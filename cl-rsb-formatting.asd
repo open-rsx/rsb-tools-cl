@@ -1,4 +1,4 @@
-;;; cl-rsb-formatting.asd --- 
+;;; cl-rsb-formatting.asd --- Formatting functions for cl-rsb-based utilities.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -20,9 +20,7 @@
 (defpackage :cl-rsb-formatting-system
   (:use
    :cl
-   :asdf)
-  (:documentation
-   "TODO(jmoringe): document"))
+   :asdf))
 
 (in-package :cl-rsb-formatting-system)
 
@@ -30,7 +28,7 @@
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     "0.1.0"
-  :license     "LICENSE; see COPYING file for details."
+  :license     "GPL3; see COPYING file for details."
   :description "This system provides some formatting functions for
 RSB-related systems."
   :depends-on  (cl-rsb)
@@ -38,7 +36,7 @@ RSB-related systems."
 		 :components ((:file       "package")
 			      (:file       "util"
 			       :depends-on ("package"))
-			      
+
 			      (:file       "protocol"
 			       :depends-on ("package"))
 			      (:file       "event"
