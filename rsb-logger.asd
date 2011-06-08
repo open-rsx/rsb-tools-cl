@@ -1,4 +1,4 @@
-;;; rsb-logger.asd ---
+;;; rsb-logger.asd --- RSB Logging utility based cl-rsb.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -20,9 +20,7 @@
 (defpackage :rsb-logger-system
   (:use
    :cl
-   :asdf)
-  (:documentation
-   "TODO(jmoringe): document"))
+   :asdf))
 
 (in-package :rsb-logger-system)
 
@@ -42,8 +40,7 @@ exchanged on a given RSB bus or channel."
 		:cl-rsb
 		:cl-rsb-formatting)
   :components  ((:module     "logger"
-		 :components (;;
-			      (:file       "package")
+		 :components ((:file       "package")
 
 			      (:file       "main"
 			       :depends-on ("package"))))))
