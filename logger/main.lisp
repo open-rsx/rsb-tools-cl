@@ -17,39 +17,33 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(in-package :rsb-logger)
+(in-package :rsb.tools.logger)
 
-(defun update-synopsis ()
-  "TODO(jmoringe): document"
-  (make-synopsis
-   :postfix "[URI]"
-   :item    (make-text
-	     :contents (format nil "URI designates the channel for which ~
-events should be received and logged and the transport that should be ~
-used to attach to channel. ~A The following URI schemas designate ~
-supported transports: ~{~(~A~)~^, ~}.
+(defun make-help-string ()
+  "Return a help that explains the commandline option interface."
+  (with-output-to-string (stream)
+    (format stream "URI designates the channel for which events ~
+should be received and logged and the transport that should be used ~
+to attach to channel. A URI of the form
 
+  ")
+    (print-uri-help-string stream)
+    (format stream
+	    "
 Examples:
 
   ~A --rsb-plugins-load cl-spread spread://localhost:4811
-  ~:*~A --rsb-plugins-load cl-spread,xpath spread:"
-			       (documentation 'rsb::uri->scope-and-options 'function)
-			       (remove-duplicates
-				(apply #'append
-				       (map 'list (compose #'rsb.transport:connector-schemas
-							   #'second)
-					    (rsb.transport:transport-classes))))
-			       ;; (progname)
-			       "rsb-logger"))
-   :item    (defgroup (:header "General Options")
-	      (flag    :short-name     "h"
-		       :long-name      "help"
-		       :description
-		       "Print this help and exit.")
-	      (flag    :short-name     "d"
-		       :long-name      "debug"
-		       :description
-		       "Enable debugging."))
+  ~:*~A --rsb-plugins-load cl-spread,xpath spread:
+"
+	    ;; (progname)
+	    "rsb-logger")))
+
+(defun update-synopsis ()
+  "Create and return a commandline option tree."
+  (make-synopsis
+   :postfix "[URI]"
+   :item    (make-text :contents (make-help-string))
+   :item    (make-common-options)
    :item    (defgroup (:header "Logging Options")
 	      (stropt  :short-name      "f"
 		       :long-name       "filter"
@@ -61,46 +55,35 @@ Examples:
 		       :default-value   :standard-output
 		       :description
 		       "TODO")
-	      (enum    :short-name      "l"
-		       :long-name       "detail-level"
+	      (enum    :short-name      "s"
+		       :long-name       "style"
 		       :enum            (format-styles 'format-event)
-		       :default-value    :line
+		       :default-value   :compact
 		       :description
-		       "Level of detail when printing events."))
-   ;; RSB Options
-   :item   (rsb::make-options))
+		       "The style to use when printing events."))
+   ;; Append RSB options.
+   :item   (rsb:make-options)))
 
-  ;; Create a new global context.
-  (make-context))
-
-(defun construct-filter (spec)
-  "TODO(jmoringe): document"
+(defun make-filter-tree (spec)
+  "Construct and return a filter tree according to SPEC."
   (with-input-from-string (stream spec)
     (apply #'rsb.filter:filter
 	   (iter (for arg in-stream stream)
 		 (collect arg)))))
 
 (defun main ()
-  "TODO(jmoringe): document"
+  "Entry point function of the cl-rsb-tools-logger system."
   (update-synopsis)
   (setf rsb:*default-configuration* (cons '((:transport :spread :converter)
-					    . (:fundamental-bytes :fundamental-string :protocol-buffer))
+					    . (:fundamental-bytes :fundamental-string :protocol-buffer)) ;;; TODO(jmoringe):
 					  (rsb:options-from-default-sources)))
 
-  (when (getopt :long-name "debug")
-    (log5:debugging 'log5:info+))
-
-  (rsb::load-plugins)
-  (update-synopsis)
-
-  (when (getopt :long-name "help")
-    (help)
-    (return-from main))
-
-  ;; (format t "Using filter ~A~%" (construct-filter (getopt :long-name "filter")))
+  (process-commandline-options
+   :update-synopsis #'update-synopsis
+   :return          (lambda () (return-from main)))
 
   (let* ((uri         (first (com.dvlsoft.clon:remainder)))
-	 (event-style (getopt :long-name "detail-level"))
+	 (event-style (getopt :long-name "style"))
 	 (terminate? nil))
     (unless uri
       (format t "Specify URI~%")
@@ -115,13 +98,8 @@ Examples:
 	 (setf terminate? t)
 	 (log5:log-for log5:info "Received signal ~D; Shutting down ..." signal)))
 
-    ;(handler-case
-	(rsb:with-reader (reader uri)
-	  (log5:log-for log5:info "Created reader ~A" reader)
-	  (iter (until terminate?)
-		(for event next (rsb:receive reader :block? t))
-		(format-event event event-style *standard-output*)))
-      ;(error (condition)
-	;(format *error-output* "Error: ~A~%" condition)
-	;))
-	))
+    (rsb:with-reader (reader uri)
+      (log5:log-for log5:info "Created reader ~A" reader)
+      (iter (until terminate?)
+	    (for event next (rsb:receive reader :block? t))
+	    (format-event event event-style *standard-output*)))))

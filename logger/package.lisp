@@ -19,7 +19,7 @@
 
 (in-package :cl-user)
 
-(defpackage :rsb-logger
+(defpackage :rsb.tools.logger
   (:use
    :cl
    :alexandria
@@ -27,8 +27,13 @@
    :bind
 
    :rsb
+   :rsb.common
    :rsb.formatting
 
    :com.dvlsoft.clon)
+
+  (:export
+   :main)
+
   (:documentation
-   "Main package of the `rsb-logger' system."))
+   "Main package of the `cl-rsb-tools-logger' system."))
