@@ -23,14 +23,28 @@
 ;;; Event formatting protocol
 ;;
 
-(defgeneric format-event (event style stream)
+(defgeneric format-event (event style stream
+			  &key
+			  max-lines
+			  max-columns)
   (:documentation
-   "Format EVENT onto STREAM using a style designated by STYLE."))
+   "Format EVENT onto STREAM using a style designated by STYLE.
+MAX-LINES controls specifies the maximum number of lines the produced
+output is allowed to take up.
+MAX-COLUMNS limits the number of columns individual output lines are
+allowed to take up."))
 
-(defgeneric format-payload (data style stream)
+(defgeneric format-payload (data style stream
+			    &key
+			    max-lines
+			    max-columns)
   (:documentation
    "Format the event payload DATA onto STREAM using a formatting style
-designated by STYLE."))
+designated by STYLE.
+MAX-LINES controls specifies the maximum number of lines the produced
+output is allowed to take up.
+MAX-COLUMNS limits the number of columns individual output lines are
+allowed to take up."))
 
 
 ;;;

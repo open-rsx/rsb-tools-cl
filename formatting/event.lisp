@@ -1,4 +1,4 @@
-;;; event.lisp ---
+;;; event.lisp --- Formatting functions for events.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -19,40 +19,70 @@
 
 (in-package :rsb.formatting)
 
-(defmethod format-event ((event event) (style (eql :line)) (stream t))
+(defmethod format-event :around ((event event) (style t) (stream t)
+				 &key
+				 (max-lines   16)
+				 (max-columns 79))
+  (let ((*print-right-margin* most-positive-fixnum)
+	(*print-miser-width*  most-positive-fixnum))
+    (call-next-method event style stream
+		      :max-lines   max-lines
+		      :max-columns max-columns)))
+
+(defmethod format-event ((event event) (style (eql :discard)) (stream t)
+			 &key &allow-other-keys)
+  "Ignore EVENT."
+  (values))
+
+(defmethod format-event ((event event) (style (eql :compact)) (stream t)
+			 &key &allow-other-keys)
   "Format EVENT on STREAM on a single line."
   (let ((*print-right-margin* most-positive-fixnum)
 	(*print-miser-width*  most-positive-fixnum))
-    (format stream "[~8,3F ~/rsb::print-id/ -> ~12A] ~A~%"
-	    (float (/ (get-internal-real-time) internal-time-units-per-second)) ;; TODO
-	    (if (slot-boundp event 'rsb::origin)
-		(event-origin event)
-		:origin?)
-	    (scope-string (event-scope event))
-	    event)))
+    (format stream "~A ~:[ORIGIN? ~;~:*~/rsb::print-id/~] ~A~%"
+	    (local-time:now) (event-origin event) event)))
 
-(defmethod format-event ((event event) (style (eql :detailed)) (stream t))
-  (format-event event :line stream)
+(defmethod format-event ((event event) (style (eql :detailed)) (stream t)
+			 &key
+			 max-lines
+			 max-columns)
+  "Format EVENT on STREAM with as many details as possible."
+  (bind (((:accessors-r/o
+	   (scope event-scope) (id event-id) (type event-type)
+	   (origin event-origin) (data event-data)
+	   (meta-data meta-data-alist))
+	  event))
+   ;; Envelope information.
+   (with-indented-section (stream "Event")
+     (format-aligned-items stream '(:scope :id :type :origin)
+			   (list (scope-string scope) id type origin)))
 
+   ;; Framework and user timestamps.
+   (when (> max-lines 5)
+    (with-indented-section (stream "Timestamps")
+      (let ((keys (append '(:create :send :receive :deliver)
+			  (set-difference
+			   (timestamp-keys event)
+			   '(:create :send :receive :deliver)))))
+	(format-aligned-items
+	 stream keys (map 'list (curry #'timestamp event) keys)))))
 
-  (with-indent (stream)
-    (format stream "Scope  ~A~%" (scope-string (event-scope event)))
-    (format stream "ID     ~:/rsb::print-id/~%" (event-id event))
-    (format stream "Type   ~A~%" (event-type event))
-    (format stream "Origin ~:/rsb::print-id/~%" (ignore-errors (event-origin event))))
+   ;; Meta-data.
+   (when (and meta-data (> max-lines 10))
+     (with-indented-section (stream "Meta-Data")
+       (format-aligned-items/alist stream meta-data)))
 
-  (with-indented-section (stream "Timestamps")
-    (let ((keys (append '(:create :send :receive :deliver)
-			(set-difference
-			 (timestamp-keys event)
-			 '(:create :send :receive :deliver)))))
-      (format-aligned-items
-       stream keys (map 'list (curry #'timestamp event) keys))))
+   ;; Payload.
+   (when (> max-lines 11)
+    (with-indented-section (stream (format nil "Payload (~S)" (class-name (class-of data))))
+      (format-payload data :any stream
+		      :max-lines   (- max-lines 11)
+		      :max-columns (- max-columns 2))))))
 
-  (when (event-meta-data event)
-    (with-indented-section (stream "Meta-Data")
-      (format-aligned-items/alist stream (meta-data-alist event))))
-
-  (with-indented-section (stream (format nil "Payload (~A)"
-					 (type-of (event-data event))))
-    (format-payload (event-data event) :any stream)))
+(defmethod format-event :after ((event event) (style (eql :detailed)) (stream t)
+				&key
+				max-columns
+				&allow-other-keys)
+  "When formatting events in :detailed style, print a vertical rule
+after each event."
+  (format stream "~A~%" (make-string max-columns :initial-element #\-)))
