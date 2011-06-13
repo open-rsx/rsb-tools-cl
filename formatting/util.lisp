@@ -55,6 +55,10 @@ content by AMOUNT."
 				 :final-fresh-line?   ,final-fresh-line?)
 	 ,@body))))
 
+(defun format-maybe (stream value)
+  "Print VALUE onto STREAM unless it is nil."
+  (format stream "~:[N/A~;~:*~A~]" value))
+
 (defun format-aligned-items (stream keys values
 			     &key
 			     (value-formatter #'format-maybe))
