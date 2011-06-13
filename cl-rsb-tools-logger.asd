@@ -1,4 +1,4 @@
-;;; rsb-logger.asd --- RSB Logging utility based cl-rsb.
+;;; cl-rsb-tools-logger.asd --- RSB Logging utility based cl-rsb.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -17,14 +17,14 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(defpackage :rsb-logger-system
+(defpackage :cl-rsb-tools-logger-system
   (:use
    :cl
    :asdf))
 
-(in-package :rsb-logger-system)
+(in-package :cl-rsb-tools-logger-system)
 
-(defsystem :rsb-logger
+(defsystem :cl-rsb-tools-logger
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     "0.1.0"
@@ -38,6 +38,7 @@ exchanged on a given RSB bus or channel."
 		:com.dvlsoft.clon
 
 		:cl-rsb
+		:cl-rsb-common
 		:cl-rsb-formatting)
   :components  ((:module     "logger"
 		 :components ((:file       "package")
