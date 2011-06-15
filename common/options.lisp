@@ -22,18 +22,30 @@
 (defun make-common-options ()
   "Return a `clon:group' instance containing common program options."
   (defgroup (:header "General Options")
-    (flag :short-name     "v"
-	  :long-name      "version"
-	  :description
-	  "Print version information exit.")
-    (flag :short-name     "h"
-	  :long-name      "help"
-	  :description
-	  "Print this help and exit.")
-    (flag :short-name     "d"
-	  :long-name      "debug"
-	  :description
-	  "Enable debugging.")))
+    (flag   :long-name      "version"
+	    :short-name     "v"
+	    :description
+	    "Print version information exit.")
+    (flag   :long-name      "help"
+	    :short-name     "h"
+	    :description
+	    "Print this help and exit.")
+    (stropt :short-name   "t"
+	    :long-name    "trace"
+	    :argument-name "SPEC"
+	    :description
+	    "Trace specified things. This option can be supplied multiple times to trace multiple things. Each occurrence takes an argument which has to have one of the following forms:
++ \"PACKAGE\" (note the double quotes and uppercase): trace all functions in the package named PACKAGE.
++ function-name (note: no quotes, actual case of the function name): trace the named function.")
+    (flag   :long-name      "debug"
+	    :short-name     "d"
+	    :description
+	    "Enable debugging. This does the following things:
++ Set the log level such that debug output is emitted
++ Enable printing backtraces instead of just condition reports in case of unhandled error conditions.")
+    (flag   :long-name      "swank"
+	    :description
+	    "Start a swank listener (If you don't know what swank is, pretend this option does not exist - or google \"emacs slime\"). Swank will print the port it listens on. In addition, a file named \"./swank-port.txt\" containing the port number is written.")))
 
 (defun process-commandline-options (&key
 				    (version '(0 1 0))
@@ -41,20 +53,38 @@
 				    return)
   "Perform the following commandline option processing:
 
-+ if --debug has been supplied, keep debugger enabled and adjust
-  log-level, otherwise disable debugger
-
 + if --version has been supplied, print version information and call
   RETURN or exit.
 
 + if --help has been supplied, print a help text and call RETURN or
-  exit."
+  exit.
+
++ if --trace has been supplied (at least once), trace the packages or
+  functions specified in the arguments to --trace.
+
++ if --debug has been supplied, keep debugger enabled and adjust
+  log-level, otherwise disable debugger
+
++ if --swank is supplied, start a swank server and write its port to
+  ./swank-port.txt"
   ;; Create a new global context.
   (make-context)
 
+  ;; Process --trace options.
+  (let ((trace-specs
+	 (iter (for trace-spec next (getopt :long-name "trace"))
+	       (while trace-spec)
+	       (collect (read-from-string trace-spec)))))
+    (trace-things trace-specs))
+
+  ;; Process --debug option.
   (if (getopt :long-name "debug")
       (log5:debugging 'log5:info+)
       (disable-debugger))
+
+  ;; Process --swank option.
+  (when (getopt :long-name "swank")
+    (start-swank))
 
   ;; Load specified RSB plugins, potentially updating the option
   ;; synopsis afterwards.
