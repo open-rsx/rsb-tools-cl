@@ -83,8 +83,7 @@ Examples:
    :return          (lambda () (return-from main)))
 
   (let* ((uri         (first (com.dvlsoft.clon:remainder)))
-	 (event-style (getopt :long-name "style"))
-	 (terminate? nil))
+	 (event-style (getopt :long-name "style")))
     (unless uri
       (format t "Specify URI~%")
       (return-from main))
@@ -95,11 +94,13 @@ Examples:
      sb-unix:SIGINT
      #'(lambda (signal info context)
 	 (declare (ignore info context))
-	 (setf terminate? t)
-	 (log5:log-for log5:info "Received signal ~D; Shutting down ..." signal)))
+	 (log5:log-for log5:info "Received signal ~D; Shutting down ..." signal)
+	 (throw 'terminate nil)))
 
     (rsb:with-reader (reader uri)
       (log5:log-for log5:info "Created reader ~A" reader)
-      (iter (until terminate?)
-	    (for event next (rsb:receive reader :block? t))
-	    (format-event event event-style *standard-output*)))))
+
+      (catch 'terminate
+	(iter (while t)
+	      (for event next (rsb:receive reader :block? t))
+	      (format-event event event-style *standard-output*))))))
