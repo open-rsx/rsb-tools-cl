@@ -75,7 +75,7 @@ Examples:
   "Entry point function of the cl-rsb-tools-logger system."
   (update-synopsis)
   (setf rsb:*default-configuration* (cons '((:transport :spread :converter)
-					    . (:fundamental-bytes :fundamental-string :protocol-buffer)) ;;; TODO(jmoringe):
+					    . (:fundamental-bytes :fundamental-utf-8-string :fundamental-acsii-string :protocol-buffer)) ;;; TODO(jmoringe):
 					  (rsb:options-from-default-sources)))
 
   (process-commandline-options
