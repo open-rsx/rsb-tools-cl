@@ -33,7 +33,9 @@
    :process-commandline-options)
 
   (:export
-   :disable-debugger)
+   :trace-things
+   :disable-debugger
+   :start-swank)
 
   (:export
    :print-uri-help-string

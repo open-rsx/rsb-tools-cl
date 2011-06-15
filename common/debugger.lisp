@@ -19,6 +19,11 @@
 
 (in-package :rsb.common)
 
+(defun trace-things (specs)
+  "Like `trace', but SPECS is evaluated."
+  #+sbcl (eval (sb-debug::expand-trace specs))
+  #-sbcl (error "Not implemented"))
+
 (defun disable-debugger ()
   "Disable the debugger and return."
   #+sbcl (setf sb-ext:*invoke-debugger-hook*
@@ -26,3 +31,8 @@
 		 (declare (ignore previous-value))
 		 (format *error-output* "~A~%" condition)
 		 (com.dvlsoft.clon:exit 1))))
+
+(defun start-swank ()
+  "Start a swank server and write its port to \"./swank-port.txt\"."
+  (ql:quickload :swank)
+  (funcall (find-symbol "START-SERVER" :swank) "./swank-port.txt"))
