@@ -84,23 +84,20 @@ Examples:
 
   (let* ((uri         (first (com.dvlsoft.clon:remainder)))
 	 (event-style (getopt :long-name "style")))
-    (unless uri
-      (format t "Specify URI~%")
-      (return-from main))
-
     (log5:log-for log5:info "Using URI ~S" uri)
-    (log5:log-for log5:info "Installing SIGINT handler ~S" sb-unix:SIGINT)
-    (sb-unix::enable-interrupt
-     sb-unix:SIGINT
-     #'(lambda (signal info context)
-	 (declare (ignore info context))
-	 (log5:log-for log5:info "Received signal ~D; Shutting down ..." signal)
-	 (throw 'terminate nil)))
 
-    (rsb:with-reader (reader uri)
+    (rsb:with-reader (reader (or uri "/"))
       (log5:log-for log5:info "Created reader ~A" reader)
 
       (catch 'terminate
+	(log5:log-for log5:info "Installing SIGINT handler ~S" sb-unix:SIGINT)
+	(sb-unix::enable-interrupt
+	 sb-unix:SIGINT
+	 #'(lambda (signal info context)
+	     (declare (ignore info context))
+	     (log5:log-for log5:info "Received signal ~D; Shutting down ..." signal)
+	     (throw 'terminate nil)))
+
 	(iter (while t)
 	      (for event next (rsb:receive reader :block? t))
 	      (format-event event event-style *standard-output*))))))
