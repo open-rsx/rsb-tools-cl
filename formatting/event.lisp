@@ -86,3 +86,9 @@
   "When formatting events in :detailed style, print a vertical rule
 after each event."
   (format stream "~A~%" (make-string max-columns :initial-element #\-)))
+
+(defmethod format-event ((event event) (style (eql :payload)) (stream t)
+			 &key &allow-other-keys)
+  "Only format the payload of EVENT without any meta-data or processing."
+  (format-payload (event-data event) :raw stream)
+  (force-output stream))
