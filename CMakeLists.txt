@@ -1,5 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+# Processor Architectur
+EXECUTE_PROCESS(OUTPUT_VARIABLE SYSTEM_MACHINE
+                COMMAND uname --machine
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+
 # Find and check SBCL installation.
 SET(SBCL_HOME $ENV{SBCL_HOME})
 IF(NOT SBCL_HOME)
@@ -18,7 +23,7 @@ FIND_PROGRAM(GZEXE_EXECUTABLE gzexe)
 
 # Configure ASDF.
 SET(CL_SOURCE_REGISTRY "${CMAKE_CURRENT_SOURCE_DIR}//:")
-SET(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t \\\"${CMAKE_CURRENT_BINARY_DIR}/fasl-cache-${SBCL_VERSION}\\\") :ignore-inherited-configuration)")
+SET(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t \\\"${CMAKE_CURRENT_BINARY_DIR}/fasl-cache-${SBCL_VERSION}-${SYSTEM_MACHINE}\\\") :ignore-inherited-configuration)")
 
 # Create images.
 FILE(GLOB SCRIPTS "*/dump.lisp")
