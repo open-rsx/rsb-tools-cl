@@ -88,4 +88,4 @@ onto STREAM."
   (format stream "~A version ~{~D.~D.~D~}" (progname) version)
   (when include-rsb-version?
     (format stream "~&RSB Version ~{~D.~D.~D~}"
-	    (cl-rsb-system:version))))
+	    (cl-rsb-system:version/list))))
