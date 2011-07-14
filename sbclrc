@@ -1,16 +1,20 @@
 (require :asdf)
-(require :sb-posix)
 
+;; We do this strange stuff to avoid loading sb-posix (for getenv)
+;; before quicklisp.
 (defvar *lisp-share-path*
-  (merge-pathnames
-   "../../share/common-lisp"
-   (parse-namestring
-    (concatenate 'string (sb-posix:getenv "SBCL_HOME") "/"))))
+  (with-output-to-string (stream)
+    (sb-ext:run-program
+     "sh" '("-c" "env echo -n \"${SBCL_HOME}\"/../../share/common-lisp")
+     :search t
+     :output stream)))
 
 #-quicklisp
 (let ((quicklisp-init (format nil "~A/quicklisp/setup.lisp" *lisp-share-path*)))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
+
+(require :sb-posix)
 
 (defun load-system (system)
   (let ((*compile-verbose* nil)
