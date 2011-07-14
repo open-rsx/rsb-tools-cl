@@ -5,7 +5,7 @@
 (defvar *lisp-share-path*
   (with-output-to-string (stream)
     (sb-ext:run-program
-     "sh" '("-c" "env echo -n \"${SBCL_HOME}\"/../../share/common-lisp")
+     "sh" '("-c" "env echo -n \"${SBCL_HOME}\"/../../../share/common-lisp")
      :search t
      :output stream)))
 
