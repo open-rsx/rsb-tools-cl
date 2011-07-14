@@ -45,22 +45,16 @@ Examples:
    :item    (make-text :contents (make-help-string))
    :item    (make-common-options)
    :item    (defgroup (:header "Logging Options")
-	      (stropt  :short-name      "f"
-		       :long-name       "filter"
-		       :description
-		       "TODO")
-	      (enum    :short-name      "t"
-		       :long-name       "target"
-		       :enum            '(:standard-output)
-		       :default-value   :standard-output
-		       :description
-		       "TODO")
-	      (enum    :short-name      "s"
-		       :long-name       "style"
-		       :enum            (format-styles 'format-event)
-		       :default-value   :compact
-		       :description
-		       "The style to use when printing events."))
+	      (stropt :short-name      "f"
+		      :long-name       "filter"
+		      :description
+		      "TODO")
+	      (enum   :short-name      "s"
+		      :long-name       "style"
+		      :enum            (format-styles 'format-event)
+		      :default-value   :compact
+		      :description
+		      "The style to use when printing events."))
    ;; Append RSB options.
    :item   (rsb:make-options)))
 
