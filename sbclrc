@@ -41,6 +41,7 @@
 	 (ql:quickload system :verbose nil :explain nil :prompt nil)))))
 
 (load-system :alexandria)
+(load-system :split-sequence)
 (load-system :drakma)
 
 (defvar *jenkins-base-url*
@@ -51,25 +52,44 @@
 (defvar *job-name* (sb-posix:getenv "JOB_NAME")
   "Our job name.")
 
+(defvar *dep-suffixes* (append
+			(split-sequence:split-sequence
+			 #\: (sb-posix:getenv "DEP_SUFFIX")
+			 :remove-empty-subseqs t)
+			'(nil))
+  "A list of priority-sorted suffixes to append to systems when trying
+to download artifacts.")
+
 (defvar *job-workspace* (sb-posix:getenv "WORKSPACE")
   "Our workspace.")
 
 (defun %download-project-artifact (name destination-directory)
-  (let ((url         (format nil "~A/job/~A/lastSuccessfulBuild/artifact/~:*~A.tar.gz"
-			     *jenkins-base-url* name))
-	(destination (make-pathname
+  (let ((destination (make-pathname
 		      :name     (concatenate 'string name ".tar")
 		      :type     "gz"
 		      :defaults destination-directory)))
     ;; Download the artifact archive.
     (ensure-directories-exist destination-directory)
-    (alexandria:with-output-to-file (stream destination
-					    :if-does-not-exist :create
-					    :if-exists         :supersede
-					    :element-type      '(unsigned-byte 8))
-      (let ((http-stream (drakma:http-request url :want-stream t)))
-	(alexandria:copy-stream http-stream stream
-				:element-type '(unsigned-byte 8))))
+    (unless (some
+	     #'(lambda (suffix)
+		 (ignore-errors
+		   (alexandria:with-output-to-file
+		       (stream destination
+			       :if-does-not-exist :create
+			       :if-exists         :supersede
+			       :element-type      '(unsigned-byte 8))
+		     (let* ((url
+			     (format nil "~A/job/~A~@[-~A~]/lastSuccessfulBuild/artifact/~2:*~A~@[-~A~].tar.gz"
+				     *jenkins-base-url* name suffix))
+			    (http-stream
+			     (drakma:http-request url :want-stream t)))
+		       (alexandria:copy-stream
+			http-stream stream
+			:element-type '(unsigned-byte 8))))
+		   t))
+	     *dep-suffixes*)
+      (error "~@<Could not download artifact for system ~A.~@:>"
+	     name))
 
     ;; Extract the archive.
     (unless (zerop
