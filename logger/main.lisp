@@ -38,13 +38,16 @@ Examples:
 	    ;; (progname)
 	    "rsb-logger")))
 
-(defun update-synopsis ()
+(defun update-synopsis (&key
+			(show :default))
   "Create and return a commandline option tree."
   (make-synopsis
    :postfix "[URI]"
    :item    (make-text :contents (make-help-string))
    :item    (make-common-options)
-   :item    (defgroup (:header "Logging Options")
+   :item    (defgroup (:header "Logging Options"
+		       :hidden (and (listp show)
+				    (not (member :logging show))))
 	      (stropt :short-name      "f"
 		      :long-name       "filter"
 		      :description
@@ -56,7 +59,9 @@ Examples:
 		      :description
 		      "The style to use when printing events."))
    ;; Append RSB options.
-   :item   (rsb:make-options)))
+   :item   (rsb:make-options
+	    :show? (or (eq show t)
+		       (and (listp show) (member :rsb show))))))
 
 (defun make-filter-tree (spec)
   "Construct and return a filter tree according to SPEC."
