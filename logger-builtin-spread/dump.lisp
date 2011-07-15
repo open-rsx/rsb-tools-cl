@@ -1,3 +1,4 @@
+(load-system :cl-protobuf)
 (load-system :cl-spread)
 (load-system :cl-rsb-tools-logger)
 
