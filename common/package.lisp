@@ -37,8 +37,11 @@
    :disable-debugger
    :start-swank)
 
+  ;; Help text generation
   (:export
    :print-uri-help-string
+   :print-filter-help
+
    :print-version)
 
   (:documentation

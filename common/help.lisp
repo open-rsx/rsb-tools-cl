@@ -76,6 +76,22 @@ following patterns:
   (print-all-uri-synopsis stream))
 
 
+;;; Filter help string
+;;
+
+(defun print-filter-help (stream)
+  "Format a table of filter names and corresponding documentation
+strings onto STREAM."
+  (bind ((items (remove-duplicates (rsb.filter:filter-classes)
+				  :key #'second))
+	 (width (reduce #'max items
+			:key (compose #'length #'string #'first)))
+	 ((:flet do-one (name class))
+	   (list width name (documentation (class-name class) 'type))))
+   (format stream "~{~{~(~VA~): ~@<~@;~A~:>~}~^~&~}"
+	   (map 'list (curry #'apply #'do-one) items))))
+
+
 ;;; Version string
 ;;
 
