@@ -1,5 +1,8 @@
-(load-system :cl-protobuf)
+(load-system :cl-ppcre) ;; for regex filter
+
+(load-system :cl-protobuf) ;; spread transport
 (load-system :cl-spread)
+
 (load-system :cl-rsb-tools-logger)
 
 (cffi:close-foreign-library 'spread::libspread)
