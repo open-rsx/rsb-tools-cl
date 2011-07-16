@@ -38,6 +38,24 @@ Examples:
 	    ;; (progname)
 	    "rsb-logger")))
 
+(defun make-filter-help-string ()
+  "Return a help string that explains how to specify filters and lists
+the available filters. "
+  (with-output-to-string (stream)
+    (format stream "Specify a filter that received events have to ~
+match in order to be processed rather than discarded. This option can ~
+be supplied multiple times in which case events have to match all ~
+specified filters. Each SPEC has to be of the form
+
+  KIND KEY1 VALUE1 KEY2 VALUE2 ...
+
+where keys and values depend on KIND and may be optional in some ~
+cases. The following filters are currently available (left column ~
+corresponds to KIND):
+
+")
+    (print-filter-help stream)))
+
 (defun update-synopsis (&key
 			(show :default))
   "Create and return a commandline option tree."
@@ -51,7 +69,7 @@ Examples:
 	      (stropt :short-name      "f"
 		      :long-name       "filter"
 		      :description
-		      "TODO")
+		      (make-filter-help-string))
 	      (enum   :short-name      "s"
 		      :long-name       "style"
 		      :enum            (format-styles 'format-event)
