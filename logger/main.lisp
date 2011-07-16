@@ -54,8 +54,14 @@ specified filters. Each SPEC has to be of the form
   KIND KEY1 VALUE1 KEY2 VALUE2 ...
 
 where keys and values depend on KIND and may be optional in some ~
-cases. The following filters are currently available (left column ~
-corresponds to KIND):
+cases. Examples (note that the single quotes have to be included only ~
+when used within a shell):
+
+  --filter 'origin \"EAEE2B00-AF4B-11E0-8930-001AA0342D7D\"'
+  --filter 'regex \".*foo[0-9]+\"'
+
+The following filters are currently available (paragraph headings ~
+correspond to respective KIND):
 
 ")
     (print-filter-help stream)))
@@ -85,13 +91,6 @@ corresponds to KIND):
 	    :show? (or (eq show t)
 		       (and (listp show) (member :rsb show))))))
 
-(defun make-filter-tree (spec)
-  "Construct and return a filter tree according to SPEC."
-  (with-input-from-string (stream spec)
-    (apply #'rsb.filter:filter
-	   (iter (for arg in-stream stream)
-		 (collect arg)))))
-
 (defun main ()
   "Entry point function of the cl-rsb-tools-logger system."
   (update-synopsis)
@@ -104,12 +103,16 @@ corresponds to KIND):
    :return          (lambda () (return-from main)))
 
   (let* ((uri         (first (com.dvlsoft.clon:remainder)))
+	 (filters     (iter (for spec next (getopt :long-name "filter"))
+			    (while spec)
+			    (collect
+				(make-filter (parse-filter-spec spec)))))
 	 (event-style (getopt :long-name "style")))
     (log5:log-for log5:info "Using URI ~S" uri)
 
     (rsb:with-reader (reader (or uri "/"))
+      (setf (receiver-filters reader) filters)
       (log5:log-for log5:info "Created reader ~A" reader)
-
       (catch 'terminate
 	(log5:log-for log5:info "Installing SIGINT handler ~S" sb-unix:SIGINT)
 	(sb-unix::enable-interrupt

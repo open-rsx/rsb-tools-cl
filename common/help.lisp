@@ -79,16 +79,19 @@ following patterns:
 ;;; Filter help string
 ;;
 
-(defun print-filter-help (stream)
+(defun print-filter-help (stream
+			  &key
+			  (blacklist '(:or :disjoin :and :conjoin)))
   "Format a table of filter names and corresponding documentation
 strings onto STREAM."
-  (bind ((items (remove-duplicates (rsb.filter:filter-classes)
-				  :key #'second))
-	 (width (reduce #'max items
-			:key (compose #'length #'string #'first)))
+  (bind ((items (remove-duplicates
+		 (remove-if (rcurry #'member blacklist)
+			    (rsb.filter:filter-classes)
+			    :key #'first)
+		 :key #'second))
 	 ((:flet do-one (name class))
-	   (list width name (documentation (class-name class) 'type))))
-   (format stream "~{~{~(~VA~): ~@<~@;~A~:>~}~^~&~}"
+	   (list name (documentation (class-name class) 'type))))
+   (format stream "~{~{~(~A~) ARGS~&~2T~@<~@;~A~:>~}~^~&~}"
 	   (map 'list (curry #'apply #'do-one) items))))
 
 
