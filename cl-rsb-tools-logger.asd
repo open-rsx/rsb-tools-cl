@@ -17,12 +17,12 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(defpackage :cl-rsb-tools-logger-system
+(cl:defpackage :cl-rsb-tools-logger-system
   (:use
    :cl
    :asdf))
 
-(in-package :cl-rsb-tools-logger-system)
+(cl:in-package :cl-rsb-tools-logger-system)
 
 (defsystem :cl-rsb-tools-logger
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
