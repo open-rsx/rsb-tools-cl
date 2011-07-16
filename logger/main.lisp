@@ -22,9 +22,13 @@
 (defun make-help-string ()
   "Return a help that explains the commandline option interface."
   (with-output-to-string (stream)
-    (format stream "URI designates the channel for which events ~
-should be received and logged and the transport that should be used ~
-to attach to channel. A URI of the form
+    (format stream "Show events exchanged on the RSB channel ~
+designated by URI. Events can be filtered and displayed in several ~
+ways which can be controlled using the --filter and --style options.
+
+URI designates the channel for which events should be received and ~
+logged and the transport that should be used to attach to channel. A ~
+URI of the form
 
   ")
     (print-uri-help stream)
