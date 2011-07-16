@@ -27,7 +27,7 @@ should be received and logged and the transport that should be used ~
 to attach to channel. A URI of the form
 
   ")
-    (print-uri-help-string stream)
+    (print-uri-help stream)
     (format stream
 	    "
 Examples:

@@ -39,7 +39,7 @@
 
   ;; Help text generation
   (:export
-   :print-uri-help-string
+   :print-uri-help
    :print-filter-help
 
    :print-version)

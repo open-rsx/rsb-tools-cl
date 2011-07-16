@@ -53,7 +53,7 @@ STREAM."
 ;;; URI help string
 ;;
 
-(defun print-uri-help-string (stream)
+(defun print-uri-help (stream)
   "Print an explanatory string regarding the interpretation of URIS
 onto STREAM."
   (format stream
