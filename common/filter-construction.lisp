@@ -36,7 +36,11 @@ and return the result as a list."
   (maybe-expand-filter-spec
    (with-input-from-string (stream string)
      (iter (for token in-stream stream)
-	   (collect token)))))
+	   (collect
+	       (if (and (first-iteration-p)
+			(not (keywordp token)))
+		   (make-keyword (string-upcase (string token)))
+		   token))))))
 
 (defun make-filter (spec)
   "Construct and return a list of filters according to SPEC."
