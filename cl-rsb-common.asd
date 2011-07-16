@@ -37,6 +37,9 @@ RSB-related systems."
   :components  ((:module     "common"
 		 :components ((:file       "package")
 
+			      (:file       "filter-construction"
+			       :depends-on ("package"))
+
 			      (:file       "debugger"
 			       :depends-on ("package"))
 

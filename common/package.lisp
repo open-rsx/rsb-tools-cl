@@ -28,14 +28,15 @@
 
    :com.dvlsoft.clon)
 
+  ;; Filter spec parsing and filter construction
+  (:export
+   :parse-filter-spec
+   :make-filter)
+
+  ;; Commandline options
   (:export
    :make-common-options
    :process-commandline-options)
-
-  (:export
-   :trace-things
-   :disable-debugger
-   :start-swank)
 
   ;; Help text generation
   (:export
@@ -43,6 +44,12 @@
    :print-filter-help
 
    :print-version)
+
+  ;; Debugging
+  (:export
+   :trace-things
+   :disable-debugger
+   :start-swank)
 
   (:documentation
    "This package contains some common utility functions for RSB:
