@@ -29,12 +29,13 @@
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     "0.1.0"
   :license     "GPL3; see COPYING file for details."
-  :description "A simple utility for receiving and displaying event
+  :description "A simple utility for receiving and displaying events
 exchanged on a given RSB bus or channel."
   :depends-on  (:alexandria
 		:metabang-bind
 		:iterate
 
+		:yacc
 		:com.dvlsoft.clon
 
 		:cl-rsb
