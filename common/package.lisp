@@ -44,6 +44,10 @@
   (:export
    :load-idl)
 
+  ;; Logging
+  (:export
+   :with-logged-warnings)
+
   ;; Commandline options
   (:export
    :make-common-options

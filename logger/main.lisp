@@ -111,23 +111,25 @@ correspond to respective KIND):
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
 
-  ;; Load IDL definitions.
-  (iter (for spec next (getopt :long-name "idl-path"))
-	(while spec)
-	(load-idl spec :auto))
+  (with-logged-warnings
 
-  (let* ((uri         (first (com.dvlsoft.clon:remainder)))
-	 (filters     (iter (for spec next (getopt :long-name "filter"))
-			    (while spec)
-			    (collect
-				(make-filter (parse-filter-spec spec)))))
-	 (event-style (getopt :long-name "style")))
-    (log5:log-for log5:info "Using URI ~S" uri)
+    ;; Load IDL definitions.
+    (iter (for spec next (getopt :long-name "idl-path"))
+	  (while spec)
+	  (load-idl spec :auto))
 
-    (rsb:with-reader (reader (or uri "/"))
-      (setf (receiver-filters reader) filters)
-      (log5:log-for log5:info "Created reader ~A" reader)
+    (let* ((uri         (first (com.dvlsoft.clon:remainder)))
+	   (filters     (iter (for spec next (getopt :long-name "filter"))
+			      (while spec)
+			      (collect
+				  (make-filter (parse-filter-spec spec)))))
+	   (event-style (getopt :long-name "style")))
+      (log5:log-for log5:info "Using URI ~S" uri)
 
-      (with-interactive-interrupt-exit
-	(iter (for event next (rsb:receive reader :block? t))
-	      (format-event event event-style *standard-output*))))))
+      (rsb:with-reader (reader (or uri "/"))
+	(setf (receiver-filters reader) filters)
+	(log5:log-for log5:info "Created reader ~A" reader)
+
+	(with-interactive-interrupt-exit
+	  (iter (for event next (rsb:receive reader :block? t))
+		(format-event event event-style *standard-output*)))))))
