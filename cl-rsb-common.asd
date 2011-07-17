@@ -33,12 +33,19 @@
 RSB-related systems."
   :depends-on  (:com.dvlsoft.clon
 
+		:cl-protobuf
+
 		:cl-rsb)
   :components  ((:module     "common"
 		 :components ((:file       "package")
 
+			      (:file       "conditions"
+			       :depends-on ("package"))
+
 			      (:file       "filter-construction"
 			       :depends-on ("package"))
+			      (:file       "idl-loading"
+			       :depends-on ("package" "conditions"))
 
 			      (:file       "debugger"
 			       :depends-on ("package"))

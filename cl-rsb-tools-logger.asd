@@ -36,6 +36,8 @@ exchanged on a given RSB bus or channel."
 		:iterate
 
 		:yacc
+		:cl-protobuf
+
 		:com.dvlsoft.clon
 
 		:cl-rsb

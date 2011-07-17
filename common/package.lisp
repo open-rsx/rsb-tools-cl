@@ -26,12 +26,23 @@
    :bind
    :iterate
 
-   :com.dvlsoft.clon)
+   :com.dvlsoft.clon
+
+   :rsb)
+
+  ;; Conditions
+  (:export
+   :failed-to-load-idl
+   :failed-to-load-idl-source)
 
   ;; Filter spec parsing and filter construction
   (:export
    :parse-filter-spec
    :make-filter)
+
+  ;; IDL loading
+  (:export
+   :load-idl)
 
   ;; Commandline options
   (:export

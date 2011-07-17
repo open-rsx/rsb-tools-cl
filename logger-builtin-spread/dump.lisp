@@ -1,7 +1,6 @@
 (load-system :cl-ppcre) ;; for regex filter
 
-(load-system :cl-protobuf) ;; spread transport
-(load-system :cl-spread)
+(load-system :cl-spread) ;; spread transport
 
 (load-system :cl-rsb-tools-logger)
 
