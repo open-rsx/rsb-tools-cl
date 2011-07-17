@@ -127,15 +127,7 @@ correspond to respective KIND):
     (rsb:with-reader (reader (or uri "/"))
       (setf (receiver-filters reader) filters)
       (log5:log-for log5:info "Created reader ~A" reader)
-      (catch 'terminate
-	(log5:log-for log5:info "Installing SIGINT handler ~S" sb-unix:SIGINT)
-	(sb-unix::enable-interrupt
-	 sb-unix:SIGINT
-	 #'(lambda (signal info context)
-	     (declare (ignore info context))
-	     (log5:log-for log5:info "Received signal ~D; Shutting down ..." signal)
-	     (throw 'terminate nil)))
 
-	(iter (while t)
-	      (for event next (rsb:receive reader :block? t))
+      (with-interactive-interrupt-exit
+	(iter (for event next (rsb:receive reader :block? t))
 	      (format-event event event-style *standard-output*))))))
