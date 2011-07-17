@@ -50,8 +50,9 @@ RSB-related systems."
 			      (:file       "debugger"
 			       :depends-on ("package"))
 
+			      (:file       "interactive"
+					   :depends-on ("package"))
 			      (:file       "help"
-			       :depends-on ("package"))
-
+					   :depends-on ("package"))
 			      (:file       "options"
 			       :depends-on ("package" "debugger" "help"))))))

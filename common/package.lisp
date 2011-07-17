@@ -49,6 +49,10 @@
    :make-common-options
    :process-commandline-options)
 
+  ;; Interactive stuff
+  (:export
+   :with-interactive-interrupt-exit)
+
   ;; Help text generation
   (:export
    :print-uri-help
