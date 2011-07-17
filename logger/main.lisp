@@ -85,7 +85,12 @@ correspond to respective KIND):
 		      :enum            (format-styles 'format-event)
 		      :default-value   :compact
 		      :description
-		      "The style to use when printing events."))
+		      "The style to use when printing events.")
+	      (path   :long-name       "idl-path"
+		      :type            :directory-list
+		      :default-value   nil
+		      :description
+		      "A list of paths from which IDL definitions should be loaded. Directory names have to end in \"/\"."))
    ;; Append RSB options.
    :item   (rsb:make-options
 	    :show? (or (eq show t)
@@ -101,6 +106,11 @@ correspond to respective KIND):
   (process-commandline-options
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
+
+  ;; Load IDL definitions.
+  (iter (for spec next (getopt :long-name "idl-path"))
+	(while spec)
+	(load-idl spec :auto))
 
   (let* ((uri         (first (com.dvlsoft.clon:remainder)))
 	 (filters     (iter (for spec next (getopt :long-name "filter"))
