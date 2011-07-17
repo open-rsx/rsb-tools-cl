@@ -51,12 +51,17 @@ allowed to take up."))
 ;;
 
 (defun format-styles (format-function)
-  "TODO(jmoringe): document"
+  "Return a list of items that are styles and descriptions of the
+form (STYLE DESCRIPTION)."
   (bind (((:flet method-style (method))
 	  (let ((style-specializer (second (closer-mop:method-specializers method))))
 	    (when (typep style-specializer 'closer-mop:eql-specializer)
 	      (closer-mop:eql-specializer-object style-specializer))))
-	 (methods (closer-mop:generic-function-methods
-		   (fdefinition format-function)))
-	 (all-styles (remove nil (map 'list #'method-style methods))))
-    (remove-duplicates all-styles)))
+	 (methods (remove-if-not #'method-style
+				 (closer-mop:generic-function-methods
+				  (fdefinition format-function)))))
+    (remove-duplicates
+     (map 'list #'(lambda (method)
+		    (list (method-style method) (documentation method t)))
+	  methods)
+     :key #'first)))

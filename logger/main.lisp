@@ -82,10 +82,14 @@ correspond to respective KIND):
 		      (make-filter-help-string))
 	      (enum   :short-name      "s"
 		      :long-name       "style"
-		      :enum            (format-styles 'format-event)
+		      :enum            (map 'list #'first
+					    (format-styles 'format-event))
 		      :default-value   :compact
 		      :description
-		      "The style to use when printing events.")
+		      (format nil "The style to use when printing events. The following styles are available:
+
+~{~{~(~A~)~&~2T~@<~@;~A~:>~}~^~&~}"
+			      (format-styles 'format-event)))
 	      (path   :long-name       "idl-path"
 		      :type            :directory-list
 		      :default-value   nil
