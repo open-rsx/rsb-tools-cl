@@ -30,9 +30,24 @@
 	       (lambda (condition previous-value)
 		 (declare (ignore previous-value))
 		 (format *error-output* "~A~%" condition)
-		 (com.dvlsoft.clon:exit 1))))
+		 (com.dvlsoft.clon:exit 1)))
+  #-sbcl (error "Not implemented"))
 
-(defun start-swank ()
+
+;;; Swank
+;;
+
+(defun start-swank (&key (port-file "./swank-port.txt"))
   "Start a swank server and write its port to \"./swank-port.txt\"."
   (ql:quickload :swank)
-  (funcall (find-symbol "START-SERVER" :swank) "./swank-port.txt"))
+  (when (probe-file port-file)
+    (delete-file port-file))
+  (funcall (find-symbol "START-SERVER" :swank) port-file))
+
+(defun enable-swank-on-signal (&key (signal sb-unix:SIGUSR1))
+  "Install a handler for SIGNAL that starts a swank server."
+  #+sbcl (sb-unix::enable-interrupt
+	  signal #'(lambda (signal info context)
+		     (declare (ignore signal info context))
+		     (start-swank)))
+  #-sbcl (error "Not implemented"))

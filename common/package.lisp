@@ -60,7 +60,9 @@
   (:export
    :trace-things
    :disable-debugger
-   :start-swank)
+
+   :start-swank
+   :enable-swank-on-signal)
 
   (:documentation
    "This package contains some common utility functions for RSB:
