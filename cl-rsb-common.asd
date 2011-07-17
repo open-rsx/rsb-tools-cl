@@ -17,12 +17,12 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(defpackage :cl-rsb-common-system
+(cl:defpackage :cl-rsb-common-system
   (:use
    :cl
    :asdf))
 
-(in-package :cl-rsb-common-system)
+(cl:in-package :cl-rsb-common-system)
 
 (defsystem :cl-rsb-common
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
