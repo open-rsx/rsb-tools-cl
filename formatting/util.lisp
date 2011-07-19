@@ -101,6 +101,9 @@ objects.")
 	  (etypecase value
 	    (string
 	     (format stream "~S" value))
+	    ((and (array (unsigned-byte 8) (*))
+		  (not (array (unsigned-byte 8) (0))))
+	     (format-payload value :any stream))
 	    (sequence
 	     (if (emptyp value)
 		 (format stream "<empty sequence>")
