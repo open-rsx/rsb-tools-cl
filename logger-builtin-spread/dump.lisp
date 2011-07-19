@@ -1,6 +1,8 @@
 (load-system :cl-ppcre) ;; for regex filter
 
-(load-system :cl-spread) ;; spread transport
+(load-system :cl-spread) ;; for spread transport
+
+(load-system :swank) ;; for the lulz
 
 (load-system :cl-rsb-tools-logger)
 
