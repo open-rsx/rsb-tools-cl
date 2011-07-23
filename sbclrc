@@ -81,11 +81,15 @@ to download artifacts.")
 		     (let* ((url
 			     (format nil "~A/job/~A~@[-~A~]/lastSuccessfulBuild/artifact/~2:*~A~@[-~A~].tar.gz"
 				     *jenkins-base-url* name suffix))
-			    (http-stream
-			     (drakma:http-request url :want-stream t)))
-		       (alexandria:copy-stream
-			http-stream stream
-			:element-type '(unsigned-byte 8))))
+			    ())
+		       (multiple-value-bind (http-stream result)
+			   (drakma:http-request url :want-stream t)
+			 (unless (= result 200)
+			   (error "~@<Download failed with result code ~D.~@:>"
+				  result))
+			 (alexandria:copy-stream
+			  http-stream stream
+			  :element-type '(unsigned-byte 8)))))
 		   t))
 	     *dep-suffixes*)
       (error "~@<Could not download artifact for system ~A.~@:>"
