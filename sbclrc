@@ -80,8 +80,7 @@ to download artifacts.")
 			       :element-type      '(unsigned-byte 8))
 		     (let* ((url
 			     (format nil "~A/job/~A~@[-~A~]/lastSuccessfulBuild/artifact/~2:*~A~@[-~A~].tar.gz"
-				     *jenkins-base-url* name suffix))
-			    ())
+				     *jenkins-base-url* name suffix)))
 		       (multiple-value-bind (http-stream result)
 			   (drakma:http-request url :want-stream t)
 			 (unless (= result 200)
