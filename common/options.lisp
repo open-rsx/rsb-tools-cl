@@ -34,6 +34,12 @@
 	      :short-name    "h"
 	      :description
 	      "Print this help and exit.")
+      (enum   :long-name     "log-level"
+	      :enum          '(:off :trace :info :warn :error)
+	      :default-value :off
+	      :argument-name "LEVEL"
+	      :description
+	      "Controls the amount of generated log output.")
       (stropt :short-name    "t"
 	      :long-name     "trace"
 	      :argument-name "SPEC"
@@ -76,6 +82,11 @@
   ./swank-port.txt"
   ;; Create a new global context.
   (make-context)
+
+  ;; Process logging-related options.
+  (let ((level (getopt :long-name "log-level")))
+    (unless (eq level :off)
+      (setf (log-level) level)))
 
   ;; Process --trace options.
   (let ((trace-specs

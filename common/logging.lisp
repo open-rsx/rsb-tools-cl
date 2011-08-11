@@ -19,6 +19,40 @@
 
 (in-package :rsb.common)
 
+
+;;; Logging configuration
+;;
+
+(defun make-output-spec ()
+  "Return a suitable log5 output specification."
+  '("[" log5:category log5:context "]" log5:indent log5:message))
+
+(defun enable-logging (level
+		       &key
+		       (stream *standard-output*))
+  "Enable logging to STREAM for the log5 category LEVEL."
+  (log5:start-stream-sender
+   :error         stream
+   :output-spec   (make-output-spec)
+   :category-spec level))
+
+(defun (setf log-level) (level
+			 &key
+			 stream)
+  "Set log level LEVEL."
+  (when (member level '(:trace :info :warn :error))
+    (enable-logging 'log5:warn+
+		    :stream (or stream *error-output*)))
+  (when (member level '(:trace :info))
+    (enable-logging (ecase level
+		      (:info  'log5:info)
+		      (:trace '(or log5:info log5:trace)))
+		    :stream (or stream *error-output*))))
+
+
+;;; Utility macros
+;;
+
 (defmacro with-logged-warnings (&body body)
   "Execute BODY with unhandled warnings translated to log messages
 with warning category."
