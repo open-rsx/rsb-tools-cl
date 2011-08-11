@@ -90,16 +90,23 @@ correspond to respective KIND):
 		      :description
 		      (format nil "The style to use when printing events. The following styles are available:
 ~{~{~(~A~)~&~2T~@<~@;~A~:>~}~^~&~}"
-			      (format-styles 'format-event)))
+			      (format-styles 'format-event))))
+   :item    (defgroup (:header "IDL Options")
 	      (path   :long-name       "idl-path"
+		      :short-name      "I"
 		      :type            :directory-list
 		      :default-value   nil
 		      :description
-		      "A list of paths from which IDL definitions should be loaded. Directory names have to end in \"/\"."))
+		      "A list of paths from which data definitions should be loaded. This option can be supplied multiple times.")
+	      (stropt :long-name       "load-idl"
+		      :short-name      "l"
+		      :argument-name   "FILE"
+		      :description
+		      "Load data definition from FILE. If FILE depends on additional data definition files (i.e. contains \"import\" statements), the list directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times."))
    ;; Append RSB options.
-   :item   (make-options
-	    :show? (or (eq show t)
-		       (and (listp show) (member :rsb show))))))
+   :item    (make-options
+	     :show? (or (eq show t)
+			(and (listp show) (member :rsb show))))))
 
 (defun main ()
   "Entry point function of the cl-rsb-tools-logger system."
@@ -111,8 +118,14 @@ correspond to respective KIND):
 
   (with-logged-warnings
 
-    ;; Load IDL definitions.
-    (iter (for spec next (getopt :long-name "idl-path"))
+    ;; Extend data definition source path.
+    (iter (for paths next (getopt :long-name "idl-path"))
+	  (while paths)
+	  (iter (for path in paths)
+		(pushnew path pbf:*proto-load-path*)))
+
+    ;; Load specified data definitions.
+    (iter (for spec next (getopt :long-name "load-idl"))
 	  (while spec)
 	  (load-idl spec :auto))
 
