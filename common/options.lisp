@@ -96,9 +96,8 @@
     (trace-things trace-specs))
 
   ;; Process --debug option.
-  (if (getopt :long-name "debug")
-      (log5:debugging 'log5:info+)
-      (disable-debugger))
+  (unless (getopt :long-name "debug")
+    (disable-debugger))
 
   ;; Process --swank option.
   (when (getopt :long-name "swank")
