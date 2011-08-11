@@ -104,10 +104,7 @@ correspond to respective KIND):
 (defun main ()
   "Entry point function of the cl-rsb-tools-logger system."
   (update-synopsis)
-  (setf *default-configuration* (cons '((:transport :spread :converter)
-					    . (:fundamental-bytes :fundamental-utf-8-string :fundamental-acsii-string :protocol-buffer)) ;;; TODO(jmoringe):
-					  (options-from-default-sources)))
-
+  (setf *default-configuration* (options-from-default-sources))
   (process-commandline-options
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
@@ -119,15 +116,20 @@ correspond to respective KIND):
 	  (while spec)
 	  (load-idl spec :auto))
 
-    (let* ((uri         (first (com.dvlsoft.clon:remainder)))
+    ;; Create a reader and start the receiving and printing loop.
+    (let* ((uri         (or (first (remainder)) "/"))
 	   (filters     (iter (for spec next (getopt :long-name "filter"))
 			      (while spec)
 			      (collect
 				  (make-filter (parse-filter-spec spec)))))
 	   (event-style (getopt :long-name "style")))
       (log1 :info "Using URI ~S" uri)
-
-      (rsb:with-reader (reader (or uri "/"))
+      (with-reader (reader uri :transports '((:spread :converter (:fundamental-bytes
+								  :fundamental-utf-8-string
+								  :fundamental-acsii-string
+								  :protocol-buffer
+								  :fundamental-null)
+					      &inherit)))
 	(setf (receiver-filters reader) filters)
 	(log1 :info "Created reader ~A" reader)
 
