@@ -76,18 +76,19 @@ correspond to respective KIND):
    :item    (defgroup (:header "Logging Options"
 		       :hidden (and (listp show)
 				    (not (member :logging show))))
-	      (stropt :short-name      "f"
-		      :long-name       "filter"
+	      (stropt :long-name       "filter"
+		      :short-name      "f"
+		      :argument-name   "SPEC"
 		      :description
 		      (make-filter-help-string))
-	      (enum   :short-name      "s"
-		      :long-name       "style"
+	      (enum   :long-name       "style"
+		      :short-name      "s"
 		      :enum            (map 'list #'first
 					    (format-styles 'format-event))
 		      :default-value   :compact
+		      :argument-name   "STYLE"
 		      :description
 		      (format nil "The style to use when printing events. The following styles are available:
-
 ~{~{~(~A~)~&~2T~@<~@;~A~:>~}~^~&~}"
 			      (format-styles 'format-event)))
 	      (path   :long-name       "idl-path"
@@ -96,16 +97,16 @@ correspond to respective KIND):
 		      :description
 		      "A list of paths from which IDL definitions should be loaded. Directory names have to end in \"/\"."))
    ;; Append RSB options.
-   :item   (rsb:make-options
+   :item   (make-options
 	    :show? (or (eq show t)
 		       (and (listp show) (member :rsb show))))))
 
 (defun main ()
   "Entry point function of the cl-rsb-tools-logger system."
   (update-synopsis)
-  (setf rsb:*default-configuration* (cons '((:transport :spread :converter)
+  (setf *default-configuration* (cons '((:transport :spread :converter)
 					    . (:fundamental-bytes :fundamental-utf-8-string :fundamental-acsii-string :protocol-buffer)) ;;; TODO(jmoringe):
-					  (rsb:options-from-default-sources)))
+					  (options-from-default-sources)))
 
   (process-commandline-options
    :update-synopsis #'update-synopsis
@@ -124,12 +125,12 @@ correspond to respective KIND):
 			      (collect
 				  (make-filter (parse-filter-spec spec)))))
 	   (event-style (getopt :long-name "style")))
-      (log5:log-for log5:info "Using URI ~S" uri)
+      (log1 :info "Using URI ~S" uri)
 
       (rsb:with-reader (reader (or uri "/"))
 	(setf (receiver-filters reader) filters)
-	(log5:log-for log5:info "Created reader ~A" reader)
+	(log1 :info "Created reader ~A" reader)
 
 	(with-interactive-interrupt-exit
-	  (iter (for event next (rsb:receive reader :block? t))
+	  (iter (for event next (receive reader :block? t))
 		(format-event event event-style *standard-output*)))))))
