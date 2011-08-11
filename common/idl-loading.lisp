@@ -29,34 +29,32 @@
 the kind designated by KIND."))
 
 
-;;; 
+;;;
 ;;
 
 (defmethod load-idl ((source t) (kind t))
   "Signal an error if we no not know how load an IDL for the
 combination SOURCE and KIND."
-  (error 'failed-to-load-idl
-	 :source source
-	 :cause  (make-condition 'simple-error
-				 :format-control  "~@<~A is an unknown IDL type.~@:>"
-				 :format-arguments (list kind))))
+  (failed-to-load-idl
+   source
+   (make-condition 'simple-error
+		   :format-control  "~@<~A is an unknown data definition type.~@:>"
+		   :format-arguments (list kind))))
 
 (defmethod load-idl ((source pathname) (kind (eql :file)))
   "Load an IDL definition from the file SOURCE. The IDL kind is
 inferred form the file type of SOURCE."
   (log1 :info "Processing IDL file ~S" source)
-  (handler-case
-      (load-idl source (make-keyword (string-upcase
-				      (pathname-type source))))
-    (error (condition)
-      (error 'failed-to-load-idl
-	     :source source
-	     :cause  condition))))
+  (handler-bind
+      ((error #'(lambda (condition)
+		  (failed-to-load-idl source condition))))
+    (load-idl source (make-keyword (string-upcase
+				    (pathname-type source))))))
 
 (defmethod load-idl ((source pathname) (kind (eql :wild)))
   "Load IDL definitions from all files matching the wildcard pathname
 SOURCE."
-  (rsb:log1 :info "Processing IDL files matching ~S" source)
+  (log1 :info "Processing IDL files matching ~S" source)
   (map 'list (rcurry #'load-idl :file) (directory source)))
 
 (defmethod load-idl ((source pathname) (kind (eql :auto)))
@@ -81,7 +79,7 @@ otherwise."
 
 (defmethod load-idl ((source list) (kind t))
   "Process all elements of SOURCE sequentially."
-  (map 'list (rcurry #'load-idl :auto) source))
+  (map 'list (rcurry #'load-idl kind) source))
 
 
 ;;; Protocol buffer specific stuff
@@ -89,6 +87,7 @@ otherwise."
 
 (defun process-descriptor (descriptor)
   "Emit a data-holder class and deserializer code for DESCRIPTOR."
+  (log1 :info "Emitting data holder and deserializer for ~A" descriptor)
   (prog1
       (pbb:emit descriptor :class)
     (pbb:emit descriptor :deserializer)))

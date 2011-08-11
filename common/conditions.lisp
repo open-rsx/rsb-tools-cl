@@ -33,3 +33,10 @@
   (:documentation
    "This error is signaled when an attempt to load a data definition
 from some source fails."))
+
+(defun failed-to-load-idl (source &optional cause)
+  "Convenience function for signaling `failed-to-load-idl'."
+  (apply #'error 'failed-to-load-idl
+	 :source source
+	 (when cause
+	   (list :cause cause))))
