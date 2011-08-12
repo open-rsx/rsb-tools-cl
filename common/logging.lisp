@@ -25,7 +25,7 @@
 
 (defun make-output-spec ()
   "Return a suitable log5 output specification."
-  '("[" log5:category log5:context "]" log5:indent log5:message))
+  '("[" log5:category log5:context "]" log5::indent log5:message))
 
 (defun enable-logging (name level
 		       &key
