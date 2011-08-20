@@ -25,6 +25,6 @@ returns nil instead of entering the debugger."
   `(catch 'terminate
      (sb-unix::enable-interrupt sb-unix:SIGINT
 				#'(lambda (signal info context)
-				    (declare (ignore info context))
+				    (declare (ignore signal info context))
 				    (throw 'terminate nil)))
      ,@body))
