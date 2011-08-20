@@ -29,7 +29,7 @@
       (flag   :long-name     "version"
 	      :short-name    "v"
 	      :description
-	      "Print version information exit.")
+	      "Print version information and exit.")
       (flag   :long-name     "help"
 	      :short-name    "h"
 	      :description
