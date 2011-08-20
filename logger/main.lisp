@@ -146,6 +146,6 @@ correspond to respective KIND):
 	(setf (receiver-filters reader) filters)
 	(log1 :info "Created reader ~A" reader)
 
-	(with-interactive-interrupt-exit
+	(with-interactive-interrupt-exit ()
 	  (iter (for event next (receive reader :block? t))
 		(format-event event event-style *standard-output*)))))))
