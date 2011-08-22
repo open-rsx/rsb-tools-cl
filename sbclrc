@@ -28,14 +28,14 @@
 	     #'(lambda (condition)
 		 ;; defined below
 		 (funcall
-		  (intern "%LOAD-SYSTEM-FROM-ARTIFACT")
+		  (intern "LOAD-SYSTEM-FROM-ARTIFACT")
 		  (asdf::missing-requires condition))
 		 (go retry)))
 	    (quicklisp-client::system-not-found
 	     #'(lambda (condition)
 		 ;; defined below
 		 (funcall
-		  (intern "%LOAD-SYSTEM-FROM-ARTIFACT")
+		  (intern "LOAD-SYSTEM-FROM-ARTIFACT")
 		  (quicklisp-client::system-not-found-name condition))
 		 (go retry))))
 	 (ql:quickload system :verbose nil :explain nil :prompt nil)))))
@@ -63,24 +63,35 @@ to download artifacts.")
 (defvar *job-workspace* (sb-posix:getenv "WORKSPACE")
   "Our workspace.")
 
-(defun %download-project-artifact (name destination-directory)
-  (let ((destination (make-pathname
-		      :name     (concatenate 'string name ".tar")
-		      :type     "gz"
-		      :defaults destination-directory)))
+(defvar *dep-label* (sb-posix:getenv "DEP_LABEL")
+  "A label that we should splice into artifact URLs.")
+
+(defun %download-project-artifact (name destination-directory
+				   &key
+				   label
+				   suffixes)
+  (let ((combinations (alexandria:map-product #'list
+					      (list label nil)
+					      (append suffixes (list nil))))
+	(destination  (make-pathname
+		       :name     (concatenate 'string name ".tar")
+		       :type     "gz"
+		       :defaults destination-directory)))
     ;; Download the artifact archive.
     (ensure-directories-exist destination-directory)
     (unless (some
-	     #'(lambda (suffix)
+	     #'(lambda (label-and-suffix)
 		 (ignore-errors
 		   (alexandria:with-output-to-file
 		       (stream destination
 			       :if-does-not-exist :create
 			       :if-exists         :supersede
 			       :element-type      '(unsigned-byte 8))
-		     (let* ((url
-			     (format nil "~A/job/~A~@[-~A~]/lastSuccessfulBuild/artifact/~2:*~A~@[-~A~].tar.gz"
-				     *jenkins-base-url* name suffix)))
+		     (let* ((label  (first label-and-suffix))
+			    (suffix (second label-and-suffix))
+			    (url
+			     (format nil "~A/job/~A~@[-~A~]/~@[label=~A/~]lastSuccessfulBuild/artifact/~3:*~A~@[-~A~].tar.gz"
+				     *jenkins-base-url* name suffix label)))
 		       (multiple-value-bind (http-stream result)
 			   (drakma:http-request url :want-stream t)
 			 (unless (= result 200)
@@ -90,7 +101,7 @@ to download artifacts.")
 			  http-stream stream
 			  :element-type '(unsigned-byte 8)))))
 		   t))
-	     *dep-suffixes*)
+	     combinations)
       (error "~@<Could not download artifact for system ~A.~@:>"
 	     name))
 
@@ -106,7 +117,10 @@ to download artifacts.")
       (error "~@<Could not extract artifact archive ~A~@:>"
 	     destination))))
 
-(defun %load-system-from-artifact (system-name)
+(defun load-system-from-artifact (system-name
+				  &key
+				  (label    *dep-label*)
+				  (suffixes *dep-suffixes*))
   (unless (and *jenkins-base-url* *job-name* *job-workspace*)
     (error "~@<Cannot download artifact for system ~A since at least ~
 one Jenkins environment variable is missing.~@:>"
@@ -114,12 +128,12 @@ one Jenkins environment variable is missing.~@:>"
 
   (let ((name (string-downcase (string system-name)))
 	(deps (format nil "~A/deps/" *job-workspace*)))
-    (%download-project-artifact name deps)
+    ;; Download and extract the artifact into the dependency
+    ;; directory.
+    (%download-project-artifact name deps
+				:label    label
+				:suffixes suffixes)
 
-    (let ((asd (first (directory (merge-pathnames
-				  (make-pathname
-				   :directory (list :relative name :wild-inferiors)
-				   :name      name
-				   :type      "asd")
-				  deps)))))
-      (load asd))))
+    ;; Re-initialize the source registry to allow the new asd-files to
+    ;; get picked up.
+    (asdf:initialize-source-registry)))
