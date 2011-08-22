@@ -64,7 +64,6 @@ exchanged on a given RSB bus or channel."
 		:metabang-bind
 		:iterate
 
-		:yacc
 		:cl-protobuf
 
 		:com.dvlsoft.clon
