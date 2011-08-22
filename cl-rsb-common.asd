@@ -85,4 +85,5 @@ RSB-related systems."
 			      (:file       "help"
 					   :depends-on ("package"))
 			      (:file       "options"
-			       :depends-on ("package" "debugger" "help"))))))
+			       :depends-on ("package" "debugger"
+					    "logging" "help"))))))
