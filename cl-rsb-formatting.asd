@@ -60,7 +60,7 @@
   :license     "GPL3; see COPYING file for details."
   :description "This system provides some formatting functions for
 RSB-related systems."
-  :depends-on  (:cl-rsb)
+  :depends-on  ((:version :cl-rsb "0.5.0"))
   :components  ((:module     "formatting"
 		 :components ((:file       "package")
 			      (:file       "util"
