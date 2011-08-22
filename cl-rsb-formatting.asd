@@ -17,17 +17,46 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(defpackage :cl-rsb-formatting-system
+(cl:defpackage :cl-rsb-formatting-system
   (:use
    :cl
-   :asdf))
+   :asdf)
 
-(in-package :cl-rsb-formatting-system)
+  (:export
+   :version/list
+   :version/string))
+
+(cl:in-package :cl-rsb-formatting-system)
+
+
+;;; Version stuff
+;;
+
+(defconstant +version-major+ 0
+  "Major component of version number.")
+
+(defconstant +version-minor+ 1
+  "Minor component of version number.")
+
+(defconstant +version-revision+ 0
+  "Revision component of version number.")
+
+(defun version/list ()
+  "Return a version of the form (MAJOR MINOR REVISION) "
+  (list +version-major+ +version-minor+ +version-revision+))
+
+(defun version/string ()
+  "Return a version string of the form \"MAJOR.MINOR.REVISION\"."
+  (format nil "~{~A.~A.~A~}" (version/list)))
+
+
+;;; System definition
+;;
 
 (defsystem :cl-rsb-formatting
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
-  :version     "0.1.0"
+  :version     #.(version/string)
   :license     "GPL3; see COPYING file for details."
   :description "This system provides some formatting functions for
 RSB-related systems."
