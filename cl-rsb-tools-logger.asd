@@ -27,7 +27,7 @@
 (defsystem :cl-rsb-tools-logger
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
-  :version     "0.1.0"
+  :version     "0.4.0"
   :license     "GPL3; see COPYING file for details."
   :description "A simple utility for receiving and displaying events
 exchanged on a given RSB bus or channel."
@@ -40,9 +40,9 @@ exchanged on a given RSB bus or channel."
 
 		:com.dvlsoft.clon
 
-		:cl-rsb
-		:cl-rsb-common
-		:cl-rsb-formatting)
+		(:version :cl-rsb            "0.4.0")
+		(:version :cl-rsb-common     "0.4.0")
+		(:version :cl-rsb-formatting "0.4.0"))
   :components  ((:module     "logger"
 		 :components ((:file       "package")
 

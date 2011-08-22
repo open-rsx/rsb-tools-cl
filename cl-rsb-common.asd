@@ -27,7 +27,7 @@
 (defsystem :cl-rsb-common
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
-  :version     "0.1.0"
+  :version     "0.4.0"
   :license     "GPL3; see COPYING file for details."
   :description "This system provides some common functions for
 RSB-related systems."
@@ -35,7 +35,7 @@ RSB-related systems."
 
 		:cl-protobuf
 
-		:cl-rsb)
+		(:version :cl-rsb "0.4.0"))
   :components  ((:module     "common"
 		 :components ((:file       "package")
 

@@ -27,11 +27,11 @@
 (defsystem :cl-rsb-formatting
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
-  :version     "0.1.0"
+  :version     "0.4.0"
   :license     "GPL3; see COPYING file for details."
   :description "This system provides some formatting functions for
 RSB-related systems."
-  :depends-on  (:cl-rsb)
+  :depends-on  ((:version :cl-rsb "0.4.0"))
   :components  ((:module     "formatting"
 		 :components ((:file       "package")
 			      (:file       "util"
