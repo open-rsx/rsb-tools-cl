@@ -20,7 +20,8 @@
 (in-package :rsb.common)
 
 (defmacro with-interactive-interrupt-exit ((&key
-					    (signals '(sb-unix:SIGINT)))
+					    (signals '(sb-unix:SIGINT
+						       sb-unix:SIGTERM)))
 					   &body body)
   "Run BODY with an interruption handler that exits non-locally and
 returns nil instead of entering the debugger."
