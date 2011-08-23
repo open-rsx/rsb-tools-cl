@@ -113,6 +113,7 @@ correspond to respective KIND):
   (update-synopsis)
   (setf *default-configuration* (options-from-default-sources))
   (process-commandline-options
+   :version         (cl-rsb-tools-logger-system:version/list)
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
 
