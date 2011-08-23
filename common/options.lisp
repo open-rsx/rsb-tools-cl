@@ -22,9 +22,9 @@
 (defun make-common-options (&key
 			    show)
   "Return a `clon:group' instance containing common program options."
-  (let ((advanced-debug (or (eq show t)
-			    (and (listp show)
-				 (member :advanced-debug show)))))
+  (let ((advanced-debug? (or (eq show t)
+			     (and (listp show)
+				  (member :advanced-debug show)))))
     (defgroup (:header "General Options")
       (flag   :long-name     "version"
 	      :short-name    "v"
@@ -43,25 +43,26 @@
       (stropt :short-name    "t"
 	      :long-name     "trace"
 	      :argument-name "SPEC"
-	      :hidden        (not advanced-debug)
+	      :hidden        (not advanced-debug?)
 	      :description
 	      "Trace specified things. This option can be supplied multiple times to trace multiple things. Each occurrence takes an argument which has to have one of the following forms:
 + \"PACKAGE\" (note the double quotes and uppercase): trace all functions in the package named PACKAGE.
 + function-name (note: no quotes, actual case of the function name): trace the named function.")
       (flag   :long-name     "debug"
 	      :short-name    "d"
-	      :hidden        (not advanced-debug)
+	      :hidden        (not advanced-debug?)
 	      :description
 	      "Enable debugging. This does the following things:
 + Set the log level such that debug output is emitted
 + Enable printing backtraces instead of just condition reports in case of unhandled error conditions.")
       (flag   :long-name     "swank"
-	      :hidden        (not advanced-debug)
+	      :hidden        (not advanced-debug?)
 	      :description
 	      "Start a swank listener (If you don't know what swank is, pretend this option does not exist - or google \"emacs slime\"). Swank will print the port it listens on. In addition, a file named \"./swank-port.txt\" containing the port number is written."))))
 
 (defun process-commandline-options (&key
 				    (version '(0 1 0))
+				    more-versions
 				    update-synopsis
 				    return)
   "Perform the following commandline option processing:
@@ -112,14 +113,16 @@
   ;;   ;; Create a new global context.
   ;;   (make-context))
 
+  ;; Process --version option.
   (when (getopt :long-name "version")
     (print-version version *standard-output*
-		   :include-rsb-version? t)
+		   :more-versions more-versions)
     (terpri *standard-output*)
     (if return
 	(funcall return)
 	(exit 0)))
 
+  ;; Process --help option.
   (when (getopt :long-name "help")
     (help)
     (if return
