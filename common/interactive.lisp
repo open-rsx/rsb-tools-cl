@@ -19,12 +19,18 @@
 
 (in-package :rsb.common)
 
-(defmacro with-interactive-interrupt-exit (&body body)
+(defmacro with-interactive-interrupt-exit ((&key
+					    (signals '(sb-unix:SIGINT
+						       sb-unix:SIGTERM)))
+					   &body body)
   "Run BODY with an interruption handler that exits non-locally and
 returns nil instead of entering the debugger."
   `(catch 'terminate
-     (sb-unix::enable-interrupt sb-unix:SIGINT
-				#'(lambda (signal info context)
-				    (declare (ignore info context))
-				    (throw 'terminate nil)))
+     ,@(iter (for signal in signals)
+	     (collect
+		 `(sb-unix::enable-interrupt
+		   ,signal
+		   #'(lambda (signal info context)
+		       (declare (ignore signal info context))
+		       (throw 'terminate nil)))) )
      ,@body))
