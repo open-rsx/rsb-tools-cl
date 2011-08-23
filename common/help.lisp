@@ -100,11 +100,31 @@ strings onto STREAM."
 
 (defun print-version (version stream
 		      &key
-		      include-rsb-version?)
+		      include-lisp-version?
+		      include-rsb-version?
+		      more-versions)
   "Format VERSION onto STREAM as a version number. If
 INCLUDE-RSB-VERSION? is non-nil, additionally format the RSB version
 onto STREAM."
-  (format stream "~A version ~{~D.~D.~D~}" (progname) version)
-  (when include-rsb-version?
-    (format stream "~&RSB Version ~{~D.~D.~D~}"
-	    (cl-rsb-system:version/list))))
+  (bind (;; Compute the list of all requested versions.
+	 (versions
+	  (append `((,(progname) ,version))
+		  (when include-lisp-version?
+		    `((,(lisp-implementation-type)
+			,(lisp-implementation-version))))
+		  (when include-rsb-version?
+		    `(("RSB" ,(cl-rsb-system:version/list))))
+		  (iter (for (name version) on more-versions :by #'cddr)
+			(collect (list (string name) version)))))
+	 ;; Compute the common column for all versions to be printed
+	 ;; to.
+	 (version-column (+ (reduce #'max versions
+				    :key (compose #'length #'first))
+			    1
+			    (length "version")
+			    1))
+	 ((:flet format-version (info))
+	  (bind (((name version) info))
+	    (format stream "~A version~VT~:[~{~D.~D.~D~}~;~A~]~&"
+		    name version-column (stringp version) version))))
+    (map nil #'format-version versions)))
