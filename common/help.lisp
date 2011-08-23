@@ -90,9 +90,9 @@ strings onto STREAM."
 			    :key #'first)
 		 :key #'second))
 	 ((:flet do-one (name class))
-	   (list name (documentation (class-name class) 'type))))
-   (format stream "~{~{~(~A~) ARGS~&~2T~@<~@;~A~:>~}~^~&~}"
-	   (map 'list (curry #'apply #'do-one) items))))
+	  (list name (documentation (class-name class) 'type))))
+    (format stream "~{~{~(~A~) ARGS~&~2T~@<~@;~A~:>~}~^~&~}"
+	    (map 'list (curry #'apply #'do-one) items))))
 
 
 ;;; Version string
@@ -103,9 +103,13 @@ strings onto STREAM."
 		      (include-lisp-version? t)
 		      (include-rsb-version?  t)
 		      more-versions)
-  "Format VERSION onto STREAM as a version number. If
-INCLUDE-RSB-VERSION? is non-nil, additionally format the RSB version
-onto STREAM."
+  "Format VERSION onto STREAM as a version number.
+If INCLUDE-LISP-VERSION? is non-nil, additionally format the Lisp
+implementation name and version onto STREAM.
+If INCLUDE-RSB-VERSION? is non-nil, additionally format the RSB
+version onto STREAM.
+MORE-VERSIONS is a \"plist\" of additional component names and
+associated versions that should be printed onto STREAM."
   (bind (;; Compute the list of all requested versions.
 	 (versions
 	  (append `((,(progname) ,version))
