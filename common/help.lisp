@@ -100,8 +100,8 @@ strings onto STREAM."
 
 (defun print-version (version stream
 		      &key
-		      include-lisp-version?
-		      include-rsb-version?
+		      (include-lisp-version? t)
+		      (include-rsb-version?  t)
 		      more-versions)
   "Format VERSION onto STREAM as a version number. If
 INCLUDE-RSB-VERSION? is non-nil, additionally format the RSB version
