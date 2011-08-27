@@ -28,7 +28,7 @@
   (:report
    (lambda (condition stream)
      (format stream "~@<Failed to load data definition from source ~
-~A.~_~/rsb::maybe-print-cause/~@:>"
+~A.~/rsb::maybe-print-cause/~@:>"
 	     (failed-to-load-idl-source condition)
 	     (chainable-condition-cause condition))))
   (:documentation
