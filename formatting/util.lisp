@@ -77,10 +77,20 @@ vertically across output lines."
 (defun format-aligned-items/alist (stream items
 				   &key
 				   value-formatter)
-  "TODO(jmoringe): document"
+  "Format ITEMS in which each item is of the form (KEY . VALUE) onto
+STREAM such that keys and values align vertically across output
+lines."
   (format-aligned-items
    stream (map 'list #'car items) (map 'list #'cdr items))
   :value-formatter value-formatter)
+
+(defun format-pairs/plist (stream &rest items)
+  "Format keys and values of the plist ITEMS onto STREAM such that
+keys and values align vertically across output lines."
+  (format-aligned-items
+   stream
+   (iter (for item in items        :by #'cddr) (collect item))
+   (iter (for item in (rest items) :by #'cddr) (collect item))))
 
 (declaim (special *tracker*))
 

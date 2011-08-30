@@ -47,15 +47,18 @@
 			 max-lines
 			 max-columns)
   "Format EVENT on STREAM with as many details as possible."
-  (bind (((:accessors-r/o
-	   (scope event-scope) (id event-id) (type event-type)
-	   (origin event-origin) (data event-data)
-	   (meta-data meta-data-alist))
-	  event))
+  (bind (((:accessors-r/o (data      event-data)
+			  (meta-data meta-data-alist)) event))
    ;; Envelope information.
    (with-indented-section (stream "Event")
-     (format-aligned-items stream '(:scope :id :type :origin)
-			   (list (scope-string scope) id type origin)))
+     (format-pairs/plist
+      stream
+      :scope           (scope-string (event-scope event))
+      :id              (event-id              event)
+      :sequence-number (event-sequence-number event)
+      :origin          (event-origin          event)
+      :method          (event-method          event)
+      :type            (event-type            event)))
 
    ;; Framework and user timestamps.
    (when (> max-lines 5)
