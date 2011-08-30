@@ -35,7 +35,7 @@
 (defconstant +version-major+ 0
   "Major component of version number.")
 
-(defconstant +version-minor+ 1
+(defconstant +version-minor+ 5
   "Minor component of version number.")
 
 (defconstant +version-revision+ 0
@@ -69,8 +69,8 @@ exchanged on a given RSB bus or channel."
 		:com.dvlsoft.clon
 
 		(:version :cl-rsb            "0.5.0")
-		(:version :cl-rsb-common     "0.1.0")
-		(:version :cl-rsb-formatting "0.1.0"))
+		(:version :cl-rsb-common     "0.5.0")
+		(:version :cl-rsb-formatting "0.5.0"))
   :components  ((:module     "logger"
 		 :components ((:file       "package")
 
