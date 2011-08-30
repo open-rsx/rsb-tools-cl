@@ -102,7 +102,7 @@ correspond to respective KIND):
 		      :short-name      "l"
 		      :argument-name   "FILE"
 		      :description
-		      "Load data definition from FILE. If FILE depends on additional data definition files (i.e. contains \"import\" statements), the list directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times."))
+		      "Load data definition from FILE. If FILE depends on additional data definition files (i.e. contains \"import\" statements), the list of directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times."))
    ;; Append RSB options.
    :item    (make-options
 	     :show? (or (eq show t)
