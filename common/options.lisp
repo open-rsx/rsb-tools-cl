@@ -34,6 +34,9 @@
 	      :short-name    "h"
 	      :description
 	      "Print this help and exit.")
+      (flag   :long-name     "help-all"
+	      :description
+	      "Print all available help and exit.")
       (enum   :long-name     "log-level"
 	      :enum          '(:off :trace :info :warn :error)
 	      :default-value :off
@@ -122,9 +125,14 @@
 	(funcall return)
 	(exit 0)))
 
-  ;; Process --help option.
-  (when (getopt :long-name "help")
-    (help)
-    (if return
-	(funcall return)
-	(exit 0))))
+  ;; Process --help and --help-all option.
+  (let ((help-all (getopt :long-name "help-all"))
+	(help     (getopt :long-name "help")))
+    (when help-all
+      (funcall update-synopsis :show t)
+      (make-context))
+    (when (or help help-all)
+      (help)
+      (if return
+	  (funcall return)
+	  (exit 0)))))
