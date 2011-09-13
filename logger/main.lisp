@@ -72,7 +72,7 @@ correspond to respective KIND):
   (make-synopsis
    :postfix "[URI]"
    :item    (make-text :contents (make-help-string))
-   :item    (make-common-options)
+   :item    (make-common-options :show show)
    :item    (defgroup (:header "Logging Options"
 		       :hidden (and (listp show)
 				    (not (member :logging show))))
