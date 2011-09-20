@@ -108,6 +108,14 @@ correspond to respective KIND):
 	     :show? (or (eq show t)
 			(and (listp show) (member :rsb show))))))
 
+(defun existing-directory-or-lose (pathname)
+  "Signal an error unless PATHNAME designates an existing directory."
+  (if-let ((truename (probe-file pathname)))
+    (when (or (pathname-name truename)
+	      (pathname-type truename))
+      (error "~@<Not a directory: ~A.~@:>" truename))
+    (error "~@<Directory does not exist: ~A.~@:>" pathname)))
+
 (defun main ()
   "Entry point function of the cl-rsb-tools-logger system."
   (update-synopsis)
@@ -128,6 +136,7 @@ the URI argument).~@:>"))
     (iter (for paths next (getopt :long-name "idl-path"))
 	  (while paths)
 	  (iter (for path in paths)
+		(existing-directory-or-lose path)
 		(pushnew path pbf:*proto-load-path*)))
 
     ;; Load specified data definitions.
