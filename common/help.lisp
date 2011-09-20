@@ -53,7 +53,9 @@ STREAM."
 ;;; URI help string
 ;;
 
-(defun print-uri-help (stream)
+(defun print-uri-help (stream
+		       &key
+		       (uri-var "URI"))
   "Print an explanatory string regarding the interpretation of URIS
 onto STREAM."
   (format stream
@@ -69,10 +71,11 @@ is interpreted as follows:
 KEY1=VALUE1;KEY2=VALUE2;...
 + FRAGMENT -> not processed
 
-For the currently available transports, URIs should match the ~
+For the currently available transports, ~A should match the ~
 following patterns:
 
-~2T")
+~2T"
+	  uri-var)
   (print-all-uri-synopsis stream))
 
 
