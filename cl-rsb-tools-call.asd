@@ -64,8 +64,6 @@ via RSB."
 		:metabang-bind
 		:iterate
 
-		:cl-protobuf
-
 		:cl-ppcre
 		:com.dvlsoft.clon
 
