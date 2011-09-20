@@ -1,9 +1,9 @@
+(load-system :cl-spread)
+
 (load-system :cl-rsb-tools-call)
 
 (asdf:clear-source-registry)
 (asdf:clear-output-translations)
-
-(load-system :cl-spread)
 
 (cffi:close-foreign-library 'spread::libspread)
 
