@@ -25,6 +25,15 @@
     (format stream "Call METHOD of the server at SERVER-URI with ~
 argument ARG.
 
+ARG is parsed as string when surrounded with double-quotes and as ~
+integer or float number when consisting of digits without and with ~
+decimal point respectively.
+If ARG is the single character -, the entire \"contents\" of standard ~
+input (until end of file) is read as a string and used as argument for ~
+the method call.
+If ARG is the empty string, i.e. the call specification is of the form ~
+SERVER-URI/METHOD(), the method is called without argument.
+
 SERVER-URI designates the root scope of the remote server and the ~
 transport that should be used. A URI of the form
 
@@ -36,6 +45,7 @@ Examples:
 
   ~A spread://localhost:4811/my/interface/method(5)
   ~:*~A /remotecontrol/stop(\"now\")
+  cat my-arg.txt | ~:*~A socket:/printer/print(-)
 "
 	    ;; (progname)
 	    "rsb-call")))
@@ -54,9 +64,14 @@ Examples:
 
 (defun parse-argument (string)
   "Parse STRING as Lisp object treating the empty string specially."
-  (if (emptyp string)
-      rsb.converter:+no-value+
-      (read-from-string string)))
+  (cond
+    ((emptyp string)
+     rsb.converter:+no-value+)
+    ((string= string "-")
+     (with-output-to-string (stream)
+       (copy-stream *standard-input* stream)))
+    (t
+     (read-from-string string))))
 
 (defun main ()
   "Entry point function of the cl-rsb-tools-call system."
