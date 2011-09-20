@@ -117,6 +117,11 @@ correspond to respective KIND):
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
 
+  ;; Validate commandline options.
+  (when (> (length (remainder)) 1)
+    (error "~@<Specify at most one URI (also, options cannot follow ~
+the URI argument).~@:>"))
+
   (with-logged-warnings
 
     ;; Extend data definition source path.
