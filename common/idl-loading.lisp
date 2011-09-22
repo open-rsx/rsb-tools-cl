@@ -117,7 +117,8 @@ otherwise."
 			   &key
 			   (emit '(:deserializer :extractor :offset)))
   "Emit a data-holder class and deserializer code for DESCRIPTOR."
-  (log1 :info "Emitting data holder and deserializer for ~A" descriptor)
+  (log1 :info "Emitting data holder~@[ and ~(~{~A~^, ~}~)~] for ~A"
+	emit descriptor)
   (prog1
       (pbb:emit descriptor :class)
     (map nil (curry #'pbb:emit descriptor) emit)))
