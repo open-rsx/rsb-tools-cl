@@ -61,8 +61,7 @@ combination SOURCE and KIND."
 inferred form the file type of SOURCE."
   (log1 :info "Processing IDL file ~S" source)
   (handler-bind
-      ((error #'(lambda (condition)
-		  (failed-to-load-idl source condition))))
+      ((error (curry #'failed-to-load-idl source)))
     (apply #'load-idl
 	   source (make-keyword (string-upcase
 				 (pathname-type source)))
