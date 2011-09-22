@@ -113,12 +113,14 @@ otherwise."
 ;;; Protocol buffer specific stuff
 ;;
 
-(defun process-descriptor (descriptor)
+(defun process-descriptor (descriptor
+			   &key
+			   (emit '(:deserializer :extractor :offset)))
   "Emit a data-holder class and deserializer code for DESCRIPTOR."
   (log1 :info "Emitting data holder and deserializer for ~A" descriptor)
   (prog1
       (pbb:emit descriptor :class)
-    (pbb:emit descriptor :deserializer)))
+    (map nil (curry #'pbb:emit descriptor) emit)))
 
 (macrolet ((define-load-method (type kind func)
 	     `(defmethod load-idl ((source ,type) (kind (eql ,kind))
