@@ -93,7 +93,7 @@ pathname, as directory or as a file depending on its properties."
     (t
      (apply #'load-idl source :file args))))
 
-(defmethod load-idl ((source string) (kind t)
+(defmethod load-idl ((source string) (kind (eql :auto))
 		     &rest args
 		     &key &allow-other-keys)
   "Treat SOURCE as an URI if it contains a ':', treat it as a pathname
