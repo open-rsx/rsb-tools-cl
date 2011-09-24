@@ -31,16 +31,7 @@ logged and the transport that should be used to attach to channel. A ~
 URI of the form
 
   ")
-    (print-uri-help stream)
-    (format stream
-	    "
-Examples:
-
-  ~A --rsb-plugins-load cl-spread spread://localhost:4811
-  ~:*~A --rsb-plugins-load cl-spread,xpath spread:
-"
-	    ;; (progname)
-	    "rsb-logger")))
+    (print-uri-help stream)))
 
 (defun make-filter-help-string ()
   "Return a help string that explains how to specify filters and lists
@@ -68,10 +59,38 @@ correspond to respective KIND):
 ")
     (print-filter-help stream)))
 
+(defun make-examples-string (&key
+			     (program-name "logger"))
+  "Make and return a string containing usage examples of the program."
+  (format nil "~A
+
+  Use all enabled transports with their respective default ~
+configuration to access the bus. Receive and display all events ~
+exchanged on the entire bus (since the channel designated by the root ~
+scope, \"/\", is implicitly used).
+
+~:*~A spread://localhost:4811
+
+  Use the Spread daemon listening on port 4811 on localhost to connect ~
+to the bus. Since no scope is specified, receive and print all events ~
+exchanged on the entire bus.
+
+~:*~A -f 'regex :regex \"^mypattern\" :fallback-policy :do-not-match' ~
+--style detailed spread:/my/channel
+
+  Use the default configuration of the Spread transport to connect to ~
+the bus. Receive events on the channel designated by ~
+\"/my/channel\" (and sub-channels) the payloads of which match the ~
+regular expression \"^mypattern\". Display matching event using the ~
+\"detailed\" display style.
+"
+	  program-name))
+
 (defun update-synopsis (&key
 			(show :default))
   "Create and return a commandline option tree."
   (make-synopsis
+   ;; Basic usage and specific options.
    :postfix "[URI]"
    :item    (make-text :contents (make-help-string))
    :item    (make-common-options :show show)
@@ -108,7 +127,10 @@ correspond to respective KIND):
    ;; Append RSB options.
    :item    (make-options
 	     :show? (or (eq show t)
-			(and (listp show) (member :rsb show))))))
+			(and (listp show) (member :rsb show))))
+   ;; Append examples.
+   :item    (defgroup (:header "Examples")
+	      (make-text :contents (make-examples-string)))))
 
 (defun existing-directory-or-lose (pathname)
   "Signal an error unless PATHNAME designates an existing directory."
@@ -125,7 +147,7 @@ correspond to respective KIND):
   (process-commandline-options
    :version         (cl-rsb-tools-logger-system:version/list)
    :update-synopsis #'update-synopsis
-   :return          (lambda () (return-from main)))
+   :return          #'(lambda () (return-from main)))
 
   ;; Validate commandline options.
   (when (> (length (remainder)) 1)
