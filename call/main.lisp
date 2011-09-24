@@ -28,9 +28,9 @@ argument ARG.
 ARG is parsed as string when surrounded with double-quotes and as ~
 integer or float number when consisting of digits without and with ~
 decimal point respectively.
-If ARG is the single character -, the entire \"contents\" of standard ~
-input (until end of file) is read as a string and used as argument for ~
-the method call.
+If ARG is the single character \"-\", the entire \"contents\" of ~
+standard input (until end of file) is read as a string and used as ~
+argument for the method call.
 If ARG is the empty string, i.e. the call specification is of the form ~
 SERVER-URI/METHOD(), the method is called without argument.
 
@@ -44,23 +44,31 @@ transport that should be used. A URI of the form
 			     (program-name #+does-not-work (progname) "call"))
   "Make and return a string containing usage examples of the program."
   (format nil
-	  "~A spread://localhost:4811/my/interface/method(5)
+	  "~A 'spread://localhost:4811/my/interface/method(5)'
 
   Use the spread transport to call the method \"method\" of the server ~
-at \"/my/inferface\" passing it the integer argument \"5\".
+at \"/my/inferface\" passing it the integer argument \"5\". Note the ~
+quotes to prevent the shell from interpreting the \"(\" and \")\".
 
-~:*~A /my/interface/noarg()
+~:*~A 'spread:/interface?name=4803/method(5)'
+
+  Like the previous example, but use the \"daemon name\" option of the ~
+Spread transport instead of specifying host and port. Note how URI ~
+options, being part of the server URI, are inserted between the URI ~
+path component and the method name.
+
+~:*~A '/my/interface/noarg()'
 
   Use the default transport configuration to call the \"noarg\" method ~
 of the server at scope \"/my/inferface\" without argument.
 
-~:*~A /remotecontrol/stop(\"now\")
+~:*~A '/remotecontrol/stop(\"now\")'
 
   Use the default transport configuration to call the \"stop\" method ~
 of the server at scope \"/remotecontrol\" passing it the string ~
 argument \"now\".
 
-cat my-arg.txt | ~:*~A socket:/printer/print(-)
+cat my-arg.txt | ~:*~A 'socket:/printer/print(-)'
 
   Call the \"print\" method of the server at scope \"/printer\" using ~
 the socket transform (with its default configuration) using the ~
