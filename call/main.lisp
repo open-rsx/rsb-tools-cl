@@ -119,7 +119,7 @@ SERVER-URI/METHOD(ARG).~@:>"))
     (bind ((spec (first (remainder)))
 	   ((:values server-uri method arg)
 	    (cl-ppcre:register-groups-bind (server-uri method arg)
-		("([a-zA-Z0-9/:&=;]*)/([a-zA-Z0-9]+)\\((.*)\\)" spec)
+		("^([a-zA-Z0-9/:&?#=+;]*)/([a-zA-Z0-9]+)\\((.*)\\)$" spec)
 	      (values server-uri method (parse-argument arg)))))
 
       (unless (and server-uri method arg)
