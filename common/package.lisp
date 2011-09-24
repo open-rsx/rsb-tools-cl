@@ -56,7 +56,8 @@
 
   ;; Interactive stuff
   (:export
-   :with-interactive-interrupt-exit)
+   :with-interactive-interrupt-exit
+   :interrupt)
 
   ;; Help text generation
   (:export

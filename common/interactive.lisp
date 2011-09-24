@@ -34,3 +34,14 @@ returns nil instead of entering the debugger."
 		       (declare (ignore signal info context))
 		       (throw 'terminate nil)))) )
      ,@body))
+
+(defun interrupt (&optional thread)
+  "Cause a `with-interactive-interrupt-exit' form to interrupt its
+body, clean up and return.
+If supplied, THREAD specifies the thread executing the form."
+  (if thread
+      (bt:interrupt-thread thread
+			   #'(lambda ()
+			       (sleep 1)
+			       (throw 'terminate nil)))
+      (throw 'terminate nil)))
