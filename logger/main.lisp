@@ -44,7 +44,7 @@ Examples:
 
 (defun make-filter-help-string ()
   "Return a help string that explains how to specify filters and lists
-the available filters. "
+the available filters."
   (with-output-to-string (stream)
     (format stream "Specify a filter that received events have to ~
 match in order to be processed rather than discarded. This option can ~
@@ -59,6 +59,8 @@ when used within a shell):
 
   --filter 'origin \"EAEE2B00-AF4B-11E0-8930-001AA0342D7D\"'
   --filter 'regex \".*foo[0-9]+\"'
+  --filter 'regex :regex \".*foo[0-9]+\"' (equivalent)
+  -f 'xpath :xpath \"node()/@foo\" :fallback-policy :do-not-match'
 
 The following filters are currently available (paragraph headings ~
 correspond to respective KIND):
