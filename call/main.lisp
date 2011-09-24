@@ -94,7 +94,12 @@ works if the called method accepts an argument of type string.
      (with-output-to-string (stream)
        (copy-stream *standard-input* stream)))
     (t
-     (read-from-string string))))
+     (bind (((:values value consumed)
+	     (read-from-string string)))
+       (unless (= consumed (length string))
+	 (error "~@<Junk at end of argument string: ~S.~@:>"
+		(subseq string consumed)))
+       value))))
 
 (defun main ()
   "Entry point function of the cl-rsb-tools-call system."
@@ -114,7 +119,7 @@ SERVER-URI/METHOD(ARG).~@:>"))
     (bind ((spec (first (remainder)))
 	   ((:values server-uri method arg)
 	    (cl-ppcre:register-groups-bind (server-uri method arg)
-		("([a-z0-9/:&=;]+)/([a-z0-9]+)\\((.*)\\)" spec)
+		("([a-zA-Z0-9/:&=;]*)/([a-zA-Z0-9]+)\\((.*)\\)" spec)
 	      (values server-uri method (parse-argument arg)))))
 
       (unless (and server-uri method arg)
