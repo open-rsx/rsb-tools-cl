@@ -176,12 +176,11 @@ the URI argument).~@:>"))
 				  (make-filter (parse-filter-spec spec)))))
 	   (event-style (getopt :long-name "style")))
       (log1 :info "Using URI ~S" uri)
-      (with-reader (reader uri :transports '((:spread :converter (:fundamental-bytes
+      (with-reader (reader uri :converters '((rsb:octet-vector . (:fundamental-bytes
 								  :fundamental-utf-8-string
 								  :fundamental-acsii-string
 								  :protocol-buffer
-								  :fundamental-null)
-					      &inherit)))
+								  :fundamental-null))))
 	(setf (receiver-filters reader) filters)
 	(log1 :info "Created reader ~A" reader)
 
