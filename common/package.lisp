@@ -23,6 +23,7 @@
   (:use
    :cl
    :alexandria
+   :split-sequence
    :bind
    :iterate
 
@@ -62,7 +63,9 @@
    :print-uri-help
    :print-filter-help
 
-   :print-version)
+   :print-version
+
+   :print-classes-help-string)
 
   ;; Debugging
   (:export

@@ -84,18 +84,11 @@ following patterns:
 
 (defun print-filter-help (stream
 			  &key
-			  (blacklist '(:or :disjoin :and :conjoin)))
+			  (blacklist '(:or :disjoin :and :conjoin :constant)))
   "Format a table of filter names and corresponding documentation
 strings onto STREAM."
-  (bind ((items (remove-duplicates
-		 (remove-if (rcurry #'member blacklist)
-			    (rsb.filter:filter-classes)
-			    :key #'first)
-		 :key #'second))
-	 ((:flet do-one (name class))
-	  (list name (documentation (class-name class) 'type))))
-    (format stream "~{~{~(~A~) ARGS~&~2T~@<~@;~A~:>~}~^~&~}"
-	    (map 'list (curry #'apply #'do-one) items))))
+  (print-classes-help-string
+   (rsb.filter:filter-classes) stream :blacklist blacklist))
 
 
 ;;; Version string
@@ -135,3 +128,44 @@ associated versions that should be printed onto STREAM."
 	    (format stream "~A version~VT~:[~{~D.~D.~D~}~;~A~]~&"
 		    name version-column (stringp version) version))))
     (map nil #'format-version versions)))
+
+
+;;; Utility functions
+;;
+
+(defun print-classes-help-string (classes stream
+				  &key
+				  blacklist)
+  "Based on CLASSES, format a table of class names, valid initargs and
+corresponding documentation strings onto STREAM.
+BLACKLIST can be used to specify classes that should not be
+processed."
+  (bind ((*print-right-margin* most-positive-fixnum)
+	 (*print-miser-width*  most-positive-fixnum)
+	 (items (remove-duplicates
+		 (remove-if (rcurry #'member blacklist)
+			    classes
+			    :key #'first)
+		 :key #'second))
+	 ((:flet do-one (name class))
+	  (bind ((args (%class-valid-initargs class))
+		 (doc  (substitute
+			#\Space #\Newline
+			(documentation (class-name class) 'type))))
+	    (list name args doc))))
+    (format stream "~{~{~(~A~)~<~#[~*~; [~@{~(~S~) ARG~}]~:; { ~
+~@{~(~S~) ARG~^ | ~} }*~]~:>~&~2T~@<~@;~A~:>~}~^~&~}"
+	    (map 'list (curry #'apply #'do-one) items))))
+
+(defun %class-valid-initargs (class)
+  "Return a list of keywords each of which is an acceptable initarg of
+class."
+  (closer-mop:finalize-inheritance class)
+  (remove-duplicates
+   (append
+    (map 'list #'first
+	 (closer-mop:class-default-initargs class))
+    (remove nil
+	    (map 'list (compose #'first
+				#'closer-mop:slot-definition-initargs)
+		 (closer-mop:class-slots class))))))
