@@ -174,13 +174,15 @@ the URI argument).~@:>"))
 			      (while spec)
 			      (collect
 				  (make-filter (parse-filter-spec spec)))))
+	   (converters  (iter (for (wire-type . converter) in (default-converters))
+			      (collect
+				  (cons wire-type
+					(if (listp converter)
+					    (append converter '(:fundamental-null))
+					    converter)))))
 	   (event-style (getopt :long-name "style")))
       (log1 :info "Using URI ~S" uri)
-      (with-reader (reader uri :converters '((rsb:octet-vector . (:fundamental-bytes
-								  :fundamental-utf-8-string
-								  :fundamental-acsii-string
-								  :protocol-buffer
-								  :fundamental-null))))
+      (with-reader (reader uri :converters converters)
 	(setf (receiver-filters reader) filters)
 	(log1 :info "Created reader ~A" reader)
 
