@@ -84,11 +84,14 @@ following patterns:
 
 (defun print-filter-help (stream
 			  &key
-			  (blacklist '(:or :disjoin :and :conjoin :constant)))
+			  (class-blacklist   '(:or :disjoin :and :conjoin :constant))
+			  (initarg-blacklist '(:intern-scope?)))
   "Format a table of filter names and corresponding documentation
 strings onto STREAM."
   (print-classes-help-string
-   (rsb.filter:filter-classes) stream :blacklist blacklist))
+   (rsb.filter:filter-classes) stream
+   :class-blacklist   class-blacklist
+   :initarg-blacklist initarg-blacklist))
 
 
 ;;; Version string
@@ -135,7 +138,8 @@ associated versions that should be printed onto STREAM."
 
 (defun print-classes-help-string (classes stream
 				  &key
-				  blacklist)
+				  class-blacklist
+				  initarg-blacklist)
   "Based on CLASSES, format a table of class names, valid initargs and
 corresponding documentation strings onto STREAM.
 BLACKLIST can be used to specify classes that should not be
@@ -143,17 +147,18 @@ processed."
   (bind ((*print-right-margin* most-positive-fixnum)
 	 (*print-miser-width*  most-positive-fixnum)
 	 (items (remove-duplicates
-		 (remove-if (rcurry #'member blacklist)
+		 (remove-if (rcurry #'member class-blacklist)
 			    classes
 			    :key #'first)
 		 :key #'second))
 	 ((:flet do-one (name class))
-	  (bind ((args (%class-valid-initargs class))
+	  (bind ((args (set-difference (%class-valid-initargs class)
+				       initarg-blacklist))
 		 (doc  (substitute
 			#\Space #\Newline
 			(documentation (class-name class) 'type))))
 	    (list name args doc))))
-    (format stream "~{~{~(~A~)~<~#[~*~; [~@{~(~S~) ARG~}]~:; { ~
+    (format stream "~{~{~(~A~)~<~#[~; [~@{~(~S~) ARG~}]~:; { ~
 ~@{~(~S~) ARG~^ | ~} }*~]~:>~&~2T~@<~@;~A~:>~}~^~&~}"
 	    (map 'list (curry #'apply #'do-one) items))))
 
@@ -161,11 +166,21 @@ processed."
   "Return a list of keywords each of which is an acceptable initarg of
 class."
   (closer-mop:finalize-inheritance class)
-  (remove-duplicates
-   (append
-    (map 'list #'first
-	 (closer-mop:class-default-initargs class))
-    (remove nil
-	    (map 'list (compose #'first
-				#'closer-mop:slot-definition-initargs)
-		 (closer-mop:class-slots class))))))
+  (bind ((i-i-methods (closer-mop:compute-applicable-methods-using-classes
+		       (fdefinition 'initialize-instance)
+		       (list class)))
+	 (s-i-methods (closer-mop:compute-applicable-methods-using-classes
+		       (fdefinition 'shared-initialize)
+		       (list class (find-class 't))))
+	 ((:flet keyword-args (method))
+	  (map 'list #'caar
+	       (nth-value 3 (parse-ordinary-lambda-list
+			     (closer-mop:method-lambda-list method))))))
+    (remove-duplicates
+     (append
+      (mappend #'keyword-args i-i-methods)
+      (mappend #'keyword-args s-i-methods)
+      (remove nil
+	      (map 'list (compose #'first
+				  #'closer-mop:slot-definition-initargs)
+		   (closer-mop:class-slots class)))))))
