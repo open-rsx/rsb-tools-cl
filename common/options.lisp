@@ -136,3 +136,38 @@
       (if return
 	  (funcall return)
 	  (exit 0)))))
+
+
+;;; Instantiation spec parsing
+;;
+
+(defun parse-instantiation-spec (string)
+  "Parse STRING as an instantiation specification of one of the forms
+
+  KIND KEY1 VALUE1 KEY2 VALUE2 ...
+
+and
+
+  KIND VALUE1
+
+and return the result as a list."
+  (maybe-expand-instantiation-spec
+   (with-input-from-string (stream string)
+     (iter (for token in-stream stream)
+	   (collect
+	       (if (and (first-iteration-p)
+			(not (keywordp token)))
+		   (make-keyword (string-upcase (string token)))
+		   token))))))
+
+(defun simple-instantiation-spec? (spec)
+  "Return non-nil if SPEC is a \"simple\" instantiation specification
+of the form (KIND SOLE-ARGUMENT)."
+  (and (length= 2 spec) (keywordp (first spec))))
+
+(defun maybe-expand-instantiation-spec (spec)
+  "Expand SPEC into a full instantiation specification if it is a
+simple specification. Otherwise, just return SPEC."
+  (if (simple-instantiation-spec? spec)
+      (cons (first spec) spec)
+      spec))

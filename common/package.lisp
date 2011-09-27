@@ -52,7 +52,9 @@
   ;; Commandline options
   (:export
    :make-common-options
-   :process-commandline-options)
+   :process-commandline-options
+
+   :parse-instantiation-spec)
 
   ;; Interactive stuff
   (:export
