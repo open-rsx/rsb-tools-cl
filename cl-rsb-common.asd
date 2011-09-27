@@ -71,8 +71,6 @@ RSB-related systems."
 			      (:file       "conditions"
 			       :depends-on ("package"))
 
-			      (:file       "filter-construction"
-			       :depends-on ("package"))
 			      (:file       "idl-loading"
 			       :depends-on ("package" "conditions"))
 
@@ -81,9 +79,9 @@ RSB-related systems."
 			      (:file       "debugger"
 			       :depends-on ("package"))
 			      (:file       "interactive"
-					   :depends-on ("package"))
+			       :depends-on ("package"))
 			      (:file       "help"
-					   :depends-on ("package"))
+			       :depends-on ("package"))
 			      (:file       "options"
 			       :depends-on ("package" "debugger"
 					    "logging" "help"))))))

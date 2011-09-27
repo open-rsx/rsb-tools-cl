@@ -190,8 +190,8 @@ the URI argument).~@:>"))
     (let* ((uri         (or (first (remainder)) "/"))
 	   (filters     (iter (for spec next (getopt :long-name "filter"))
 			      (while spec)
-			      (collect
-				  (make-filter (parse-filter-spec spec)))))
+			      (collect (apply #'rsb.filter:filter
+					      (parse-instantiation-spec spec)))))
 	   (converters  (iter (for (wire-type . converter) in (default-converters))
 			      (collect
 				  (cons wire-type

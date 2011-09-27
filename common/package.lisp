@@ -36,11 +36,6 @@
    :failed-to-load-idl
    :failed-to-load-idl-source)
 
-  ;; Filter spec parsing and filter construction
-  (:export
-   :parse-filter-spec
-   :make-filter)
-
   ;; IDL loading
   (:export
    :load-idl)
