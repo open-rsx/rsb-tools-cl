@@ -68,9 +68,9 @@ exchanged on a given RSB bus or channel."
 
 		:com.dvlsoft.clon
 
-		(:version :cl-rsb            "0.5.0")
-		(:version :cl-rsb-common     "0.5.0")
-		(:version :cl-rsb-formatting "0.5.0"))
+		(:version :cl-rsb            #.(version/string))
+		(:version :cl-rsb-common     #.(version/string))
+		(:version :cl-rsb-formatting #.(version/string)))
   :components  ((:module     "logger"
 		 :components ((:file       "package")
 

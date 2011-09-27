@@ -64,7 +64,7 @@ RSB-related systems."
 
 		:cl-protobuf
 
-		(:version :cl-rsb "0.5.0"))
+		(:version :cl-rsb #.(version/string)))
   :components  ((:module     "common"
 		 :components ((:file       "package")
 
