@@ -204,7 +204,10 @@ the URI argument).~@:>"))
 			  (apply #'make-instance (find-style-class class)
 				 args))))
       (log1 :info "Using URI ~S" uri)
-      (with-reader (reader uri :converters converters)
+      (with-reader (reader uri
+			   :transports '((:spread :expose-wire-schema? t
+					  &inherit))
+			   :converters converters)
 	(setf (receiver-filters reader) filters)
 	(log1 :info "Created reader ~A" reader)
 
