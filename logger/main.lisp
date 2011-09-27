@@ -40,11 +40,11 @@ the available filters."
     (format stream "Specify a filter that received events have to ~
 match in order to be processed rather than discarded. This option can ~
 be supplied multiple times in which case events have to match all ~
-specified filters. Each SPEC has to be of the form
+specified filters. Each SPEC has to be of one of the forms
 
-  KIND KEY1 VALUE1 KEY2 VALUE2 ...
+  KIND | KIND SINGLE-VALUE | KIND KEY1 VALUE1 KEY2 VALUE2 ...
 
-where keys and values depend on KIND and may be optional in some ~
+where keys and values depend on KIND and may be mandatory in some ~
 cases. Examples (note that the single quotes have to be included only ~
 when used within a shell):
 
