@@ -32,8 +32,11 @@
    :format-event
    :format-payload)
 
+  ;; Formatting style class family
   (:export
-   :format-styles)
+   :no-such-style-class
+   :find-style-class
+   :style-classes)
 
   (:documentation
    "This package contains formatting functions for RSB events and

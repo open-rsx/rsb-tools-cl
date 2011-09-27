@@ -59,6 +59,28 @@ correspond to respective KIND):
 ")
     (print-filter-help stream)))
 
+(defun make-style-help-string ()
+  "Return a help string that explains how to specify a formatting
+style and its parameters."
+  (with-output-to-string (stream)
+    (format stream "Specify a formatting style that should be used to ~
+print events. Each SPEC has to be of the form
+
+  KIND KEY1 VALUE1 KEY2 VALUE2 ...
+
+where keys and values are optional and depend on KIND. Examples (note ~
+that the single quotes have to be included only when used within a ~
+shell):
+
+  --style detailed
+  -s compact
+  --style 'compact :separator \"|\"'
+
+The following formatting styles are currently available:
+
+")
+    (print-classes-help-string (style-classes) stream)))
+
 (defun make-examples-string (&key
 			     (program-name "logger"))
   "Make and return a string containing usage examples of the program."
@@ -102,16 +124,12 @@ regular expression \"^mypattern\". Display matching event using the ~
 		      :argument-name   "SPEC"
 		      :description
 		      (make-filter-help-string))
-	      (enum   :long-name       "style"
+	      (stropt :long-name       "style"
 		      :short-name      "s"
-		      :enum            (map 'list #'first
-					    (format-styles 'format-event))
-		      :default-value   :compact
-		      :argument-name   "STYLE"
+		      :default-value   "compact"
+		      :argument-name   "SPEC"
 		      :description
-		      (format nil "The style to use when printing events. The following styles are available:
-~{~{~(~A~)~&~2T~@<~@;~A~:>~}~^~&~}"
-			      (format-styles 'format-event))))
+		      (make-style-help-string)))
    :item    (defgroup (:header "IDL Options")
 	      (path   :long-name       "idl-path"
 		      :short-name      "I"
@@ -180,7 +198,11 @@ the URI argument).~@:>"))
 					(if (listp converter)
 					    (append converter '(:fundamental-null))
 					    converter)))))
-	   (event-style (getopt :long-name "style")))
+	   (event-style (bind (((class &rest args)
+				(parse-instantiation-spec
+				 (getopt :long-name "style"))))
+			  (apply #'make-instance (find-style-class class)
+				 args))))
       (log1 :info "Using URI ~S" uri)
       (with-reader (reader uri :converters converters)
 	(setf (receiver-filters reader) filters)

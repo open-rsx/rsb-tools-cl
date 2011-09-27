@@ -47,21 +47,10 @@ MAX-COLUMNS limits the number of columns individual output lines are
 allowed to take up."))
 
 
-;;;
+;;; Formatting style class family
 ;;
 
-(defun format-styles (format-function)
-  "Return a list of items that are styles and descriptions of the
-form (STYLE DESCRIPTION)."
-  (bind (((:flet method-style (method))
-	  (let ((style-specializer (second (closer-mop:method-specializers method))))
-	    (when (typep style-specializer 'closer-mop:eql-specializer)
-	      (closer-mop:eql-specializer-object style-specializer))))
-	 (methods (remove-if-not #'method-style
-				 (closer-mop:generic-function-methods
-				  (fdefinition format-function)))))
-    (remove-duplicates
-     (map 'list #'(lambda (method)
-		    (list (method-style method) (documentation method t)))
-	  methods)
-     :key #'first)))
+(dynamic-classes:define-findable-class-family style
+    "This class family consists of event formatting style
+classes. Each class implements a particular style of formatting
+received events onto a given stream by specializing `format-event'.")

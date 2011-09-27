@@ -29,24 +29,45 @@
 		      :max-lines   max-lines
 		      :max-columns max-columns)))
 
-(defmethod format-event ((event event) (style (eql :discard)) (stream t)
+(defmethod find-style-class ((spec (eql :discard)))
+  (find-class 'discard))
+
+(defclass discard ()
+  ()
+  (:documentation
+   "Ignore all events."))
+
+(defmethod format-event ((event event) (style discard) (stream t)
 			 &key &allow-other-keys)
-  "Ignore EVENT."
   (values))
 
-(defmethod format-event ((event event) (style (eql :compact)) (stream t)
+(defmethod find-style-class ((spec (eql :compact)))
+  (find-class 'compact))
+
+(defclass compact ()
+  ()
+  (:documentation
+   "Format each event on a single line."))
+
+(defmethod format-event ((event event) (style compact) (stream t)
 			 &key &allow-other-keys)
-  "Format EVENT on STREAM on a single line."
   (let ((*print-right-margin* most-positive-fixnum)
 	(*print-miser-width*  most-positive-fixnum))
     (format stream "~A ~:[ORIGIN? ~;~:*~/rsb::print-id/~] ~A~%"
 	    (local-time:now) (event-origin event) event)))
 
-(defmethod format-event ((event event) (style (eql :detailed)) (stream t)
+(defmethod find-style-class ((spec (eql :detailed)))
+  (find-class 'detailed))
+
+(defclass detailed ()
+  ()
+  (:documentation
+   "Format each with as many details as possible."))
+
+(defmethod format-event ((event event) (style detailed) (stream t)
 			 &key
 			 max-lines
 			 max-columns)
-  "Format EVENT on STREAM with as many details as possible."
   (bind (((:accessors-r/o (data      event-data)
 			  (meta-data meta-data-alist)) event))
    ;; Envelope information.
@@ -82,7 +103,7 @@
 		      :max-lines   (- max-lines 11)
 		      :max-columns (- max-columns 2))))))
 
-(defmethod format-event :after ((event event) (style (eql :detailed)) (stream t)
+(defmethod format-event :after ((event event) (style detailed) (stream t)
 				&key
 				max-columns
 				&allow-other-keys)
@@ -90,8 +111,15 @@
 after each event."
   (format stream "~A~%" (make-string max-columns :initial-element #\-)))
 
-(defmethod format-event ((event event) (style (eql :payload)) (stream t)
+(defmethod find-style-class ((spec (eql :payload)))
+  (find-class 'payload))
+
+(defclass payload ()
+  ()
+  (:documentation
+   "Only format the payload of each event, but not the meta-data."))
+
+(defmethod format-event ((event event) (style payload) (stream t)
 			 &key &allow-other-keys)
-  "Only format the payload of EVENT without any meta-data or processing."
   (format-payload (event-data event) :raw stream)
   (force-output stream))
