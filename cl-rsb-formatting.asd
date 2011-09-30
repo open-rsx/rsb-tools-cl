@@ -71,4 +71,59 @@ RSB-related systems."
 			      (:file       "event"
 			       :depends-on ("package" "util"))
 			      (:file       "payload"
-			       :depends-on ("package" "util"))))))
+			       :depends-on ("package" "util"))
+
+			      ;; Formatting style mixin classes
+			      (:file       "width-mixin"
+			       :depends-on ("package" "protocol"))
+			      (:file       "counting-mixin"
+			       :depends-on ("package" "protocol"))
+			      (:file       "header-printing-mixin"
+			       :depends-on ("package" "protocol"
+					    "counting-mixin"))
+			      (:file       "columns-mixin"
+			       :depends-on ("package" "protocol"
+					    "header-printing-mixin"
+					    "width-mixin"))
+			      (:file       "periodic-printing-mixin"
+			       :depends-on ("package" "protocol"))
+			      (:file       "delegating-mixin"
+			       :depends-on ("package" "protocol"))
+
+			      ;; Column classes
+			      (:file       "columns"
+			       :depends-on ("package" "protocol"
+					    "width-mixin"))
+
+			      ;; Formatting style classes
+			      (:file       "event-style-discard"
+			       :depends-on ("package" "protocol"))
+			      (:file       "event-style-detailed"
+			       :depends-on ("package" "protocol"
+					    "util"))
+			      (:file       "event-style-compact"
+			       :depends-on ("package" "protocol" "util"
+					    "delegating-mixin"
+					    "header-printing-mixin"
+					    "columns-mixin"
+					    "columns"))
+			      (:file       "event-style-columns"
+			       :depends-on ("package" "protocol" "util"
+					    "header-printing-mixin"
+					    "columns-mixin"
+					    "columns"))))))
+
+(defsystem-connection :cl-rsb-formatting-and-cl-rsb-stats
+  :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :version     #.(version/string)
+  :license     "GPL3; see COPYING file for details."
+  :description "This system connection adds a column-based event
+formatting style, the columns of which are quantities defined in the
+cl-rsb-stats system."
+  :requires    (cl-rsb-formatting
+		cl-rsb-stats)
+  :components  ((:module     "formatting"
+		 :components ((:file       "quantity-column")
+			      (:file       "event-style-statistics"
+			       :depends-on ("quantity-column"))))))

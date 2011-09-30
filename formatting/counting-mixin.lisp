@@ -1,4 +1,4 @@
-;;; event.lisp --- Formatting functions for events.
+;;; counting-mixin.lisp --- Output counting style mixin class.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -19,25 +19,20 @@
 
 (in-package :rsb.formatting)
 
-(defmethod format-event :around ((event event) (style t) (stream t)
-				 &key
-				 (max-lines   16)
-				 (max-columns 79))
-  (let ((*print-right-margin* most-positive-fixnum)
-	(*print-miser-width*  most-positive-fixnum))
-    (call-next-method event style stream
-		      :max-lines   max-lines
-		      :max-columns max-columns)))
-
-(defmethod find-style-class ((spec (eql :payload)))
-  (find-class 'payload))
-
-(defclass payload ()
-  ()
+(defclass counting-mixin ()
+  ((count :initarg  :count
+	  :type     non-negative-integer
+	  :accessor style-count
+	  :initform 0
+	  :documentation
+	  "Stores the number of output cycles already performed by the
+formatter."))
   (:documentation
-   "Only format the payload of each event, but not the meta-data."))
+   "This class is intended to be mixed into formatter classes that
+need keep track of the number of performed output cycles."))
 
-(defmethod format-event ((event event) (style payload) (stream t)
-			 &key &allow-other-keys)
-  (format-payload (event-data event) :raw stream)
-  (force-output stream))
+(defmethod format-event :after ((event  t)
+				(style  counting-mixin)
+				(stream t)
+				&key &allow-other-keys)
+  (incf (style-count style)))

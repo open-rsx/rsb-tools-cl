@@ -54,3 +54,44 @@ allowed to take up."))
     "This class family consists of event formatting style
 classes. Each class implements a particular style of formatting
 received events onto a given stream by specializing `format-event'.")
+
+
+;;; Column protocol
+;;
+
+(defgeneric column-name (column)
+  (:documentation
+   "Return the name of COLUMN."))
+
+(defgeneric column-width (column)
+  (:documentation
+   "Return the width in characters of COLUMN."))
+
+(defgeneric column-produces-output? (column)
+  (:documentation
+   "Return non-nil if COLUMN produces output when asked to format
+something. This can be nil for example the width of COLUMN has been
+set to zero or if COLUMN is actually a pseudo-column producing things
+like linebreaks."))
+
+
+;;; Default behavior
+;;
+
+(defmethod column-produces-output? ((column t))
+  "Default implementation assumes that COLUMN produces output if its
+width is positive."
+  (plusp (column-width column)))
+
+
+;;; Column class family
+;;
+
+(dynamic-classes:define-findable-class-family column
+    "This class family consists of column classes, instances of which
+can be used in column-based formatting styles. Column classes have to
+implement the column protocol consisting of:
++ `column-name'
++ `column-width'
++ [`column-produces-output?' default implementation available]
++ `format-event'")

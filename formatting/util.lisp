@@ -19,6 +19,38 @@
 
 (in-package :rsb.formatting)
 
+
+;;; Predicates
+;;
+
+(defun request-event? (event)
+  "Return non-nil when EVENT is a request."
+  (eq (event-method event) :|request|))
+
+(defun reply-event? (event)
+  "Return non-nil when EVENT is a reply."
+  (eq (event-method event) :|reply|))
+
+(defun error-event? (event)
+  "Return non-nil if EVENT is a reply indicating an error."
+  (meta-data event :|rsb:error?|))
+
+
+;;; Formatting functions
+;;
+
+(defun format-method (stream event &optional colon? at?)
+  "Format called method of EVENT onto STREAM."
+  (declare (ignore colon? at?))
+  (let ((components (scope-components (event-scope event))))
+    (format stream "~{/~A~}::~A"
+	    (subseq components 0 (- (length components) 2))
+	    (lastcar components))))
+
+
+;;;
+;;
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
 
   (defmacro with-indent ((stream-var

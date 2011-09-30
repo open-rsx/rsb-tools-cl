@@ -1,4 +1,4 @@
-;;; cl-rsb-tools-logger.asd --- RSB Logging utility based cl-rsb.
+;;; cl-rsb-stats.asd --- Stats functions for cl-rsb-based utilities.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(cl:defpackage :cl-rsb-tools-logger-system
+(cl:defpackage :cl-rsb-stats-system
   (:use
    :cl
    :asdf)
@@ -26,7 +26,7 @@
    :version/list
    :version/string))
 
-(cl:in-package :cl-rsb-tools-logger-system)
+(cl:in-package :cl-rsb-stats-system)
 
 
 ;;; Version stuff
@@ -53,27 +53,44 @@
 ;;; System definition
 ;;
 
-(defsystem :cl-rsb-tools-logger
+(defsystem :cl-rsb-stats
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPL3; see COPYING file for details."
-  :description "A simple utility for receiving and displaying events
-exchanged on a given RSB bus or channel."
-  :depends-on  (:alexandria
-		:metabang-bind
-		:iterate
+  :description "This system provides some stats functions for
+RSB-related systems."
+  :depends-on  (:local-time
 
-		:cl-protobuf
-
-		:com.dvlsoft.clon
-
-		(:version :cl-rsb            #.(version/string))
-		(:version :cl-rsb-common     #.(version/string))
-		(:version :cl-rsb-stats      #.(version/string))
-		(:version :cl-rsb-formatting #.(version/string)))
-  :components  ((:module     "logger"
+		(:version :cl-rsb #.(version/string)))
+  :components  ((:module     "stats"
 		 :components ((:file       "package")
+			      (:file       "protocol"
+			       :depends-on ("package"))
 
-			      (:file       "main"
-			       :depends-on ("package"))))))
+			      ;; Quantity mixin classes
+			      (:file       "named-mixin"
+			       :depends-on ("package" "protocol"))
+			      (:file       "collecting-mixin"
+			       :depends-on ("package" "protocol"))
+			      (:file       "histogram-mixin"
+			       :depends-on ("package" "protocol"))
+			      (:file       "extract-function-mixin"
+			       :depends-on ("package" "protocol"))
+			      (:file       "moments-mixin"
+			       :depends-on ("package" "protocol"))
+			      (:file       "reduction-mixin"
+			       :depends-on ("package" "protocol"))
+			      (:file       "rate-mixin"
+			       :depends-on ("package" "protocol"))
+
+			      ;; Quantity classes
+			      (:file       "quantities"
+			       :depends-on ("package" "protocol"
+					    "named-mixin"
+					    "collecting-mixin"
+					    "histogram-mixin"
+					    "extract-function-mixin"
+					    "moments-mixin"
+					    "reduction-mixin"
+					    "rate-mixin"))))))

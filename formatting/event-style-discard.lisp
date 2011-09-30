@@ -1,4 +1,4 @@
-;;; event.lisp --- Formatting functions for events.
+;;; event-style-discard.lisp --- A style that ignores all events.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -19,25 +19,14 @@
 
 (in-package :rsb.formatting)
 
-(defmethod format-event :around ((event event) (style t) (stream t)
-				 &key
-				 (max-lines   16)
-				 (max-columns 79))
-  (let ((*print-right-margin* most-positive-fixnum)
-	(*print-miser-width*  most-positive-fixnum))
-    (call-next-method event style stream
-		      :max-lines   max-lines
-		      :max-columns max-columns)))
+(defmethod find-style-class ((spec (eql :discard)))
+  (find-class 'style-discard))
 
-(defmethod find-style-class ((spec (eql :payload)))
-  (find-class 'payload))
-
-(defclass payload ()
+(defclass style-discard ()
   ()
   (:documentation
-   "Only format the payload of each event, but not the meta-data."))
+   "Ignore all events."))
 
-(defmethod format-event ((event event) (style payload) (stream t)
+(defmethod format-event ((event t) (style style-discard) (stream t)
 			 &key &allow-other-keys)
-  (format-payload (event-data event) :raw stream)
-  (force-output stream))
+  (values))

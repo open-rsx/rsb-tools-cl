@@ -59,7 +59,8 @@ correspond to respective KIND):
 ")
     (print-filter-help stream)))
 
-(defun make-style-help-string ()
+(defun make-style-help-string (&key
+			       (show :default))
   "Return a help string that explains how to specify a formatting
 style and its parameters."
   (with-output-to-string (stream)
@@ -75,11 +76,56 @@ shell):
   --style detailed
   -s compact
   --style 'compact :separator \"|\"'
+  --style 'columns :columns (:now (:scope :width 12) :id :newline)' ~
+\(see below for an explanation of the :columns argument\)
 
 The following formatting styles are currently available:
 
 ")
-    (print-classes-help-string (style-classes) stream)))
+    (print-classes-help-string
+     (style-classes) stream
+     :initarg-blacklist '(:stream :quantities :count :sub-styles))
+
+    (when (or (eq show t)
+	      (member :columns (ensure-list show)))
+      (format stream "
+
+In column-based formatting styles, columns can be selected and ~
+configured using the :columns argument and a syntax of the form
+
+  :columns (COLSPEC1 COLSPEC2 ...)
+
+where
+
+  COLSPEC ::= KIND | (KIND KEY1 VALUE1 KEY2 VALUE2 ...)
+
+The following columns are available:
+
+")
+      (print-classes-help-string
+       (column-classes) stream))
+
+    (when (or (eq show t)
+	      (member :quantities (ensure-list show)))
+      (format stream "
+
+In the statistics style, statistical quantities are used in ~
+columns. These columns can be configured using the :columns argument ~
+and a syntax of the form
+
+  :columns (COLSPEC1 COLSPEC2 ...)
+
+where
+
+  COLSPEC ::= (:quantity :quantity QUANTITY VALUE1 KEY2 VALUE2 ...)
+              | (:quantity :quantity (QUANTITY KEY1 VALUE1 KEY2 VALUE2 ...) KEY1 VALUE1 KEY2 VALUE2 ...)
+
+The following quantities are available:
+
+")
+      (print-classes-help-string
+       (rsb.stats:quantity-classes) stream
+       :initarg-blacklist '(:extractor :reduce-by :start-time :values)))))
 
 (defun make-examples-string (&key
 			     (program-name "logger"))
@@ -105,6 +151,21 @@ the bus. Receive events on the channel designated by ~
 \"/my/channel\" (and sub-channels) the payloads of which match the ~
 regular expression \"^mypattern\". Display matching event using the ~
 \"detailed\" display style.
+
+~:*~A -f \"$(cat my-complex-filter)\" -s \"$(cat my-complex-style)\" ~
+/some/scope
+
+  Use the contents of the files \"my-complex-filter\" and ~
+\"my-complex-style\" to specify a filter expression and an event ~
+formatting style respectively. Note that the syntactic details depend ~
+on the used shell and that the idiom is not specific to ~:*~A. As an ~
+example, a file with the following content would mimic the \"compact\" ~
+style when used as argument to the --style (-s) option:
+
+  columns
+  :columns (:now
+            :origin :sequence-number :method :id :scope :data :data-size
+            :newline)
 "
 	  program-name))
 
@@ -129,7 +190,7 @@ regular expression \"^mypattern\". Display matching event using the ~
 		      :default-value   "compact"
 		      :argument-name   "SPEC"
 		      :description
-		      (make-style-help-string)))
+		      (make-style-help-string :show show)))
    :item    (defgroup (:header "IDL Options")
 	      (path   :long-name       "idl-path"
 		      :short-name      "I"

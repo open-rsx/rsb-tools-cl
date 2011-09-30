@@ -26,6 +26,7 @@
 
    :rsb)
 
+  ;; Event formatting protocol
   (:export
    :format-event
    :format-payload)
@@ -35,6 +36,60 @@
    :no-such-style-class
    :find-style-class
    :style-classes)
+
+  ;; Column protocol
+  (:export
+   :column-name
+   :column-width
+   :column-produces-output?)
+
+  ;; Column class family
+  (:export
+   :no-such-column-class
+   :find-column-class
+   :column-classes)
+
+  ;; `width-mixin' mixin class
+  (:export
+   :width-mixin
+
+   :column-alignment
+
+   :invoke-width-width-limit
+   :with-width-limit)
+
+  ;; `counting-mixin' mixin class
+  (:export
+   :couting-mixin
+
+   :style-count)
+
+  ;; `header-printing-mixin' mixin class
+  (:export
+   :header-printing-mixin
+
+   :style-header-frequency)
+
+  ;; `columns-mixin' mixin class
+  (:export
+   :columns-mixin
+
+   :style-columns
+   :style-separator
+
+   :make-column)
+
+  ;; `periodic-printing-mixin' mixin class
+  (:export
+   :periodic-printing-mixin
+
+   :style-print-interval)
+
+  ;; `delegating-mixin' mixin class
+  (:export
+   :delegating-mixin
+
+   :style-sub-styles)
 
   (:documentation
    "This package contains formatting functions for RSB events and

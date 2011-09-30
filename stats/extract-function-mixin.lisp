@@ -1,4 +1,4 @@
-;;; event.lisp --- Formatting functions for events.
+;;; extract-function-mixin.lisp --- A mixin class for flexible value extraction.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -17,27 +17,22 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(in-package :rsb.formatting)
+(in-package :rsb.stats)
 
-(defmethod format-event :around ((event event) (style t) (stream t)
-				 &key
-				 (max-lines   16)
-				 (max-columns 79))
-  (let ((*print-right-margin* most-positive-fixnum)
-	(*print-miser-width*  most-positive-fixnum))
-    (call-next-method event style stream
-		      :max-lines   max-lines
-		      :max-columns max-columns)))
-
-(defmethod find-style-class ((spec (eql :payload)))
-  (find-class 'payload))
-
-(defclass payload ()
-  ()
+(defclass extract-function-mixin ()
+  ((extractor :initarg  :extractor
+	      :type     function
+	      :accessor quantity-extractor
+	      :initform (missing-required-initarg
+			 'extract-function-mixin :extractor)
+	      :documentation
+	      "Stores a function that is called to extract a value
+from some object."))
   (:documentation
-   "Only format the payload of each event, but not the meta-data."))
+   "This mixin class is intended to be mixed into quantity classes
+that should provide flexible extraction of values from events or other
+sources."))
 
-(defmethod format-event ((event event) (style payload) (stream t)
-			 &key &allow-other-keys)
-  (format-payload (event-data event) :raw stream)
-  (force-output stream))
+(defmethod update! ((quantity extract-function-mixin)
+		    (event    event))
+  (update! quantity (funcall (quantity-extractor quantity) event)))

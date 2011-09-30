@@ -1,4 +1,4 @@
-;;; event.lisp --- Formatting functions for events.
+;;; named-mixin.lisp --- A mixin class for named quantities.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -17,27 +17,20 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(in-package :rsb.formatting)
+(in-package :rsb.stats)
 
-(defmethod format-event :around ((event event) (style t) (stream t)
-				 &key
-				 (max-lines   16)
-				 (max-columns 79))
-  (let ((*print-right-margin* most-positive-fixnum)
-	(*print-miser-width*  most-positive-fixnum))
-    (call-next-method event style stream
-		      :max-lines   max-lines
-		      :max-columns max-columns)))
-
-(defmethod find-style-class ((spec (eql :payload)))
-  (find-class 'payload))
-
-(defclass payload ()
-  ()
+(defclass named-mixin ()
+  ((name :initarg  :name
+	 :type     string
+	 :accessor quantity-name
+	 :initform (missing-required-initarg 'named-mixin :name)
+	 :documentation
+	 "Stores the name of the quantity."))
   (:documentation
-   "Only format the payload of each event, but not the meta-data."))
+   "This mixin class is intended to be mixed into quantity classes to
+take care of the quantity name."))
 
-(defmethod format-event ((event event) (style payload) (stream t)
-			 &key &allow-other-keys)
-  (format-payload (event-data event) :raw stream)
-  (force-output stream))
+(defmethod print-object ((object named-mixin) stream)
+  (print-unreadable-object (object stream :type t :identity t)
+    (format stream "~A = " (quantity-name object))
+    (format-value object stream)))

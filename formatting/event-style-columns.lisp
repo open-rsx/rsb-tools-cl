@@ -1,4 +1,4 @@
-;;; event.lisp --- Formatting functions for events.
+;;; event-style-columns.lisp --- Generic column-based formatting class.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -19,25 +19,15 @@
 
 (in-package :rsb.formatting)
 
-(defmethod format-event :around ((event event) (style t) (stream t)
-				 &key
-				 (max-lines   16)
-				 (max-columns 79))
-  (let ((*print-right-margin* most-positive-fixnum)
-	(*print-miser-width*  most-positive-fixnum))
-    (call-next-method event style stream
-		      :max-lines   max-lines
-		      :max-columns max-columns)))
+(defmethod find-style-class ((spec (eql :columns)))
+  (find-class 'style-columns))
 
-(defmethod find-style-class ((spec (eql :payload)))
-  (find-class 'payload))
-
-(defclass payload ()
+(defclass style-columns (header-printing-mixin
+			 columns-mixin)
   ()
   (:documentation
-   "Only format the payload of each event, but not the meta-data."))
-
-(defmethod format-event ((event event) (style payload) (stream t)
-			 &key &allow-other-keys)
-  (format-payload (event-data event) :raw stream)
-  (force-output stream))
+   "This formatting styles prints configurable properties of received
+events in a column-oriented fashion. Event properties and the
+associated columns in which the properties should be printed have to
+be specified using the :columns initarg. If no columns are specified,
+no output is produced."))
