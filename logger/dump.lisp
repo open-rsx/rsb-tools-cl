@@ -1,3 +1,5 @@
+(load-system :asdf-system-connections)
+
 (load-system :cl-rsb-tools-logger)
 
 (asdf:clear-source-registry)
