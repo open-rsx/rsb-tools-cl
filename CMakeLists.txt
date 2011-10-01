@@ -51,6 +51,8 @@ FOREACH(IMAGE ${IMAGES})
     FILE(RELATIVE_PATH NAME "${CMAKE_CURRENT_BINARY_DIR}" "${IMAGE}")
     ADD_TEST(NAME    "${NAME}-help"
              COMMAND "${IMAGE}" --help)
+    ADD_TEST(NAME    "${NAME}-help-all"
+             COMMAND "${IMAGE}" --help-for=all)
     ADD_TEST(NAME    "${NAME}-version"
              COMMAND "${IMAGE}" --version)
 ENDFOREACH()
