@@ -159,7 +159,7 @@ processed."
 			(documentation (class-name class) 'type))))
 	    (list name args doc))))
     (format stream "~{~{~(~A~)~<~#[~; [~@{~(~S~) ARG~}]~:; { ~
-~@{~(~S~) ARG~^ | ~} }*~]~:>~&~2T~@<~@;~A~:>~}~^~&~}"
+~@{~(~S~) ARG~^ | ~} }*~]~:>~&~2T~@<~@;~A~:>~}~^~%~%~}"
 	    (map 'list (curry #'apply #'do-one) items))))
 
 (defun %class-valid-initargs (class)
