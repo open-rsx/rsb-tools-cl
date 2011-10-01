@@ -34,9 +34,10 @@
 	      :short-name    "h"
 	      :description
 	      "Print this help and exit.")
-      (flag   :long-name     "help-all"
+      (stropt :long-name     "help-for"
+	      :argument-name "CATEGORY"
 	      :description
-	      "Print all available help and exit.")
+	      "Print help for specified categories and exit. This option can be specified multiple times.")
       (enum   :long-name     "log-level"
 	      :enum          '(:off :trace :info :warn :error)
 	      :default-value :warn
@@ -125,13 +126,19 @@
 	(funcall return)
 	(exit 0)))
 
-  ;; Process --help and --help-all option.
-  (let ((help-all (getopt :long-name "help-all"))
-	(help     (getopt :long-name "help")))
-    (when help-all
-      (funcall update-synopsis :show t)
+  ;; Process --help and --help-for options.
+  (let ((show)
+	(help (getopt :long-name "help")))
+    (iter (for category next (getopt :long-name "help-for"))
+	  (while category)
+	  (when (string= category "all")
+	    (setf show t)
+	    (terminate))
+	  (push (make-keyword (string-upcase category)) show))
+    (when show
+      (funcall update-synopsis :show show)
       (make-context))
-    (when (or help help-all)
+    (when (or help show)
       (help)
       (if return
 	  (funcall return)
