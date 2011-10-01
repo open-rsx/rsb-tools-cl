@@ -39,7 +39,7 @@
 	      "Print all available help and exit.")
       (enum   :long-name     "log-level"
 	      :enum          '(:off :trace :info :warn :error)
-	      :default-value :off
+	      :default-value :warn
 	      :argument-name "LEVEL"
 	      :description
 	      "Controls the amount of generated log output.")
