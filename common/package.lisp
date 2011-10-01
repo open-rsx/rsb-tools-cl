@@ -58,6 +58,9 @@
 
   ;; Help text generation
   (:export
+   :show-help-for?
+   :with-abbreviation
+
    :print-uri-help
    :print-filter-help
 

@@ -20,6 +20,42 @@
 (in-package :rsb.common)
 
 
+;;; Selective help display
+;;
+
+(defun show-help-for? (category
+		       &key
+		       default
+		       show)
+  "Return non-nil if help for CATEGORY should be shown.
+SHOW contains the specification of which help to show.
+DEFAULT controls the result if SHOW is :default."
+  (case show
+    ((t)      t)
+    (:default default)
+    (t        (intersection (ensure-list category)
+			    (ensure-list show)))))
+
+(defmacro with-abbreviation ((stream category show
+			      &key
+			      default)
+			     &body body)
+  "Execute BODY with STREAM bound a stream when SHOW is t or contains
+CATEGORY in the following sense: if CATEGORY is a single category, it
+has to be contained in SHOW, if CATEGORY is a list, it has to have a
+non-empty intersection with SHOW."
+  (check-type category (or list keyword) "a keyword or a list of keywords")
+
+  (once-only (stream show)
+    `(if (show-help-for? ,category
+			 :show    ,show
+			 :default ,default)
+	 (progn ,@body)
+	 (format ,stream "Use the ~{--help-for=~A or~} --help-for=all ~
+options to display the full help text for this item."
+		 (ensure-list ,category)))))
+
+
 ;;; URI synopsis for connectors
 ;;
 
