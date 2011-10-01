@@ -75,5 +75,8 @@ exchanged on a given RSB bus or channel."
   :components  ((:module     "logger"
 		 :components ((:file       "package")
 
+
+			      (:file       "help"
+			       :depends-on ("package"))
 			      (:file       "main"
-			       :depends-on ("package"))))))
+			       :depends-on ("package" "help"))))))
