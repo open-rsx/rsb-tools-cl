@@ -22,47 +22,47 @@
 (defun make-common-options (&key
 			    show)
   "Return a `clon:group' instance containing common program options."
-  (let ((advanced-debug? (or (eq show t)
-			     (and (listp show)
-				  (member :advanced-debug show)))))
-    (defgroup (:header "General Options")
-      (flag   :long-name     "version"
-	      :short-name    "v"
-	      :description
-	      "Print version information and exit.")
-      (flag   :long-name     "help"
-	      :short-name    "h"
-	      :description
-	      "Print this help and exit.")
-      (stropt :long-name     "help-for"
-	      :argument-name "CATEGORY"
-	      :description
-	      "Print help for specified categories and exit. This option can be specified multiple times.")
-      (enum   :long-name     "log-level"
-	      :enum          '(:off :trace :info :warn :error)
-	      :default-value :warn
-	      :argument-name "LEVEL"
-	      :description
-	      "Controls the amount of generated log output.")
-      (stropt :short-name    "t"
-	      :long-name     "trace"
-	      :argument-name "SPEC"
-	      :hidden        (not advanced-debug?)
-	      :description
-	      "Trace specified things. This option can be supplied multiple times to trace multiple things. Each occurrence takes an argument which has to have one of the following forms:
+  (defgroup (:header "General Options")
+    (flag   :long-name     "version"
+	    :short-name    "v"
+	    :description
+	    "Print version information and exit.")
+    (flag   :long-name     "help"
+	    :short-name    "h"
+	    :description
+	    "Print this help and exit.")
+    (stropt :long-name     "help-for"
+	    :argument-name "CATEGORY"
+	    :description
+	    "Print help for specified categories and exit. This option can be specified multiple times.")
+    (enum   :long-name     "log-level"
+	    :enum          '(:off :trace :info :warn :error)
+	    :default-value :warn
+	    :argument-name "LEVEL"
+	    :description
+	    "Controls the amount of generated log output.")
+    (stropt :short-name    "t"
+	    :long-name     "trace"
+	    :argument-name "SPEC"
+	    :hidden        (not (show-help-for? :advanced-debug
+						:show show))
+	    :description
+	    "Trace specified things. This option can be supplied multiple times to trace multiple things. Each occurrence takes an argument which has to have one of the following forms:
 + \"PACKAGE\" (note the double quotes and uppercase): trace all functions in the package named PACKAGE.
 + function-name (note: no quotes, actual case of the function name): trace the named function.")
-      (flag   :long-name     "debug"
-	      :short-name    "d"
-	      :hidden        (not advanced-debug?)
-	      :description
-	      "Enable debugging. This does the following things:
+    (flag   :long-name     "debug"
+	    :short-name    "d"
+	    :hidden        (not (show-help-for? :advanced-debug
+						:show show))
+	    :description
+	    "Enable debugging. This does the following things:
 + Set the log level such that debug output is emitted
 + Enable printing backtraces instead of just condition reports in case of unhandled error conditions.")
-      (flag   :long-name     "swank"
-	      :hidden        (not advanced-debug?)
-	      :description
-	      "Start a swank listener (If you don't know what swank is, pretend this option does not exist - or google \"emacs slime\"). Swank will print the port it listens on. In addition, a file named \"./swank-port.txt\" containing the port number is written."))))
+    (flag   :long-name     "swank"
+	    :hidden        (not (show-help-for? :advanced-debug
+						:show show))
+	    :description
+	    "Start a swank listener (If you don't know what swank is, pretend this option does not exist - or google \"emacs slime\"). Swank will print the port it listens on. In addition, a file named \"./swank-port.txt\" containing the port number is written.")))
 
 (defun process-commandline-options (&key
 				    (version '(0 1 0))
