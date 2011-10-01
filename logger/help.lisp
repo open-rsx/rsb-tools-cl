@@ -60,12 +60,12 @@ correspond to respective KIND):
     (print-filter-help stream)))
 
 (defun make-style-help-string (&key
-				 (show :default))
+			       (show :default))
   "Return a help string that explains how to specify a formatting
 style and its parameters."
   (with-output-to-string (stream)
     (format stream "Specify a formatting style that should be used to ~
-print events. Each SPEC has to be of the form
+print events. SPEC has to be of the form
 
   KIND KEY1 VALUE1 KEY2 VALUE2 ...
 
