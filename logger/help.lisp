@@ -33,7 +33,8 @@ URI of the form
   ")
     (print-uri-help stream)))
 
-(defun make-filter-help-string ()
+(defun make-filter-help-string (&key
+				  (show :default))
   "Return a help string that explains how to specify filters and lists
 the available filters."
   (with-output-to-string (stream)
@@ -53,11 +54,12 @@ when used within a shell):
   --filter 'regex :regex \".*foo[0-9]+\"' (equivalent)
   -f 'xpath :xpath \"node()/@foo\" :fallback-policy :do-not-match'
 
-The following filters are currently available (paragraph headings ~
-correspond to respective KIND):
+")
+    (with-abbreviation (stream :filters show)
+      (format stream "The following filters are currently available:
 
 ")
-    (print-filter-help stream)))
+      (print-filter-help stream))))
 
 (defun make-style-help-string (&key
 			       (show :default))
@@ -76,22 +78,25 @@ shell):
   --style detailed
   -s compact
   --style 'compact :separator \"|\"'
-  --style 'columns :columns (:now (:scope :width 12) :id :newline)' ~
-\(see below for an explanation of the :columns argument\)
-
-The following formatting styles are currently available:
+  --style 'columns :columns (:now (:scope :width 12) :id :newline)'
+    \(see extended help, enable with --help-for=columns, for an ~
+explanation of the :columns argument\)
 
 ")
-    (print-classes-help-string
-     (style-classes) stream
-     :initarg-blacklist '(:stream :quantities :count :sub-styles))
+    (with-abbreviation (stream '(:styles :columns :quantities) show)
+      (format stream "The following formatting styles are ~
+currently available:
 
-    (when (or (eq show t)
-	      (member :columns (ensure-list show)))
-      (format stream "
+")
+      (print-classes-help-string
+       (style-classes) stream
+       :initarg-blacklist '(:stream :quantities :count :sub-styles))
 
-In column-based formatting styles, columns can be selected and ~
-configured using the :columns argument and a syntax of the form
+      (format stream "~%~%")
+      (with-abbreviation (stream :columns show)
+	(format stream "In column-based formatting styles, columns can ~
+be selected and configured using the :columns argument and a syntax of ~
+the form
 
   :columns (COLSPEC1 COLSPEC2 ...)
 
@@ -102,30 +107,29 @@ where
 The following columns are available:
 
 ")
-      (print-classes-help-string
-       (column-classes) stream))
+	(print-classes-help-string
+	 (column-classes) stream))
 
-    (when (or (eq show t)
-	      (member :quantities (ensure-list show)))
-      (format stream "
-
-In the statistics style, statistical quantities are used in ~
-columns. These columns can be configured using the :columns argument ~
-and a syntax of the form
+      (format stream "~%~%")
+      (with-abbreviation (stream :quantities show)
+	(format stream "In the statistics style, statistical ~
+quantities are used in columns. These columns can be configured using ~
+the :columns argument and a syntax of the form
 
   :columns (COLSPEC1 COLSPEC2 ...)
 
 where
 
-  COLSPEC ::= (:quantity :quantity QUANTITY VALUE1 KEY2 VALUE2 ...)
-              | (:quantity :quantity (QUANTITY KEY1 VALUE1 KEY2 VALUE2 ...) KEY1 VALUE1 KEY2 VALUE2 ...)
+  COLSPEC      ::= (:quantity :quantity QUANTITYSPEC KEY1 VALUE1 KEY2 ~
+VALUE2 ...)
+  QUANTITYSPEC ::= KIND | (KIND KEY1 VALUE1 KEY2 VALUE2 ...)
 
 The following quantities are available:
 
 ")
-      (print-classes-help-string
-       (rsb.stats:quantity-classes) stream
-       :initarg-blacklist '(:extractor :reduce-by :start-time :values)))))
+	(print-classes-help-string
+	 (rsb.stats:quantity-classes) stream
+	 :initarg-blacklist '(:extractor :reduce-by :start-time :values))))))
 
 (defun make-examples-string (&key
 			       (program-name "logger"))
