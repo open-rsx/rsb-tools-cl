@@ -201,3 +201,30 @@ the value of the :key initarg."
 
   (define-meta-data-column (:timestamp))
   (define-meta-data-column (:meta-data)))
+
+
+;;; Count column
+;;
+
+(defmethod find-column-class ((spec (eql :count)))
+  (find-class 'column-count))
+
+(defclass column-count (width-mixin
+			name-mixin)
+  ((count :initarg  :count
+	  :type     non-negative-integer
+	  :accessor column-count
+	  :initform 0
+	  :documentation
+	  "Stores the number of performed output operations."))
+  (:default-initargs
+   :width 8
+   :name  "Count")
+  (:documentation
+   "Count the number of output operations and emit that number."))
+
+(defmethod format-event ((event  t)
+			 (column column-count)
+			 (stream t)
+			 &key &allow-other-keys)
+  (format stream "~:D" (incf (column-count column))))
