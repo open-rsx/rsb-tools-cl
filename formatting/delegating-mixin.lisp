@@ -42,7 +42,7 @@ delegate to sub-styles based on dispatch predicates."))
 					    (object    delegating-mixin))
   (call-next-method (subst object :self new-value) object))
 
-(defmethod format-event ((event  event)
+(defmethod format-event ((event  t)
 			 (style  delegating-mixin)
 			 (stream t)
 			 &key &allow-other-keys)
