@@ -69,6 +69,15 @@ possible to determine the size of an event payload and that,
 consequently, the value of this quantity may not reflect the actual
 throughput in some cases.")
 
+  (define-simple-quantity (scope
+			   :extractor (compose #'scope-string
+					       #'event-scope))
+      (extract-function-mixin
+       histogram-mixin)
+    "The value of this quantity is a histogram of event scopes
+observed over a period of time. When output is produced, the most
+frequent scopes are printed first.")
+
   (define-simple-quantity (method
 			   :extractor #'event-method)
       (extract-function-mixin
