@@ -190,8 +190,7 @@ processed."
 	 ((:flet do-one (name class))
 	  (bind ((args (set-difference (%class-valid-initargs class)
 				       initarg-blacklist))
-		 (doc  (substitute
-			#\Space #\Newline
+		 (doc  (%format-documentation
 			(documentation (class-name class) 'type))))
 	    (list name args doc))))
     (format stream "~{~{~(~A~)~<~#[~; [~@{~(~S~) ARG~}]~:; { ~
@@ -220,3 +219,28 @@ class."
 	      (map 'list (compose #'first
 				  #'closer-mop:slot-definition-initargs)
 		   (closer-mop:class-slots class)))))))
+
+
+;;; Utility function
+;;
+
+(defun %format-documentation (string)
+  "Format STRING as documentation by breaking it into paragraphs and
+removing linebreaks from paragraphs that appear to not have been
+layouted specifically. "
+  (bind (((:flet split-into-paragraphs (string))
+	  (iter (with rest = string)
+		(let ((index (search #.(format nil "~%~%") rest)))
+		  (collect (subseq rest 0 index))
+		  (while index)
+		  (setf rest (subseq rest (+ index 2))))))
+	 ((:flet has-layout? (string))
+	  (or (search "  " string) (find #\Tab string)))
+	 ((:flet remove-newlines (string))
+	  (substitute #\Space #\Newline string)))
+    (format nil "~{~A~^~%~%~}"
+	    (map 'list #'(lambda (paragraph)
+			   (if (has-layout? paragraph)
+			       paragraph
+			       (remove-newlines paragraph)))
+		 (split-into-paragraphs string)))))
