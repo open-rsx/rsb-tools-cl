@@ -32,18 +32,19 @@
 			       &allow-other-keys)
 			      super-classes
 			      &optional doc)
-       `(progn
-	  (defmethod find-quantity-class ((spec (eql ,designator)))
-	    (find-class ',name))
+       (let ((class-name (symbolicate "QUANTITY-" name)))
+	 `(progn
+	    (defmethod find-quantity-class ((spec (eql ,designator)))
+	      (find-class ',class-name))
 
-	  (defclass ,name (named-mixin
-			   ,@super-classes)
-	    ()
-	    (:default-initargs
-	     :name ,pretty-name
-	     ,@(remove-from-plist initargs :designator :pretty-name))
-	    ,@(when doc
-	        `((:documentation ,doc)))))))
+	    (defclass ,class-name (named-mixin
+				   ,@super-classes)
+	      ()
+	      (:default-initargs
+	       :name ,pretty-name
+		,@(remove-from-plist initargs :designator :pretty-name))
+	      ,@(when doc
+		  `((:documentation ,doc))))))))
 
   (define-simple-quantity (rate
 			   :extractor (constantly 1)
@@ -68,10 +69,8 @@ possible to determine the size of an event payload and that,
 consequently, the value of this quantity may not reflect the actual
 throughput in some cases.")
 
-  (define-simple-quantity (method1
-			   :designator  :method
-			   :pretty-name "Method"
-			   :extractor   #'event-method)
+  (define-simple-quantity (method
+			   :extractor #'event-method)
       (extract-function-mixin
        histogram-mixin)
     "The value of this quantity is a histogram of event methods
