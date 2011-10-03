@@ -68,8 +68,6 @@ RSB-related systems."
 
 			      (:file       "protocol"
 			       :depends-on ("package"))
-			      (:file       "event"
-			       :depends-on ("package" "util"))
 			      (:file       "payload"
 			       :depends-on ("package" "util"))
 
@@ -95,7 +93,7 @@ RSB-related systems."
 			       :depends-on ("package" "protocol"
 					    "width-mixin"))
 
-			      ;; Formatting style classes
+			      ;; Event formatting style classes
 			      (:file       "event-style-discard"
 			       :depends-on ("package" "protocol"))
 			      (:file       "event-style-detailed"
@@ -111,7 +109,9 @@ RSB-related systems."
 			       :depends-on ("package" "protocol" "util"
 					    "header-printing-mixin"
 					    "columns-mixin"
-					    "columns"))))))
+					    "columns"))
+			      (:file       "event-style-payload"
+			       :depends-on ("package" "protocol"))))))
 
 (defsystem-connection :cl-rsb-formatting-and-cl-rsb-stats
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
