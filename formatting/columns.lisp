@@ -78,6 +78,11 @@ current content to be overridden by subsequent output."
 			 :event-class t)
       "Emit the current time."
     (format stream "~A" (local-time:now)))
+  (define-simple-column (:text 32
+			 :event-class t)
+      "Emit a given text. The name of the column is also the emitted
+text."
+    (format stream "~A" (column-name column)))
 
   ;; Event properties
   (define-simple-column (:origin (8 :left))
