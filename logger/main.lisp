@@ -28,13 +28,15 @@
    :item    (make-text :contents (make-help-string))
    :item    (make-common-options :show show)
    :item    (defgroup (:header "Logging Options"
-		       :hidden (and (listp show)
-				    (not (member :logging show))))
+		       :hidden (not (show-help-for?
+				     '(:logging :filters :styles :columns :quantities)
+				     :default t
+				     :show    show)))
 	      (stropt :long-name       "filter"
 		      :short-name      "f"
 		      :argument-name   "SPEC"
 		      :description
-		      (make-filter-help-string))
+		      (make-filter-help-string :show show))
 	      (stropt :long-name       "style"
 		      :short-name      "s"
 		      :default-value   "compact"
