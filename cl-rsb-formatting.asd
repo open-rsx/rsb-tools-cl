@@ -77,6 +77,8 @@ RSB-related systems."
 			      ;; Formatting style mixin classes
 			      (:file       "width-mixin"
 			       :depends-on ("package" "protocol"))
+			      (:file       "name-mixin"
+			       :depends-on ("package" "protocol"))
 			      (:file       "counting-mixin"
 			       :depends-on ("package" "protocol"))
 			      (:file       "header-printing-mixin"
@@ -94,7 +96,7 @@ RSB-related systems."
 			      ;; Column classes
 			      (:file       "columns"
 			       :depends-on ("package" "protocol"
-					    "width-mixin"))
+					    "width-mixin" "name-mixin"))
 
 			      ;; Event formatting style classes
 			      (:file       "event-style-discard"

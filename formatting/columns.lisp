@@ -37,17 +37,14 @@
 		    (find-class ',class-name))
 
 		  (defclass ,class-name (,@(when width
-						 '(width-mixin)))
-		    ((name :initarg  :name
-			   :type     string
-			   :accessor column-name
-			   :initform ,print-name
-			   :documentation
-			   "Stores the name of the column."))
+						 '(width-mixin))
+					 name-mixin)
+		    ()
 		    ,@(when width
 			    `((:default-initargs
-				  :width     ,width
-				:alignment ,alignment)))
+			       :width     ,width
+			       :alignment ,alignment
+			       :name      ,print-name)))
 		    ,@(when doc
 			    `((:documentation ,doc))))
 
@@ -167,18 +164,14 @@ events that actually are replies to method calls."
 	    (defmethod find-column-class ((spec (eql ,name)))
 	      (find-class ',class-name))
 
-	    (defclass ,class-name (width-mixin)
-	      ((key  :initarg  :key
-		     :type     symbol
-		     :reader   column-key
-		     :documentation
-		     "Stores the key of the meta-data item that should
-be extracted from events.")
-	       (name :initarg  :name
-		     :type     string
-		     :accessor column-name
-		     :documentation
-		     "Stores the name of the column."))
+	    (defclass ,class-name (width-mixin
+				   name-mixin)
+	      ((key :initarg  :key
+		    :type     symbol
+		    :reader   column-key
+		    :documentation
+		    "Stores the key of the meta-data item that should
+be extracted from events."))
 	      (:default-initargs
 	       :key       (missing-required-initarg 'timestamp :key)
 	       :width     32
