@@ -66,10 +66,13 @@ RSB-related systems."
 			      (:file       "util"
 			       :depends-on ("package"))
 
+			      (:file       "format-functions"
+			       :depends-on ("package" "util"))
+
 			      (:file       "protocol"
 			       :depends-on ("package"))
 			      (:file       "payload"
-			       :depends-on ("package" "util"))
+			       :depends-on ("package" "format-functions"))
 
 			      ;; Formatting style mixin classes
 			      (:file       "width-mixin"

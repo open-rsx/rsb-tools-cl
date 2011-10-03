@@ -43,20 +43,7 @@
 			   max-columns)
   "Format PAYLOAD in form of a hexdump if it is an octet-vector."
   (if (typep payload 'octet-vector)
-      (iter (for  byte   in-vector payload)
-	    (for  offset :from     0)
-	    (with line   =         1)
-	    (with column =         1)
-	    (when (or (= line max-lines) (= offset 400))
-	      (format stream ".... ..")
-	      (terminate))
-	    (when (= column 1)
-	      (format stream "~4,'0X" offset))
-	    (format stream " ~2,'0X" byte)
-	    (when (= (incf column) (1+ (floor (- max-columns 4) 3)))
-	      (format stream "~&")
-	      (incf line)
-	      (setf column 1)))
+      (format-octet-vector stream payload)
       (call-next-method)))
 
 (defmethod format-payload ((payload string) (style t) (stream t)
@@ -65,23 +52,7 @@
 			   max-columns)
   "Format PAYLOAD as a multi-line string, trying to honor MAX-LINES
 and MAX-COLUMNS constraints."
-  (iter (for  c    in-vector payload)
-	(for  size :from 0)
-	(with line =     1)
-	(with column =   1)
-	(when (or (= line max-lines) (= size 400))
-	  (format stream "...")
-	  (terminate))
-	(if (or (eq c #\Newline) (= column max-columns))
-	    (progn
-	      (unless (eq c #\Newline)
-		(format stream "\\"))
-	      (fresh-line stream)
-	      (incf line)
-	      (setf column 1))
-	    (progn
-	      (write-char c stream)
-	      (incf column)))))
+  (format-string stream payload))
 
 (defmethod format-payload ((payload standard-object) (style t) (stream t)
 			   &key

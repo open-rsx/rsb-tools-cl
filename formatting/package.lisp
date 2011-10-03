@@ -91,6 +91,11 @@
 
    :style-sub-styles)
 
+  ;; Formatting functions
+  (:export
+   :format-octet-vector
+   :format-string)
+
   (:documentation
    "This package contains formatting functions for RSB events and
 event payloads."))
