@@ -25,7 +25,7 @@
   (make-synopsis
    ;; Basic usage and specific options.
    :postfix "[URI]"
-   :item    (make-text :contents (make-help-string))
+   :item    (make-text :contents (make-help-string :show show))
    :item    (make-common-options :show show)
    :item    (defgroup (:header "Logging Options"
 		       :hidden (not (show-help-for?

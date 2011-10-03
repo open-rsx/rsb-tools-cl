@@ -19,7 +19,8 @@
 
 (in-package :rsb.tools.call)
 
-(defun make-help-string ()
+(defun make-help-string (&key
+			 (show :default))
   "Return a help that explains the commandline option interface."
   (with-output-to-string (stream)
     (format stream "Call METHOD of the server at SERVER-URI with ~
@@ -35,10 +36,15 @@ If ARG is the empty string, i.e. the call specification is of the form ~
 SERVER-URI/METHOD(), the method is called without argument.
 
 SERVER-URI designates the root scope of the remote server and the ~
-transport that should be used. A URI of the form
+transport that should be used.
+
+")
+    (with-abbreviation (stream :uri show)
+      (progn
+	(format stream "A SERVER-URI of the form
 
   ")
-    (print-uri-help stream :uri-var "SERVER-URI")))
+	(print-uri-help stream :uri-var "SERVER-URI")))))
 
 (defun make-examples-string (&key
 			     (program-name #+does-not-work (progname) "call"))
@@ -83,7 +89,7 @@ works if the called method accepts an argument of type string.
   (make-synopsis
    ;; Basic usage and specific options.
    :postfix "SERVER-URI/METHOD(ARG)"
-   :item    (make-text :contents (make-help-string))
+   :item    (make-text :contents (make-help-string :show show))
    :item    (make-common-options :show show)
    ;; Append RSB options.
    :item    (make-options

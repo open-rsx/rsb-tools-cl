@@ -19,7 +19,8 @@
 
 (in-package :rsb.tools.logger)
 
-(defun make-help-string ()
+(defun make-help-string (&key
+			 (show :default))
   "Return a help that explains the commandline option interface."
   (with-output-to-string (stream)
     (format stream "Show events exchanged on the RSB channel ~
@@ -27,11 +28,14 @@ designated by URI. Events can be filtered and displayed in several ~
 ways which can be controlled using the --filter and --style options.
 
 URI designates the channel for which events should be received and ~
-logged and the transport that should be used to attach to channel. A ~
-URI of the form
+logged and the transport that should be used to attach to channel.
+
+")
+    (with-abbreviation (stream :uri show)
+      (format stream "A URI of the form
 
   ")
-    (print-uri-help stream)))
+      (print-uri-help stream))))
 
 (defun make-filter-help-string (&key
 				  (show :default))
