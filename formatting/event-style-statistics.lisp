@@ -35,6 +35,10 @@ formatting style."))
    :columns '(:now
 	      (:quantity :quantity :rate       :width 12)
 	      (:quantity :quantity :throughput :width 16)
+	      (:quantity :quantity (:latency
+				    :from :create
+				    :to   :deliver
+				    :name "Latency"))
 	      :newline))
   (:documentation
    "This formatting style computes a number of configurable
