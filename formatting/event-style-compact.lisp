@@ -19,40 +19,67 @@
 
 (in-package :rsb.formatting)
 
-(defmethod find-style-class ((spec (eql :compact)))
-  (find-class 'style-compact))
+(macrolet
+    ((define-compact-style (name doc columns sub-styles)
+       (let ((class-name (symbolicate "STYLE-" name)))
+	`(progn
+	   (defmethod find-style-class ((spec (eql ,name)))
+	     (find-class ',class-name))
 
-(defclass style-compact (delegating-mixin
-			 columns-mixin
-			 header-printing-mixin)
-  ()
-  (:default-initargs
-   :columns    '(:now
-		 :origin :sequence-number :id :method :scope :data :data-size
-		 :newline)
-   :sub-styles `((,#'request-event?
-		  .
-		  ,(make-instance
-		    'columns-mixin
-		    :columns '(:now
-			       :origin :sequence-number :id :call
-			       :newline)))
-		 (,#'reply-event?
-		  .
-		  ,(make-instance
-		    'columns-mixin
-		    :columns '(:now
-			       :origin :sequence-number :call-id :result
-			       :newline)))
-		 (,#'error-event?
-		  .
-		  ,(make-instance
-		    'columns-mixin
-		    :columns '(:now
-			       :origin :sequence-number :call-id :result
-			       :newline)))
-		 (,(constantly t) . :self)))
-  (:documentation
-   "This formatting style prints several properties of received events
-on a single line. Some events are formatted specially according to
-their role in a communication pattern."))
+	   (defclass ,class-name (delegating-mixin
+				  columns-mixin
+				  header-printing-mixin)
+	     ()
+	     (:default-initargs
+	      :columns    ,columns
+	      :sub-styles ,sub-styles)
+	     (:documentation ,doc))))))
+
+  (define-compact-style :compact
+      "This formatting style prints several properties of received
+events on a single line. It is designed to fit into 80 columns. Some
+events are formatted specially according to their role in a
+communication pattern."
+    '((:now   :width 26 :alignment :left)
+      :origin
+      (:scope :width 16)
+      (:data  :width 16)
+      :data-size
+      :newline)
+    `((,#'request-event?
+       .
+       ,(make-instance 'columns-mixin
+		       :columns '((:now    :width 26 :alignment :left)
+				  :origin
+				  (:call   :width 43)
+				  :newline)))
+      (,#'reply-event?
+       .
+       ,(make-instance 'columns-mixin
+		       :columns '((:now    :width 26 :alignment :left)
+				  :origin
+				  (:result :width 43)
+				  :newline)))
+      (,(constantly t) . :self)))
+
+  (define-compact-style :compact+
+      "This formatting style prints several properties of received
+events on a single line. It is designed to fit into 128 columns. Some
+events are formatted specially according to their role in a
+communication pattern."
+    '(:now
+      :origin :sequence-number :id :method :scope :data :data-size
+      :newline)
+    `((,#'request-event?
+       .
+       ,(make-instance 'columns-mixin
+		       :columns '(:now
+				  :origin :sequence-number :id :call :data-size
+				  :newline)))
+      (,#'reply-event?
+       .
+       ,(make-instance 'columns-mixin
+		       :columns '(:now
+				  :origin :sequence-number :call-id :result :data-size
+				  :newline)))
+      (,(constantly t) . :self))))
