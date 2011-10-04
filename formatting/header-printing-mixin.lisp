@@ -23,7 +23,7 @@
   ((header-frequency :initarg  :header-frequency
 		     :type     (or null positive-integer)
 		     :accessor style-header-frequency
-		     :initform 23
+		     :initform 22
 		     :documentation
 		     "Stores the number of output cycles after which a
 header should be printed or nil in case a header is never printed."))
