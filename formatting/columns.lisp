@@ -121,7 +121,7 @@ the string \"<nomethod>\" is emitted instead."
       "Emit the scope of the event."
     (format stream "~A" (scope-string (event-scope event))))
 
-  (define-simple-column (:data (20 :left))
+  (define-simple-column (:data (21 :left))
       "Emit a representation of the data contained in the event."
     (let ((*print-length* (column-width column)))
       (format stream "~/rsb::print-event-data/" (event-data event))))
@@ -136,7 +136,7 @@ event, if the size can be determined."
       (format stream "~:[N/A~;~:*~,,,3:D~]" size)))
 
   ;; Request/Reply stuff
-  (define-simple-column (:call (58 :left))
+  (define-simple-column (:call (57 :left))
       "Emit a method call description. Should only be applied to
 events that actually are method calls."
     (let ((*print-length* most-positive-fixnum))
@@ -149,11 +149,12 @@ events that actually are replies to method calls."
       (format stream "~:[CALLID? ~;~:*~/rsb::print-id/~]"
 	      (uuid:make-uuid-from-string (meta-data event :|rsb:reply|))))
 
-  (define-simple-column (:result (58 :left))
+  (define-simple-column (:result (57 :left))
       "Emit a method reply description. Should only be applied to
 events that actually are replies to method calls."
     (let ((*print-length* most-positive-fixnum))
-      (format stream "> ~/rsb.formatting::format-method/ ~:[=>~;ERROR:~] ~/rsb::print-event-data/"
+      (format stream "> ~/rsb.formatting::format-method/ ~
+~:[=>~;ERROR:~] ~/rsb::print-event-data/"
 	      event (error-event? event) (event-data event)))))
 
 
