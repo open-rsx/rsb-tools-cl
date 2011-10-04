@@ -117,7 +117,7 @@ the string \"<nomethod>\" is emitted instead."
     (format stream "~:[EVENTID? ~;~:*~:/rsb::print-id/~]"
 	    (event-id event)))
 
-  (define-simple-column (:scope (16 :left))
+  (define-simple-column (:scope (24 :left))
       "Emit the scope of the event."
     (format stream "~A" (scope-string (event-scope event))))
 
