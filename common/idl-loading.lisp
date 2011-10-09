@@ -122,12 +122,19 @@ otherwise."
       (pbb:emit descriptor :class)
     (map nil (curry #'pbb:emit descriptor) emit)))
 
-(macrolet ((define-load-method (type kind func)
-	     `(defmethod load-idl ((source ,type) (kind (eql ,kind))
-				   &rest args
-				   &key &allow-other-keys)
-		(log1 :info "Parsing data definition from ~A" source)
-		(process-descriptor (apply #',func source args)))))
+(macrolet
+    ((define-load-method (type kind func)
+       `(defmethod load-idl ((source ,type) (kind (eql ,kind))
+			     &rest args
+			     &key
+			     (purpose nil purpose-supplied?)
+			     &allow-other-keys)
+	  (log1 :info "Parsing data definition from ~A" source)
+	  (apply #'process-descriptor
+		 (apply #',func source (remove-from-plist args :purpose))
+		 (when purpose-supplied?
+		   (list :emit purpose))))))
+
   (define-load-method string   :proto    pbf:load/text)
   (define-load-method stream   :proto    pbf:load/text)
   (define-load-method pathname :proto    pbf:load/text)
