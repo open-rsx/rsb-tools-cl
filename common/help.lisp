@@ -51,8 +51,8 @@ non-empty intersection with SHOW."
 			 :show    ,show
 			 :default ,default)
 	 (progn ,@body)
-	 (format ,stream "Use the ~{--help-for=~A or~} --help-for=all ~
-options to display the full help text for this item."
+	 (format ,stream "Use the ~{--help-for=~(~A~) or~} ~
+--help-for=all options to display the full help text for this item."
 		 (ensure-list ,category)))))
 
 
