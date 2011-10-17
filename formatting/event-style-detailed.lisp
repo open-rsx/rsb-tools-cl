@@ -33,7 +33,7 @@ possible."))
 			 (stream t)
 			 &key
 			 (max-lines   16)
-			 (max-columns *print-right-margin*))
+			 (max-columns (or *print-right-margin* 80)))
   (bind (((:accessors-r/o (data      event-data)
 			  (meta-data meta-data-alist)) event))
     ;; Envelope information.
