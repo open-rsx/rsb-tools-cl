@@ -32,8 +32,8 @@ possible."))
 			 (style  style-detailed)
 			 (stream t)
 			 &key
-			 max-lines
-			 max-columns)
+			 (max-lines   16)
+			 (max-columns *print-right-margin*))
   (bind (((:accessors-r/o (data      event-data)
 			  (meta-data meta-data-alist)) event))
     ;; Envelope information.
@@ -73,7 +73,7 @@ possible."))
 				(style  style-detailed)
 				(stream t)
 				&key
-				max-columns
+				(max-columns *print-right-margin*)
 				&allow-other-keys)
   "When formatting events in :detailed style, print a vertical rule
 after each event."
