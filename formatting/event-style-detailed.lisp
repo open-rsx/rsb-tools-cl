@@ -73,7 +73,7 @@ possible."))
 				(style  style-detailed)
 				(stream t)
 				&key
-				(max-columns *print-right-margin*)
+				(max-columns (or *print-right-margin* 80))
 				&allow-other-keys)
   "When formatting events in :detailed style, print a vertical rule
 after each event."
