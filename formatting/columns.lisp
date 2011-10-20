@@ -147,7 +147,8 @@ events that actually are method calls."
       "Emit the request id of a reply event. Should only be applied to
 events that actually are replies to method calls."
       (format stream "~:[CALLID? ~;~:*~/rsb::print-id/~]"
-	      (uuid:make-uuid-from-string (meta-data event :|rsb:reply|))))
+	      (when-let ((cause (first (event-causes event))))
+		(event-id->uuid cause))))
 
   (define-simple-column (:result (57 :left))
       "Emit a method reply description. Should only be applied to
