@@ -35,7 +35,8 @@ possible."))
 			 (max-lines   16)
 			 (max-columns (or *print-right-margin* 80)))
   (bind (((:accessors-r/o (data      event-data)
-			  (meta-data meta-data-alist)) event))
+			  (meta-data meta-data-alist)
+			  (causes    event-causes)) event))
     ;; Envelope information.
     (with-indented-section (stream "Event")
       (format-pairs/plist
@@ -61,6 +62,12 @@ possible."))
     (when (and meta-data (> max-lines 10))
       (with-indented-section (stream "Meta-Data")
 	(format-aligned-items/alist stream meta-data)))
+
+    ;; Causes
+    (when causes
+      (with-indented-section (stream "Causes")
+	(format stream "~{~A~^~&~}"
+		(map 'list #'event-id->uuid causes))))
 
     ;; Payload.
     (when (> max-lines 11)
