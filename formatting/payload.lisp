@@ -24,9 +24,12 @@
 				   (max-lines   4)
 				   (max-columns 80)) ;;; TODO(jmoringe): default from clon?
   "Supply payload-independent defaults for MAX-LINES and MAX-COLUMNS."
-  (call-next-method payload style stream
-		    :max-lines   max-lines
-		    :max-columns max-columns))
+  (let ((*print-lines*        max-lines)
+	(*print-right-margin* max-columns)
+	(*print-miser-width*  most-positive-fixnum))
+    (call-next-method payload style stream
+		      :max-lines   max-lines
+		      :max-columns max-columns)))
 
 (defmethod format-payload ((payload t) (style t) (stream t)
 			   &key
