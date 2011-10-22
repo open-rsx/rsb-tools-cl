@@ -35,7 +35,7 @@
 (defconstant +version-major+ 0
   "Major component of version number.")
 
-(defconstant +version-minor+ 5
+(defconstant +version-minor+ 6
   "Minor component of version number.")
 
 (defconstant +version-revision+ 0
@@ -67,8 +67,8 @@ via RSB."
 		:cl-ppcre
 		:com.dvlsoft.clon
 
-		(:version :cl-rsb            "0.5.0")
-		(:version :cl-rsb-common     "0.5.0"))
+		(:version :cl-rsb        #.(version/string))
+		(:version :cl-rsb-common #.(version/string)))
   :components  ((:module     "call"
 		 :components ((:file       "package")
 
