@@ -19,6 +19,23 @@
 
 (in-package :rsb.formatting)
 
+(eval-when (:compile-toplevel)
+  (defmacro when-column-fits ((column separator
+			       position
+			       produced-output? printed-ellipsis?-var)
+			      &body body)
+    "Execute BODY if the state captured by POSITION, PRODUCED-OUTPUT?
+and PRINTED-ELLIPSIS?-VAR permits printing COLUMN and optionally
+SEPARATOR."
+    (once-only (position column produced-output? separator)
+      `(if (columns-exhausted? (+ ,position
+				  (if ,produced-output? (length ,separator) 0)
+				  (column-width ,column)))
+	   (unless ,printed-ellipsis?-var
+	     (format stream ">")
+	     (setf ,printed-ellipsis?-var t))
+	   (progn ,@body)))))
+
 (defclass columns-mixin ()
   ((columns   :type     list
 	      :accessor style-columns
@@ -69,14 +86,20 @@ designated by CLASS."))
 			  (stream t))
   (bind (((:accessors-r/o (columns   style-columns)
 			  (separator style-separator)) style)
-	 (produced-output?))
-    (iter (for column in columns)
+	 (produced-output?)
+	 (printed-ellipsis?))
+    (iter (for  column   in columns)
+	  (with position =  0)
 	  (when (column-produces-output? column)
-	    (when produced-output?
-	      (format stream separator))
-	    (setf produced-output? t)
-	    (with-width-limit (stream (column-width column) :left)
-	      (format stream "~@(~A~)" (column-name column))))
+	    (when-column-fits (column separator
+			       position produced-output? printed-ellipsis?)
+	      (when produced-output?
+		(format stream separator)
+		(incf position (length separator)))
+	      (with-width-limit (stream (column-width column) :left)
+		(format stream "~@(~A~)" (column-name column)))
+	      (setf produced-output? t)))
+	  (incf position (column-width column))
 	  (finally (when produced-output? (terpri stream))))))
 
 (defmethod format-event ((event  t)
@@ -84,14 +107,21 @@ designated by CLASS."))
 			 (stream t)
 			 &key &allow-other-keys)
   (bind (((:accessors-r/o (columns   style-columns)
-			  (separator style-separator)) style))
-    (iter (for  column           in columns)
-	  (with produced-output? =  nil)
-	  (when (column-produces-output? column)
-	    (when produced-output?
-	      (format stream separator))
-	    (setf produced-output? t))
-	  (format-event event column stream))))
+			  (separator style-separator)) style)
+	 (produced-output?)
+	 (printed-ellipsis?))
+    (iter (for  column   in columns)
+	  (with position =  0)
+	  (if (column-produces-output? column)
+	      (when-column-fits (column separator
+				 position produced-output? printed-ellipsis?)
+		(when produced-output?
+		  (format stream separator)
+		  (incf position (length separator)))
+		(format-event event column stream)
+		(setf produced-output? t))
+	      (format-event event column stream))
+	  (incf position (column-width column)))))
 
 (defmethod print-object ((object columns-mixin) stream)
   (print-unreadable-object (object stream :type t :identity t)
