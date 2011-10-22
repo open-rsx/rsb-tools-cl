@@ -45,8 +45,7 @@ possible."))
        :id              (event-id              event)
        :sequence-number (event-sequence-number event)
        :origin          (event-origin          event)
-       :method          (event-method          event)
-       :type            (event-type            event)))
+       :method          (event-method          event)))
 
     ;; Framework and user timestamps.
     (when (> max-lines 5)
