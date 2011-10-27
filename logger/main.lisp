@@ -122,7 +122,7 @@ the URI argument).~@:>"))
 				 args))))
       (log1 :info "Using URI ~S" uri)
       (with-reader (reader uri
-			   :transports '((:spread :expose-wire-schema? t
+			   :transports '((:spread :expose-wire-schema t
 					  &inherit))
 			   :converters converters)
 	(setf (receiver-filters reader) filters)
