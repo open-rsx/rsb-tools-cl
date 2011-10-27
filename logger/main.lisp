@@ -52,9 +52,13 @@
 		      "A list of paths from which data definitions should be loaded. This option can be supplied multiple times.")
 	      (stropt :long-name       "load-idl"
 		      :short-name      "l"
-		      :argument-name   "FILE"
+		      :argument-name   "FILE-OR-GLOB-EXPRESSION"
 		      :description
-		      "Load data definition from FILE. If FILE depends on additional data definition files (i.e. contains \"import\" statements), the list of directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times."))
+		      "Load data definition from FILE-OR-GLOB-EXPRESSION. If a glob expression is specified, in addition to the canonical globbing syntax, expressions of the form
+
+  SOMESTUFF/**/MORESTUFF
+
+can be used to search directories recursively. If the file designated by FILE-OR-GLOB-EXPRESSION depend on additional data definition files (i.e. contain \"import\" statements), the list of directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times."))
    ;; Append RSB options.
    :item    (make-options
 	     :show? (or (eq show t)
