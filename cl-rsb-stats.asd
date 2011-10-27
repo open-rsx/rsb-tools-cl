@@ -83,6 +83,9 @@ RSB-related systems."
 			       :depends-on ("package" "protocol"))
 			      (:file       "rate-mixin"
 			       :depends-on ("package" "protocol"))
+			      (:file       "meta-data-mixin"
+			       :depends-on ("package" "protocol"
+					    "named-mixin"))
 
 			      ;; Quantity classes
 			      (:file       "quantities"
@@ -93,4 +96,5 @@ RSB-related systems."
 					    "extract-function-mixin"
 					    "moments-mixin"
 					    "reduction-mixin"
-					    "rate-mixin"))))))
+					    "rate-mixin"
+					    "meta-data-mixin"))))))

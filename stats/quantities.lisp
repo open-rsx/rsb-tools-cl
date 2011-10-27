@@ -105,6 +105,34 @@ observed over a period of time. When output is produced, the most
 frequent event origins are printed first."))
 
 
+;;; Generic meta-data quantities
+;;
+
+(defclass meta-data-moments (meta-data-mixin
+			     collecting-mixin
+			     moments-mixin)
+  ()
+  (:documentation
+   "This quantity collects the values of a given meta-data item over a
+period of time and computes mean and variance of the collected
+values."))
+
+(defmethod update! ((quantity meta-data-mixin)
+		    (event    string))
+  (update! quantity (read-from-string event)))
+
+(defmethod find-quantity-class ((spec (eql :meta-data-histogram)))
+  (find-class 'meta-data-histogram))
+
+(defclass meta-data-histogram (meta-data-mixin
+			       histogram-mixin)
+  ()
+  (:documentation
+   "The value of this quantity is a histogram of the values of a
+meta-data item extracted from events over a period of time. When
+output is produced, the most frequent values are printed first."))
+
+
 ;;; Latency quantity
 ;;
 
