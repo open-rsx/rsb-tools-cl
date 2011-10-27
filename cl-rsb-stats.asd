@@ -65,6 +65,8 @@ RSB-related systems."
 		(:version :cl-rsb #.(version/string)))
   :components  ((:module     "stats"
 		 :components ((:file       "package")
+			      (:file       "types"
+			       :depends-on ("package"))
 			      (:file       "protocol"
 			       :depends-on ("package"))
 
@@ -84,8 +86,8 @@ RSB-related systems."
 			      (:file       "rate-mixin"
 			       :depends-on ("package" "protocol"))
 			      (:file       "meta-data-mixin"
-			       :depends-on ("package" "protocol"
-					    "named-mixin"))
+			       :depends-on ("package" "types"
+					    "protocol" "named-mixin"))
 
 			      ;; Quantity classes
 			      (:file       "quantities"

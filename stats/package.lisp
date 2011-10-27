@@ -25,6 +25,11 @@
 
    :rsb)
 
+  ;; Types
+  (:export
+   :meta-data-selector
+   :when-missing-policy)
+
   ;; Quantity protocol
   (:export
    :quantity-name
@@ -68,6 +73,12 @@
   ;; `rate-mixin' mixin class
   (:export
    :rate-mixin)
+
+  ;; `meta-data-mixin' mixin class
+  (:export
+   :meta-data-mixin
+   :quantity-key
+   :quantity-when-missing)
 
   ;; Quantity findable class family
   (:export

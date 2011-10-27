@@ -20,12 +20,19 @@
 (in-package :rsb.stats)
 
 (defclass meta-data-mixin (named-mixin)
-  ((key :initarg  :key
-	:type     meta-data-selector
-	:accessor quantity-key
-	:documentation
-	"Stores the key for which meta-data items should be extracted
-from processed events."))
+  ((key          :initarg  :key
+		 :type     meta-data-selector
+		 :accessor quantity-key
+		 :documentation
+		 "Stores the key for which meta-data items should be extracted
+from processed events.")
+   (when-missing :initarg  :when-missing
+		 :type     when-missing-policy
+		 :accessor quantity-when-missing
+		 :initform :skip
+		 :documentation
+		 "Stores a designator the policy that should be
+employed when a meta-data item is not available."))
   (:default-initargs
    :key (missing-required-initarg 'meta-data-mixin :key))
   (:documentation
@@ -46,14 +53,17 @@ process meta-data items of events."))
 
 (defmethod update! ((quantity meta-data-mixin)
 		    (event    event))
-  (let ((key (quantity-key quantity)))
+  (bind (((:accessors-r/o (key          quantity-key)
+			  (when-missing quantity-when-missing)) quantity))
     (case key
       (:keys
        (map nil (curry #'update! quantity) (meta-data-keys event)))
       (:values
        (map nil (curry #'update! quantity) (meta-data-values event)))
       (t
-       (update! quantity (meta-data event key))))))
+       (let ((value (or (meta-data event key) when-missing)))
+	 (unless (eq value :skip)
+	   (update! quantity value)))))))
 
 (defmethod find-quantity-class ((spec (eql :meta-data-moments)))
   (find-class 'meta-data-moments))
