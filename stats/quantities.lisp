@@ -57,7 +57,11 @@
 arriving within a period of time.")
 
   (define-simple-quantity (throughput
-			   :extractor (compose #'length #'event-data)
+			   :extractor (lambda (event)
+					(let ((datum (event-data event)))
+					  (typecase datum
+					    (sequence (length datum))
+					    (t        0))))
 			   :reduce-by #'+)
       (extract-function-mixin
        collecting-mixin
