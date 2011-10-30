@@ -177,3 +177,40 @@ objects.")
     (with-indent (stream :final-fresh-line? nil)
       (format-aligned-items stream keys values
 			    :value-formatter #'format-recursively))))
+
+
+;;; Stream-related functions
+;;
+
+(defun stream-line-width (stream)
+  "Return the line width of STREAM or nil, if it cannot be
+determined."
+  (when-let* ((package (find-package :com.dvlsoft.clon))
+	      (symbol  (find-symbol "STREAM-LINE-WIDTH" package)))
+	     (ignore-errors (funcall symbol stream))))
+
+(defmacro with-print-limits ((stream) &body body)
+  "Execute BODY with `*print-right-margin*' and `*print-miser-width*'
+bound to the line width of STREAM. Additionally, install a handler for
+SIGWINCH that updates these values, if possible."
+  `(invoke-with-print-limits ,stream #'(lambda () ,@body)))
+
+(defun invoke-with-print-limits (stream thunk)
+  "Call THUNK with `*print-right-margin*' and ``*print-miser-width*'
+bound to the suitable values for the line width of
+STREAM. Additionally, install a handler for SIGWINCH that updates
+these values, if possible."
+  (let* ((thread               (bt:current-thread))
+	 (*print-right-margin* (stream-line-width stream))
+	 (*print-miser-width*  nil))
+    #+sbcl
+    (sb-unix::enable-interrupt
+     sb-unix:SIGWINCH
+     #'(lambda (signal info context)
+	 (declare (ignore signal info context))
+	 (bt:interrupt-thread
+	  thread
+	  #'(lambda ()
+	      (setf *print-right-margin* (stream-line-width stream)
+		    *print-miser-width*  nil)))))
+    (funcall thunk)))

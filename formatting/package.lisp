@@ -100,6 +100,13 @@
    :format-octet-vector
    :format-string)
 
+  ;; Stream-related functions
+  (:export
+   :stream-line-width
+
+   :with-print-limits
+   :invoke-with-print-limits)
+
   (:documentation
    "This package contains formatting functions for RSB events and
 event payloads."))
