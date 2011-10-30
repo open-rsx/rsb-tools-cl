@@ -14,4 +14,5 @@
   (cffi:use-foreign-library spread::libspread)
   (rsb.tools.logger:main))
 
-(com.dvlsoft.clon:dump "logger-builtin-spread" reload-spread-and-main)
+(com.dvlsoft.clon:dump "logger-builtin-spread" reload-spread-and-main
+		       :compression :best)

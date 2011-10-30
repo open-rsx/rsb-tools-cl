@@ -12,4 +12,5 @@
   (cffi:use-foreign-library spread::libspread)
   (rsb.tools.call:main))
 
-(com.dvlsoft.clon:dump "call-builtin-spread" reload-spread-and-main)
+(com.dvlsoft.clon:dump "call-builtin-spread" reload-spread-and-main
+		       :compression :best)
