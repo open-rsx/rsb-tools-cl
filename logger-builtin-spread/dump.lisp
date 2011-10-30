@@ -8,6 +8,10 @@
 
 (load-system :cl-rsb-tools-logger)
 
+
+(asdf:clear-source-registry)
+(asdf:clear-output-translations)
+
 (cffi:close-foreign-library 'spread::libspread)
 
 (defun reload-spread-and-main ()
