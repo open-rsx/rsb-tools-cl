@@ -63,14 +63,19 @@
 pretty-printing stream that indents all output produced within BODY to
 a certain depth. In addition, a scope of kind KIND and name NAME is
 printed around the output."
-    `(progn
-       ,@(when initial-fresh-line?
-	       `((format ,stream-var "~&")))
-       (pprint-logical-block (,stream-var nil
-					  :per-line-prefix ,(make-string amount :initial-element #\Space))
-	 ,@body)
-       ,@(when final-fresh-line?
-	       `((format ,stream-var "~&")))))
+    `(let ((previous *print-right-margin*))
+       (unwind-protect
+	    (progn
+	      (when *print-right-margin*
+		(decf *print-right-margin* ,amount))
+	      ,@(when initial-fresh-line?
+		  `((format ,stream-var "~&")))
+	      (pprint-logical-block (,stream-var nil
+						 :per-line-prefix ,(make-string amount :initial-element #\Space))
+		,@body)
+	      ,@(when final-fresh-line?
+	          `((format ,stream-var "~&"))))
+	 (setf *print-right-margin* previous))))
 
   (defmacro with-indented-section ((stream-var title
 				    &key
