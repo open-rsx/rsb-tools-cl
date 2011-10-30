@@ -112,7 +112,8 @@ the URI argument).~@:>"))
 	   (converters  (iter (for (wire-type . converter) in (default-converters))
 			      (collect
 				  (cons wire-type
-					(if (listp converter)
+					(if (and (listp converter)
+						 (not (member :fundamental-null converter)))
 					    (append converter '(:fundamental-null))
 					    converter)))))
 	   (event-style (bind (((class &rest args)
