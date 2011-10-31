@@ -68,8 +68,10 @@ ENDFOREACH()
 
 # Installation
 FOREACH(IMAGE ${IMAGES})
+    FILE(RELATIVE_PATH NAME "${CMAKE_CURRENT_BINARY_DIR}" "${IMAGE}")
     INSTALL(PROGRAMS    "${IMAGE}"
-            DESTINATION "bin")
+            DESTINATION "bin"
+	    RENAME      "rsb-${NAME}-cl")
 ENDFOREACH()
 
 # Packaging
