@@ -112,21 +112,24 @@ IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
     IF(LSB_DISTRIBUTOR_ID STREQUAL "ubuntu" OR LSB_DISTRIBUTOR_ID STREQUAL "debian")
         # Generate postinst and prerm hooks
-        FILE(WRITE "${CMAKE_CURRENT_BINARY_DIR}/postinst" "#!/bin/sh\n\n")
-        FILE(WRITE "${CMAKE_CURRENT_BINARY_DIR}/prerm"    "#!/bin/sh\n\n")
+        SET(POSTINST_SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/postinst")
+        SET(PRERM_SCRIPT    "${CMAKE_CURRENT_BINARY_DIR}/prerm")
+        FILE(WRITE "${POSTINST_SCRIPT}" "#!/bin/sh\n\n")
+        FILE(WRITE "${PRERM_SCRIPT}"    "#!/bin/sh\n\n")
         FOREACH(IMAGE ${IMAGES})
             FILE(RELATIVE_PATH NAME "${CMAKE_CURRENT_BINARY_DIR}" "${IMAGE}")
-            FILE(APPEND "${CMAKE_CURRENT_BINARY_DIR}/postinst"
+            FILE(APPEND "${POSTINST_SCRIPT}"
                         "update-alternatives --install                       \\
                            /usr/bin/${BINARY_PREFIX}${NAME}                  \\
                            ${BINARY_PREFIX}${NAME}                           \\
                            /usr/bin/${BINARY_PREFIX}${NAME}${VERSION_SUFFIX} \\
                            100\n\n")
-            FILE(APPEND "${CMAKE_CURRENT_BINARY_DIR}/prerm"
+            FILE(APPEND "${PRERM_SCRIPT}"
                         "update-alternatives --remove                            \\
                            ${BINARY_PREFIX}${NAME}                               \\
                            /usr/bin/${BINARY_PREFIX}${NAME}${VERSION_SUFFIX}\n\n")
         ENDFOREACH()
+        EXECUTE_PROCESS(COMMAND "chmod +x ${POSTINST_SCRIPT} ${PRERM_SCRIPT}")
 
         SET(CPACK_GENERATOR                  "DEB")
         SET(CPACK_DEBIAN_PACKAGE_NAME        "${PACKAGE_BASE_NAME}")
