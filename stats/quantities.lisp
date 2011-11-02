@@ -29,6 +29,7 @@
 			       &key
 			       (designator  (make-keyword name))
 			       (pretty-name (format nil "~(~A~)" name))
+			       slots
 			       &allow-other-keys)
 			      super-classes
 			      &optional doc)
@@ -39,10 +40,10 @@
 
 	    (defclass ,class-name (named-mixin
 				   ,@super-classes)
-	      ()
+	      (,@slots)
 	      (:default-initargs
 	       :name ,pretty-name
-		,@(remove-from-plist initargs :designator :pretty-name))
+		,@(remove-from-plist initargs :designator :pretty-name :slots))
 	      ,@(when doc
 		  `((:documentation ,doc))))))))
 
@@ -57,6 +58,7 @@
 arriving within a period of time.")
 
   (define-simple-quantity (throughput
+			   :slots     ((empty-value :initform 0))
 			   :extractor (lambda (event)
 					(let ((datum (event-data event)))
 					  (typecase datum

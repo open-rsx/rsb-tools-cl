@@ -20,11 +20,17 @@
 (in-package :rsb.stats)
 
 (defclass reduction-mixin ()
-  ((reduce-by :initarg  :reduce-by
-	      :type     function
-	      :accessor quantity-reduce-by
-	      :documentation
-	      "Stores the reduce function that produces the value of
+  ((empty-value :initarg  :empty-value
+		:allocation :class
+		:reader   quantity-empty-value
+		:initform :n/a
+		:documentation
+		"")
+   (reduce-by   :initarg  :reduce-by
+		:type     function
+		:accessor quantity-reduce-by
+		:documentation
+		"Stores the reduce function that produces the value of
 the quantity by reducing a collection of values."))
   (:documentation
    "This mixin class is intended to be mixed into quantity classes
@@ -32,10 +38,12 @@ which compute the quantity value from a collection of values using a
 reduction function."))
 
 (defmethod quantity-value ((quantity reduction-mixin))
-  (bind (((:accessors-r/o (values    quantity-values)
-			  (reduce-by quantity-reduce-by)) quantity))
+  (bind (((:accessors-r/o
+	   (empty-value quantity-empty-value)
+	   (values      quantity-values)
+	   (reduce-by   quantity-reduce-by)) quantity))
     (if (emptyp values)
-	:n/a
+	empty-value
 	(reduce reduce-by values))))
 
 (defmethod format-value ((quantity reduction-mixin) (stream t))
