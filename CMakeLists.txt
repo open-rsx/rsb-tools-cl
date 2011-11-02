@@ -71,6 +71,7 @@ FOREACH(NAME formatting stats)
                                         (make-synonym-stream '*standard-input*)
                                         (make-synonym-stream '*standard-output*)))"
 	                --eval "(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))"
+			--eval "(require :asdf)"
 		        --eval "(asdf:test-system :cl-rsb-${NAME})"
                         --quit)
 ENDFOREACH()
