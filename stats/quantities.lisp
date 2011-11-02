@@ -121,7 +121,15 @@ frequent event origins are printed first."))
 period of time and computes mean and variance of the collected
 values."))
 
-(defmethod update! ((quantity meta-data-mixin)
+(defmethod initialize-instance :before ((instance meta-data-moments)
+					&key
+					key)
+  (when (eq key :keys)
+    (error "~@<Value ~S specified for ~S initarg of ~S quantity, but ~
+moments cannot be computed over meta-data keys.~@:>"
+	   key :key 'meta-data-moments)))
+
+(defmethod update! ((quantity meta-data-moments)
 		    (event    string))
   (update! quantity (read-from-string event)))
 
