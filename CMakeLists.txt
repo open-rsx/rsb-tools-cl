@@ -62,6 +62,19 @@ ADD_CUSTOM_TARGET(scripts ALL DEPENDS ${IMAGES})
 # Tests
 ENABLE_TESTING()
 
+FOREACH(NAME formatting stats)
+    ADD_TEST(NAME    "rsb-${NAME}"
+             COMMAND "${SBCL_EXECUTABLE}"
+	                --disable-debugger
+			--eval "(setf *terminal-io*
+                                      (make-two-way-stream
+                                        (make-synonym-stream '*standard-input*)
+                                        (make-synonym-stream '*standard-output*)))"
+	                --eval "(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))"
+		        --eval "(asdf:test-system :cl-rsb-${NAME})"
+                        --quit)
+ENDFOREACH()
+
 FOREACH(IMAGE ${IMAGES})
     FILE(RELATIVE_PATH NAME "${CMAKE_CURRENT_BINARY_DIR}" "${IMAGE}")
     ADD_TEST(NAME    "${NAME}-help"

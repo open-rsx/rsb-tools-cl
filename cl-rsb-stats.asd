@@ -99,4 +99,33 @@ RSB-related systems."
 					    "moments-mixin"
 					    "reduction-mixin"
 					    "rate-mixin"
-					    "meta-data-mixin"))))))
+					    "meta-data-mixin")))))
+
+  :in-order-to ((test-op (test-op :cl-rsb-stats-test))))
+
+
+;;; System definition for test of the cl-rsb-stats system
+;;
+
+(defsystem :cl-rsb-stats-test
+  :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :version     #.(version/string)
+  :license     "GPL3; see COPYING file for details."
+  :description "This system contains tests for the cl-rsb-stats
+system."
+  :depends-on  (:cl-rsb-stats
+		:lift)
+  :components  ((:module     "stats"
+		 :pathname   "test/stats"
+		 :components ((:file       "package")
+			      (:file       "quantities"
+			       :depends-on ("package")))))
+
+  :in-order-to ((test-op (load-op :cl-rsb-stats-test))))
+
+(defmethod perform ((operation test-op)
+		    (component (eql (find-system :cl-rsb-stats-test))))
+  (funcall (find-symbol "RUN-TESTS" :lift)
+	   :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
+			    "lift-rsb-stats.config")))

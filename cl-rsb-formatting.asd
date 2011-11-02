@@ -116,7 +116,9 @@ RSB-related systems."
 					    "columns-mixin"
 					    "columns"))
 			      (:file       "event-style-payload"
-			       :depends-on ("package" "protocol"))))))
+			       :depends-on ("package" "protocol")))))
+
+  :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
 
 (defsystem-connection :cl-rsb-formatting-and-cl-rsb-stats
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -132,3 +134,38 @@ cl-rsb-stats system."
 		 :components ((:file       "quantity-column")
 			      (:file       "event-style-statistics"
 			       :depends-on ("quantity-column"))))))
+
+
+;;; System definition for test of the cl-rsb-formatting system
+;;
+
+(defsystem :cl-rsb-formatting-test
+  :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :version     #.(version/string)
+  :license     "GPL3; see COPYING file for details."
+  :description "This system contains tests for the cl-rsb-formatting
+system."
+  :depends-on  (:cl-rsb-formatting
+		:lift)
+  :components  ((:module     "formatting"
+		 :pathname   "test/formatting"
+		 :components ((:file       "package")
+			      (:file       "mock-column"
+			       :depends-on ("package"))
+
+
+			      (:file       "width-mixin"
+			       :depends-on ("package" "mock-column"))
+			      (:file       "delegating-mixin"
+			       :depends-on ("package" "mock-column"))
+			      (:file       "columns-mixin"
+			       :depends-on ("package" "mock-column")))))
+
+  :in-order-to ((test-op (load-op :cl-rsb-formatting-test))))
+
+(defmethod perform ((operation test-op)
+		    (component (eql (find-system :cl-rsb-formatting-test))))
+  (funcall (find-symbol "RUN-TESTS" :lift)
+	   :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
+			    "lift-rsb-formatting.config")))
