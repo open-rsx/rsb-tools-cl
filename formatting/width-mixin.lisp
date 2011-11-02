@@ -28,7 +28,7 @@
 	      "Stores the maximum acceptable output width for the
 formatter instance.")
    (alignment :initarg  :alignment
-	      :type     '(member :left :right)
+	      :type     (member :left :right)
 	      :accessor column-alignment
 	      :initform :right
 	      :documentation
