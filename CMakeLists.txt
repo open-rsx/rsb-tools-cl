@@ -47,12 +47,13 @@ FILE(GLOB SCRIPTS "*/dump.lisp")
 SET(IMAGES)
 FOREACH(SCRIPT ${SCRIPTS})
     STRING(REPLACE "//dump.lisp" "" IMAGE ${SCRIPT})
+    SET(DO "--load \"${SCRIPT}\"")
     GET_FILENAME_COMPONENT(NAME ${IMAGE} NAME)
     CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"
-		   @ONLY)
+                   @ONLY)
     ADD_CUSTOM_COMMAND(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-                       COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"
+                       COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"
                        DEPENDS ${SCRIPT}
                        COMMENT "Creating Lisp image ${NAME} (this can take a long time)")
     LIST(APPEND IMAGES "${CMAKE_CURRENT_BINARY_DIR}/${NAME}")
@@ -63,17 +64,14 @@ ADD_CUSTOM_TARGET(scripts ALL DEPENDS ${IMAGES})
 ENABLE_TESTING()
 
 FOREACH(NAME formatting stats)
+    SET(DO "--eval \"(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))\"
+            --eval \"(asdf:test-system :cl-rsb-${NAME})\"
+            --quit")
+    CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/sbcl.test-${NAME}.cmake"
+                   @ONLY)
     ADD_TEST(NAME    "rsb-${NAME}"
-             COMMAND "${SBCL_EXECUTABLE}"
-	                --disable-debugger
-			--eval "(setf *terminal-io*
-                                      (make-two-way-stream
-                                        (make-synonym-stream '*standard-input*)
-                                        (make-synonym-stream '*standard-output*)))"
-	                --eval "(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))"
-			--eval "(require :asdf)"
-		        --eval "(asdf:test-system :cl-rsb-${NAME})"
-                        --quit)
+             COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.test-${NAME}.cmake")
 ENDFOREACH()
 
 FOREACH(IMAGE ${IMAGES})
