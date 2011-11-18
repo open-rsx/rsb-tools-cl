@@ -37,13 +37,13 @@ on `format-event' for `style-compact'.")
 
     `((:header-frequency nil)
       (,(make-event "/foo" "bar"))
-      ".*…\\|ORIGIN? \\|/foo/           \\|\"bar\"           \\|        3
+      ".*…\\|ORIGIN\\? \\|/foo/           \\|\"bar\"           \\|        3
 ")
 
     `((:header-frequency nil)
       (,(make-event "/foo" "bar") ,(make-event "/fez" "whoop"))
-      ".*…\\|ORIGIN? \\|/foo/           \\|\"bar\"           \\|        3
-.*…\\|ORIGIN? \\|/fez/           \\|\"whoop\"         \\|        5
+      ".*…\\|ORIGIN\\? \\|/foo/           \\|\"bar\"           \\|        3
+.*…\\|ORIGIN\\? \\|/fez/           \\|\"whoop\"         \\|        5
 ")))
 
 (deftestsuite style-compact+-root (formatting-root)
