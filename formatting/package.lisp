@@ -95,6 +95,15 @@
 
    :style-sub-styles)
 
+  ;; `style-detailed' style class
+  (:export
+   :style-detailed)
+
+  ;; `style-compact[+]' style classes
+  (:export
+   :style-compact
+   :style-compact+)
+
   ;; Formatting functions
   (:export
    :format-octet-vector

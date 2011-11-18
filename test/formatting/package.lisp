@@ -55,8 +55,10 @@ output is compared to EXPECTED-OUTPUT."
 	    (output   (with-output-to-string (stream)
 			(map nil (rcurry #'format-event instance stream)
 			     data))))
-       (ensure-same output expected
-		    :test      #'string=
+
+       (ensure-same (concatenate 'string "^" expected "$") output
+		    :test      #'ppcre:scan
 		    :report    "~@<The formatting style ~A, when ~
-applied to the data ~{~S~^, ~}, produced the output ~S, not ~S.~@:>"
+applied to ~:[no data~:;the data ~:*~{~S~^, ~}~], produced the output ~
+~S, not ~S.~@:>"
 		    :arguments (instance data output expected)))))

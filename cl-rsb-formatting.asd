@@ -147,6 +147,7 @@ cl-rsb-stats system."
   :description "This system contains tests for the cl-rsb-formatting
 system."
   :depends-on  (:cl-rsb-formatting
+		:cl-ppcre
 		:lift)
   :components  ((:module     "formatting"
 		 :pathname   "test/formatting"
@@ -154,13 +155,17 @@ system."
 			      (:file       "mock-column"
 			       :depends-on ("package"))
 
-
 			      (:file       "width-mixin"
 			       :depends-on ("package" "mock-column"))
 			      (:file       "delegating-mixin"
 			       :depends-on ("package" "mock-column"))
 			      (:file       "columns-mixin"
-			       :depends-on ("package" "mock-column")))))
+			       :depends-on ("package" "mock-column"))
+
+			      (:file       "style-detailed"
+			       :depends-on ("package"))
+			      (:file       "style-compact"
+			       :depends-on ("package")))))
 
   :in-order-to ((test-op (load-op :cl-rsb-formatting-test))))
 
