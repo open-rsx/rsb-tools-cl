@@ -19,24 +19,24 @@
 
 (in-package :rsb.formatting)
 
-(defmethod find-style-class ((spec (eql :detailed)))
-  (find-class 'style-detailed))
+(defmethod find-style-class ((spec (eql :meta-data)))
+  (find-class 'style-meta-data))
 
-(defclass style-detailed ()
+(defclass style-meta-data ()
   ()
   (:documentation
-   "Format each event on multiple lines with as many details as
-possible."))
+   "Format the meta-data of each event on multiple lines, but do not
+format event payloads."))
 
 (defmethod format-event ((event  event)
-			 (style  style-detailed)
+			 (style  style-meta-data)
 			 (stream t)
 			 &key
-			 (max-lines   16)
+			 (max-lines   12)
 			 (max-columns (or *print-right-margin* 80)))
-  (bind (((:accessors-r/o (data      event-data)
-			  (meta-data meta-data-alist)
-			  (causes    event-causes)) event))
+  (bind (((:accessors-r/o (meta-data meta-data-alist)
+			  (causes    event-causes)) event)
+	 (*print-lines* max-lines))
     ;; Envelope information.
     (with-indented-section (stream "Event")
       (format-pairs/plist
@@ -66,7 +66,33 @@ possible."))
     (when causes
       (with-indented-section (stream "Causes")
 	(format stream "~{~A~^~&~}"
-		(map 'list #'event-id->uuid causes))))
+		(map 'list #'event-id->uuid causes))))))
+
+(defmethod find-style-class ((spec (eql :detailed)))
+  (find-class 'style-detailed))
+
+(defclass style-detailed ()
+  ((max-lines :initarg  :max-lines
+	      :type     positive-integer
+	      :reader   style-max-lines
+	      :initform 20
+	      :documentation
+	      ""))
+  (:documentation
+   "Format each event on multiple lines with as many details as
+possible."))
+
+(defmethod format-event ((event  event)
+			 (style  style-detailed)
+			 (stream t)
+			 &key
+			 (max-lines   16)
+			 (max-columns (or *print-right-margin* 80)))
+  (bind (((:accessors-r/o (data event-data)) event))
+    ;; Meta-data.
+    (format-event event (make-instance 'style-meta-data) stream
+		  :max-lines   max-lines
+		  :max-columns max-columns)
 
     ;; Payload.
     (when (> max-lines 11)
