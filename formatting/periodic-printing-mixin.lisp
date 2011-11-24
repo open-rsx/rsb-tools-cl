@@ -94,4 +94,5 @@ STYLE's `format-event' function when called."
     #'(lambda ()
 	(when-let ((style  (tg:weak-pointer-value weak-style))
 		   (stream (%style-stream style)))
-	  (format-event :trigger style stream)))))
+	  (ignore-some-conditions (stream-error)
+	    (format-event :trigger style stream))))))
