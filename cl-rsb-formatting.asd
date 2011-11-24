@@ -92,6 +92,8 @@ RSB-related systems."
 			       :depends-on ("package" "protocol"))
 			      (:file       "delegating-mixin"
 			       :depends-on ("package" "protocol"))
+			      (:file       "separator-mixin"
+			       :depends-on ("package" "protocol"))
 
 			      ;; Column classes
 			      (:file       "columns"
@@ -101,9 +103,15 @@ RSB-related systems."
 			      ;; Event formatting style classes
 			      (:file       "event-style-discard"
 			       :depends-on ("package" "protocol"))
+			      (:file       "event-style-meta-data"
+			       :depends-on ("package" "separator-mixin"
+					    "util"))
+			      (:file       "event-style-payload"
+			       :depends-on ("package" "protocol"))
 			      (:file       "event-style-detailed"
 			       :depends-on ("package" "protocol"
-					    "util"))
+					    "util" "separator-mixin"
+					    "event-style-meta-data"))
 			      (:file       "event-style-compact"
 			       :depends-on ("package" "protocol" "util"
 					    "delegating-mixin"
@@ -114,9 +122,7 @@ RSB-related systems."
 			       :depends-on ("package" "protocol" "util"
 					    "header-printing-mixin"
 					    "columns-mixin"
-					    "columns"))
-			      (:file       "event-style-payload"
-			       :depends-on ("package" "protocol")))))
+					    "columns")))))
 
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
 

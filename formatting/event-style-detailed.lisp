@@ -19,65 +19,18 @@
 
 (in-package :rsb.formatting)
 
-(defmethod find-style-class ((spec (eql :meta-data)))
-  (find-class 'style-meta-data))
-
-(defclass style-meta-data ()
-  ()
-  (:documentation
-   "Format the meta-data of each event on multiple lines, but do not
-format event payloads."))
-
-(defmethod format-event ((event  event)
-			 (style  style-meta-data)
-			 (stream t)
-			 &key
-			 (max-lines   12)
-			 (max-columns (or *print-right-margin* 80)))
-  (bind (((:accessors-r/o (meta-data meta-data-alist)
-			  (causes    event-causes)) event)
-	 (*print-lines* max-lines))
-    ;; Envelope information.
-    (with-indented-section (stream "Event")
-      (format-pairs/plist
-       stream
-       :scope           (scope-string (event-scope event))
-       :id              (event-id              event)
-       :sequence-number (event-sequence-number event)
-       :origin          (event-origin          event)
-       :method          (event-method          event)))
-
-    ;; Framework and user timestamps.
-    (when (> max-lines 5)
-      (with-indented-section (stream "Timestamps")
-	(let ((keys (append '(:create :send :receive :deliver)
-			    (set-difference
-			     (timestamp-keys event)
-			     '(:create :send :receive :deliver)))))
-	  (format-aligned-items
-	   stream keys (map 'list (curry #'timestamp event) keys)))))
-
-    ;; Meta-data.
-    (when (and meta-data (> max-lines 10))
-      (with-indented-section (stream "Meta-Data")
-	(format-aligned-items/alist stream meta-data)))
-
-    ;; Causes
-    (when causes
-      (with-indented-section (stream "Causes")
-	(format stream "~{~A~^~&~}"
-		(map 'list #'event-id->uuid causes))))))
-
 (defmethod find-style-class ((spec (eql :detailed)))
   (find-class 'style-detailed))
 
-(defclass style-detailed ()
+(defclass style-detailed (style-meta-data)
   ((max-lines :initarg  :max-lines
 	      :type     positive-integer
 	      :reader   style-max-lines
 	      :initform 20
 	      :documentation
 	      ""))
+  (:default-initargs
+   :separator? t)
   (:documentation
    "Format each event on multiple lines with as many details as
 possible."))
@@ -88,25 +41,14 @@ possible."))
 			 &key
 			 (max-lines   16)
 			 (max-columns (or *print-right-margin* 80)))
-  (bind (((:accessors-r/o (data event-data)) event))
-    ;; Meta-data.
-    (format-event event (make-instance 'style-meta-data) stream
-		  :max-lines   max-lines
-		  :max-columns max-columns)
+  ;; Meta-data.
+  (call-next-method)
 
-    ;; Payload.
+  ;; Payload.
+  (bind (((:accessors-r/o (data event-data)) event))
     (when (> max-lines 11)
-      (with-indented-section (stream (format nil "Payload (~S)" (class-name (class-of data))))
+      (with-indented-section (stream (format nil "Payload (~S)"
+					     (class-name (class-of data))))
 	(format-payload data :any stream
 			:max-lines   (- max-lines 11)
 			:max-columns (- max-columns 2))))))
-
-(defmethod format-event :after ((event  event)
-				(style  style-detailed)
-				(stream t)
-				&key
-				(max-columns (or *print-right-margin* 80))
-				&allow-other-keys)
-  "When formatting events in :detailed style, print a vertical rule
-after each event."
-  (format stream "~A~%" (make-string max-columns :initial-element #\-)))

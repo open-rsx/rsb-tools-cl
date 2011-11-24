@@ -22,8 +22,10 @@
 (defmethod find-style-class ((spec (eql :payload)))
   (find-class 'style-payload))
 
-(defclass style-payload ()
+(defclass style-payload (separator-mixin)
   ()
+  (:default-initargs
+   :separator? nil)
   (:documentation
    "Only format the payload of each event, but not the meta-data."))
 
