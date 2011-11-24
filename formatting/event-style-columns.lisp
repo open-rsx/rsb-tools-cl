@@ -26,7 +26,7 @@
 			 columns-mixin)
   ()
   (:documentation
-   "This formatting styles prints configurable properties of received
+   "This formatting style prints configurable properties of received
 events in a column-oriented fashion. Event properties and the
 associated columns in which the properties should be printed have to
 be specified using the :columns initarg. If no columns are specified,
