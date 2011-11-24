@@ -104,6 +104,10 @@
    :style-compact
    :style-compact+)
 
+  ;; `style-statistics' style class
+  (:export
+   :style-statistics)
+
   ;; Formatting functions
   (:export
    :format-octet-vector
