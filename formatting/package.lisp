@@ -117,6 +117,15 @@
   (:export
    :style-statistics)
 
+  ;; `style-programmable' style class
+  (:export
+   :style-programmable
+
+   :style-template
+   :style-bindings
+
+   :compile-template)
+
   ;; Formatting functions
   (:export
    :format-octet-vector

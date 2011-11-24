@@ -60,7 +60,9 @@
   :license     "GPL3; see COPYING file for details."
   :description "This system provides some formatting functions for
 RSB-related systems."
-  :depends-on  ((:version :cl-rsb #.(version/string)))
+  :depends-on  (:cl-interpol
+
+		(:version :cl-rsb #.(version/string)))
   :components  ((:module     "formatting"
 		 :components ((:file       "package")
 			      (:file       "util"
@@ -122,7 +124,9 @@ RSB-related systems."
 			       :depends-on ("package" "protocol" "util"
 					    "header-printing-mixin"
 					    "columns-mixin"
-					    "columns")))))
+					    "columns"))
+			      (:file       "event-style-programmable"
+			       :depends-on ("package" "protocol")))))
 
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
 
