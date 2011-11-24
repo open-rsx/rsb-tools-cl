@@ -95,6 +95,15 @@
 
    :style-sub-styles)
 
+  ;; `style-meta-data' style class
+  (:export
+   :style-meta-data
+
+   :style-routing-info?
+   :style-timestamps?
+   :style-user-items?
+   :style-causes?)
+
   ;; `style-detailed' style class
   (:export
    :style-detailed)
