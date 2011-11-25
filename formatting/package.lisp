@@ -26,6 +26,11 @@
 
    :rsb)
 
+  ;; Types
+  (:export
+   :rule-spec
+   :separator-spec)
+
   ;; Event formatting protocol
   (:export
    :format-event
@@ -94,6 +99,12 @@
    :delegating-mixin
 
    :style-sub-styles)
+
+  ;; `separator-mixin' mixin class
+  (:export
+   :separator-mixin
+
+   :style-separator)
 
   ;; `style-meta-data' style class
   (:export

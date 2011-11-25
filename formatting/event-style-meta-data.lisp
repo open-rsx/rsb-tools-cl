@@ -48,7 +48,9 @@ pairs be printed?")
 		  :accessor style-causes?
 		  :initform t
 		  :documentation
-		  "Should the causes of the event be printed"))
+		  "Should the causes of the event be printed?"))
+  (:default-initargs
+   :separator '((:rule #\-) #\Newline))
   (:documentation
    "Format the meta-data of each event on multiple lines, but do not
 format event payloads."))

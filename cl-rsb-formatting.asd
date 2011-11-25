@@ -65,6 +65,8 @@ RSB-related systems."
 		(:version :cl-rsb #.(version/string)))
   :components  ((:module     "formatting"
 		 :components ((:file       "package")
+			      (:file       "types"
+			       :depends-on ("package"))
 			      (:file       "util"
 			       :depends-on ("package"))
 
@@ -95,7 +97,8 @@ RSB-related systems."
 			      (:file       "delegating-mixin"
 			       :depends-on ("package" "protocol"))
 			      (:file       "separator-mixin"
-			       :depends-on ("package" "protocol"))
+			       :depends-on ("package" "types"
+					    "protocol"))
 
 			      ;; Column classes
 			      (:file       "columns"

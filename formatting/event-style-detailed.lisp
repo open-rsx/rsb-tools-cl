@@ -23,14 +23,7 @@
   (find-class 'style-detailed))
 
 (defclass style-detailed (style-meta-data)
-  ((max-lines :initarg  :max-lines
-	      :type     positive-integer
-	      :reader   style-max-lines
-	      :initform 20
-	      :documentation
-	      ""))
-  (:default-initargs
-   :separator? t)
+  ()
   (:documentation
    "Format each event on multiple lines with as many details as
 possible."))

@@ -1,4 +1,4 @@
-;;; event-style-payload.lisp --- Formatting style that only print the payload.
+;;; types.lisp --- Types used in the formatting module.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -19,17 +19,10 @@
 
 (in-package :rsb.formatting)
 
-(defmethod find-style-class ((spec (eql :payload)))
-  (find-class 'style-payload))
+(deftype rule-spec ()
+  "A rule specification of the form (:RULE CHARACTER)."
+  '(cons (eql :rule) (cons character null)))
 
-(defclass style-payload (separator-mixin)
-  ()
-  (:documentation
-   "Only format the payload of each event, but not the meta-data."))
-
-(defmethod format-event ((event  event)
-			 (style  style-payload)
-			 (stream t)
-			 &key &allow-other-keys)
-  (format-payload (event-data event) :raw stream)
-  (force-output stream))
+(deftype separator-spec ()
+  "This type consists of several possible separator specifications."
+  `(or null character string rule-spec list))

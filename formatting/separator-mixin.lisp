@@ -20,20 +20,13 @@
 (in-package :rsb.formatting)
 
 (defclass separator-mixin ()
-  ((separator-character :initarg  :separator-character
-			:type     character
-			:accessor style-separator-character
-			:initform #\-
-			:documentation
-			"The character by means of repetition of which
-the separator is built.")
-   (separator?          :initarg  :separator?
-			:accessor style-separator?
-			:type     boolean
-			:initform t
-			:documentation
-			"Controls whether the style instance actually
-prints the separator."))
+  ((separator :initarg  :separator
+	      :type     separator-spec
+	      :accessor style-separator
+	      :initform #\Newline
+	      :documentation
+	      "The character or pattern by means of which items should
+be separated in the output."))
   (:documentation
    "This class is intended to be mixed into style classes that should
 print separators between output items."))
@@ -44,10 +37,21 @@ print separators between output items."))
 				&key
 				(max-columns (or *print-right-margin* 80))
 				&allow-other-keys)
-  "Print a vertical rule after each event."
-  (bind (((:accessors-r/o (separator-character style-separator-character)
-			  (separator?          style-separator?)) style))
-    (when separator?
-      (format stream "~A~%"
-	      (make-string max-columns
-			   :initial-element separator-character)))))
+  "Print a separator after each event."
+  (print-separator (style-separator style) stream max-columns))
+
+
+;;; Utility functions
+;;
+
+(defun print-separator (spec stream max-columns)
+  "Print a separator according to SPEC onto STREAM."
+  (etypecase spec
+    (null)
+    ((or character string)
+     (princ spec stream))
+    (rule-spec
+     (princ (make-string max-columns :initial-element (second spec))
+	    stream))
+    (list
+     (map nil (rcurry #'print-separator stream max-columns) spec))))
