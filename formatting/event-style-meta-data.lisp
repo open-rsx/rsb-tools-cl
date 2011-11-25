@@ -59,21 +59,26 @@ format event payloads."))
 			 &key
 			 (max-lines 12)
 			 &allow-other-keys)
-  (bind (((:accessors-r/o (meta-data meta-data-alist)
+  (bind (((:accessors-r/o (routing-info? style-routing-info?)
+			  (timestamps?   style-timestamps?)
+			  (user-items?   style-user-items?)
+			  (causes?       style-causes?)) style)
+	 ((:accessors-r/o (meta-data meta-data-alist)
 			  (causes    event-causes)) event)
 	 (*print-lines* max-lines))
     ;; Envelope information.
-    (with-indented-section (stream "Event")
-      (format-pairs/plist
-       stream
-       :scope           (scope-string (event-scope event))
-       :id              (event-id              event)
-       :sequence-number (event-sequence-number event)
-       :origin          (event-origin          event)
-       :method          (event-method          event)))
+    (when routing-info?
+      (with-indented-section (stream "Event")
+	(format-pairs/plist
+	 stream
+	 :scope           (scope-string (event-scope event))
+	 :id              (event-id              event)
+	 :sequence-number (event-sequence-number event)
+	 :origin          (event-origin          event)
+	 :method          (event-method          event))))
 
     ;; Framework and user timestamps.
-    (when (> max-lines 5)
+    (when (and timestamps? (> max-lines 5))
       (with-indented-section (stream "Timestamps")
 	(let ((keys (append '(:create :send :receive :deliver)
 			    (set-difference
@@ -83,12 +88,12 @@ format event payloads."))
 	   stream keys (map 'list (curry #'timestamp event) keys)))))
 
     ;; Meta-data.
-    (when (and meta-data (> max-lines 10))
+    (when (and user-items? meta-data (> max-lines 10))
       (with-indented-section (stream "Meta-Data")
 	(format-aligned-items/alist stream meta-data)))
 
     ;; Causes
-    (when causes
+    (when (and causes? causes)
       (with-indented-section (stream "Causes")
 	(format stream "~{~A~^~&~}"
 		(map 'list #'event-id->uuid causes))))))
