@@ -25,4 +25,6 @@
 
 (deftype separator-spec ()
   "This type consists of several possible separator specifications."
-  `(or null character string rule-spec list))
+  `(or null
+       character string rule-spec
+       (cons (not keyword) list)))

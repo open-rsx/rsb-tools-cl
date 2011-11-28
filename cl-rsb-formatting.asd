@@ -175,6 +175,8 @@ system."
 			      (:file       "columns-mixin"
 			       :depends-on ("package" "mock-column"))
 
+			      (:file       "separator-mixin"
+			       :depends-on ("package"))
 			      (:file       "style-detailed"
 			       :depends-on ("package"))
 			      (:file       "style-compact"

@@ -20,8 +20,7 @@
 (in-package :rsb.formatting)
 
 (defclass separator-mixin ()
-  ((separator :initarg  :separator
-	      :type     separator-spec
+  ((separator :type     separator-spec
 	      :accessor style-separator
 	      :initform #\Newline
 	      :documentation
@@ -30,6 +29,17 @@ be separated in the output."))
   (:documentation
    "This class is intended to be mixed into style classes that should
 print separators between output items."))
+
+(defmethod shared-initialize :after ((instance   separator-mixin)
+                                     (slot-names t)
+                                     &key
+				     (separator nil separator-supplied?))
+  (when separator-supplied?
+    (setf (style-separator instance) separator)))
+
+(defmethod (setf style-separator) :before ((new-value t)
+					   (style     separator-mixin))
+  (check-type new-value separator-spec "a valid separator specification"))
 
 (defmethod format-event :after ((event  event)
 				(style  separator-mixin)
