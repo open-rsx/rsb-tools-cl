@@ -29,6 +29,7 @@ FIND_PROGRAM(SBCL_EXECUTABLE sbcl
 	     NO_DEFAULT_PATH)
 
 # Configure Lisp environment.
+SET(LISP_RUNTIME_OPTIONS "" CACHE STRING "Runtime options to pass to the Lisp system.")
 SET(LISP_INIT_FILE "" CACHE FILEPATH "File to load as Lisp init file.")
 SET(LISP_INIT_CODE "" CACHE STRING "Lisp code to be evaulated during initialization.")
 SET(LISP_INIT "")
@@ -52,7 +53,7 @@ FOREACH(SCRIPT ${SCRIPTS})
     CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"
                    @ONLY)
-    ADD_CUSTOM_COMMAND(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
                        COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"
                        DEPENDS ${SCRIPT}
                        COMMENT "Creating Lisp image ${NAME} (this can take a long time)")

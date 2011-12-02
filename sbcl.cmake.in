@@ -5,14 +5,15 @@ SET(ENV{ASDF_OUTPUT_TRANSLATIONS} "@ASDF_OUTPUT_TRANSLATIONS@")
 
 MESSAGE("Executing Lisp process @NAME@")
 EXECUTE_PROCESS(COMMAND           "@SBCL_EXECUTABLE@"
+                                  @LISP_RUNTIME_OPTIONS@
                                   --disable-debugger
-				  --no-sysinit
-				  @LISP_INIT@
-				  --load "@CMAKE_CURRENT_SOURCE_DIR@/sbclrc"
-				  @DO@
+                                  --no-sysinit
+                                  @LISP_INIT@
+                                  --load "@CMAKE_CURRENT_SOURCE_DIR@/sbclrc"
+                                  @DO@
                 WORKING_DIRECTORY "@CMAKE_CURRENT_BINARY_DIR@"
                 OUTPUT_FILE       "@CMAKE_CURRENT_BINARY_DIR@/@NAME@.log"
-		RESULT_VARIABLE   RESULT)
+                RESULT_VARIABLE   RESULT)
 IF(NOT ${RESULT} EQUAL 0)
     MESSAGE(FATAL_ERROR "Failed to execute Lisp process @NAME@")
 ENDIF()
