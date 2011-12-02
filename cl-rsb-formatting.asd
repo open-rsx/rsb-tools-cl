@@ -177,6 +177,8 @@ system."
 
 			      (:file       "separator-mixin"
 			       :depends-on ("package"))
+			      (:file       "style-meta-data"
+			       :depends-on ("package"))
 			      (:file       "style-detailed"
 			       :depends-on ("package"))
 			      (:file       "style-compact"
