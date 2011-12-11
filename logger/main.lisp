@@ -1,4 +1,4 @@
-;;; main.lisp ---
+;;; main.lisp --- Entry point of the logger tool.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
