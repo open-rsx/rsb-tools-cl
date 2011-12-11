@@ -51,7 +51,7 @@ non-empty intersection with SHOW."
 			 :show    ,show
 			 :default ,default)
 	 (progn ,@body)
-	 (format ,stream "Use the ~{--help-for=~(~A~) or~} ~
+	 (format ,stream "Use the ~{--help-for=~(~A~) or ~}~
 --help-for=all options to display the full help text for this item."
 		 (ensure-list ,category)))))
 
@@ -86,7 +86,7 @@ STREAM."
 	  (pprint-newline :mandatory stream))))
 
 
-;;; URI help string
+;;; URI help
 ;;
 
 (defun print-uri-help (stream
@@ -115,7 +115,7 @@ following patterns:
   (print-all-uri-synopsis stream))
 
 
-;;; Filter help string
+;;; Filter help
 ;;
 
 (defun print-filter-help (stream
@@ -135,6 +135,7 @@ strings onto STREAM."
 
 (defun print-version (version stream
 		      &key
+		      (program-name          (progname))
 		      (include-lisp-version? t)
 		      (include-rsb-version?  t)
 		      more-versions)
@@ -147,7 +148,7 @@ MORE-VERSIONS is a \"plist\" of additional component names and
 associated versions that should be printed onto STREAM."
   (bind (;; Compute the list of all requested versions.
 	 (versions
-	  (append `((,(progname) ,version))
+	  (append `((,program-name ,version))
 		  (when include-lisp-version?
 		    `((,(lisp-implementation-type)
 			,(lisp-implementation-version))))
