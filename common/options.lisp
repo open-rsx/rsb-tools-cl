@@ -24,7 +24,6 @@
   "Return a `clon:group' instance containing common program options."
   (defgroup (:header "General Options")
     (flag   :long-name     "version"
-	    :short-name    "v"
 	    :description
 	    "Print version information and exit.")
     (flag   :long-name     "help"
