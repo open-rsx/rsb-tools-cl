@@ -63,6 +63,26 @@
 	    :description
 	    "Start a swank listener (If you don't know what swank is, pretend this option does not exist - or google \"emacs slime\"). Swank will print the port it listens on. In addition, a file named \"./swank-port.txt\" containing the port number is written.")))
 
+(defun make-idl-options ()
+  "Return a `clon:group' instance containing IDL-related option
+definitions."
+  (defgroup (:header "IDL Options")
+    (path   :long-name       "idl-path"
+	    :short-name      "I"
+	    :type            :directory-list
+	    :default-value   nil
+	    :description
+	    "A list of paths from which data definitions should be loaded. This option can be supplied multiple times.")
+    (stropt :long-name       "load-idl"
+	    :short-name      "l"
+	    :argument-name   "FILE-OR-GLOB-EXPRESSION"
+	    :description
+	    "Load data definition from FILE-OR-GLOB-EXPRESSION. If a glob expression is specified, in addition to the canonical globbing syntax, expressions of the form
+
+  SOMESTUFF/**/MORESTUFF
+
+can be used to search directories recursively. If the file designated by FILE-OR-GLOB-EXPRESSION depend on additional data definition files (i.e. contain \"import\" statements), the list of directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times.")))
+
 (defun process-commandline-options (&key
 				    (version '(0 1 0))
 				    more-versions

@@ -149,6 +149,10 @@
    :with-print-limits
    :invoke-with-print-limits)
 
+  ;;Help text generation
+  (:export
+   :make-style-help-string)
+
   (:documentation
    "This package contains formatting functions for RSB events and
 event payloads."))

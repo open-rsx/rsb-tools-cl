@@ -45,6 +45,7 @@
   ;; Commandline options
   (:export
    :make-common-options
+   :make-idl-options
    :process-commandline-options
 
    :parse-instantiation-spec)
