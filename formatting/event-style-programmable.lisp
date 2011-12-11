@@ -159,12 +159,13 @@ function."))
 	  (compile
 	   nil
 	   `(lambda (event stream)
+	      (declare (ignorable event))
 	      (format stream
 		      (symbol-macrolet (,@bindings)
 			,(let ((*package* #.*package*))
-			      (with-interpol-syntax ()
-				(read-from-string
-				 (format nil "#?\"~A\"" template))))))))))
+			   (with-interpol-syntax ()
+			     (read-from-string
+			      (format nil "#?\"~A\"" template))))))))))
     (when failed?
       (error "~@<Failed to compile template ~S.~@:>"
 	     template))
