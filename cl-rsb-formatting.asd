@@ -182,6 +182,8 @@ system."
 			      (:file       "style-detailed"
 			       :depends-on ("package"))
 			      (:file       "style-compact"
+			       :depends-on ("package"))
+			      (:file       "style-programmable"
 			       :depends-on ("package")))))
 
   :in-order-to ((test-op (load-op :cl-rsb-formatting-test))))
