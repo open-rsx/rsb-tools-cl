@@ -148,6 +148,18 @@ cl-rsb-stats system."
 			      (:file       "event-style-statistics"
 			       :depends-on ("quantity-column"))))))
 
+(defsystem-connection :cl-rsb-formatting-and-cl-rsb-common
+  :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :version     #.(version/string)
+  :license     "GPL3; see COPYING file for details."
+  :description "This system connection adds formatting-related
+handling of commandline options."
+  :requires    (cl-rsb-formatting
+		cl-rsb-common)
+  :components  ((:file       "help"
+		 :pathname   "formatting/help")))
+
 
 ;;; System definition for test of the cl-rsb-formatting system
 ;;
