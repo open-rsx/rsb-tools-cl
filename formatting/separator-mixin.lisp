@@ -41,7 +41,7 @@ print separators between output items."))
 					   (style     separator-mixin))
   (check-type new-value separator-spec "a valid separator specification"))
 
-(defmethod format-event :after ((event  event)
+(defmethod format-event :after ((event  t)
 				(style  separator-mixin)
 				(stream t)
 				&key
