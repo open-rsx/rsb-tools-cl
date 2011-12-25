@@ -1,4 +1,4 @@
-;;; main.lisp ---
+;;; main.lisp --- Entry point of the call tool.
 ;;
 ;; Copyright (C) 2011 Jan Moringen
 ;;
@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(in-package :rsb.tools.call)
+(cl:in-package :rsb.tools.call)
 
 (defun make-help-string (&key
 			 (show :default))
