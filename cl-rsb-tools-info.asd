@@ -61,6 +61,7 @@
   :description "A simple utility for infoing remote methods exposed
 via RSB."
   :depends-on  (:alexandria
+		:metabang-bind
 
 		:com.dvlsoft.clon
 

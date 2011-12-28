@@ -21,6 +21,7 @@
   (:use
    :cl
    :alexandria
+   :bind
 
    :rsb
    :rsb.common
