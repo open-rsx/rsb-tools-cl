@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(in-package :rsb.tools.logger)
+(cl:in-package :rsb.tools.logger)
 
 (defun update-synopsis (&key
 			(show :default))
@@ -46,8 +46,7 @@
    :item    (make-idl-options)
    ;; Append RSB options.
    :item    (make-options
-	     :show? (or (eq show t)
-			(and (listp show) (member :rsb show))))
+	     :show? (show-help-for? :rsb :show show))
    ;; Append examples.
    :item    (defgroup (:header "Examples")
 	      (make-text :contents (make-examples-string)))))
@@ -106,15 +105,19 @@ the URI argument).~@:>"))
 				 (getopt :long-name "style"))))
 			  (apply #'make-instance (find-style-class class)
 				 args))))
-      (log1 :info "Using URI ~S" uri)
-      (with-print-limits (*standard-output*)
-       (with-reader (reader uri
-			    :transports '((:spread :expose-wire-schema t
-					   &inherit))
-			    :converters converters)
-	 (setf (receiver-filters reader) filters)
-	 (log1 :info "Created reader ~A" reader)
 
-	 (with-interactive-interrupt-exit ()
-	   (iter (for event next (receive reader :block? t))
-		 (format-event event event-style *standard-output*))))))))
+      (with-print-limits (*standard-output*)
+	(log1 :info "Using URI ~S" uri)
+
+	(with-reader (reader uri
+			     :transports '((:spread :expose-wire-schema? t
+					    &inherit)
+					   (:socket :expose-wire-schema? t
+					    &inherit))
+			     :converters converters)
+	  (setf (receiver-filters reader) filters)
+	  (log1 :info "Created reader ~A" reader)
+
+	  (with-interactive-interrupt-exit ()
+	    (iter (for event next (receive reader :block? t))
+		  (format-event event event-style *standard-output*))))))))
