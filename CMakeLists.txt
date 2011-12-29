@@ -2,25 +2,16 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # Project definition (version is grovelled from an asd system definition)
 PROJECT(cl-rsb-tools)
-SET(VERSION_SYSTEM_NAME cl-rsb-tools-logger)
-EXECUTE_PROCESS(COMMAND sh -c "cat ${CMAKE_SOURCE_DIR}/${VERSION_SYSTEM_NAME}.asd \\
-                               | grep -e 'defconstant +\\+version-major\\+'"
-                OUTPUT_VARIABLE TEMP
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
-STRING(REGEX REPLACE ".*\\+version-major\\+ +([0-9]+).*" "\\1"
-       CL_RSB_TOOLS_VERSION_MAJOR ${TEMP})
-EXECUTE_PROCESS(COMMAND sh -c "cat ${CMAKE_SOURCE_DIR}/${VERSION_SYSTEM_NAME}.asd \\
-                               | grep -e 'defconstant +\\+version-minor\\+'"
-                OUTPUT_VARIABLE TEMP
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
-STRING(REGEX REPLACE ".*\\+version-minor\\+ +([0-9]+).*" "\\1"
-       CL_RSB_TOOLS_VERSION_MINOR ${TEMP})
-EXECUTE_PROCESS(COMMAND sh -c "cat ${CMAKE_SOURCE_DIR}/${VERSION_SYSTEM_NAME}.asd \\
-                               | grep -e 'defconstant +\\+version-revision\\+'"
-                OUTPUT_VARIABLE TEMP
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
-STRING(REGEX REPLACE ".*\\+version-revision\\+ +([0-9]+).*" "\\1"
-       CL_RSB_TOOLS_VERSION_PATCH ${TEMP})
+SET(SYSTEM_NAME "cl-rsb-tools-logger")
+MACRO(EXTRACT_COMPONENT NAME OUTPUT)
+    FILE(STRINGS "${CMAKE_SOURCE_DIR}/${SYSTEM_NAME}.asd" TEMP
+         REGEX   "defconstant +\\+version-${NAME}\\+")
+    STRING(REGEX REPLACE ".*\\+version-${NAME}\\+ +([0-9]+).*" "\\1"
+           CL_RSB_TOOLS_VERSION_${OUTPUT} ${TEMP})
+ENDMACRO()
+EXTRACT_COMPONENT(major    MAJOR)
+EXTRACT_COMPONENT(minor    MINOR)
+EXTRACT_COMPONENT(revision PATCH)
 
 # Find and check SBCL installation.
 SET(SBCL_HOME $ENV{SBCL_HOME})
