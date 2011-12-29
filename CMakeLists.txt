@@ -23,9 +23,12 @@ FIND_PROGRAM(SBCL_EXECUTABLE sbcl
              NO_DEFAULT_PATH)
 
 # Configure Lisp environment.
-SET(LISP_RUNTIME_OPTIONS "" CACHE STRING   "Runtime options to pass to the Lisp system.")
-SET(LISP_INIT_FILE       "" CACHE FILEPATH "File to load as Lisp init file.")
-SET(LISP_INIT_CODE       "" CACHE STRING   "Lisp code to be evaulated during initialization.")
+SET(LISP_RUNTIME_OPTIONS "" CACHE STRING
+    "Runtime options to pass to the Lisp system.")
+SET(LISP_INIT_FILE       "" CACHE FILEPATH
+    "File to load as Lisp init file.")
+SET(LISP_INIT_CODE       "" CACHE STRING
+    "Lisp code to be evaulated during initialization.")
 SET(LISP_INIT "")
 IF(LISP_INIT_FILE)
     SET(LISP_INIT "${LISP_INIT} --userinit ${LISP_INIT_FILE}")
@@ -119,6 +122,12 @@ SET(CPACK_PACKAGE_VERSION       "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_
 SET(CPACK_PACKAGE_VENDOR        "CoR-Lab, Bielefeld University")
 SET(PACKAGE_ALT_PRIORITY        "100")
 
+IF(NOT CPACK_GENERATOR)
+    IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        LIST(APPEND CPACK_GENERATOR "DEB")
+    ENDIF()
+ENDIF()
+
 IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
     FIND_PROGRAM(LSB_RELEASE_EXECUTABLE lsb_release)
@@ -159,7 +168,6 @@ IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         ENDFOREACH()
         EXECUTE_PROCESS(COMMAND chmod +x "${POSTINST_SCRIPT}" "${PRERM_SCRIPT}")
 
-        SET(CPACK_GENERATOR                  "DEB")
         SET(CPACK_DEBIAN_PACKAGE_NAME        "${PACKAGE_BASE_NAME}")
         SET(CPACK_DEBIAN_PACKAGE_VERSION     "${CPACK_PACKAGE_VERSION}")
         SET(CPACK_DEBIAN_PACKAGE_MAINTAINER  "Jan Moringen (jmoringe@techfak.uni-bielefeld.de)")
