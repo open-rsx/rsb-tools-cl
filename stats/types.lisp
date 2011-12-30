@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(in-package :rsb.stats)
+(cl:in-package :rsb.stats)
 
 (deftype meta-data-selector ()
   "Either the name of a meta-data item or one of the special

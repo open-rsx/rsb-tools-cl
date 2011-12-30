@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(in-package :rsb.formatting)
+(cl:in-package :rsb.formatting)
 
 (defmethod find-style-class ((spec (eql :detailed)))
   (find-class 'style-detailed))
