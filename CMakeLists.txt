@@ -16,11 +16,15 @@ EXTRACT_COMPONENT(revision PATCH)
 # Find and check SBCL installation.
 SET(SBCL_HOME $ENV{SBCL_HOME})
 IF(NOT SBCL_HOME)
-    MESSAGE(FATAL_ERROR "SBCL_HOME is not set. Set it.")
+    MESSAGE(STATUS "SBCL_HOME is not set. Trying to find SBCL on default path.")
+    FIND_PROGRAM(SBCL_EXECUTABLE sbcl)
+ELSE()
+    MESSAGE(STATUS "SBCL_HOME is set to ${SBCL_HOME}. Trying to find SBCL there.")
+    FIND_PROGRAM(SBCL_EXECUTABLE sbcl
+                 PATHS "${SBCL_HOME}/../../bin"
+                 NO_DEFAULT_PATH)
 ENDIF()
-FIND_PROGRAM(SBCL_EXECUTABLE sbcl
-             PATHS "${SBCL_HOME}/../../bin"
-             NO_DEFAULT_PATH)
+MESSAGE(STATUS "SBCL executable: ${SBCL_EXECUTABLE}")
 
 # Configure Lisp environment.
 SET(LISP_RUNTIME_OPTIONS "" CACHE STRING
