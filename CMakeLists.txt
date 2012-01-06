@@ -21,7 +21,7 @@ IF(NOT SBCL_HOME)
 ELSE()
     MESSAGE(STATUS "SBCL_HOME is set to ${SBCL_HOME}. Trying to find SBCL there.")
     FIND_PROGRAM(SBCL_EXECUTABLE sbcl
-                 PATHS "${SBCL_HOME}/../../bin"
+                 PATHS "${SBCL_HOME}/../../bin" ${SBCL_HOME}
                  NO_DEFAULT_PATH)
 ENDIF()
 MESSAGE(STATUS "SBCL executable: ${SBCL_EXECUTABLE}")
