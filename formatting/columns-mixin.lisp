@@ -1,6 +1,6 @@
 ;;; columns-mixin.lisp --- Mixin class for column-based formatting styles.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -84,7 +84,7 @@ designated by CLASS."))
 
 (defmethod format-header ((style  columns-mixin)
 			  (stream t))
-  (bind (((:accessors-r/o (columns   style-columns)
+  (let+ (((&accessors-r/o (columns   style-columns)
 			  (separator style-separator)) style)
 	 (produced-output?)
 	 (printed-ellipsis?))
@@ -106,7 +106,7 @@ designated by CLASS."))
 			 (style  columns-mixin)
 			 (stream t)
 			 &key &allow-other-keys)
-  (bind (((:accessors-r/o (columns   style-columns)
+  (let+ (((&accessors-r/o (columns   style-columns)
 			  (separator style-separator)) style)
 	 (produced-output?)
 	 (printed-ellipsis?))
@@ -144,7 +144,7 @@ instance."
      (make-instance (find-column-class spec)))
     (list
      (check-type spec (cons keyword list) "a keyword followed by initargs")
-     (bind (((class &rest args) spec))
+     (let+ (((class &rest args) spec))
        (apply #'make-instance (find-column-class class) args)))
     (standard-object
      spec)))

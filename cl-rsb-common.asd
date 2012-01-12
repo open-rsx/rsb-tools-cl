@@ -1,6 +1,6 @@
 ;;; cl-rsb-common.asd --- Common functions for cl-rsb-based utilities.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -60,7 +60,9 @@
   :license     "GPL3; see COPYING file for details."
   :description "This system provides some common functions for
 RSB-related systems."
-  :depends-on  (:com.dvlsoft.clon
+  :depends-on  (:let-plus
+
+		:com.dvlsoft.clon
 
 		:cl-protobuf
 

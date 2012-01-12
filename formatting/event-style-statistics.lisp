@@ -1,6 +1,6 @@
 ;;; event-style-statistics.lisp --- Column-oriented formatting of statistics.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -50,10 +50,10 @@ tabular manner."))
 					(style     style-statistics))
   ;; Find columns in NEW-VALUE that contain a quantity. Extract and
   ;; store these quantities for direct updates.
-  (bind (((:flet quantity-column? (column))
-	  (closer-mop:compute-applicable-methods-using-classes
-	   (fdefinition 'column-quantity)
-	   (list (class-of column)))))
+  (let+ (((&flet quantity-column? (column)
+	    (closer-mop:compute-applicable-methods-using-classes
+	     (fdefinition 'column-quantity)
+	     (list (class-of column))))))
     (setf (%style-quantities style)
 	  (map 'list #'column-quantity
 	       (remove-if-not #'quantity-column? (style-columns style))))))

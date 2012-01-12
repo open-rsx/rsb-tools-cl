@@ -1,6 +1,6 @@
 ;;; rate-mixin.lisp --- rate quantity mixin class.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -33,8 +33,8 @@ tracking the start and end times of time periods and turns a computed
 absolute value into a rate value using this information."))
 
 (defmethod quantity-value :around ((quantity rate-mixin))
-  (bind ((value (call-next-method))
-	 ((:accessors-r/o (start-time %quantity-start-time)) quantity)
+  (let+ ((value (call-next-method))
+	 ((&accessors-r/o (start-time %quantity-start-time)) quantity)
 	 (now (local-time:now)))
     (if (and (realp value) start-time)
 	(let ((diff (local-time:timestamp-difference now start-time)))

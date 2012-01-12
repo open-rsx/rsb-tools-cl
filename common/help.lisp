@@ -1,6 +1,6 @@
 ;;; help.lisp --- Automatic generation of help strings.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -61,7 +61,7 @@ non-empty intersection with SHOW."
 
 (defun print-uri-synopsis (connector-class stream)
   "Return a synopsis string for the URI syntax of CONNECTOR-CLASS."
-  (bind (((:accessors-r/o
+  (let+ (((&accessors-r/o
 	   (schema  rsb.transport:connector-schemas)
 	   (options rsb.transport:connector-options)) connector-class)
 	 (host  (find :host options :key #'first))
@@ -146,7 +146,7 @@ If INCLUDE-RSB-VERSION? is non-nil, additionally format the RSB
 version onto STREAM.
 MORE-VERSIONS is a \"plist\" of additional component names and
 associated versions that should be printed onto STREAM."
-  (bind (;; Compute the list of all requested versions.
+  (let+ (;; Compute the list of all requested versions.
 	 (versions
 	  (append `((,program-name ,version))
 		  (when include-lisp-version?
@@ -163,8 +163,7 @@ associated versions that should be printed onto STREAM."
 			    1
 			    (length "version")
 			    1))
-	 ((:flet format-version (info))
-	  (bind (((name version) info))
+	 ((&flet+ format-version ((name version))
 	    (format stream "~A version~VT~:[~{~D.~D.~D~}~;~A~]~&"
 		    name version-column (stringp version) version))))
     (map nil #'format-version versions)))
@@ -181,19 +180,19 @@ associated versions that should be printed onto STREAM."
 corresponding documentation strings onto STREAM.
 BLACKLIST can be used to specify classes that should not be
 processed."
-  (bind ((*print-right-margin* most-positive-fixnum)
+  (let+ ((*print-right-margin* most-positive-fixnum)
 	 (*print-miser-width*  most-positive-fixnum)
 	 (items (remove-duplicates
 		 (remove-if (rcurry #'member class-blacklist)
 			    classes
 			    :key #'first)
 		 :key #'second))
-	 ((:flet do-one (name class))
-	  (bind ((args (set-difference (%class-valid-initargs class)
-				       initarg-blacklist))
-		 (doc  (%format-documentation
-			(documentation (class-name class) 'type))))
-	    (list name args doc))))
+	 ((&flet do-one (name class)
+	    (let ((args (set-difference (%class-valid-initargs class)
+					initarg-blacklist))
+		  (doc  (%format-documentation
+			 (documentation (class-name class) 'type))))
+	      (list name args doc)))))
     (format stream "~{~{~(~A~)~<~#[~; [~@{~(~S~) ARG~}]~:; { ~
 ~@{~(~S~) ARG~^ | ~} }*~]~:>~&~2T~@<~@;~A~:>~}~^~%~%~}"
 	    (map 'list (curry #'apply #'do-one) items))))
@@ -202,16 +201,16 @@ processed."
   "Return a list of keywords each of which is an acceptable initarg of
 class."
   (closer-mop:finalize-inheritance class)
-  (bind ((i-i-methods (closer-mop:compute-applicable-methods-using-classes
+  (let+ ((i-i-methods (closer-mop:compute-applicable-methods-using-classes
 		       (fdefinition 'initialize-instance)
 		       (list class)))
 	 (s-i-methods (closer-mop:compute-applicable-methods-using-classes
 		       (fdefinition 'shared-initialize)
 		       (list class (find-class 't))))
-	 ((:flet keyword-args (method))
-	  (map 'list #'caar
-	       (nth-value 3 (parse-ordinary-lambda-list
-			     (closer-mop:method-lambda-list method))))))
+	 ((&flet keyword-args (method)
+	    (map 'list #'caar
+		 (nth-value 3 (parse-ordinary-lambda-list
+			       (closer-mop:method-lambda-list method)))))))
     (remove-duplicates
      (append
       (mappend #'keyword-args i-i-methods)
@@ -229,16 +228,16 @@ class."
   "Format STRING as documentation by breaking it into paragraphs and
 removing linebreaks from paragraphs that appear to not have been
 layouted specifically. "
-  (bind (((:flet split-into-paragraphs (string))
-	  (iter (with rest = string)
-		(let ((index (search #.(format nil "~%~%") rest)))
-		  (collect (subseq rest 0 index))
-		  (while index)
-		  (setf rest (subseq rest (+ index 2))))))
-	 ((:flet has-layout? (string))
-	  (or (search "  " string) (find #\Tab string)))
-	 ((:flet remove-newlines (string))
-	  (substitute #\Space #\Newline string)))
+  (let+ (((&flet split-into-paragraphs (string)
+	    (iter (with rest = string)
+		  (let ((index (search #.(format nil "~%~%") rest)))
+		    (collect (subseq rest 0 index))
+		    (while index)
+		    (setf rest (subseq rest (+ index 2)))))))
+	 ((&flet has-layout? (string)
+	    (or (search "  " string) (find #\Tab string))))
+	 ((&flet remove-newlines (string)
+	    (substitute #\Space #\Newline string))))
     (format nil "~{~A~^~%~%~}"
 	    (map 'list #'(lambda (paragraph)
 			   (if (has-layout? paragraph)

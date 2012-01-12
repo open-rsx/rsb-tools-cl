@@ -1,6 +1,6 @@
 ;;; cl-rsb-tools-logger.asd --- RSB Logging utility based cl-rsb.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -61,7 +61,7 @@
   :description "A simple utility for receiving and displaying events
 exchanged on a given RSB bus or channel."
   :depends-on  (:alexandria
-		:metabang-bind
+		:let-plus
 		:iterate
 
 		:cl-protobuf

@@ -61,11 +61,11 @@ format event payloads."))
 			 &key
 			 (max-lines 12)
 			 &allow-other-keys)
-  (bind (((:accessors-r/o (routing-info? style-routing-info?)
+  (let+ (((&accessors-r/o (routing-info? style-routing-info?)
 			  (timestamps?   style-timestamps?)
 			  (user-items?   style-user-items?)
 			  (causes?       style-causes?)) style)
-	 ((:accessors-r/o (meta-data meta-data-alist)
+	 ((&accessors-r/o (meta-data meta-data-alist)
 			  (causes    event-causes)) event)
 	 (*print-lines* max-lines))
     ;; Envelope information.

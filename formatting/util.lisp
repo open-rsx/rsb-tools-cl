@@ -1,6 +1,6 @@
 ;;; util.lisp --- Utility functions for event formatting.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -101,9 +101,9 @@ content by AMOUNT."
 			     (value-formatter #'format-maybe))
   "Format KEYS and VALUES onto STREAM such that keys and values align
 vertically across output lines."
-  (bind ((width  (reduce #'max keys
-			 :key           (compose #'length #'string)
-			 :initial-value 0)))
+  (let ((width (reduce #'max keys
+		       :key           (compose #'length #'string)
+		       :initial-value 0)))
     (iter (for key   in keys)
 	  (for value in values)
 	  (unless (first-iteration-p)
@@ -166,10 +166,10 @@ objects.")
 
 (defun format-instance (stream instance)
   "Format INSTANCE onto STREAM, handling slot values recursively."
-  (bind (((:flet slot-value* (name))
-	  (if (slot-boundp instance name)
-	      (slot-value instance name)
-	      "UNBOUND"))
+  (let+ (((&flet slot-value* (name)
+	    (if (slot-boundp instance name)
+		(slot-value instance name)
+		"UNBOUND")))
 	 (keys   (map 'list #'closer-mop:slot-definition-name
 		      (closer-mop:class-slots (class-of instance))))
 	 (values (map 'list #'slot-value* keys)))

@@ -1,6 +1,6 @@
 ;;; meta-data-mixin.lisp --- Mixin class for meta-data-based quantities.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -53,7 +53,7 @@ process meta-data items of events."))
 
 (defmethod update! ((quantity meta-data-mixin)
 		    (event    event))
-  (bind (((:accessors-r/o (key          quantity-key)
+  (let+ (((&accessors-r/o (key          quantity-key)
 			  (when-missing quantity-when-missing)) quantity))
     (case key
       (:keys

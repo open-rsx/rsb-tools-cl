@@ -1,6 +1,6 @@
 ;;; main.lisp --- Entry point of the info tool.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -73,7 +73,7 @@
    :return          #'(lambda () (return-from main)))
   (enable-swank-on-signal)
 
-  (bind ((stream   *standard-output*)
+  (let+ ((stream   *standard-output*)
 	 (verbose? (getopt :long-name "verbose"))
 	 ((version? connectors? converters? filters? event-processing?)
 	  (mapcar #'(lambda (name)

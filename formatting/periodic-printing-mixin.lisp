@@ -1,6 +1,6 @@
 ;;; periodic-printing-mixin.lisp --- Mixin for timer-driven formatting.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -49,7 +49,7 @@ timer-driven way."))
 (defmethod initialize-instance :after ((instance periodic-printing-mixin)
                                        &key)
 
-  (bind (((:accessors (timer          %style-timer)
+  (let+ (((&accessors (timer          %style-timer)
 		      (print-interval style-print-interval)) instance)
 	 (timer* #+sbcl (sb-ext:make-timer (%make-timer-function instance))
 		 #-sbcl #.(error "not implemented")))

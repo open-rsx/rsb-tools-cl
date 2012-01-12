@@ -1,6 +1,6 @@
 ;;; package.lisp --- Package definition for the call utility.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -22,7 +22,7 @@
    :cl
    :alexandria
    :iterate
-   :bind
+   :let-plus
 
    :rsb
    :rsb.patterns

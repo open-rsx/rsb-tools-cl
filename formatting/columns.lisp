@@ -1,6 +1,6 @@
 ;;; columns.lisp --- Some column classes.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -28,9 +28,9 @@
 					(event-class 'event)
 					(print-name  (string name)))
 				  &body doc-and-body)
-	     (bind (((&optional width (alignment :right)) (ensure-list width))
+	     (let+ (((&optional width (alignment :right)) (ensure-list width))
 		    (class-name  (symbolicate "COLUMN-" name))
-		    ((:values body _ doc)
+		    ((&values body nil doc)
 		     (parse-body doc-and-body :documentation t)))
 	       `(progn
 		  (defmethod find-column-class ((spec (eql ,name)))

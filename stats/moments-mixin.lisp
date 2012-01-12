@@ -1,6 +1,6 @@
 ;;; moments-mixin.lisp --- A mixin class for computing moments.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -27,7 +27,7 @@ that provided mean and variance of a collection of accumulated
 values."))
 
 (defmethod quantity-value ((quantity moments-mixin))
-  (bind (((:accessors-r/o (values quantity-values)) quantity))
+  (let+ (((&accessors-r/o (values quantity-values)) quantity))
     (if (emptyp values)
 	(values :n/a          :n/a)
 	(values (mean values) (standard-deviation values)))))

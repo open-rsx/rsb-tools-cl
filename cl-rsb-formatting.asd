@@ -1,6 +1,6 @@
 ;;; cl-rsb-formatting.asd --- Formatting functions for cl-rsb-based utilities.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -60,7 +60,8 @@
   :license     "GPL3; see COPYING file for details."
   :description "This system provides some formatting functions for
 RSB-related systems."
-  :depends-on  (:cl-interpol
+  :depends-on  (:let-plus
+		:cl-interpol
 
 		(:version :cl-rsb #.(version/string)))
   :components  ((:module     "formatting"
@@ -133,6 +134,10 @@ RSB-related systems."
 
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
 
+
+;;; System connection with cl-rsb-stats
+;;
+
 (defsystem-connection :cl-rsb-formatting-and-cl-rsb-stats
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -147,6 +152,10 @@ cl-rsb-stats system."
 		 :components ((:file       "quantity-column")
 			      (:file       "event-style-statistics"
 			       :depends-on ("quantity-column"))))))
+
+
+;;; System connection with cl-rsb-common
+;;
 
 (defsystem-connection :cl-rsb-formatting-and-cl-rsb-common
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"

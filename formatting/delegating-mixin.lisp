@@ -1,6 +1,6 @@
 ;;; delegating-mixin.lisp --- Predicate-based delegation to sub-styles.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -47,7 +47,7 @@ delegate to sub-styles based on dispatch predicates."))
 			 (stream t)
 			 &key &allow-other-keys)
   "Format EVENT on STREAM on a single line."
-  (bind (((:accessors-r/o (sub-styles style-sub-styles)) style)
+  (let+ (((&accessors-r/o (sub-styles style-sub-styles)) style)
 	 (sub-style (cdr (find-if (rcurry #'funcall event) sub-styles
 				  :key #'car))))
     (cond

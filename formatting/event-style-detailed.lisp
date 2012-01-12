@@ -1,6 +1,6 @@
 ;;; event-style-detailed.lisp --- Detailed event formatting style class.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -38,7 +38,7 @@ possible."))
   (call-next-method)
 
   ;; Payload.
-  (bind (((:accessors-r/o (data event-data)) event))
+  (let+ (((&accessors-r/o (data event-data)) event))
     (when (> max-lines 11)
       (with-indented-section (stream (format nil "Payload (~S)"
 					     (class-name (class-of data))))

@@ -1,6 +1,6 @@
 ;;; header-printing-mixin.lisp --- Mixin for formatting styles which print headers.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -36,7 +36,7 @@ stream of output."))
 				 (style  header-printing-mixin)
 				 (stream t)
 				 &key &allow-other-keys)
-  (bind (((:accessors-r/o (header-frequency style-header-frequency)) style))
+  (let+ (((&accessors-r/o (header-frequency style-header-frequency)) style))
     (when (and header-frequency
 	       (zerop (mod (style-count style) header-frequency)))
       (format-header style stream))))

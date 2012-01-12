@@ -1,6 +1,6 @@
 ;;; main.lisp --- Entry point of the logger tool.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -100,7 +100,7 @@ the URI argument).~@:>"))
 						 (not (member :fundamental-null converter)))
 					    (append converter '(:fundamental-null))
 					    converter)))))
-	   (event-style (bind (((class &rest args)
+	   (event-style (let+ (((class &rest args)
 				(parse-instantiation-spec
 				 (getopt :long-name "style"))))
 			  (apply #'make-instance (find-style-class class)

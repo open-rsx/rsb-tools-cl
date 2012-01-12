@@ -1,6 +1,6 @@
 ;;; main.lisp --- Entry point of the call tool.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -108,7 +108,7 @@ works if the called method accepts an argument of type string.
      (with-output-to-string (stream)
        (copy-stream *standard-input* stream)))
     (t
-     (bind (((:values value consumed)
+     (let+ (((&values value consumed)
 	     (read-from-string string)))
        (unless (= consumed (length string))
 	 (error "~@<Junk at end of argument string: ~S.~@:>"
@@ -130,9 +130,9 @@ works if the called method accepts an argument of type string.
 SERVER-URI/METHOD(ARG).~@:>"))
 
   (with-logged-warnings
-    (bind ((spec (first (remainder)))
-	   ((:values server-uri method arg)
-	    (cl-ppcre:register-groups-bind (server-uri method arg)
+    (let+ ((spec (first (remainder)))
+	   ((&values server-uri method arg)
+	    (ppcre:register-groups-bind (server-uri method arg)
 		("^([a-zA-Z0-9/:&?#=+;]*)/([a-zA-Z0-9]+)\\((.*)\\)$" spec)
 	      (values server-uri method (parse-argument arg)))))
 
@@ -144,7 +144,7 @@ SERVER-URI/METHOD(ARG).~@:>"))
 	    server-uri method arg)
       (with-interactive-interrupt-exit ()
 	(with-remote-server (server server-uri)
-	  (bind ((reply  (multiple-value-list
+	  (let* ((reply  (multiple-value-list
 			  (call server method arg)))
 		 (reply? (not (null reply)))
 		 (reply  (when reply?

@@ -1,6 +1,6 @@
 ;;; cl-rsb-tools-call.asd --- RSB RPC calling utility based on cl-rsb.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -61,7 +61,7 @@
   :description "A simple utility for calling remote methods exposed
 via RSB."
   :depends-on  (:alexandria
-		:metabang-bind
+		:let-plus
 		:iterate
 
 		:cl-ppcre

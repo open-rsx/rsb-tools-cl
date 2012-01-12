@@ -1,6 +1,6 @@
 ;;; reduction-mixin.lisp --- A mixin class for reduction-based quantities.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -38,7 +38,7 @@ which compute the quantity value from a collection of values using a
 reduction function."))
 
 (defmethod quantity-value ((quantity reduction-mixin))
-  (bind (((:accessors-r/o
+  (let+ (((&accessors-r/o
 	   (empty-value quantity-empty-value)
 	   (values      quantity-values)
 	   (reduce-by   quantity-reduce-by)) quantity))

@@ -1,6 +1,6 @@
 ;;; event-style-progammable.lisp --- A programmable formatting style.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -155,7 +155,7 @@ function."))
 			     &key
 			     (bindings (style-bindings style)))
   (log1 :info style "Compiling template ~S" template)
-  (bind (((:values function _ failed?)
+  (let+ (((&values function nil failed?)
 	  (compile
 	   nil
 	   `(lambda (event stream)

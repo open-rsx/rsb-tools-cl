@@ -1,6 +1,6 @@
 ;;; quantities.lisp --- Unit tests for quantity classes.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -67,12 +67,12 @@
 		      :method :b)) "^B: 2, A: 1$")))
 
 (define-simple-quantity-suite (:origin)
-  (bind ((id1 (uuid:make-v4-uuid))
+  (let+ ((id1 (uuid:make-v4-uuid))
 	 (id2 (uuid:make-v4-uuid))
-	 ((:flet from (origin))
-	  (let ((event (make-event "/foo" "baz")))
-	    (setf (event-origin event) origin)
-	    event)))
+	 ((&flet from (origin)
+	    (let ((event (make-event "/foo" "baz")))
+	      (setf (event-origin event) origin)
+	      event))))
     `((() ()                                    "^N/A$")
       (() (,(from id1))                         ,(format nil "^~A: 1$" id1))
       (() (,(from id1) ,(from id2) ,(from id2)) ,(format nil "^~A: 2, ~A: 1$"
@@ -90,8 +90,8 @@
 		      :rsb.wire-schema "b")) "^b: 2, a: 1$")))
 
 (define-simple-quantity-suite (:meta-data-moments)
-  (bind (((:flet event (&rest args &key &allow-other-keys))
-	  (apply #'make-event "/foo" "baz" args)))
+  (let+ (((&flet event (&rest args &key &allow-other-keys)
+	    (apply #'make-event "/foo" "baz" args))))
     `(;; missing required initarg :key
       (()             ()                                    :error)
       ;; cannot compute moment on meta-data keys
@@ -108,11 +108,11 @@
 		       ,(event :foo "3") ,(event :foo "4")) "^2\\.500 ± 1\\.118$"))))
 
 (define-simple-quantity-suite (:latency)
-  (bind (((:flet args (&rest keys))
-	  `(,@(when-let ((value (first keys)))
-	        `(:from ,value))
-	    ,@(when-let ((value (second keys)))
-	        `(:to ,value)))))
+  (let+ (((&flet args (&rest keys)
+	    `(,@(when-let ((value (first keys)))
+			  `(:from ,value))
+		,@(when-let ((value (second keys)))
+			    `(:to ,value))))))
     `(;; missing :from and :to initargs
       (()                      ()                           :error)
       (,(args :create)         ()                           :error)

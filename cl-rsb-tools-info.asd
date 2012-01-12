@@ -1,6 +1,6 @@
 ;;; cl-rsb-tools-info.asd --- RSB information query utility.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -61,7 +61,7 @@
   :description "A simple utility for infoing remote methods exposed
 via RSB."
   :depends-on  (:alexandria
-		:metabang-bind
+		:let-plus
 
 		:com.dvlsoft.clon
 

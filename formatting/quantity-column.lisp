@@ -1,6 +1,6 @@
 ;;; quantity-column.lisp ---
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -47,7 +47,7 @@ provide a name and the printed value."))
 			 (style  quantity-column)
 			 (stream t)
 			 &key &allow-other-keys)
-  (bind (((:accessors-r/o (quantity column-quantity)) style))
+  (let+ (((&accessors-r/o (quantity column-quantity)) style))
     (rsb.stats:format-value quantity stream)
     (rsb.stats:reset! quantity)))
 
@@ -73,7 +73,7 @@ instance."
      (make-instance (rsb.stats:find-quantity-class spec)))
     (list
      (check-type spec (cons keyword list) "a keyword followed by initargs")
-     (bind (((class &rest args) spec))
+     (let+ (((class &rest args) spec))
        (apply #'make-instance (rsb.stats:find-quantity-class class) args)))
     (standard-object
      spec)))
