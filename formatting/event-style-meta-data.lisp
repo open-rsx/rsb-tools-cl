@@ -1,6 +1,6 @@
 ;;; event-style-meta-data.lisp --- Meta-data-only formatting style class.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -82,10 +82,9 @@ format event payloads."))
     ;; Framework and user timestamps.
     (when (and timestamps? (> max-lines 5))
       (with-indented-section (stream "Timestamps")
-	(let ((keys (append '(:create :send :receive :deliver)
-			    (set-difference
-			     (timestamp-keys event)
-			     '(:create :send :receive :deliver)))))
+	(let ((keys (append *framework-timestamps*
+			    (set-difference (timestamp-keys event)
+					    *framework-timestamps*))))
 	  (format-aligned-items
 	   stream keys (map 'list (curry #'timestamp event) keys)))))
 
