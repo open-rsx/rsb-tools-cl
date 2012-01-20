@@ -91,6 +91,17 @@ works if the called method accepts an argument of type string.
    :postfix "SERVER-URI/METHOD(ARG)"
    :item    (make-text :contents (make-help-string :show show))
    :item    (make-common-options :show show)
+   :item    (defgroup (:header "Call options")
+	      (lispobj :long-name     "timeout"
+		       :short-name    "o"
+		       :typespec      'non-negative-real
+		       :argument-name "SPEC"
+		       :description
+		       "If the result of the method call does not arrive within the amount of time specified by SPEC, consider the call to have failed and exit with non-zero status.")
+	      (flag    :long-name     "no-wait"
+		       :short-name    "w"
+		       :description
+		       "Do not wait for the result of the method call. Immediately return with zero status without printing a result to standard output."))
    ;; Append RSB options.
    :item    (make-options
 	     :show? (or (eq show t)
@@ -134,20 +145,36 @@ SERVER-URI/METHOD(ARG).~@:>"))
 	   ((&values server-uri method arg)
 	    (ppcre:register-groups-bind (server-uri method arg)
 		("^([a-zA-Z0-9/:&?#=+;]*)/([a-zA-Z0-9]+)\\((.*)\\)$" spec)
-	      (values server-uri method (parse-argument arg)))))
+	      (values server-uri method (parse-argument arg))))
+	   (timeout (getopt :long-name "timeout"))
+	   (wait?   (not (getopt :long-name "no-wait")))
+	   ((&flet call (server)
+	      (cond
+		((not wait?)
+		 (call server method arg :block? nil)
+		 (values))
+		((not timeout)
+		 (call server method arg))
+		(t
+		 (handler-case
+		     (call server method arg :timeout timeout)
+		   (bt:timeout (condition)
+		     (error "~@<Method call timed out after ~S ~
+second~:P.~@:>"
+			    timeout))))))))
 
       (unless (and server-uri method arg)
 	(error "~@<Parse error in call specification ~S.~@:>"
 	       spec))
 
+      (when (and timeout (not wait?))
+	(error "~@<Cannot specify timeout ~S in conjunction with
+no-wait.~@:>"
+	       timeout))
+
       (log1 :info "Using URI ~S method ~S arg ~A"
 	    server-uri method arg)
       (with-interactive-interrupt-exit ()
 	(with-remote-server (server server-uri)
-	  (let* ((reply  (multiple-value-list
-			  (call server method arg)))
-		 (reply? (not (null reply)))
-		 (reply  (when reply?
-			   (first reply))))
-	    (when reply?
-	      (format t "~S~%" reply))))))))
+	  (when-let* ((reply (multiple-value-list (call server))))
+	    (format t "~S~%"  (first reply))))))))
