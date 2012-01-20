@@ -1,10 +1,12 @@
 (load-system :asdf-system-connections)
 
-(load-system :cl-ppcre) ;; for regex filter
+(load-system :cl-ppcre)    ;; for regex filter
 
-(load-system :cl-spread) ;; for spread transport
+(load-system :cl-protobuf) ;; for spread and socket transports
+(load-system :cl-spread)   ;; for spread transport
+(load-system :usocket)     ;; for socket
 
-(load-system :swank) ;; for the lulz
+(load-system :swank)       ;; for the lulz
 
 (load-system :cl-rsb-tools-logger)
 
