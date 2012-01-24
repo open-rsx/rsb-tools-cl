@@ -29,7 +29,9 @@
   ;; Types
   (:export
    :rule-spec
-   :separator-spec)
+   :separator-spec
+
+   :template-designator)
 
   ;; Event formatting protocol
   (:export

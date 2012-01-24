@@ -1,6 +1,6 @@
 ;;; types.lisp --- Types used in the formatting module.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -28,3 +28,7 @@
   `(or null
        character string rule-spec
        (cons (not keyword) list)))
+
+(deftype template-designator ()
+  "A thing that can be converted into a formatting template."
+  '(or string pathname))

@@ -46,7 +46,8 @@
 			(let ((ts (timestamp event ,(make-keyword timestamp))))
 			  (+ (* (expt 10 9) (local-time:timestamp-to-unix ts))
 			     (local-time:nsec-of ts))))))
-    (causes          (map 'list #'event-id->uuid (event-causes event))))
+    (causes          (map 'list #'event-id->uuid (event-causes event)))
+    (skip-event      (throw 'skip-event nil)))
   "Default bindings available in instances of `style-programmable'.")
 
 (defmethod find-style-class ((spec (eql :programmable)))
@@ -54,7 +55,7 @@
 
 (defclass style-programmable ()
   ((template :type     string
-	     :accessor style-template
+	     :reader   style-template
 	     :accessor %style-template
 	     :documentation
 	     "Stores the string template specifying the output format
@@ -97,23 +98,37 @@ By default, the following PROPERTY names are available:
 				     (template nil template-supplied?)
 				     (bindings nil bindings-supplied?))
   (when template-supplied?
-    (check-type template string))
+    (check-type template template-designator))
   (when bindings-supplied?
     (check-type bindings list "a list of items of the form (SYMBOL FORM)"))
 
   (cond
-    ((and template bindings)
-     (setf (%style-template instance) template))
-    (template
-     (setf (style-template instance) template)))
-  (when bindings
-    (setf (style-bindings instance) bindings)))
+    ((and bindings-supplied? template-supplied?)
+     (setf (%style-bindings instance) bindings))
+    (bindings-supplied?
+     (setf (style-bindings instance) bindings)))
+  (when template-supplied?
+    (setf (style-template instance) template)))
+
+(defmethod (setf style-template) ((new-value pathname)
+				  (style     style-programmable))
+  (setf (style-template style)
+	(handler-bind
+	    ((error (lambda (condition)
+		      (error "~@<Failed to read template from file ~S: ~A~:@>"
+			     new-value condition))))
+	  (read-file-into-string new-value)))
+  new-value)
+
+(defmethod (setf style-template) ((new-value string)
+				  (style     style-programmable))
+  (setf (%style-template style) new-value))
 
 (defmethod (setf style-template) :after ((new-value string)
 					 (style     style-programmable))
   (%recompile style))
 
-(defmethod (setf style-bindings) :after ((new-value string)
+(defmethod (setf style-bindings) :after ((new-value list)
 					 (style     style-programmable))
   (%recompile style))
 
@@ -129,6 +144,16 @@ bindings~_~{~2T~{~16A -> ~A~_~}~}and template~_~2T~S~_: ~A~@:>"
 		       (style-bindings style) (style-template style)
 		       condition))))
       (funcall (%style-lambda style) event stream)))
+
+(defmethod print-object ((object style-programmable) stream)
+  (let+ (((&accessors-r/o (template style-template)
+			  (bindings style-bindings)) object)
+	 (length (length template)))
+   (print-unreadable-object (object stream :type t :identity t)
+     (format stream "\"~A~:[~;…~]\"~:[~; (~D)~]"
+	     (subseq template 0 (min 8 length)) (> length 8)
+	     (not (eq bindings *style-programmable-default-bindings*))
+	     (length bindings)))))
 
 
 ;;; (Re-)Compilation
@@ -155,18 +180,26 @@ function."))
 			     &key
 			     (bindings (style-bindings style)))
   (log1 :info style "Compiling template ~S" template)
-  (let+ (((&values function nil failed?)
+  (let+ ((form (handler-bind
+		   ((error (lambda (condition)
+			     (error "~@<Failed to read template string ~S: ~A~@:>"
+				    template condition))))
+		 (let ((*package* #.*package*))
+		   (with-interpol-syntax ()
+		     (read-from-string
+		      (format nil "#?\"~A\"" template))))))
+	 ((&values function nil failed?)
 	  (compile
 	   nil
 	   `(lambda (event stream)
 	      (declare (ignorable event))
-	      (format stream
-		      (symbol-macrolet (,@bindings)
-			,(let ((*package* #.*package*))
-			   (with-interpol-syntax ()
-			     (read-from-string
-			      (format nil "#?\"~A\"" template))))))))))
+	      (format stream (symbol-macrolet (,@bindings)
+			       ,form))))))
     (when failed?
       (error "~@<Failed to compile template ~S.~@:>"
 	     template))
     function))
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
