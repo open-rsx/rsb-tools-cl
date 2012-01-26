@@ -1,6 +1,6 @@
 ;;; package.lisp --- Package definition for unit tests of the formatting module.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -33,6 +33,12 @@
    "This package contains unit tests for the formatting module."))
 
 (cl:in-package :rsb.formatting.test)
+
+(defvar *simple-event* (make-event "/foo" "bar")
+  "A simple event for use in tests.")
+
+(defvar *simple-events* (list *simple-event* (make-event "/baz" "fez"))
+  "A sequence of simple events for use in tests.")
 
 (deftestsuite formatting-root ()
   ()
