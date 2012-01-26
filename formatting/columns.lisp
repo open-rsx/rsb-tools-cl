@@ -41,16 +41,16 @@
 					 name-mixin)
 		    ()
 		    ,@(when width
-			    `((:default-initargs
-			       :width     ,width
-			       :alignment ,alignment
-			       :name      ,print-name)))
+		        `((:default-initargs
+			   :width     ,width
+			   :alignment ,alignment
+			   :name      ,print-name)))
 		    ,@(when doc
-			    `((:documentation ,doc))))
+		        `((:documentation ,doc))))
 
 		  ,@(unless width
-			    `((defmethod column-width ((column ,class-name))
-				0)))
+		      `((defmethod column-width ((column ,class-name))
+			  0)))
 
 		  (defmethod format-event ((event  ,event-class)
 					   (column ,class-name)
