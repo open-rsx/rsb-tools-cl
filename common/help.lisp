@@ -235,7 +235,8 @@ layouted specifically. "
 		    (while index)
 		    (setf rest (subseq rest (+ index 2)))))))
 	 ((&flet has-layout? (string)
-	    (or (search "  " string) (find #\Tab string))))
+	    (or (some (rcurry #'search string) '("  " "* " "+ " "- "))
+		(find #\Tab string))))
 	 ((&flet remove-newlines (string)
 	    (substitute #\Space #\Newline string))))
     (format nil "~{~A~^~%~%~}"
