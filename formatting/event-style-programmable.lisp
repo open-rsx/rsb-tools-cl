@@ -276,8 +276,6 @@ By default, the following PROPERTY names are available:
 	   :code :template))
 
   (when template-supplied?
-    (check-type template template-designator)
-
     (setf (style-template instance) template)))
 
 (defmethod (setf style-template) :before ((new-value string)
