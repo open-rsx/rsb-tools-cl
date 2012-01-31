@@ -31,7 +31,8 @@
    :rule-spec
    :separator-spec
 
-   :template-designator)
+   :template-designator
+   :script-designator)
 
   ;; Event formatting protocol
   (:export

@@ -31,4 +31,8 @@
 
 (deftype template-designator ()
   "A thing that can be converted into a formatting template."
-  '(or string pathname))
+  '(or string stream pathname))
+
+(deftype script-designator ()
+  "A thing that can be converted into a formatting script."
+  '(or list string stream pathname))
