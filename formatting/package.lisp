@@ -130,14 +130,41 @@
   (:export
    :style-statistics)
 
+  ;; Default variable names provided by programmable styles
+  (:export
+   :sequence-number
+   :id
+   :scope
+   :origin
+   :data
+   :create  :create-unix  :create-unix-nsec
+   :send    :send-unix    :send-unix-nsec
+   :receive :receive-unix :receive-unix-nsec
+   :deliver :deliver-unix :deliver-unix-nsec
+   :causes/event-id
+   :causes/uuid
+   :skip-event)
+
   ;; `style-programmable' style class
   (:export
    :style-programmable
 
-   :style-template
+   :style-code
    :style-bindings
 
-   :compile-template)
+   :compile-code)
+
+  ;; `style-programmable/script' style class
+  (:export
+   :style-programmable/script
+
+   :style-script)
+
+  ;; `style-programmable/template' style class
+  (:export
+   :style-programmable/template
+
+   :style-template)
 
   ;; Formatting functions
   (:export

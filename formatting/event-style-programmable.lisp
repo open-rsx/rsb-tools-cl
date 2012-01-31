@@ -20,6 +20,15 @@
 (cl:in-package :rsb.formatting)
 
 
+;;; Compilation protocol
+;;
+
+(defgeneric compile-code (style code bindings)
+  (:documentation
+   "Compile CODE using BINDINGS for use with STYLE and return the
+resulting compiled function."))
+
+
 ;;; Utility functions
 ;;
 
@@ -46,21 +55,19 @@
 			(let ((ts (timestamp event ,(make-keyword timestamp))))
 			  (+ (* (expt 10 9) (local-time:timestamp-to-unix ts))
 			     (local-time:nsec-of ts))))))
-    (causes          (map 'list #'event-id->uuid (event-causes event)))
+    (causes/event-id (event-causes event))
+    (causes/uuid     (map 'list #'event-id->uuid (event-causes event)))
     (skip-event      (throw 'skip-event nil)))
-  "Default bindings available in instances of `style-programmable'.")
+  "A list of default bindings available in instances of
+`style-programmable' and subclasses. Entries are like `cl:let'
+bindings, that is
 
-(defmethod find-style-class ((spec (eql :programmable)))
-  (find-class 'style-programmable))
+  (VARIABLE FORM)
+
+where FORM is evaluated to produce the value of VARIABLE.")
 
 (defclass style-programmable ()
-  ((template :type     string
-	     :reader   style-template
-	     :accessor %style-template
-	     :documentation
-	     "Stores the string template specifying the output format
-of the style instance.")
-   (bindings :initarg  :bindings
+  ((bindings :initarg  :bindings
 	     :type     list
 	     :accessor style-bindings
 	     :accessor %style-bindings
@@ -72,9 +79,181 @@ specification.")
 	     :accessor %style-lambda
 	     :documentation
 	     "Stores the compiled output formatting function for the
-style instance."))
+style instance.")
+   (code     :type     list
+	     :accessor style-code
+	     :accessor %style-code
+	     :documentation
+	     "Stores the code producing the output of the style
+instance."))
   (:default-initargs
-   :template (missing-required-initarg 'style-programmable :template))
+   :code (missing-required-initarg 'style-programmable :code))
+  (:documentation
+   "This formatting style produces its output by executing a supplied
+code. The supplied code can rely on `stream' to be bound to a
+character output stream which it should use for producing the output.
+
+By default, the following bindings are available:
+"))
+
+(defmethod shared-initialize :after ((instance   style-programmable)
+                                     (slot-names t)
+                                     &key
+				     (bindings nil bindings-supplied?)
+				     (code     nil code-supplied?))
+  (when bindings-supplied?
+    (check-type bindings list "a list of items of the form (SYMBOL FORM)"))
+
+  (when code-supplied?
+    (setf (style-code instance) code)))
+
+(defmethod (setf style-code) :before ((new-value t)
+				      (style     style-programmable))
+  (let+ (((&accessors (lambda   %style-lambda)
+		      (bindings %style-bindings)) style))
+    (setf lambda (compile-code style new-value bindings))))
+
+(defmethod (setf style-bindings) :before ((new-value list)
+					  (style     style-programmable))
+  (let+ (((&accessors (lambda %style-lambda)
+		      (code   %style-code)) style))
+    (setf lambda (compile-code style code new-value))))
+
+(defmethod compile-code ((style    style-programmable)
+			 (code     t)
+			 (bindings list))
+  (log1 :info style "Compiling code ~S" code)
+  ;; Try to compile CODE collecting and subsequently muffling all
+  ;; errors and warnings since we do not want to leak these to the
+  ;; caller.
+  (let+ ((conditions '())
+	 ((&values function nil failed?)
+	  (handler-bind
+	      (#+sbcl
+	       (sb-ext:compiler-note
+		#'(lambda (condition)
+		    (log1 :info "Compiler said: ~A" condition)
+		    (muffle-warning)))
+	       (style-warning
+		#'(lambda (condition)
+		    (log1 :warn "Compiler said: ~A" condition)
+		    (muffle-warning)))
+	       ((or error warning)
+		#'(lambda (condition)
+		    (push condition conditions)
+		    (muffle-warning condition))))
+	    (with-compilation-unit (:override t)
+	      (compile nil
+		       `(lambda (event stream)
+			  (declare (ignorable event stream))
+			  (symbol-macrolet (,@bindings)
+			    (catch 'skip-event
+			      ,@code))))))))
+    ;;; TODO(jmoringe, 2012-01-30): get format string right ...
+    (when (or failed? conditions)
+      (error "~@<Failed to compile code ~_~S~_.~@[ Compiler said: ~
+~:{~_+ ~@<~@;~A~:@>~}~]~@:>"
+	     code conditions)) function))
+
+(defmethod format-event ((event  event)
+			 (style  style-programmable)
+			 (stream stream)
+			 &key &allow-other-keys)
+  (handler-bind
+      (((and error (not stream-error))
+	(lambda (condition)
+	  (error "~@<Failed to format event ~A using specified ~
+bindings ~_~{~2T~{~24A -> ~A~_~}~}and code ~_~2T~S~_: ~A~@:>"
+		 event
+		 (style-bindings style) (style-code style)
+		 condition))))
+    (funcall (%style-lambda style) event stream)))
+
+(defmethod print-object ((object style-programmable) stream)
+  (print-unreadable-object (object stream :type t :identity t)
+    (if (slot-boundp object 'code)
+	(let+ (((&accessors-r/o (code     style-code)
+				(bindings style-bindings)) object)
+	       (*print-length* (or *print-length* 3)))
+	  (format stream "~:[<no code>~;~:*~A~] " code)
+	  (%print-bindings bindings stream))
+	(format stream "<not initialized>"))))
+
+
+;;; Script-based style
+;;
+
+(defmethod find-style-class ((spec (eql :programmable/script)))
+  (find-class 'style-programmable/script))
+
+(defclass style-programmable/script (style-programmable)
+  ((code :reader   style-script))
+  (:default-initargs
+   :code   nil
+   :script (missing-required-initarg
+	    'style-programmable/script :script))
+  (:documentation
+   "This formatting style produces its output by executing a supplied
+script which can take the forms of a pathname, designating a file, a
+stream, a string or any other Lisp object. The code can rely on
+`stream' to be bound to a character output stream which it should use
+for producing the output.
+
+By default, the following bindings are available:
+"))
+
+(defmethod shared-initialize :after ((instance   style-programmable/script)
+                                     (slot-names t)
+                                     &key
+				     code
+				     (script nil script-supplied?))
+  (when code
+    (error "~@<The initarg ~S cannot be supplied; ~S has to be used.~@:>"
+	   :code :script))
+
+  (when script-supplied?
+    (setf (style-script instance) script)))
+
+(defmethod (setf style-script) ((new-value list)
+				(style     style-programmable/script))
+  (setf (style-code style) new-value))
+
+(defmethod (setf style-script) ((new-value stream)
+				(style     style-programmable/script))
+  (setf (style-script style) (let ((*package* #.*package*))
+			       (iter (for token in-stream new-value)
+				     (collect token))))
+  new-value)
+
+(defmethod (setf style-script) ((new-value string)
+				(style     style-programmable/script))
+  (with-input-from-string (stream new-value)
+    (setf (style-script style) stream))
+  new-value)
+
+(defmethod (setf style-script) ((new-value pathname)
+				(style     style-programmable/script))
+  (with-input-from-file (stream new-value)
+    (setf (style-script style) stream))
+  new-value)
+
+
+;;; Template-based style
+;;
+
+(defmethod find-style-class ((spec (eql :programmable/template)))
+  (find-class 'style-programmable/template))
+
+(defclass style-programmable/template (style-programmable)
+  ((template :type     string
+	     :accessor style-template
+	     :documentation
+	     "Stores the template which is used for producing the
+output of the style."))
+  (:default-initargs
+   :code     nil
+   :template (missing-required-initarg
+	      'style-programmable/template :template))
   (:documentation
    "This formatting style produces its output by applying a template
 specification to individual events. In the template specification,
@@ -87,31 +266,39 @@ supported.
 By default, the following PROPERTY names are available:
 "))
 
-(setf (documentation 'style-programmable 'type)
-      (format nil "~A~{+ ~(~A~)~^~%~}"
-	      (documentation 'style-programmable 'type)
-	      (map 'list #'first *style-programmable-default-bindings*)))
-
-(defmethod shared-initialize :after ((instance   style-programmable)
+(defmethod shared-initialize :after ((instance   style-programmable/template)
                                      (slot-names t)
                                      &key
-				     (template nil template-supplied?)
-				     (bindings nil bindings-supplied?))
-  (when template-supplied?
-    (check-type template template-designator))
-  (when bindings-supplied?
-    (check-type bindings list "a list of items of the form (SYMBOL FORM)"))
+				     code
+				     (template nil template-supplied?))
+  (when code
+    (error "~@<The initarg ~S cannot be supplied; ~S has to be used.~@:>"
+	   :code :template))
 
-  (cond
-    ((and bindings-supplied? template-supplied?)
-     (setf (%style-bindings instance) bindings))
-    (bindings-supplied?
-     (setf (style-bindings instance) bindings)))
   (when template-supplied?
+    (check-type template template-designator)
+
     (setf (style-template instance) template)))
 
+(defmethod (setf style-template) :before ((new-value string)
+					  (style     style-programmable/template))
+  (let ((form (handler-bind
+		  ((error (lambda (condition)
+			    (error "~@<Failed to read template string ~S: ~A~@:>"
+				   new-value condition))))
+		  (let ((*package* #.*package*))
+		    (with-interpol-syntax ()
+		      (read-from-string
+		       (format nil "#?\"~A\"" new-value)))))))
+    (setf (style-code style) `((princ ,form stream)))))
+
+(defmethod (setf style-template) ((new-value stream)
+				  (style     style-programmable/template))
+  (setf (style-template style) (read-stream-content-into-string new-value))
+  new-value)
+
 (defmethod (setf style-template) ((new-value pathname)
-				  (style     style-programmable))
+				  (style     style-programmable/template))
   (setf (style-template style)
 	(handler-bind
 	    ((error (lambda (condition)
@@ -120,85 +307,47 @@ By default, the following PROPERTY names are available:
 	  (read-file-into-string new-value)))
   new-value)
 
-(defmethod (setf style-template) ((new-value string)
-				  (style     style-programmable))
-  (setf (%style-template style) new-value))
-
-(defmethod (setf style-template) :after ((new-value string)
-					 (style     style-programmable))
-  (%recompile style))
-
-(defmethod (setf style-bindings) :after ((new-value list)
-					 (style     style-programmable))
-  (%recompile style))
-
 (defmethod format-event ((event  event)
-			 (style  style-programmable)
+			 (style  style-programmable/template)
 			 (stream stream)
 			 &key &allow-other-keys)
   (handler-bind
-      ((error (lambda (condition)
-		(error "~@<Failed to format event ~A using specified ~
-bindings~_~{~2T~{~16A -> ~A~_~}~}and template~_~2T~S~_: ~A~@:>"
-		       event
-		       (style-bindings style) (style-template style)
-		       condition))))
-      (funcall (%style-lambda style) event stream)))
+      (((and error (not stream-error))
+	(lambda (condition)
+	  (error "~@<Failed to format event ~A using specified ~
+bindings ~_~{~2T~{~16A -> ~A~_~}~}and template ~_~2T~S~_: ~A~@:>"
+		 event
+		 (style-bindings style) (style-template style)
+		 condition))))
+    (funcall (%style-lambda style) event stream)))
 
-(defmethod print-object ((object style-programmable) stream)
-  (let+ (((&accessors-r/o (template style-template)
-			  (bindings style-bindings)) object)
-	 (length (length template)))
-   (print-unreadable-object (object stream :type t :identity t)
-     (format stream "\"~A~:[~;…~]\"~:[~; (~D)~]"
-	     (subseq template 0 (min 8 length)) (> length 8)
-	     (not (eq bindings *style-programmable-default-bindings*))
-	     (length bindings)))))
+(defmethod print-object ((object style-programmable/template) stream)
+  (print-unreadable-object (object stream :type t :identity t)
+    (if (slot-boundp object 'template)
+	(let+ (((&accessors-r/o (template style-template)
+				(bindings style-bindings)) object)
+	       (length (length template)))
+	  (format stream "\"~A~:[~;…~]\" "
+		  (subseq template 0 (min 8 length)) (> length 8))
+	  (%print-bindings bindings stream))
+	(call-next-method))))
 
 
-;;; (Re-)Compilation
+;;; Utility functions
 ;;
 
-(defgeneric %recompile (style)
-  (:documentation
-   "Recompile the formatting function for the current template and
-bindings of STYLE."))
+(defun %print-bindings (bindings stream)
+  (format stream "(~D~:[~;*~])"
+	  (length bindings)
+	  (eq bindings *style-programmable-default-bindings*)))
 
-(defgeneric compile-template (style template
-			      &key
-			      bindings)
-  (:documentation
-   "Compile TEMPLATE using BINDINGS and return the resulting compiled
-function."))
-
-(defmethod %recompile ((style style-programmable))
-  (setf (%style-lambda style)
-	(compile-template style (style-template style))))
-
-(defmethod compile-template ((style    style-programmable)
-			     (template string)
-			     &key
-			     (bindings (style-bindings style)))
-  (log1 :info style "Compiling template ~S" template)
-  (let+ ((form (handler-bind
-		   ((error (lambda (condition)
-			     (error "~@<Failed to read template string ~S: ~A~@:>"
-				    template condition))))
-		 (let ((*package* #.*package*))
-		   (with-interpol-syntax ()
-		     (read-from-string
-		      (format nil "#?\"~A\"" template))))))
-	 ((&values function nil failed?)
-	  (compile
-	   nil
-	   `(lambda (event stream)
-	      (declare (ignorable event))
-	      (format stream (symbol-macrolet (,@bindings)
-			       ,form))))))
-    (when failed?
-      (error "~@<Failed to compile template ~S.~@:>"
-	     template))
-    function))
+(iter (for class in '(style-programmable
+		      style-programmable/script
+		      style-programmable/template))
+      (setf (documentation class 'type)
+	    (format nil "~A~{+ ~(~A~)~^~%~}"
+		    (documentation class 'type)
+		    (map 'list #'first *style-programmable-default-bindings*))))
 
 ;; Local Variables:
 ;; coding: utf-8
