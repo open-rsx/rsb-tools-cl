@@ -247,6 +247,7 @@ By default, the following bindings are available:
 (defclass style-programmable/template (style-programmable)
   ((template :type     string
 	     :accessor style-template
+	     :writer   (setf %style-template)
 	     :documentation
 	     "Stores the template which is used for producing the
 output of the style."))
@@ -289,6 +290,11 @@ By default, the following PROPERTY names are available:
 		      (read-from-string
 		       (format nil "#?\"~A\"" new-value)))))))
     (setf (style-code style) `((princ ,form stream)))))
+
+(defmethod (setf style-template) ((new-value t)
+				  (style     style-programmable/template))
+  (check-type new-value string)
+  (setf (%style-template style) new-value))
 
 (defmethod (setf style-template) ((new-value stream)
 				  (style     style-programmable/template))
