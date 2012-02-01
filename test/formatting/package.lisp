@@ -21,6 +21,7 @@
   (:use
    :cl
    :alexandria
+   :let-plus
    :lift
 
    :rsb
@@ -57,14 +58,17 @@ output is compared to EXPECTED-OUTPUT."
   `(ensure-cases (args data expected)
        (list ,@cases)
 
-     (let* ((instance (apply #'make-instance ',class args))
-	    (output   (with-output-to-string (stream)
-			(map nil (rcurry #'format-event instance stream)
-			     data))))
-
-       (ensure-same (concatenate 'string "^" expected "$") output
-		    :test      #'ppcre:scan
-		    :report    "~@<The formatting style ~A, when ~
+     (let+ ((instance (apply #'make-instance ',class args))
+	    ((&flet do-it ()
+	       (with-output-to-string (stream)
+		 (map nil (rcurry #'format-event instance stream)
+		      data)))))
+       (if (eq expected :error)
+	   (ensure-condition error (do-it))
+	   (let ((output (do-it)))
+	     (ensure-same (concatenate 'string "^" expected "$") output
+			  :test      #'ppcre:scan
+			  :report    "~@<The formatting style ~A, when ~
 applied to ~:[no data~:;the data ~:*~{~S~^, ~}~], produced the output ~
 ~S, not ~S.~@:>"
-		    :arguments (instance data output expected)))))
+			  :arguments (instance data output expected)))))))
