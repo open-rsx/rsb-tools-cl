@@ -20,7 +20,9 @@
 (cl:in-package :rsb.stats.test)
 
 (defmacro define-simple-quantity-suite ((name) &body cases)
-  ""
+  "Define a test suite for the quantity class designated by NAME. Use
+CASES as body of `ensure-quantity-cases' in a test case for the
+`update!' and `format-value' methods."
   (let ((class-name (class-name (find-quantity-class name)))
 	(suite-name (symbolicate name "-ROOT")))
     `(progn
@@ -41,7 +43,7 @@
 	   (progn ,@cases))))))
 
 (define-simple-quantity-suite (:rate)
-  `((() ()                           "^N/A$")
+  `((() ()                           "^0\\.000$")
     (() (,(make-event "/foo" "bar")) "^[0-9]+\\.[0-9]+$")))
 
 (define-simple-quantity-suite (:throughput)
@@ -56,7 +58,7 @@
 	 ,(make-event "/bar" "baz")) "^/bar/: 2, /foo/: 1$")))
 
 (define-simple-quantity-suite (:method)
-  `((() ()                           "^N/A$")
+  `((() ()                         "^N/A$")
     (() (,(make-event "/foo" "baz"
 		      :method :a)) "^A: 1$")
     (() (,(make-event "/foo" "baz"

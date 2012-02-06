@@ -1,6 +1,6 @@
 ;;; quantities.lisp --- A collection of simple quantities.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -43,11 +43,12 @@
 	      (,@slots)
 	      (:default-initargs
 	       :name ,pretty-name
-		,@(remove-from-plist initargs :designator :pretty-name :slots))
+	       ,@(remove-from-plist initargs :designator :pretty-name :slots))
 	      ,@(when doc
 		  `((:documentation ,doc))))))))
 
   (define-simple-quantity (rate
+			   :slots     ((empty-value :initform 0))
 			   :extractor (constantly 1)
 			   :reduce-by #'+)
       (extract-function-mixin
