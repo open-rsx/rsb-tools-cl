@@ -35,13 +35,19 @@ absolute value into a rate value using this information."))
 (defmethod quantity-value :around ((quantity rate-mixin))
   (let+ ((value (call-next-method))
 	 ((&accessors-r/o (start-time %quantity-start-time)) quantity)
-	 (now (local-time:now)))
-    (if (and (realp value) start-time)
-	(let ((diff (local-time:timestamp-difference now start-time)))
-	  (if (plusp diff)
-	      (/ value diff)
-	      :n/a))
-	:n/a)))
+	 (now  (local-time:now))
+	 (diff (when start-time
+		 (local-time:timestamp-difference now start-time))))
+    (cond
+      ;; Start time not recorded yet or no difference to start time.
+      ((not (and diff (plusp diff)))
+       :n/a)
+      ;; No value recorded for current time period.
+      ((not (realp value))
+       :n/a)
+      ;; Everything is fine, compute rate.
+      (t
+       (/ value diff)))))
 
 (defmethod reset! ((quantity rate-mixin))
   (setf (%quantity-start-time quantity) (local-time:now))
