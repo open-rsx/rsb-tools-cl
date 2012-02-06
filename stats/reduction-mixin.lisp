@@ -25,7 +25,9 @@
 		:reader   quantity-empty-value
 		:initform :n/a
 		:documentation
-		"")
+		"This class allocated slot stores a value that should
+be produced when the quantity is queried when no values have been
+collected.")
    (reduce-by   :initarg  :reduce-by
 		:type     function
 		:accessor quantity-reduce-by
