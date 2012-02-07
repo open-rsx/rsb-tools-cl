@@ -106,6 +106,10 @@ RSB-related systems."
 			       :depends-on ("package" "protocol"
 					    "width-mixin" "name-mixin"))
 
+			      ;; Payload formatting classes
+			      (:file       "payload-collection"
+			       :depends-on ("package" "event-style-detailed"))
+
 			      ;; Event formatting style classes
 			      (:file       "event-style-discard"
 			       :depends-on ("package" "protocol"))
