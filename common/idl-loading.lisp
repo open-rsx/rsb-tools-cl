@@ -1,6 +1,6 @@
 ;;; idl-loading.lisp --- Loading IDL files at runtime.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -40,6 +40,15 @@ If supplied, DEPENDENCY-HANDLER has to be a function that resolves
 dependencies. It is called when SOURCE contains references to entities
 not specified within SOURCE."))
 
+(defmethod load-idl :around  ((source t)
+			      (kind   t)
+			      &key &allow-other-keys)
+  "Wrap error conditions in `failed-to-load-idl'."
+  (handler-bind
+      (((and error (not failed-to-load-idl))
+	(curry #'failed-to-load-idl source)))
+    (call-next-method)))
+
 
 ;;;
 ;;
@@ -48,11 +57,8 @@ not specified within SOURCE."))
 		     &key &allow-other-keys)
   "Signal an error if we no not know how load an IDL for the
 combination SOURCE and KIND."
-  (failed-to-load-idl
-   source
-   (make-condition 'simple-error
-		   :format-control  "~@<~A is an unknown data definition type.~@:>"
-		   :format-arguments (list kind))))
+  (error "~@<~A is an unknown data definition type.~@:>"
+	 kind))
 
 (defmethod load-idl ((source pathname) (kind (eql :file))
 		     &rest args
@@ -60,12 +66,10 @@ combination SOURCE and KIND."
   "Load an IDL definition from the file SOURCE. The IDL kind is
 inferred form the file type of SOURCE."
   (log1 :info "Processing IDL file ~S" source)
-  (handler-bind
-      ((error (curry #'failed-to-load-idl source)))
-    (apply #'load-idl
-	   source (make-keyword (string-upcase
-				 (pathname-type source)))
-	   args)))
+  (apply #'load-idl
+	 source (make-keyword (string-upcase
+			       (pathname-type source)))
+	 args))
 
 (defmethod load-idl ((source pathname) (kind (eql :wild))
 		     &rest args
