@@ -42,17 +42,34 @@ delegate to sub-styles based on dispatch predicates."))
 					    (object    delegating-mixin))
   (call-next-method (subst object :self new-value) object))
 
+(defmethod sub-style-for ((style delegating-mixin)
+			  (event t))
+  "Return a list of sub-styles of STYLES whose predicate succeeds on
+EVENT."
+  (map 'list #'cdr
+       (remove-if (complement (rcurry #'funcall event))
+		  (style-sub-styles style)
+		  :key #'car)))
+
 (defmethod format-event ((event  t)
 			 (style  delegating-mixin)
 			 (stream t)
 			 &key &allow-other-keys)
-  "Format EVENT on STREAM on a single line."
-  (let+ (((&accessors-r/o (sub-styles style-sub-styles)) style)
-	 (sub-style (cdr (find-if (rcurry #'funcall event) sub-styles
-				  :key #'car))))
-    (cond
-      ((null sub-style))
-      ((eq sub-style style)
-       (call-next-method))
-      (t
-       (format-event event sub-style stream)))))
+  "Delegate formatting of EVENT on STREAM to appropriate sub-styles of
+STYLE."
+  (let+ ((sub-styles (sub-style-for style event))
+	 ((&labels apply-style (style-or-styles)
+	    (cond
+	      ((typep style-or-styles 'sequence)
+	       (map nil #'apply-style style-or-styles))
+
+	      ((eq style-or-styles style)
+	       (call-next-method))
+
+	      (t
+	       (format-event event style-or-styles stream))))))
+    (map nil #'apply-style sub-styles)))
+
+(defmethod print-object ((object delegating-mixin) stream)
+  (print-unreadable-object (object stream :type t :identity t)
+    (format stream "(~D)" (length (style-sub-styles object)))))

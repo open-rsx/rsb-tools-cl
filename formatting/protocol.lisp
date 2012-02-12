@@ -1,6 +1,6 @@
 ;;; protocol.lisp --- Protocol for formatting of RSB events.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -54,6 +54,15 @@ allowed to take up."))
     "This class family consists of event formatting style
 classes. Each class implements a particular style of formatting
 received events onto a given stream by specializing `format-event'.")
+
+
+;;; Delegation protocol
+;;
+
+(defgeneric sub-style-for (style event)
+  (:documentation
+   "Return a sub-style object of STYLE or a sequence of such style
+objects for formatting EVENT."))
 
 
 ;;; Column protocol
