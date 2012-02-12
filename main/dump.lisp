@@ -5,8 +5,9 @@
 (load-system :cl-protobuf)
 (load-system :cl-spread)   ;; for spread transport
 
-(load-system :swank)       ;; for the lulz
 (load-system :usocket)     ;; for socket transport
+
+(load-system :swank)       ;; for the lulz
 
 (load-system :cl-rsb-tools-main)
 
