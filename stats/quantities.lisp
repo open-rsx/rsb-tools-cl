@@ -60,11 +60,7 @@ arriving within a period of time.")
 
   (define-simple-quantity (throughput
 			   :slots     ((empty-value :initform 0))
-			   :extractor (lambda (event)
-					(let ((datum (event-data event)))
-					  (typecase datum
-					    (sequence (length datum))
-					    (t        0))))
+			   :extractor (rcurry #'event-size 0)
 			   :reduce-by #'+)
       (extract-function-mixin
        collecting-mixin

@@ -86,6 +86,13 @@
    :find-quantity-class
    :quantity-classes)
 
+  ;; Extractor utilities
+  (:export
+   :event-size
+   :event-size/power-of-2
+
+   :event-type/simple)
+
   (:documentation
    "This package contains functions and classes for computing basic
 statistical quantities over properties of RSB events. Most quantities

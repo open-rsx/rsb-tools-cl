@@ -70,6 +70,8 @@ RSB-related systems."
 			       :depends-on ("package"))
 			      (:file       "protocol"
 			       :depends-on ("package"))
+			      (:file       "util"
+			       :depends-on ("package"))
 
 			      ;; Quantity mixin classes
 			      (:file       "named-mixin"
@@ -92,7 +94,7 @@ RSB-related systems."
 
 			      ;; Quantity classes
 			      (:file       "quantities"
-			       :depends-on ("package" "protocol"
+			       :depends-on ("package" "protocol" "util"
 					    "named-mixin"
 					    "collecting-mixin"
 					    "histogram-mixin"
