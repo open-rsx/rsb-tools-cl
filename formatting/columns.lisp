@@ -24,9 +24,9 @@
 ;;
 
 (macrolet ((define-simple-column ((name width
-					&key
-					(event-class 'event)
-					(print-name  (string name)))
+				   &key
+				   (event-class 'event)
+				   (print-name  (string name)))
 				  &body doc-and-body)
 	     (let+ (((&optional width (alignment :right)) (ensure-list width))
 		    (class-name  (symbolicate "COLUMN-" name))
