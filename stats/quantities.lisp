@@ -72,6 +72,26 @@ possible to determine the size of an event payload and that,
 consequently, the value of this quantity may not reflect the actual
 throughput in some cases.")
 
+  (define-simple-quantity (size
+			   :extractor #'rsb.stats:event-size)
+      (extract-function-mixin
+       collecting-mixin
+       moments-mixin)
+    "This quantity measures the size of events over a period of time
+and computes mean and variance of the collected values. Note that it
+is not always possible to determine the size of an event payload and
+that, consequently, the value of this quantity may not reflect the
+actual size statistics in some cases.")
+
+  (define-simple-quantity (size/log
+			   :extractor #'rsb.stats:event-size/power-of-2)
+      (extract-function-mixin
+       histogram-mixin)
+    "The value of this measures is a histogram of event sizes -
+rounded to the nearest power of 2 - observed over a period of
+time. When output is produced, the most frequent sizes are printed
+first.")
+
   (define-simple-quantity (scope
 			   :extractor (compose #'scope-string
 					       #'event-scope))
@@ -105,7 +125,15 @@ frequent event origins are printed first.")
        histogram-mixin)
     "The value of this quantity is a histogram of event wire-schemas
 observed over a period of time. When output is produced, the most
-frequent event origins are printed first."))
+frequent event origins are printed first.")
+
+  (define-simple-quantity (type
+			   :extractor #'event-type/simple)
+      (extract-function-mixin
+       histogram-mixin)
+    "The value of this quantity is a histogram of event types over a
+period of time. When output is produced, the most frequent event types
+are printed first."))
 
 
 ;;; Generic meta-data quantities
