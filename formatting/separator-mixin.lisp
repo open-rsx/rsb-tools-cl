@@ -1,6 +1,6 @@
-;;; separator-mixin.lisp --- Mixin for printing separator rulers.
+;;; separator-mixin.lisp --- Mixin for printing separators.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -58,10 +58,16 @@ print separators between output items."))
   "Print a separator according to SPEC onto STREAM."
   (etypecase spec
     (null)
+
     ((or character string)
      (princ spec stream))
+
     (rule-spec
      (princ (make-string max-columns :initial-element (second spec))
 	    stream))
+
+    ((eql :clear)
+     (format stream "~C~A~C~A" #\Escape "[1;1f" #\Escape "[J"))
+
     (list
      (map nil (rcurry #'print-separator stream max-columns) spec))))

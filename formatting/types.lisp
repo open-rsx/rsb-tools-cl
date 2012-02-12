@@ -26,7 +26,9 @@
 (deftype separator-spec ()
   "This type consists of several possible separator specifications."
   `(or null
-       character string rule-spec
+       character string
+       rule-spec
+       (eql :clear)
        (cons (not keyword) list)))
 
 (deftype template-designator ()
