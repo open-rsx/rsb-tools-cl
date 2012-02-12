@@ -23,7 +23,9 @@
 #.(asdf:load-system :usocket)
 
 (defvar *by-scope-formatting-converter*
-  (append (rsb:default-converters) '((t . :fundamental-null)))
+  (append (ensure-list
+	   (cdr (assoc 'octet-vector (rsb:default-converters))))
+	  '(:fundamental-null))
   "The converter that should be applied to inner payloads in event
 collection payloads.")
 
