@@ -50,7 +50,7 @@ pairs be printed?")
 		  :documentation
 		  "Should the causes of the event be printed?"))
   (:default-initargs
-   :separator '(#\Newline (:rule #\-) #\Newline))
+   :separator '((:rule #\-) #\Newline))
   (:documentation
    "Format the meta-data of each event on multiple lines, but do not
 format event payloads."))

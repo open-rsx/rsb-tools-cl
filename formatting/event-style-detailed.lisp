@@ -41,8 +41,7 @@ possible."))
   (let+ (((&accessors-r/o (data event-data)) event))
     (when (> max-lines 11)
       (with-indented-section (stream (format nil "Payload (~S)"
-					     (class-name (class-of data)))
-				     :final-fresh-line? nil)
+					     (class-name (class-of data))))
 	(format-payload data :any stream
 			:max-lines   (- max-lines 11)
 			:max-columns (- max-columns 2))))))
