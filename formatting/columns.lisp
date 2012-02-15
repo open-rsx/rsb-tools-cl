@@ -180,7 +180,7 @@ events that actually are replies to method calls."
 		    "Stores the key of the meta-data item that should
 be extracted from events."))
 	      (:default-initargs
-	       :key       (missing-required-initarg 'timestamp :key)
+	       :key       (missing-required-initarg ',class-name :key)
 	       :width     32
 	       :alignment :left)
 	      (:documentation
