@@ -73,7 +73,7 @@ consequently, the value of this quantity may not reflect the actual
 throughput in some cases.")
 
   (define-simple-quantity (size
-			   :extractor #'rsb.stats:event-size)
+			   :extractor (rcurry #'rsb.stats:event-size nil))
       (extract-function-mixin
        collecting-mixin
        moments-mixin)
