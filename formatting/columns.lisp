@@ -78,6 +78,13 @@ current content to be overridden by subsequent output."
 			 :event-class t)
       "Emit the current time."
     (format stream "~A" (local-time:now)))
+  (define-simple-column (:now/compact 15
+			 :print-name  "now"
+			 :event-class t)
+      "Emit the current time in a compact format."
+    (local-time:format-timestring
+     stream (local-time:now)
+     :format '((:hour 2) #\: (:min 2) #\: (:sec 2) #\. (:usec 6))))
   (define-simple-column (:text 32
 			 :event-class t)
       "Emit a given text. The name of the column is also the emitted
