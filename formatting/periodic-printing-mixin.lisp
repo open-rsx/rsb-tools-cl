@@ -36,7 +36,14 @@ printing.")
    (timer          :accessor %style-timer
 		   :documentation
 		   "Stores the timer used to trigger periodic
-printing."))
+printing.")
+   (lock           :reader   %style-lock
+		   :initform (bt:make-recursive-lock
+			      "Periodic printing lock")
+		   :documentation
+		   "Stores a lock that protects timer-triggered
+accesses to the style object against `format-event'-triggered
+accesses."))
   (:documentation
    "This mixin class is intended to be mixed into formatting classes
 that produce output periodically instead of being triggered by the
@@ -48,7 +55,6 @@ timer-driven way."))
 
 (defmethod initialize-instance :after ((instance periodic-printing-mixin)
                                        &key)
-
   (let+ (((&accessors (timer          %style-timer)
 		      (print-interval style-print-interval)) instance)
 	 (timer* #+sbcl (sb-ext:make-timer (%make-timer-function instance))
@@ -74,14 +80,17 @@ timer-driven way."))
 				:repeat-interval new-value)
   #-sbcl #.(error "not implemented"))
 
-(defmethod format-event :around ((event  event)
+(defmethod format-event :around ((event  t)
 				 (style  periodic-printing-mixin)
-				 (stream stream)
+				 (stream t)
 				 &key &allow-other-keys)
-  "Store stream for use in timer-driven output."
-  ;; Not running the next method prevents output from being produced
-  ;; at this point. Output is done in a timer-driven way.
-  (setf (%style-stream style) stream))
+  "Protect against concurrent access to STYLE and store STREAM for use
+in timer-driven output."
+  (bt:with-recursive-lock-held ((%style-lock style))
+    (unless (eq event :trigger)
+      (setf (%style-stream style) stream))
+
+    (call-next-method)))
 
 
 ;;; Utility functions
