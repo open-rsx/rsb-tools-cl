@@ -1,6 +1,6 @@
 ;;; width-mixin.lisp --- Mixin for width limited and aligned formatting.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -64,15 +64,23 @@ and alignment according to ALIGN. ALIGN can be :left or :right."
 		   (funcall thunk stream)))
 	 (length (length value)))
     (cond
+      ;; No room at all - print nothing.
       ((zerop limit))
+
+      ;; Only room for a single character - print ellipsis if we have
+      ;; any output.
       ((< limit 1 length)
        (format stream "…"))
+
+      ;; Not enough room - print value and ellipsis.
       ((< limit length)
        (ecase align
 	 (:left
 	  (format stream "~A…" (subseq value 0 (- limit 1))))
 	 (:right
 	  (format stream "…~A" (subseq value (1+ (- length limit)))))))
+
+      ;; Enough room - pad value.
       (t
        (ecase align
 	 (:left
