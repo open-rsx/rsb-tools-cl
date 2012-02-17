@@ -1,6 +1,6 @@
 ;;; main.lisp --- Dispatch function of the main tools program.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -29,14 +29,19 @@
   "Entry point function of the main tools program."
   (make-synopsis)
   (let* ((pathname (pathname (first (com.dvlsoft.clon::cmdline))))
-	 (name     (pathname-name pathname))
+	 (name     (apply #'concatenate
+			  'string
+			  (pathname-name pathname)
+			  (when (pathname-type pathname)
+			    (list "." (pathname-type pathname)))))
 	 (entry    (cdr (assoc name *filename->entry-point*
 			       :test #'(lambda (name entry)
 					 (search entry name))))))
     (if entry
 	(funcall entry)
-	(format *error-output* "~@<Invoke as ~{~A~^ or ~}.~_~_This is ~
-usually done by creating symbolic links~_~_~:*~{~2T~A -> tools~_~}~_The ~
-following command can be used to achieve this:~:*~2&~2T~@<~@;~{ln -s ~
-tools ~A~^ && ~}~:>~@:>~%"
-		(map 'list #'car *filename->entry-point*)))))
+	(format *error-output* "~@<Invoke as ~{~A~^ or ~} (not ~
+~A).~_~_This is usually done by creating symbolic links~_~_~2:*~{~2T~A ~
+-> tools~_~}~_The following command can be used to achieve ~
+this:~:*~2&~2T~@<~@;~{ln -s tools ~A~^ \\~_~2T&& ~}~:>~@:>~%"
+		(map 'list #'car *filename->entry-point*)
+		name))))
