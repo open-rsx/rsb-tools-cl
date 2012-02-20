@@ -120,7 +120,7 @@ frequent event origins are printed first.")
 
   (define-simple-quantity (wire-schema
 			   :extractor #'(lambda (event)
-					  (meta-data event :rsb.wire-schema)))
+					  (meta-data event :rsb.transport.wire-schema)))
       (extract-function-mixin
        histogram-mixin)
     "The value of this quantity is a histogram of event wire-schemas

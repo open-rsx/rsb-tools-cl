@@ -22,7 +22,7 @@
 (defun event-size (event &optional (replacement-value :n/a))
   "Try to determine and return the size of the payload of EVENT in
 bytes. Return REPLACEMENT-VALUE, if the size cannot be determined."
-  (or (meta-data event :rsb.payload-size)
+  (or (meta-data event :rsb.transport.payload-size)
       (let ((data (event-data event)))
 	(typecase data
 	  (integer
@@ -42,5 +42,5 @@ power of two, if it is a positive integer."
 
 (defun event-type/simple (event)
   "Return an object designating the type of EVENT."
-  (or (meta-data event :rsb.wire-schema)
+  (or (meta-data event :rsb.transport.wire-schema)
       (type-of (event-data event))))
