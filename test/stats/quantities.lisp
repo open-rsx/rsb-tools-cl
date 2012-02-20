@@ -83,13 +83,15 @@ CASES as body of `ensure-quantity-cases' in a test case for the
 (define-simple-quantity-suite (:wire-schema)
   `((() ()                                   "^N/A$")
     (() (,(make-event "/foo" "baz"
-		      :rsb.wire-schema "a")) "^a: 1$")
-    (() (,(make-event "/foo" "baz"
-		      :rsb.wire-schema "a")
-	 ,(make-event "/bar" "baz"
-		      :rsb.wire-schema "b")
-	 ,(make-event "/bar" "baz"
-		      :rsb.wire-schema "b")) "^b: 2, a: 1$")))
+		      :rsb.transport.wire-schema "a")) "^a: 1$")
+    (()
+     (,(make-event "/foo" "baz"
+		   :rsb.transport.wire-schema "a")
+       ,(make-event "/bar" "baz"
+		    :rsb.transport.wire-schema "b")
+       ,(make-event "/bar" "baz"
+		    :rsb.transport.wire-schema "b"))
+     "^b: 2, a: 1$")))
 
 (define-simple-quantity-suite (:meta-data-moments)
   (let+ (((&flet event (&rest args &key &allow-other-keys)
