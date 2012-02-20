@@ -32,17 +32,13 @@ bytes. Return REPLACEMENT-VALUE, if the size cannot be determined."
 	  (t
 	   replacement-value)))))
 
-(defun event-size/power-of-2 (event)
+(defun event-size/power-of-2 (event &optional (replacement-value :n/a))
   "Like `event-size', but the returned size is rounded to the nearest
-power of two, if it is a real number."
-  (let ((size (event-size event)))
-    (cond
-      ((not (realp size))
-       size)
-      ((zerop size)
-       0)
-      (t
-       (ash 1 (ceiling (log size 2)))))))
+power of two, if it is a positive integer."
+  (let ((size (event-size event replacement-value)))
+    (if (typep size 'non-negative-integer)
+	(ash 1 (integer-length size))
+	size)))
 
 (defun event-type/simple (event)
   "Return an object designating the type of EVENT."
