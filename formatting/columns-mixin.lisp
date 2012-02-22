@@ -47,7 +47,7 @@ style is composed.")
    (separator :initarg  :separator
 	      :type     string
 	      :accessor style-separator
-	      :initform "|"
+	      :initform (if *textual-output-can-use-utf-8?* "│" "|")
 	      :documentation
 	      "Stores a separator string that is printed between the
 output produced by adjacent columns."))
@@ -148,3 +148,7 @@ instance."
        (apply #'make-instance (find-column-class class) args)))
     (standard-object
      spec)))
+
+;; Local Variables:
+;; coding: utf-8
+;; End:

@@ -34,6 +34,10 @@
    :template-designator
    :script-designator)
 
+  ;; Variables
+  (:export
+   :*textual-output-can-use-utf-8?*)
+
   ;; Event formatting protocol
   (:export
    :format-event

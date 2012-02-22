@@ -68,6 +68,8 @@ RSB-related systems."
 		 :components ((:file       "package")
 			      (:file       "types"
 			       :depends-on ("package"))
+			      (:file       "variables"
+			       :depends-on ("package"))
 			      (:file       "util"
 			       :depends-on ("package"))
 
@@ -90,7 +92,8 @@ RSB-related systems."
 			       :depends-on ("package" "protocol"
 					    "counting-mixin"))
 			      (:file       "columns-mixin"
-			       :depends-on ("package" "protocol"
+			       :depends-on ("package" "variables"
+					    "protocol"
 					    "header-printing-mixin"
 					    "width-mixin"))
 			      (:file       "periodic-printing-mixin"
