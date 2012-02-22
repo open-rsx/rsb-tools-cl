@@ -110,10 +110,8 @@ the URI argument).~@:>"))
 	(log1 :info "Using URI ~S" uri)
 
 	(with-reader (reader uri
-			     :transports '((:spread :expose-wire-schema? t
-					    &inherit)
-					   (:socket :expose-wire-schema? t
-					    &inherit))
+			     :transports '((t :expose (:rsb.transport.wire-schema
+						       :rsb.transport.payload-size)))
 			     :converters converters)
 	  (setf (receiver-filters reader) filters)
 	  (log1 :info "Created reader ~A" reader)
