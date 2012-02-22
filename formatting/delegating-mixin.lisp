@@ -20,27 +20,16 @@
 (cl:in-package :rsb.formatting)
 
 (defclass delegating-mixin ()
-  ((sub-styles :type     list
+  ((sub-styles :initarg  :sub-styles
+	       :type     list
 	       :accessor style-sub-styles
 	       :initform nil
 	       :documentation
 	       "Stores predicates and corresponding sub-styles as an
 alist of items of the form (PREDICATE . SUB-STYLE)."))
-  (:default-initargs
-   :sub-styles (list (cons (constantly t) :self)))
   (:documentation
    "This class is intended to be used in formatting classes that
 delegate to sub-styles based on dispatch predicates."))
-
-(defmethod shared-initialize :after ((instance   delegating-mixin)
-                                     (slot-names t)
-                                     &key
-				     sub-styles)
-  (setf (style-sub-styles instance) sub-styles))
-
-(defmethod (setf style-sub-styles) :around ((new-value sequence)
-					    (object    delegating-mixin))
-  (call-next-method (subst object :self new-value) object))
 
 (defmethod sub-style-for ((style delegating-mixin)
 			  (event t))
@@ -51,24 +40,25 @@ EVENT."
 		  (style-sub-styles style)
 		  :key #'car)))
 
+(defmethod delegate ((event  t)
+		     (style  delegating-mixin)
+		     (stream t))
+  (let+ ((sub-styles (sub-style-for style event))
+	 ((&labels apply-style (style-or-styles)
+	    (cond
+	      ((typep style-or-styles 'sequence)
+	       (map nil #'apply-style style-or-styles))
+	      (t
+	       (format-event event style-or-styles stream))))))
+    (map nil #'apply-style sub-styles)))
+
 (defmethod format-event ((event  t)
 			 (style  delegating-mixin)
 			 (stream t)
 			 &key &allow-other-keys)
   "Delegate formatting of EVENT on STREAM to appropriate sub-styles of
 STYLE."
-  (let+ ((sub-styles (sub-style-for style event))
-	 ((&labels apply-style (style-or-styles)
-	    (cond
-	      ((typep style-or-styles 'sequence)
-	       (map nil #'apply-style style-or-styles))
-
-	      ((eq style-or-styles style)
-	       (call-next-method))
-
-	      (t
-	       (format-event event style-or-styles stream))))))
-    (map nil #'apply-style sub-styles)))
+  (delegate event style stream))
 
 (defmethod print-object ((object delegating-mixin) stream)
   (print-unreadable-object (object stream :type t :identity t)

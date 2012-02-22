@@ -106,7 +106,9 @@
    :delegating-mixin
 
    :style-sub-styles
-   :sub-style-for)
+   :sub-style-for
+
+   :delegate)
 
   ;; `separator-mixin' mixin class
   (:export

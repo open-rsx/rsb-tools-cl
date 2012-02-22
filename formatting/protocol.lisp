@@ -64,6 +64,10 @@ received events onto a given stream by specializing `format-event'.")
    "Return a sub-style object of STYLE or a sequence of such style
 objects for formatting EVENT."))
 
+(defgeneric delegate (event style stream)
+  (:documentation
+   "Delegate processing of EVENT on STREAM by STYLE to a sub-style."))
+
 
 ;;; Column protocol
 ;;

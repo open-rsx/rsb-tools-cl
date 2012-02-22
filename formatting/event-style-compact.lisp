@@ -34,14 +34,18 @@
 	     (find-class ',class-name))
 
 	   (defclass ,class-name (delegating-mixin
-				  columns-mixin
 				  header-printing-mixin)
 	     ()
 	     (:default-initargs
 	      :sub-styles (list ,@(map 'list #'make-sub-style
 				       sub-styles)))
 	     ,@(when documentation
-	         `((:documentation ,documentation))))))))
+	         `((:documentation ,documentation))))
+
+	   (defmethod format-header ((style  ,class-name)
+				     (stream t))
+	     (format-header
+	      (cdr (lastcar (style-sub-styles style))) stream))))))
 
   (define-compact-style :compact
       "This formatting style prints several properties of received
