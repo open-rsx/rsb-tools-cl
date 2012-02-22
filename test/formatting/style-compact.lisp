@@ -1,6 +1,6 @@
-;;; style-compact.lisp ---
+;;; style-compact.lisp --- Unit tests for the compact family of styles.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -37,13 +37,13 @@ on `format-event' for `style-compact'.")
 
     `((:header-frequency nil)
       (,(make-event "/foo" "bar"))
-      ".*…\\|ORIGIN\\? \\|/foo/           \\|\"bar\"           \\|        3
+      ".*…\\│ORIGIN\\? \\│/foo/           \\│\"bar\"           \\│        3
 ")
 
     `((:header-frequency nil)
       (,(make-event "/foo" "bar") ,(make-event "/fez" "whoop"))
-      ".*…\\|ORIGIN\\? \\|/foo/           \\|\"bar\"           \\|        3
-.*…\\|ORIGIN\\? \\|/fez/           \\|\"whoop\"         \\|        5
+      ".*…\\│ORIGIN\\? \\│/foo/           \\│\"bar\"           \\│        3
+.*…\\│ORIGIN\\? \\│/fez/           \\│\"whoop\"         \\│        5
 ")))
 
 (deftestsuite style-compact+-root (formatting-root)
@@ -64,13 +64,13 @@ on `format-event' for `style-compact+'.")
 
     `((:header-frequency nil)
       (,(make-event "/foo" "bar"))
-      ".*\\|ORIGIN\\? \\|     NIL\\|EVENTID…\\|<nomethod>\\|/foo/                   \\|\"bar\"                \\|        3
+      ".*\\│ORIGIN\\? \\│     NIL\\│EVENTID…\\│<nomethod>\\│/foo/                   \\│\"bar\"                \\│        3
 ")
 
     `((:header-frequency nil)
       (,(make-event "/foo" "bar") ,(make-event "/fez" "whoop"))
-      ".*\\|ORIGIN\\? \\|     NIL\\|EVENTID…\\|<nomethod>\\|/foo/                   \\|\"bar\"                \\|        3
-.*\\|ORIGIN\\? \\|     NIL\\|EVENTID…\\|<nomethod>\\|/fez/                   \\|\"whoop\"              \\|        5
+      ".*\\│ORIGIN\\? \\│     NIL\\│EVENTID…\\│<nomethod>\\│/foo/                   \\│\"bar\"                \\│        3
+.*\\│ORIGIN\\? \\│     NIL\\│EVENTID…\\│<nomethod>\\│/fez/                   \\│\"whoop\"              \\│        5
 ")))
 
 ;; Local Variables:
