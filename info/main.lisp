@@ -75,15 +75,21 @@
 
   (let+ ((stream   *standard-output*)
 	 (verbose? (getopt :long-name "verbose"))
-	 ((version? connectors? converters? filters? event-processing?)
+	 ((version? configuration? connectors? converters? filters?
+	   event-processing?)
 	  (mapcar #'(lambda (name)
 		      (or (getopt :long-name name) verbose?))
-		  '("version" "connectors" "converters" "filters"
-		    "event-processing"))))
+		  '("version" "configuration" "connectors" "converters"
+		    "filters" "event-processing"))))
     (with-print-limits (stream)
       (with-logged-warnings
 	(when version?
 	  (print-version nil stream))
+
+	(when configuration?
+	  (rsb.formatting::with-indented-section (stream "Configuration")
+	    (format stream "~{~48@<~(~{~A~^.~}~)~>: ~S~^~&~}"
+		    (alist-plist *default-configuration*))))
 
 	(when connectors?
 	  (rsb.formatting::with-indented-section (stream "Connectors")
