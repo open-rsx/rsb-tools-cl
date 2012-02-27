@@ -48,7 +48,9 @@
    :make-idl-options
    :process-commandline-options
 
-   :parse-instantiation-spec)
+   :parse-instantiation-spec
+
+   :process-idl-options)
 
   ;; Interactive stuff
   (:export

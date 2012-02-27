@@ -86,4 +86,8 @@ RSB-related systems."
 			       :depends-on ("package"))
 			      (:file       "options"
 			       :depends-on ("package" "debugger"
-					    "logging" "help"))))))
+					    "logging" "help"))
+
+			      (:file       "idl-options"
+			       :depends-on ("package" "idl-loading"
+					    "options"))))))
