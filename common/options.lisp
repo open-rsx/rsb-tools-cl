@@ -1,6 +1,6 @@
 ;;; options.lisp --- Common functions related to commandline options.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -82,6 +82,25 @@ definitions."
   SOMESTUFF/**/MORESTUFF
 
 can be used to search directories recursively. If the file designated by FILE-OR-GLOB-EXPRESSION depend on additional data definition files (i.e. contain \"import\" statements), the list of directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times.")))
+
+
+;;; Option processing
+;;
+
+(defun collect-option-values (&rest spec
+			      &key
+			      (transform #'(lambda (string)
+					     (let ((*read-eval* nil))
+					       (read-from-string string))))
+			      &allow-other-keys)
+  "Return a list of all values that have been supplied for the option
+specified by SPEC.
+
+TRANSFORM is applied to all option values."
+  (let ((spec (remove-from-plist spec :transform)))
+    (iter (for value/string next (apply #'getopt spec))
+	  (while value/string)
+	  (collect (funcall transform value/string)))))
 
 (defun process-commandline-options (&key
 				    (version '(0 1 0))
