@@ -103,6 +103,9 @@ RSB-related systems."
 			      (:file       "separator-mixin"
 			       :depends-on ("package" "types"
 					    "protocol"))
+			      (:file       "image-output-mixin"
+			       :depends-on ("package" "types"
+					    "protocol"))
 
 			      ;; Column classes
 			      (:file       "columns"

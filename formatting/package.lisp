@@ -31,6 +31,10 @@
    :rule-spec
    :separator-spec
 
+   :dimension-spec/short
+   :dimension-spec/full
+   :dimension-spec
+
    :template-designator
    :script-designator)
 
@@ -116,6 +120,16 @@
 
    :style-separator)
 
+  ;; `image-output-mixin' mixin class
+  (:export
+   :image-output-mixin
+
+   :style-width
+   :style-height
+
+   :normalize-dimension-spec
+   :apply-dimension-spec)
+
   ;; `style-meta-data' style class
   (:export
    :style-meta-data
@@ -186,7 +200,7 @@
    :with-print-limits
    :invoke-with-print-limits)
 
-  ;;Help text generation
+  ;; Help text generation
   (:export
    :make-style-help-string)
 

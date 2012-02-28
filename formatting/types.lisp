@@ -31,6 +31,31 @@
        (eql :clear)
        (cons (not keyword) list)))
 
+
+;;; Image-related types.
+;;
+
+(deftype dimension-spec/short ()
+  "Short specification of an image dimension."
+  '(or positive-integer
+       positive-real
+       (eql t)))
+
+(deftype dimension-spec/full ()
+  "Full specification of an image dimension."
+  '(or (cons (eql :px) (cons positive-integer null))
+       (cons (eql :%)  (cons positive-real    null))
+       (eql t)))
+
+(deftype dimension-spec ()
+  "Either short or full specification of an image dimension."
+  '(or dimension-spec/short
+       dimension-spec/full))
+
+
+;;;
+;;
+
 (deftype template-designator ()
   "A thing that can be converted into a formatting template."
   '(or string stream pathname))
