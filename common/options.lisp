@@ -33,15 +33,14 @@
     (stropt :long-name     "help-for"
 	    :argument-name "CATEGORY"
 	    :description
-	    "Print help for specified categories and exit. This option can be specified multiple times.")
+	    "Print help for specified categories and exit. This option can be supplied multiple times.")
     (enum   :long-name     "log-level"
 	    :enum          '(:off :trace :info :warn :error)
 	    :default-value :warn
 	    :argument-name "LEVEL"
 	    :description
 	    "Controls the amount of generated log output.")
-    (stropt :short-name    "t"
-	    :long-name     "trace"
+    (stropt :long-name     "trace"
 	    :argument-name "SPEC"
 	    :hidden        (not (show-help-for? :advanced-debug
 						:show show))
@@ -50,7 +49,6 @@
 + \"PACKAGE\" (note the double quotes and uppercase): trace all functions in the package named PACKAGE.
 + function-name (note: no quotes, actual case of the function name): trace the named function.")
     (flag   :long-name     "debug"
-	    :short-name    "d"
 	    :hidden        (not (show-help-for? :advanced-debug
 						:show show))
 	    :description
