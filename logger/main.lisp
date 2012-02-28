@@ -51,14 +51,6 @@
    :item    (defgroup (:header "Examples")
 	      (make-text :contents (make-examples-string)))))
 
-(defun existing-directory-or-lose (pathname)
-  "Signal an error unless PATHNAME designates an existing directory."
-  (if-let ((truename (probe-file pathname)))
-    (when (or (pathname-name truename)
-	      (pathname-type truename))
-      (error "~@<Not a directory: ~A.~@:>" truename))
-    (error "~@<Directory does not exist: ~A.~@:>" pathname)))
-
 (defun main ()
   "Entry point function of the cl-rsb-tools-logger system."
   (update-synopsis)
@@ -68,24 +60,15 @@
    :update-synopsis #'update-synopsis
    :return          #'(lambda () (return-from main)))
 
+
   ;; Validate commandline options.
   (when (> (length (remainder)) 1)
     (error "~@<Specify at most one URI (also, options cannot follow ~
 the URI argument).~@:>"))
 
   (with-logged-warnings
-
-    ;; Extend data definition source path.
-    (iter (for paths next (getopt :long-name "idl-path"))
-	  (while paths)
-	  (iter (for path in paths)
-		(existing-directory-or-lose path)
-		(pushnew path pbf:*proto-load-path*)))
-
-    ;; Load specified data definitions.
-    (iter (for spec next (getopt :long-name "load-idl"))
-	  (while spec)
-	  (load-idl spec :auto))
+    ;; Load IDLs as specified on the commandline.
+    (process-idl-options)
 
     ;; Create a reader and start the receiving and printing loop.
     (let* ((uri         (or (first (remainder)) "/"))
