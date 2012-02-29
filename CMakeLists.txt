@@ -83,11 +83,11 @@ FOREACH(NAME formatting stats)
 ENDFOREACH()
 
 FOREACH(TOOL ${TOOLS})
-    ADD_TEST(NAME    "${TOOL}-help"
+    ADD_TEST(NAME    "${TOOL}/help"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}" --help)
-    ADD_TEST(NAME    "${TOOL}-help-all"
+    ADD_TEST(NAME    "${TOOL}/help-all"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}" --help-for=all)
-    ADD_TEST(NAME    "${TOOL}-version"
+    ADD_TEST(NAME    "${TOOL}/version"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}" --version)
 ENDFOREACH()
 
