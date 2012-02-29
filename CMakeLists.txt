@@ -91,6 +91,23 @@ FOREACH(TOOL ${TOOLS})
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}" --version)
 ENDFOREACH()
 
+FOREACH(CATEGORY verbose configuration connectors converters filters event-processing)
+    ADD_TEST(NAME    "info/${CATEGORY}"
+             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/info" --debug --${CATEGORY})
+ENDFOREACH()
+
+# TODO: add these:
+# programmable/template :template #p"${CMAKE_CURRENT_SOURCE_DIR}/test/data/empty.template"
+# programmable/script   :template #p"${CMAKE_CURRENT_SOURCE_DIR}/test/data/empty.lisp"
+FOREACH(STYLE discard meta-data payload detailed
+              compact compact+ statistics)
+    ADD_TEST(NAME    "logger/${STYLE}"
+             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+                     --debug --style "${STYLE}"
+                     --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:quit))))) (sb-ext:schedule-timer timer 3))"
+                     inprocess:)
+ENDFOREACH()
+
 # Installation
 SET(BINARY_PREFIX    "rsb-")
 SET(VERSION_SUFFIX   "cl${CL_RSB_TOOLS_VERSION_MAJOR}.${CL_RSB_TOOLS_VERSION_MINOR}")
