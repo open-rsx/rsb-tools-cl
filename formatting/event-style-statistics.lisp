@@ -19,12 +19,54 @@
 
 (cl:in-package :rsb.formatting)
 
+
+;;; Class `statistics-columns-mixin'
+;;
+
+(defclass statistics-columns-mixin (columns-mixin)
+  ((quantities :type     list
+	       :accessor %style-quantities
+	       :initform nil
+	       :documentation
+	       "Stores the list of quantities printed by the
+formatting style."))
+  (:documentation
+   "This class is intended to be mixed into formatting classes that
+present the values of statistical quantities in a column-based
+manner."))
+
+(defmethod (setf style-columns) :after ((new-value t)
+					(style     statistics-columns-mixin))
+  ;; Find columns in NEW-VALUE that contain a quantity. Extract and
+  ;; store these quantities for direct updates.
+  (let+ (((&flet quantity-column? (column)
+	    (closer-mop:compute-applicable-methods-using-classes
+	     (fdefinition 'column-quantity)
+	     (list (class-of column))))))
+    (setf (%style-quantities style)
+	  (map 'list #'column-quantity
+	       (remove-if-not #'quantity-column? (style-columns style))))))
+
+(defmethod format-event :around ((event  t)
+				 (style  statistics-columns-mixin)
+				 (stream t)
+				 &key &allow-other-keys)
+  ;; Update quantities.
+  (if (eq event :trigger)
+      (call-next-method)
+      (map nil (rcurry #'rsb.stats:update! event)
+	   (%style-quantities style))))
+
+
+;;; Class `style-statistics'
+;;
+
 (defmethod find-style-class ((spec (eql :statistics)))
   (find-class 'style-statistics))
 
 (defclass style-statistics (periodic-printing-mixin
-			    header-printing-mixin
-			    columns-mixin)
+			    statistics-columns-mixin
+			    header-printing-mixin)
   ((quantities :type     list
 	       :accessor %style-quantities
 	       :initform nil
@@ -45,25 +87,3 @@ formatting style."))
 statistical quantities from received events collected over a
 configurable period of time and prints the computed values in a
 tabular manner."))
-
-(defmethod (setf style-columns) :after ((new-value t)
-					(style     style-statistics))
-  ;; Find columns in NEW-VALUE that contain a quantity. Extract and
-  ;; store these quantities for direct updates.
-  (let+ (((&flet quantity-column? (column)
-	    (closer-mop:compute-applicable-methods-using-classes
-	     (fdefinition 'column-quantity)
-	     (list (class-of column))))))
-    (setf (%style-quantities style)
-	  (map 'list #'column-quantity
-	       (remove-if-not #'quantity-column? (style-columns style))))))
-
-(defmethod format-event :around ((event  event)
-				 (style  style-statistics)
-				 (stream t)
-				 &key &allow-other-keys)
-  ;; Updated quantities.
-  (map nil (rcurry #'rsb.stats:update! event) (%style-quantities style))
-
-  ;; Give `periodic-printing-mixin' a chance to grab STREAM.
-  (call-next-method))
