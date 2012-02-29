@@ -40,6 +40,18 @@
 	    :argument-name "LEVEL"
 	    :description
 	    "Controls the amount of generated log output.")
+    (path   :long-name     "load"
+	    :type          :file
+	    :hidden        (not (show-help-for? :advanced-debug
+						:show show))
+	    :description
+	    "Load FILE. This option can be supplied multiple times. Files are loaded in the order in which they appear on the commandline.")
+    (stropt :long-name     "eval"
+	    :argument-name "SEXP"
+	    :hidden        (not (show-help-for? :advanced-debug
+						:show show))
+	    :description
+	    "Evaluate SEXP as Lisp code. This option can be supplied multiple times. Code fragments are evaluated in the order in which they appear on the commandline.")
     (stropt :long-name     "trace"
 	    :argument-name "SPEC"
 	    :hidden        (not (show-help-for? :advanced-debug
@@ -139,6 +151,15 @@ TRANSFORM is applied to all option values."
   ;; Process --debug option.
   (unless (getopt :long-name "debug")
     (disable-debugger))
+
+  ;; Process --load options.
+  (with-compilation-unit ()
+    (map nil #'load (collect-option-values
+		     :long-name "load"
+		     :transform #'identity)))
+
+  ;; Process --eval options.
+  (map nil #'eval (collect-option-values :long-name "eval"))
 
   ;; Process --swank option.
   (when (getopt :long-name "swank")
