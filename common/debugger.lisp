@@ -1,6 +1,6 @@
 ;;; debugger.lisp --- Disabling the debugger.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -39,13 +39,16 @@
 
 (defun start-swank (&key (port-file "./swank-port.txt"))
   "Start a swank server and write its port to \"./swank-port.txt\"."
+  ;; Load swank, if necessary.
   (unless (asdf::system-loaded-p (asdf:find-system :swank))
     (ql:quickload :swank))
+  ;; Delete old port file.
   (when (probe-file port-file)
     (delete-file port-file))
+  ;; Start the swank server.
   (funcall (find-symbol "START-SERVER" :swank) port-file))
 
-(defun enable-swank-on-signal (&key (signal sb-unix:SIGUSR1))
+(defun enable-swank-on-signal (&key (signal #+sbcl sb-unix:SIGUSR1))
   "Install a handler for SIGNAL that starts a swank server."
   #+sbcl (sb-unix::enable-interrupt
 	  signal #'(lambda (signal info context)
