@@ -128,6 +128,11 @@ the string \"<nomethod>\" is emitted instead."
       "Emit the scope of the event."
     (format stream "~A" (scope-string (event-scope event))))
 
+  (define-simple-column (:wire-schema (24 :left))
+      "Emit wire-schema of the event, if possible."
+    (format stream "~:[WIRE-SCHEMA?~;~:*~A~]"
+	    (meta-data event :rsb.transport.wire-schema)))
+
   (define-simple-column (:data (21 :left))
       "Emit a representation of the data contained in the event."
     (let ((*print-length* (column-width column)))
@@ -141,6 +146,13 @@ event, if the size can be determined."
 	   (size (typecase data
 		   (sequence (length data)))))
       (format stream "~:[N/A~;~:*~,,,3:D~]" size)))
+
+  (define-simple-column (:notification-size 9
+			 :print-name "Notification Size")
+      "Emit an indication of the size of the notification in which the
+event has been transmitted, if the size can be determined."
+    (format stream "~:[N/A~;~:*~,,,3:D~]"
+	    (meta-data event :rsb.transport.notification-size)))
 
   ;; Request/Reply stuff
   (define-simple-column (:call (57 :left))
