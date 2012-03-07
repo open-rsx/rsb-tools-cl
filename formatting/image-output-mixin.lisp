@@ -107,7 +107,7 @@ dimension and the integer scaling factor."
 		%yuv422->rgba))
 
 (defun %yuv422->rgba (yuv-array yuv-start rgb-array rgb-start)
-  (declare (optimize (speed 3) (safety 0) (space 0) (compilation-speed 0)))
+  (declare (optimize (speed 3) (safety 0) (debug 0) (space 0) (compilation-speed 0)))
 
   (let* ((c     (- (aref yuv-array (+ yuv-start 0))  16))
 	 (d     (- (aref yuv-array (+ yuv-start 1)) 128))
@@ -123,7 +123,7 @@ dimension and the integer scaling factor."
     (macrolet
 	((store (offset form)
 	   `(setf (aref rgb-array (+ rgb-start ,offset))
-		  (clamp (the positive-integer (ash ,form -8)) 0 255))))
+		  (clamp (ash ,form -8) 0 255))))
       (store 0 (+ valc1 red))
       (store 1 (+ valc1 green))
       (store 2 (+ valc1 blue))
