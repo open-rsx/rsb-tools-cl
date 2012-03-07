@@ -188,6 +188,10 @@
 
    :style-template)
 
+  ;; `style-image/png' style class
+  (:export
+   :style-image/png)
+
   ;; Formatting functions
   (:export
    :format-octet-vector

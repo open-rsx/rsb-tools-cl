@@ -116,6 +116,11 @@ RSB-related systems."
 			      (:file       "payload-collection"
 			       :depends-on ("package" "event-style-detailed"))
 
+			      (:file       "rst-forward")
+			      (:file       "payload-image-png"
+			       :depends-on ("package" "image-output-mixin"
+					    "rst-forward"))
+
 			      ;; Event formatting style classes
 			      (:file       "event-style-discard"
 			       :depends-on ("package" "protocol"))
