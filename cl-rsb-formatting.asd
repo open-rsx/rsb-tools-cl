@@ -127,6 +127,8 @@ RSB-related systems."
 			       :depends-on ("package"
 					    "data-consistency-mixin"
 					    "rst-forward"))
+			      (:file       "payload-audio-wav"
+			       :depends-on ("package" "payload-audio"))
 
 			      ;; Event formatting style classes
 			      (:file       "event-style-discard"

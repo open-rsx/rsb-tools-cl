@@ -207,9 +207,13 @@
   (:export
    :style-audio-stream)
 
-  ;; `style-audio-stream/raw' style-class
+  ;; `style-audio-stream/raw' style class
   (:export
    :style-audio-stream/raw)
+
+  ;; `style-audio-stream/wav' style class
+  (:export
+   :style-audio-stream/wav)
 
   ;; Formatting functions
   (:export
