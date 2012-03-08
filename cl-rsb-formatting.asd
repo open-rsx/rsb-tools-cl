@@ -106,6 +106,8 @@ RSB-related systems."
 			      (:file       "image-output-mixin"
 			       :depends-on ("package" "types"
 					    "protocol"))
+			      (:file       "data-consistency-mixin"
+			       :depends-on ("package"))
 
 			      ;; Column classes
 			      (:file       "columns"
@@ -122,7 +124,9 @@ RSB-related systems."
 					    "rst-forward"))
 
 			      (:file       "payload-audio"
-			       :depends-on ("package" "rst-forward"))
+			       :depends-on ("package"
+					    "data-consistency-mixin"
+					    "rst-forward"))
 
 			      ;; Event formatting style classes
 			      (:file       "event-style-discard"

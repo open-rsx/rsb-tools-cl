@@ -65,6 +65,13 @@
    :find-column-class
    :column-classes)
 
+  ;; Data consistency protocol
+  (:export
+   :descriptor-for-target
+   :make-descriptor
+   :compatible-descriptors?
+   :incompatible-descriptors)
+
   ;; `width-mixin' mixin class
   (:export
    :width-mixin
@@ -129,6 +136,10 @@
 
    :normalize-dimension-spec
    :apply-dimension-spec)
+
+  ;; `data-consistency-mixin' mixin class
+  (:export
+   :data-consistency-mixin)
 
   ;; `style-meta-data' style class
   (:export

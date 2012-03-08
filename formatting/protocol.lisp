@@ -69,6 +69,47 @@ objects for formatting EVENT."))
    "Delegate processing of EVENT on STREAM by STYLE to a sub-style."))
 
 
+;;; Data consistency protocol
+;;
+
+(defgeneric descriptor-for-target (style target)
+  (:documentation
+   "Return a descriptor of acceptable output send to TARGET by STYLE.
+
+The returned descriptor can be any object returned by a method for
+STYLE on `make-descriptor' that works with specialized methods for
+STYLE on `compatible-descriptors?' and `incompatible-descriptors'."))
+
+(defgeneric (setf descriptor-for-target) (new-value style target)
+  (:documentation
+   "Install NEW-VALUE as an descriptor of acceptable output send to
+TARGET by STYLE.
+
+NEW-VALUE can be any object returned by a method for STYLE on
+`make-descriptor' that works with specialized methods for STYLE on
+`compatible-descriptors?' and `incompatible-descriptors'."))
+
+(defgeneric make-descriptor (style data target)
+  (:documentation
+   "Return a descriptor of acceptable output send to TARGET by
+STYLE. The descriptor can be derived from DATA when future output has
+to be compatible to DATA in some sense.
+
+The returned descriptor has to work with methods on
+`compatible-descriptors?' and `incompatible-descriptors' specialized
+for STYLE."))
+
+(defgeneric compatible-descriptors? (style descriptor-1 descriptor-2)
+  (:documentation
+   "Return non-nil if DESCRIPTOR-1 and DESCRIPTOR-2 are compatible for
+the kind of output performed by STYLE. Return nil otherwise."))
+
+(defgeneric incompatible-descriptors (style descriptor-1 descriptor-2)
+  (:documentation
+   "Signal an error which indicates that DESCRIPTOR-1 and DESCRIPTOR-2
+are not compatible for the kind of output performed by STYLE."))
+
+
 ;;; Column protocol
 ;;
 

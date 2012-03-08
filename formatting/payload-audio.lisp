@@ -19,7 +19,7 @@
 
 (cl:in-package :rsb.formatting)
 
-(defclass style-audio-stream ()
+(defclass style-audio-stream (data-consistency-mixin)
   ()
   (:documentation
    "This class is intended to be used as a superclass for style
@@ -31,14 +31,30 @@ classes that produce streams of audio data from event payloads."))
 			 &key &allow-other-keys)
   (format-payload (event-data event) style target))
 
+(defmethod make-descriptor ((style  style-audio-stream)
+			    (data   rst.audition:sound-chunk)
+			    (target t))
+  (list (rst.audition:sound-chunk-channels    data)
+	(rst.audition:sound-chunk-rate        data)
+	(rst.audition:sound-chunk-sample-type data)))
+
+(defmethod incompatible-descriptors ((style        style-audio-stream)
+				     (descriptor-1 list)
+				     (descriptor-2 list))
+  (error "~@<Data format of current sound chunk (~{~A x ~A Hz, ~
+~A~}) is different from the format of previous chunks (~{~A x ~A Hz, ~
+~A~}).~@:>"
+	 descriptor-1 descriptor-2))
+
 (defmethod find-style-class ((spec (eql :audio-stream/raw)))
   (find-class 'style-audio-stream/raw))
 
 (defclass style-audio-stream/raw (style-audio-stream)
   ()
   (:documentation
-   "This style produces a stream of raw audio samples from event
-payloads of type rst.audio.SoundChunk."))
+   "This style produces a stream of raw audio samples (i.e. without a
+header or other format information) from event payloads of type
+rst.audio.SoundChunk."))
 
 (defmethod format-payload ((data   rst.audition:sound-chunk)
 			   (style  style-audio-stream/raw)
