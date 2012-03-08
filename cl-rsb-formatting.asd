@@ -121,6 +121,9 @@ RSB-related systems."
 			       :depends-on ("package" "image-output-mixin"
 					    "rst-forward"))
 
+			      (:file       "payload-audio"
+			       :depends-on ("package" "rst-forward"))
+
 			      ;; Event formatting style classes
 			      (:file       "event-style-discard"
 			       :depends-on ("package" "protocol"))

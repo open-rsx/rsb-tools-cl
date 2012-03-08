@@ -192,6 +192,14 @@
   (:export
    :style-image/png)
 
+  ;; `style-audio-stream' style class
+  (:export
+   :style-audio-stream)
+
+  ;; `style-audio-stream/raw' style-class
+  (:export
+   :style-audio-stream/raw)
+
   ;; Formatting functions
   (:export
    :format-octet-vector
