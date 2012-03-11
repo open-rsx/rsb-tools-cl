@@ -16,7 +16,12 @@
 (cffi:close-foreign-library 'spread::libspread)
 
 (defun reload-spread-and-main ()
-  (cffi:use-foreign-library spread::libspread)
+  (handler-case
+      (cffi:use-foreign-library spread::libspread)
+    (error (condition)
+      (warn "~@<Failed to load Spread library: ~A. Did you set ~
+LD_LIBRARY_PATH? ~_Spread transport will now be disabled.~@:>"
+	    condition)))
   (rsb.tools.main:main))
 
 (com.dvlsoft.clon:dump "tools" reload-spread-and-main
