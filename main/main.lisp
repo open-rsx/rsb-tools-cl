@@ -55,7 +55,7 @@
       (t
        (format *error-output* "~@<Invoke this program as~_~_~4T~A ~
 create-links~{~_ or ~A~}~_~_(not ~2:*~A). The latter invocations are ~
-usually done by creating symbolic links~_~_~{~2T~A -> bag~_~}~@:>~%"
+usually done by creating symbolic links~_~_~{~2T~A -> tools~_~}~@:>~%"
 	       name
 	       (map 'list #'car *filename->entry-point*))
        (unless (every (compose #'probe-file #'car) *filename->entry-point*)
