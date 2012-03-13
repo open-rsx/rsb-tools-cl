@@ -80,6 +80,7 @@ FOREACH(NAME formatting stats)
                    @ONLY)
     ADD_TEST(NAME    "rsb-${NAME}"
              COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.test-${NAME}.cmake")
+    SET_TESTS_PROPERTIES("rsb-${NAME}" PROPERTIES RUN_SERIAL TRUE)
 ENDFOREACH()
 
 FOREACH(TOOL ${TOOLS})
