@@ -1,6 +1,6 @@
-;;; cl-rsb-tools-main.asd --- System definition for main binary of cl-rsb-tools.
+;;; cl-rsb-tools-send.asd --- RSB sending utility based on cl-rsb.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -17,12 +17,16 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(cl:defpackage :cl-rsb-tools-main-system
+(cl:defpackage :cl-rsb-tools-send-system
   (:use
    :cl
-   :asdf))
+   :asdf)
 
-(cl:in-package :cl-rsb-tools-main-system)
+  (:export
+   :version/list
+   :version/string))
+
+(cl:in-package :cl-rsb-tools-send-system)
 
 
 ;;; Version stuff
@@ -38,7 +42,7 @@
   "Revision component of version number.")
 
 (defun version/list ()
-  "Return a version of the form (MAJOR MINOR REVISION)."
+  "Return a version of the form (MAJOR MINOR REVISION) "
   (list +version-major+ +version-minor+ +version-revision+))
 
 (defun version/string ()
@@ -49,18 +53,24 @@
 ;;; System definition
 ;;
 
-(defsystem :cl-rsb-tools-main
+(defsystem :cl-rsb-tools-send
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPL3; see COPYING file for details."
-  :description "Main program and dispatch function for all cl-rsb
-tools."
-  :depends-on  ((:version :cl-rsb-tools-info   #.(version/string))
-		(:version :cl-rsb-tools-logger #.(version/string))
-		(:version :cl-rsb-tools-call   #.(version/string))
-		(:version :cl-rsb-tools-send   #.(version/string)))
-  :components  ((:module     "main"
+  :description "A simple utility for sending remote methods exposed
+via RSB."
+  :depends-on  (:alexandria
+		:let-plus
+		:iterate
+
+		:cl-ppcre
+		:com.dvlsoft.clon
+
+		(:version :cl-rsb        #.(version/string))
+		(:version :cl-rsb-common #.(version/string)))
+  :components  ((:module     "send"
 		 :components ((:file       "package")
+
 			      (:file       "main"
 			       :depends-on ("package"))))))

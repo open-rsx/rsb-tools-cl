@@ -22,7 +22,8 @@
 (defvar *filename->entry-point*
   '(("info"   . rsb.tools.info:main)
     ("logger" . rsb.tools.logger:main)
-    ("call"   . rsb.tools.call:main))
+    ("call"   . rsb.tools.call:main)
+    ("send"   . rsb.tools.send:main))
   "Stores a mapping from program names to entry point functions.")
 
 (defun main ()
