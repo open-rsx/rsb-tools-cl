@@ -75,6 +75,8 @@ RSB-related systems."
 
 			      (:file       "format-functions"
 			       :depends-on ("package" "util"))
+			      (:file       "dynamic-width"
+			       :depends-on ("package"))
 
 			      (:file       "protocol"
 			       :depends-on ("package"))
@@ -144,6 +146,7 @@ RSB-related systems."
 					    "event-style-meta-data"))
 			      (:file       "event-style-compact"
 			       :depends-on ("package" "protocol" "util"
+					    "dynamic-width"
 					    "delegating-mixin"
 					    "header-printing-mixin"
 					    "columns-mixin"

@@ -58,32 +58,100 @@ manner."))
 	   (%style-quantities style))))
 
 
+;;; Classes `style-statistics/*'
+;;
+;; These provide increasingly detailed statistics formatting.
+
+(macrolet
+    ((define-statistics-style ((name
+				&key
+				(spec       (make-keyword name))
+				(class-name (symbolicate :style "-" name)))
+			       &body doc-and-column-specs)
+       (let+ (((&values column-specs nil documentation)
+	       (parse-body doc-and-column-specs :documentation t)))
+	 `(progn
+	    (defmethod find-style-class ((spec (eql ,spec)))
+	      (find-class ',class-name))
+
+	    (defclass ,class-name (periodic-printing-mixin
+				   statistics-columns-mixin
+				   header-printing-mixin)
+	      ()
+	      (:default-initargs
+	       :columns (list ,@column-specs))
+	      (:documentation
+	       ,(apply #'concatenate 'string
+		      "This formatting style computes a number of
+configurable statistical quantities from received events collected
+over a configurable period of time and prints the computed values in a
+tabular manner."
+		      (when documentation
+			(list " " documentation)))))))))
+
+  (define-statistics-style (statistics/80)
+      "The output of this style is designed to fit into 80 columns."
+    :now/compact
+    '(:quantity :quantity :rate       :width 12)
+    '(:quantity :quantity :throughput :width 13)
+    '(:quantity :quantity (:latency
+			   :from :create
+			   :to   :deliver
+			   :name "Latency"))
+    '(:quantity :quantity :size       :width 20)
+    :newline)
+
+  (define-statistics-style (statistics/128)
+      "The output of this style is designed to fit into 128 columns."
+    :now/compact
+    '(:quantity :quantity :rate       :width 12)
+    '(:quantity :quantity :throughput :width 13)
+    '(:quantity :quantity (:latency
+			   :from :create
+			   :to   :deliver
+			   :name "Latency"))
+    '(:quantity :quantity :scope      :width 46 :alignment :left)
+    '(:quantity :quantity :size       :width 20)
+    :newline)
+
+  (define-statistics-style (statistics/180)
+      "The output of this style is designed to fit into 180 columns."
+    :now
+    '(:quantity :quantity :rate       :width 12)
+    '(:quantity :quantity :throughput :width 13)
+    '(:quantity :quantity (:latency
+			   :from :create
+			   :to   :deliver
+			   :name "Latency"))
+    '(:quantity :quantity :origin     :width 35 :alignment :left)
+    '(:quantity :quantity :scope      :width 46 :alignment :left)
+    '(:quantity :quantity :size       :width 20)
+    :newline)
+
+  (define-statistics-style (statistics/220)
+      "The output of this style is designed to fit into 180 columns."
+    :now
+    '(:quantity :quantity :rate       :width 12)
+    '(:quantity :quantity :throughput :width 13)
+    '(:quantity :quantity (:latency
+			   :from :create
+			   :to   :deliver
+			   :name "Latency"))
+    '(:quantity :quantity :origin     :width 35 :alignment :left)
+    '(:quantity :quantity :scope      :width 46 :alignment :left)
+    '(:quantity :quantity :type       :width 39 :alignment :left)
+    '(:quantity :quantity :size       :width 20)
+    :newline))
+
+
 ;;; Class `style-statistics'
 ;;
+;; Statistics meta-style that dispatches to one of the statistics
+;; styles based on available horizontal room.
 
-(defmethod find-style-class ((spec (eql :statistics)))
-  (find-class 'style-statistics))
-
-(defclass style-statistics (periodic-printing-mixin
-			    statistics-columns-mixin
-			    header-printing-mixin)
-  ((quantities :type     list
-	       :accessor %style-quantities
-	       :initform nil
-	       :documentation
-	       "Stores the list of quantities printed by the
-formatting style."))
-  (:default-initargs
-   :columns '(:now
-	      (:quantity :quantity :rate       :width 12)
-	      (:quantity :quantity :throughput :width 16)
-	      (:quantity :quantity (:latency
-				    :from :create
-				    :to   :deliver
-				    :name "Latency"))
-	      :newline))
-  (:documentation
-   "This formatting style computes a number of configurable
-statistical quantities from received events collected over a
-configurable period of time and prints the computed values in a
-tabular manner."))
+(define-dynamic-width-style (statistics
+			     :superclasses (periodic-printing-mixin))
+  ((  0   81) (make-instance 'style-statistics/80 :print-interval nil))
+  (( 81  129) (make-instance 'style-statistics/128 :print-interval nil))
+  ((129  181) (make-instance 'style-statistics/180 :print-interval nil))
+  ((181     ) (make-instance 'style-statistics/220 :print-interval nil)))

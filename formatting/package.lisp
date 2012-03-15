@@ -154,13 +154,19 @@
   (:export
    :style-detailed)
 
-  ;; `style-compact[+]' style classes
+  ;; `style-compact' style classes
   (:export
-   :style-compact
-   :style-compact+)
+   :style-compact/80
+   :style-compact/128
+   :style-compact/180
+   :style-compact)
 
-  ;; `style-statistics' style class
+  ;; `style-statistics' style classes
   (:export
+   :style-statistics/80
+   :style-statistics/128
+   :style-statistics/180
+   :style-statistics/220
    :style-statistics)
 
   ;; Default variable names provided by programmable styles
