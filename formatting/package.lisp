@@ -31,6 +31,8 @@
    :rule-spec
    :separator-spec
 
+   :print-interval
+
    :dimension-spec/short
    :dimension-spec/full
    :dimension-spec

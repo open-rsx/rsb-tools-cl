@@ -32,6 +32,14 @@
        (cons (not keyword) list)))
 
 
+;;; Periodic printing
+;;
+
+(deftype print-interval ()
+  "Print interval specifications."
+  '(or null positive-real))
+
+
 ;;; Image-related types.
 ;;
 
