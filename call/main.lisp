@@ -29,9 +29,11 @@ argument ARG.
 ARG is parsed as string when surrounded with double-quotes and as ~
 integer or float number when consisting of digits without and with ~
 decimal point respectively.
+
 If ARG is the single character \"-\", the entire \"contents\" of ~
 standard input (until end of file) is read as a string and used as ~
 argument for the method call.
+
 If ARG is the empty string, i.e. the call specification is of the form ~
 SERVER-URI/METHOD(), the method is called without argument.
 
@@ -68,11 +70,11 @@ path component and the method name.
   Use the default transport configuration to call the \"noarg\" method ~
 of the server at scope \"/my/inferface\" without argument.
 
-~:*~A '/remotecontrol/stop(\"now\")'
+~:*~A --no-wait '/remotecontrol/stop(\"now\")'
 
   Use the default transport configuration to call the \"stop\" method ~
 of the server at scope \"/remotecontrol\" passing it the string ~
-argument \"now\".
+argument \"now\". Do not wait for a result of the method call.
 
 cat my-arg.txt | ~:*~A 'socket:/printer/print(-)'
 
@@ -93,7 +95,7 @@ works if the called method accepts an argument of type string.
    :item    (make-common-options :show show)
    :item    (defgroup (:header "Call options")
 	      (lispobj :long-name     "timeout"
-		       :short-name    "o"
+		       :short-name    "t"
 		       :typespec      'non-negative-real
 		       :argument-name "SPEC"
 		       :description
