@@ -1,6 +1,6 @@
 ;;; help.lisp --- Help text generation for formatting options.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -49,7 +49,9 @@ currently available:
 ")
       (rsb.common:print-classes-help-string
        (style-classes) stream
-       :initarg-blacklist '(:stream :quantities :count :sub-styles))
+       :initarg-blacklist '(:stream :pretty-state
+			    :quantities :count
+			    :sub-styles :test :key))
 
       (format stream "~%~%")
       (rsb.common:with-abbreviation (stream :columns show)
