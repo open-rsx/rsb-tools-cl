@@ -1,4 +1,4 @@
-;;; grouping-mixin.lisp --- Mixin for grouping events into sub-styles.
+;;; sub-style-grouping-mixin.lisp --- Mixin for grouping events into sub-styles.
 ;;
 ;; Copyright (C) 2012 Jan Moringen
 ;;
@@ -19,7 +19,7 @@
 
 (cl:in-package :rsb.formatting)
 
-(defclass grouping-mixin (delegating-mixin)
+(defclass sub-style-grouping-mixin (delegating-mixin)
   ((key  :initarg  :key
 	 :type     function
 	 :accessor style-key
@@ -47,7 +47,7 @@ against previously extracted key. A new sub-style is created and added
 whenever the key extracted from an event does not match the key of any
 previously created sub-styles."))
 
-(defmethod sub-style-for ((style grouping-mixin)
+(defmethod sub-style-for ((style sub-style-grouping-mixin)
 			  (event t))
   "If there is a sub-style suitable for handling EVENT, dispatch to
 it. Otherwise create a new sub-style and then dispatch to it.  "
@@ -58,7 +58,7 @@ it. Otherwise create a new sub-style and then dispatch to it.  "
 	(sub-style-for style event))))
 
 (defmethod format-event :around ((event  t)
-				 (style  grouping-mixin)
+				 (style  sub-style-grouping-mixin)
 				 (stream t)
 				 &key &allow-other-keys)
   (if (eq event :trigger)

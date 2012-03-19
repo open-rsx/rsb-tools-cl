@@ -135,9 +135,9 @@
   (:export
    :delegating-mixin)
 
-  ;; `grouping-mixin' mixin class
+  ;; `sub-style-grouping-mixin' mixin class
   (:export
-   :grouping-mixin
+   :sub-style-grouping-mixin
 
    :style-key
    :style-test)

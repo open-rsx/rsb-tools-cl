@@ -90,7 +90,7 @@ RSB-related systems."
 					    "width-mixin"))
 			      (:file       "periodic-printing-mixin")
 			      (:file       "delegating-mixin")
-			      (:file       "grouping-mixin"
+			      (:file       "sub-style-grouping-mixin"
 			       :depends-on ("delegating-mixin"))
 			      (:file       "separator-mixin")
 			      (:file       "image-output-mixin")

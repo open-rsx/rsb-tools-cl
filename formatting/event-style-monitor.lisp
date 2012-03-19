@@ -24,7 +24,7 @@
 ;;
 
 (defclass basic-monitor (periodic-printing-mixin
-			 grouping-mixin
+			 sub-style-grouping-mixin
 			 header-printing-mixin
 			 separator-mixin)
   ()
