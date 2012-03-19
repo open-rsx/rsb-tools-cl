@@ -64,100 +64,69 @@ RSB-related systems."
 		:cl-interpol
 
 		(:version :cl-rsb #.(version/string)))
-  :components  ((:module     "formatting"
+  :components  ((:module     "formatting-early"
+		 :pathname   "formatting"
+		 :serial     t
 		 :components ((:file       "package")
-			      (:file       "types"
-			       :depends-on ("package"))
-			      (:file       "variables"
-			       :depends-on ("package"))
-			      (:file       "util"
-			       :depends-on ("package"))
+			      (:file       "types")
+			      (:file       "variables")
+			      (:file       "util")
 
-			      (:file       "format-functions"
-			       :depends-on ("package" "util"))
-			      (:file       "dynamic-width"
-			       :depends-on ("package"))
+			      (:file       "protocol")
 
-			      (:file       "protocol"
-			       :depends-on ("package"))
-			      (:file       "payload"
-			       :depends-on ("package" "format-functions"))
+			      (:file       "format-functions")
+			      (:file       "dynamic-width")))
 
-			      ;; Formatting style mixin classes
-			      (:file       "width-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "name-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "counting-mixin"
-			       :depends-on ("package" "protocol"))
+		(:module     "formatting-mixins"
+		 :pathname   "formatting"
+		 :depends-on ("formatting-early")
+		 :components ((:file       "width-mixin")
+			      (:file       "name-mixin")
+			      (:file       "counting-mixin")
 			      (:file       "header-printing-mixin"
-			       :depends-on ("package" "protocol"
-					    "counting-mixin"))
+			       :depends-on ("counting-mixin"))
 			      (:file       "columns-mixin"
-			       :depends-on ("package" "variables"
-					    "protocol"
-					    "header-printing-mixin"
+			       :depends-on ("header-printing-mixin"
 					    "width-mixin"))
-			      (:file       "periodic-printing-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "delegating-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "separator-mixin"
-			       :depends-on ("package" "types"
-					    "protocol"))
-			      (:file       "image-output-mixin"
-			       :depends-on ("package" "types"
-					    "protocol"))
-			      (:file       "data-consistency-mixin"
-			       :depends-on ("package"))
+			      (:file       "periodic-printing-mixin")
+			      (:file       "delegating-mixin")
+			      (:file       "separator-mixin")
+			      (:file       "image-output-mixin")
+			      (:file       "data-consistency-mixin")))
+
+		(:module     "formatting"
+		 :depends-on ("formatting-early"
+			      "formatting-mixins")
+			     :components (
+			      (:file       "payload")
 
 			      ;; Column classes
-			      (:file       "columns"
-			       :depends-on ("package" "protocol"
-					    "width-mixin" "name-mixin"))
+			      (:file       "columns")
 
 			      ;; Payload formatting classes
 			      (:file       "payload-collection"
-			       :depends-on ("package" "event-style-detailed"))
+			       :depends-on ("event-style-detailed"))
 
 			      (:file       "rst-forward")
 			      (:file       "payload-image-png"
-			       :depends-on ("package" "image-output-mixin"
-					    "rst-forward"))
+			       :depends-on ("rst-forward"))
 
 			      (:file       "payload-audio"
-			       :depends-on ("package"
-					    "data-consistency-mixin"
-					    "rst-forward"))
+			       :depends-on ("rst-forward"))
 			      (:file       "payload-audio-wav"
-			       :depends-on ("package" "payload-audio"))
+			       :depends-on ("payload-audio"))
 
 			      ;; Event formatting style classes
-			      (:file       "event-style-discard"
-			       :depends-on ("package" "protocol"))
-			      (:file       "event-style-meta-data"
-			       :depends-on ("package" "separator-mixin"
-					    "util"))
-			      (:file       "event-style-payload"
-			       :depends-on ("package" "protocol"))
+			      (:file       "event-style-discard")
+			      (:file       "event-style-meta-data")
+			      (:file       "event-style-payload")
 			      (:file       "event-style-detailed"
-			       :depends-on ("package" "protocol"
-					    "util" "separator-mixin"
-					    "event-style-meta-data"))
+			       :depends-on ("event-style-meta-data"))
 			      (:file       "event-style-compact"
-			       :depends-on ("package" "protocol" "util"
-					    "dynamic-width"
-					    "delegating-mixin"
-					    "header-printing-mixin"
-					    "columns-mixin"
-					    "columns"))
+			       :depends-on ("columns"))
 			      (:file       "event-style-columns"
-			       :depends-on ("package" "protocol" "util"
-					    "header-printing-mixin"
-					    "columns-mixin"
-					    "columns"))
-			      (:file       "event-style-programmable"
-			       :depends-on ("package" "protocol")))))
+			       :depends-on ("columns"))
+			      (:file       "event-style-programmable"))))
 
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
 
