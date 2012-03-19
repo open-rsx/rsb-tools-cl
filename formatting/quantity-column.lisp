@@ -43,6 +43,10 @@ provide a name and the printed value."))
 (defmethod column-name ((column quantity-column))
   (rsb.stats:quantity-name (column-quantity column)))
 
+(defmethod format-header ((column quantity-column)
+			  (stream t))
+  (format stream "~@(~A~)~@[ [~A]~]" (column-name column) nil))
+
 (defmethod format-event ((event  (eql :trigger))
 			 (style  quantity-column)
 			 (stream t)

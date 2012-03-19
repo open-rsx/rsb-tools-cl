@@ -110,6 +110,14 @@ the kind of output performed by STYLE. Return nil otherwise."))
 are not compatible for the kind of output performed by STYLE."))
 
 
+;;; Header printing protocol
+;;
+
+(defgeneric format-header (thing target)
+  (:documentation
+   "Format a header for THING into TARGET."))
+
+
 ;;; Column protocol
 ;;
 

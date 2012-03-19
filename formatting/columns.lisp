@@ -20,6 +20,19 @@
 (cl:in-package :rsb.formatting)
 
 
+;;; `basic-column'
+;;
+
+(defclass basic-column (name-mixin)
+  ()
+  (:documentation
+   "Superclass for column classes."))
+
+(defmethod format-header ((column basic-column)
+			  (stream t))
+  (format stream "~@(~A~)" (column-name column)))
+
+
 ;;; Simple columns
 ;;
 
@@ -37,8 +50,8 @@
 		    (find-class ',class-name))
 
 		  (defclass ,class-name (,@(when width
-						 '(width-mixin))
-					 name-mixin)
+					   '(width-mixin))
+					 basic-column)
 		    ()
 		    ,@(when width
 		        `((:default-initargs

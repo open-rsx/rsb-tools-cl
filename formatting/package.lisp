@@ -55,6 +55,13 @@
    :find-style-class
    :style-classes)
 
+  ;; Data consistency protocol
+  (:export
+   :descriptor-for-target
+   :make-descriptor
+   :compatible-descriptors?
+   :incompatible-descriptors)
+
   ;; Column protocol
   (:export
    :column-name
@@ -67,12 +74,9 @@
    :find-column-class
    :column-classes)
 
-  ;; Data consistency protocol
+  ;; Header protocol
   (:export
-   :descriptor-for-target
-   :make-descriptor
-   :compatible-descriptors?
-   :incompatible-descriptors)
+   :format-header)
 
   ;; `width-mixin' mixin class
   (:export
@@ -98,6 +102,10 @@
    :header-printing-mixin
 
    :style-header-frequency)
+
+  ;; `basic-column' class
+  (:export
+   :basic-column)
 
   ;; `columns-mixin' mixin class
   (:export
