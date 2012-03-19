@@ -55,6 +55,15 @@
    :find-style-class
    :style-classes)
 
+  ;; Delegation protocol
+  (:export
+   :style-sub-styles
+   :sub-style-for
+
+   :delegate
+
+   :make-sub-style-entry)
+
   ;; Data consistency protocol
   (:export
    :descriptor-for-target
@@ -124,12 +133,14 @@
 
   ;; `delegating-mixin' mixin class
   (:export
-   :delegating-mixin
+   :delegating-mixin)
 
-   :style-sub-styles
-   :sub-style-for
+  ;; `grouping-mixin' mixin class
+  (:export
+   :grouping-mixin
 
-   :delegate)
+   :style-key
+   :style-test)
 
   ;; `separator-mixin' mixin class
   (:export

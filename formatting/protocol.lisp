@@ -68,6 +68,17 @@ objects for formatting EVENT."))
   (:documentation
    "Delegate processing of EVENT on STREAM by STYLE to a sub-style."))
 
+(defgeneric make-sub-style-entry (style value)
+  (:documentation
+   "Create and return a list of the form
+
+  (PREDICATE SUB-STYLE)
+
+where PREDICATE is a function of one parameter, a thing to be
+formatted, which decides whether the sub-style SUB-STYLE of STYLE is
+suitable for formatting the object. VALUE depends on how STYLE
+organizes its sub-styles. See `sub-style-for' and `delegate'."))
+
 
 ;;; Data consistency protocol
 ;;
