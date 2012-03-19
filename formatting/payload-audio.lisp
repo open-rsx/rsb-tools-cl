@@ -53,8 +53,8 @@ classes that produce streams of audio data from event payloads."))
   ()
   (:documentation
    "This style produces a stream of raw audio samples (i.e. without a
-header or other format information) from event payloads of type
-rst.audio.SoundChunk."))
+header or other format information) from event payloads containing
+audio data."))
 
 (defmethod format-payload ((data   rst.audition:sound-chunk)
 			   (style  style-audio-stream/raw)
