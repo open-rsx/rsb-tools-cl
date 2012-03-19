@@ -149,6 +149,8 @@ cl-rsb-stats system."
   :components  ((:module     "formatting"
 		 :components ((:file       "quantity-column")
 			      (:file       "event-style-statistics"
+			       :depends-on ("quantity-column"))
+			      (:file       "event-style-monitor"
 			       :depends-on ("quantity-column"))))))
 
 
