@@ -52,10 +52,10 @@ SET(NAME      "tools")
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
                "${CMAKE_CURRENT_BINARY_DIR}/sbcl.cmake"
                @ONLY)
-ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}"
+ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
                    COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.cmake"
                    DEPENDS "${SCRIPT}"
-                   COMMENT "Creating Lisp image ${MAIN_NAME} (this can take a long time)")
+                   COMMENT "Creating Lisp image ${NAME} (this can take a long time)")
 ADD_CUSTOM_TARGET(binary ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}")
 
 # Create symlinks.
