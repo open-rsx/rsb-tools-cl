@@ -80,6 +80,18 @@ suitable for formatting the object. VALUE depends on how STYLE
 organizes its sub-styles. See `sub-style-for' and `delegate'."))
 
 
+;;; Sub-style sorting protocol
+;;
+
+(defgeneric style-sub-styles/sorted (style
+				     &key
+				     predicate
+				     key)
+  (:documentation
+   "Return a list of style object which are sub-styles of STYLE,
+sorted according to PREDICATE and KEY."))
+
+
 ;;; Data consistency protocol
 ;;
 

@@ -64,6 +64,10 @@
 
    :make-sub-style-entry)
 
+  ;; Sub-style sorting protocol
+  (:export
+   :style-sub-styles/sorted)
+
   ;; Data consistency protocol
   (:export
    :descriptor-for-target
@@ -141,6 +145,13 @@
 
    :style-key
    :style-test)
+
+  ;; `sub-style-sorting-mixin'
+  (:export
+   :sub-style-sorting-mixin
+
+   :style-sort-predicate
+   :style-sort-key)
 
   ;; `separator-mixin' mixin class
   (:export

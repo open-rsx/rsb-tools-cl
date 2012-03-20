@@ -25,11 +25,15 @@
 
 (defclass basic-monitor (periodic-printing-mixin
 			 sub-style-grouping-mixin
+			 sub-style-sorting-mixin
 			 header-printing-mixin
 			 separator-mixin)
   ()
   (:default-initargs
    :sub-styles       nil
+
+   :sort-predicate   (%make-safe-predicate)
+   :sort-key         (%make-column-key-function 2)
 
    :header-frequency 1
 
@@ -48,7 +52,7 @@ display information for events within each group."))
 			 (style  basic-monitor)
 			 (stream t)
 			 &key &allow-other-keys)
-  (iter (for (_ . sub-style) each (style-sub-styles style))
+  (iter (for sub-style each (style-sub-styles/sorted style))
 	(format-event event sub-style stream)
 	(terpri stream)))
 
@@ -155,3 +159,36 @@ size-group."
     '(:quantity :quantity :origin     :width 48 :alignment :left)
     '(:quantity :quantity :type       :width 48 :alignment :left)
     '(:quantity :quantity :size       :width 20)))
+
+
+;;; Utility functions
+;;
+
+(defun %make-safe-predicate (&key
+			     (type      'real)
+			     (predicate #'>)
+			     (fallback  t))
+  "Return a function of two arguments which applies PREDICATE for
+comparison of both arguments are of type TYPE. If only the first or
+second argument is of type TYPE, FALLBACK and (not FALLBACK) are
+returned respectively. If neither argument is of type TYPE, `nil' is
+returned."
+  (declare (type (function (t t) t) predicate))
+
+  #'(lambda (a b)
+      (let ((a-ok? (typep a type))
+	    (b-ok? (typep b type)))
+	(cond
+	  ((and a-ok? b-ok?) (funcall predicate a b))
+	  (a-ok?             fallback)
+	  (b-ok?             (not fallback))
+	  (t                 nil)))))
+
+(defun %make-column-key-function (column)
+  "Return a function of one argument, a style object, that extracts
+and returns the value of the COLUMN-th column. The column specified by
+COLUMN has to be associated with a statistical quantity."
+  (compose #'rsb.stats:quantity-value
+	   #'column-quantity
+	   (rcurry #'elt column)
+	   #'style-columns))

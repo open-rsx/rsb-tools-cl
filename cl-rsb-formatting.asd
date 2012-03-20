@@ -92,6 +92,8 @@ RSB-related systems."
 			      (:file       "delegating-mixin")
 			      (:file       "sub-style-grouping-mixin"
 			       :depends-on ("delegating-mixin"))
+			      (:file       "sub-style-sorting-mixin"
+			       :depends-on ("delegating-mixin"))
 			      (:file       "separator-mixin")
 			      (:file       "image-output-mixin")
 			      (:file       "data-consistency-mixin")))
