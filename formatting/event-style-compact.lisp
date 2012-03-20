@@ -20,6 +20,30 @@
 (cl:in-package :rsb.formatting)
 
 
+;;; Class `basic-compact' style
+;;
+
+(defclass basic-compact-style (delegating-mixin
+			       header-printing-mixin)
+  ()
+  (:documentation
+   "This class is intended to be used as a superclass for compact
+style classes."))
+
+(defmethod sub-style-for ((style basic-compact-style)
+			  (event t))
+  "Return a singleton list containing the sub-style of STYLE whose
+predicate succeeds on EVENT."
+  (ensure-list
+   (cdr (find-if (rcurry #'funcall event) (style-sub-styles style)
+		 :key #'car))))
+
+(defmethod format-header ((style  basic-compact-style)
+			  (stream t))
+  (format-header
+   (cdr (lastcar (style-sub-styles style))) stream))
+
+
 ;;; Classes `style-compact/*'
 ;;
 ;; These provide increasingly detailed "compact" event formatting.
@@ -41,8 +65,7 @@
 	   (defmethod find-style-class ((spec (eql ,spec)))
 	     (find-class ',class-name))
 
-	   (defclass ,class-name (delegating-mixin
-				  header-printing-mixin)
+	   (defclass ,class-name (basic-compact-style)
 	     ()
 	     (:default-initargs
 	      :sub-styles (list ,@(map 'list #'make-sub-style
@@ -53,12 +76,7 @@
 of received events on a single line. Some events are formatted
 specially according to their role in a communication pattern."
 		      (when documentation
-			(list " " documentation)))))
-
-	   (defmethod format-header ((style  ,class-name)
-				     (stream t))
-	     (format-header
-	      (cdr (lastcar (style-sub-styles style))) stream))))))
+			(list " " documentation)))))))))
 
   (define-compact-style (compact/80)
       "The output of this style is designed to fit into 80 columns."
@@ -94,11 +112,11 @@ specially according to their role in a communication pattern."
       "The output of this style is designed to fit into 180 columns."
     (#'request-event? . (:now
 			 :origin :sequence-number :id
-			 (:call :width 32) :wire-schema :data-size
+			 (:call :width 85) :wire-schema :data-size
 			 :newline))
     (#'reply-event?   . (:now
 			 :origin :sequence-number :call-id
-			 (:result :width 32) :wire-schema :data-size
+			 (:result :width 85) :wire-schema :data-size
 			 :newline))
     ((constantly t)   . (:now
 			 :origin :sequence-number :id :method
