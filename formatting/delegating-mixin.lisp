@@ -33,7 +33,7 @@ delegate to sub-styles based on dispatch predicates."))
 
 (defmethod sub-style-for ((style delegating-mixin)
 			  (event t))
-  "Return a list of sub-styles of STYLES whose predicate succeeds on
+  "Return a list of sub-styles of STYLE whose predicates succeed on
 EVENT."
   (map 'list #'cdr
        (remove-if (complement (rcurry #'funcall event))
