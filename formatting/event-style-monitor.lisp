@@ -20,14 +20,14 @@
 (cl:in-package :rsb.formatting)
 
 
-;;; Class `basic-monitor'
+;;; Class `basic-monitor-style'
 ;;
 
-(defclass basic-monitor (periodic-printing-mixin
-			 sub-style-grouping-mixin
-			 sub-style-sorting-mixin
-			 header-printing-mixin
-			 separator-mixin)
+(defclass basic-monitor-style (periodic-printing-mixin
+			       sub-style-grouping-mixin
+			       sub-style-sorting-mixin
+			       header-printing-mixin
+			       separator-mixin)
   ()
   (:default-initargs
    :sub-styles       nil
@@ -43,13 +43,13 @@
 which group events according to some criterion and periodically
 display information for events within each group."))
 
-(defmethod format-header ((style  basic-monitor)
+(defmethod format-header ((style  basic-monitor-style)
 			  (stream t))
   (unless (emptyp (style-sub-styles style))
     (format-header (cdr (elt (style-sub-styles style) 0)) stream)))
 
 (defmethod format-event ((event  (eql :trigger))
-			 (style  basic-monitor)
+			 (style  basic-monitor-style)
 			 (stream t)
 			 &key &allow-other-keys)
   (iter (for sub-style each (style-sub-styles/sorted style))
@@ -60,27 +60,46 @@ display information for events within each group."))
 ;;; Some concrete monitor styles
 ;;
 
+(eval-when (:compile-toplevel :execute)
+  (defvar *basic-columns*
+    '((:rate       . '(:quantity :quantity :rate       :width 12))
+      (:throughput . '(:quantity :quantity :throughput :width 16))
+      (:latency    . '(:quantity :quantity (:latency
+					    :from :create
+					    :to   :deliver
+					    :name "Latency")))
+      (:origin     . '(:quantity :quantity :origin     :width 48 :alignment :left))
+      (:scope      . '(:quantity :quantity :scope      :width 48 :alignment :left))
+      (:type       . '(:quantity :quantity :type       :width 48 :alignment :left))
+      (:size       . '(:quantity :quantity :size       :width 20)))
+    "Contains an alist of entries of the form
+
+  (NAME . SPEC)
+
+where NAME names the column specification SPEC."))
+
 (macrolet
     ((define-monitor-style ((kind
+			     &rest initargs
 			     &key
-			     key
-			     test)
+			     (title '(princ-to-string value))
+			     &allow-other-keys)
 			    &body doc-and-column-specs)
        (let+ ((spec       (format-symbol :keyword  "~A/~A"
 					 :monitor kind))
 	      (class-name (format-symbol *package* "~A/~A"
 					 :style-monitor kind))
 	      ((&values column-specs nil documentation)
-	       (parse-body doc-and-column-specs :documentation t)))
+	       (parse-body doc-and-column-specs :documentation t))
+	      (columns (sublis *basic-columns* column-specs)))
 	 `(progn
 	    (defmethod find-style-class ((spec (eql ,spec)))
 	      (find-class ',class-name))
 
-	    (defclass ,class-name (basic-monitor)
+	    (defclass ,class-name (basic-monitor-style)
 	      ()
 	      (:default-initargs
-	       ,@(when key  `(:key      ,key))
-	       ,@(when test `(:test     ,test)))
+	       ,@(remove-from-plist initargs :title))
 	      ,@(when documentation
 		  `((:documentation ,documentation))))
 
@@ -88,27 +107,20 @@ display information for events within each group."))
 					     (value t))
 	      (let+ (((&accessors-r/o (key  style-key)
 				      (test style-test)) style)
-		     (title (princ-to-string value)))
+		     (title ,title))
 		(cons
 		 #'(lambda (event) (funcall test (funcall key event) value))
 		 (make-instance 'statistics-columns-mixin
-				:columns (list ,@column-specs)))))))))
+				:columns (list ,@columns)))))))))
 
   (define-monitor-style (scope
-			 :key  #'event-scope
-			 :test #'sub-scope?)
+			 :key   #'event-scope
+			 :test  #'sub-scope?
+			 :title (scope-string value))
       "This style groups events by scope and periodically displays
 various statistics for events in each scope-group."
     (list :text :name title :width 32 :alignment :left)
-    '(:quantity :quantity :rate       :width 12)
-    '(:quantity :quantity :throughput :width 16)
-    '(:quantity :quantity (:latency
-			   :from :create
-			   :to   :deliver
-			   :name "Latency"))
-    '(:quantity :quantity :origin     :width 48 :alignment :left)
-    '(:quantity :quantity :type       :width 48 :alignment :left)
-    '(:quantity :quantity :size       :width 20))
+    :rate :throughput :latency :origin :type :size)
 
   (define-monitor-style (origin
 			 :key  #'event-origin
@@ -116,15 +128,7 @@ various statistics for events in each scope-group."
       "This style groups events by origin and periodically displays
 various statistics for events in each origin-group. "
     (list :text :name title :width 32 :alignment :left)
-    '(:quantity :quantity :rate       :width 12)
-    '(:quantity :quantity :throughput :width 16)
-    '(:quantity :quantity (:latency
-			   :from :create
-			   :to   :deliver
-			   :name "Latency"))
-    '(:quantity :quantity :scope      :width 48 :alignment :left)
-    '(:quantity :quantity :type       :width 48 :alignment :left)
-    '(:quantity :quantity :size       :width 20))
+    :rate :throughput :latency :scope :type :size)
 
   (define-monitor-style (type
 			 :key  #'rsb.stats:event-type/simple
@@ -132,15 +136,7 @@ various statistics for events in each origin-group. "
       "This style groups events by type and periodically displays
 various statistics for events in each type-group. "
     (list :text :name title :width 32 :alignment :left)
-    '(:quantity :quantity :rate       :width 12)
-    '(:quantity :quantity :throughput :width 16)
-    '(:quantity :quantity (:latency
-			   :from :create
-			   :to   :deliver
-			   :name "Latency"))
-    '(:quantity :quantity :scope      :width 48 :alignment :left)
-    '(:quantity :quantity :origin     :width 48 :alignment :left)
-    '(:quantity :quantity :size       :width 20))
+    :rate :throughput :latency :scope :origin :size)
 
   (define-monitor-style (size
 			 :key  #'rsb.stats:event-size/power-of-2
@@ -149,16 +145,7 @@ various statistics for events in each type-group. "
 of 2) and periodically displays various statistics for events in each
 size-group."
     (list :text :name title :width 12 :alignment :left)
-    '(:quantity :quantity :rate       :width 12)
-    '(:quantity :quantity :throughput :width 16)
-    '(:quantity :quantity (:latency
-			   :from :create
-			   :to   :deliver
-			   :name "Latency"))
-    '(:quantity :quantity :scope      :width 48 :alignment :left)
-    '(:quantity :quantity :origin     :width 48 :alignment :left)
-    '(:quantity :quantity :type       :width 48 :alignment :left)
-    '(:quantity :quantity :size       :width 20)))
+    :rate :throughput :latency :scope :origin :type :size))
 
 
 ;;; Utility functions
@@ -182,7 +169,7 @@ returned."
 	  ((and a-ok? b-ok?) (funcall predicate a b))
 	  (a-ok?             fallback)
 	  (b-ok?             (not fallback))
-	  (t                 nil)))))
+	  (t nil)))))
 
 (defun %make-column-key-function (column)
   "Return a function of one argument, a style object, that extracts
