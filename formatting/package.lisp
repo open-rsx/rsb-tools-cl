@@ -120,6 +120,13 @@
   (:export
    :basic-column)
 
+  ;; `column-constant' class
+  (:export
+   :oclumn-constant
+
+   :column-value
+   :column-formatter)
+
   ;; `columns-mixin' mixin class
   (:export
    :columns-mixin

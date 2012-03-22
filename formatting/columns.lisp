@@ -191,6 +191,38 @@ events that actually are replies to method calls."
 	      event (error-event? event) (event-data event)))))
 
 
+;;; Constant column
+;;
+
+(defmethod find-column-class ((spec (eql :constant)))
+  (find-class 'column-constant))
+
+(defclass column-constant (width-mixin
+			   basic-column)
+  ((value     :initarg  :value
+	      :accessor column-value
+	      :documentation
+	      "Stores the constant value emitted by the column.")
+   (formatter :initarg  :formatter
+	      :type     function
+	      :accessor column-formatter
+	      :initform #'princ
+	      :documentation
+	      "Stores a function that is called to print the value of
+the column onto a destination stream."))
+  (:default-initargs
+   :value (missing-required-initarg 'column-constant :value))
+  (:documentation
+   "Instances of this column class emit a print a specified constant
+value."))
+
+(defmethod format-event ((event  t)
+			 (column column-constant)
+			 (stream t)
+			 &key &allow-other-keys)
+  (funcall (column-formatter column) (column-value column) stream))
+
+
 ;;; Timestamp and meta-data columns
 ;;
 
