@@ -81,9 +81,7 @@ where NAME names the column specification SPEC."))
 (macrolet
     ((define-monitor-style ((kind
 			     &rest initargs
-			     &key
-			     (title '(princ-to-string value))
-			     &allow-other-keys)
+			     &key &allow-other-keys)
 			    &body doc-and-column-specs)
        (let+ ((spec       (format-symbol :keyword  "~A/~A"
 					 :monitor kind))
@@ -98,16 +96,14 @@ where NAME names the column specification SPEC."))
 
 	    (defclass ,class-name (basic-monitor-style)
 	      ()
-	      (:default-initargs
-	       ,@(remove-from-plist initargs :title))
+	      (:default-initargs ,@initargs)
 	      ,@(when documentation
 		  `((:documentation ,documentation))))
 
 	    (defmethod make-sub-style-entry ((style ,class-name)
 					     (value t))
 	      (let+ (((&accessors-r/o (key  style-key)
-				      (test style-test)) style)
-		     (title ,title))
+				      (test style-test)) style))
 		(cons
 		 #'(lambda (event) (funcall test (funcall key event) value))
 		 (make-instance 'statistics-columns-mixin
@@ -115,11 +111,16 @@ where NAME names the column specification SPEC."))
 
   (define-monitor-style (scope
 			 :key   #'event-scope
-			 :test  #'sub-scope?
-			 :title (scope-string value))
+			 :test  #'sub-scope?)
       "This style groups events by scope and periodically displays
 various statistics for events in each scope-group."
-    (list :text :name title :width 32 :alignment :left)
+    (list :constant
+	  :name      "Scope"
+	  :value     value
+	  :formatter #'(lambda (value stream)
+			 (write-string (scope-string value) stream))
+	  :width     32
+	  :alignment :left)
     :rate :throughput :latency :origin :type :size)
 
   (define-monitor-style (origin
@@ -127,7 +128,11 @@ various statistics for events in each scope-group."
 			 :test #'uuid:uuid=)
       "This style groups events by origin and periodically displays
 various statistics for events in each origin-group. "
-    (list :text :name title :width 32 :alignment :left)
+    (list :constant
+	  :name      "Origin"
+	  :value     value
+	  :width     36
+	  :alignment :left)
     :rate :throughput :latency :scope :type :size)
 
   (define-monitor-style (type
@@ -135,16 +140,24 @@ various statistics for events in each origin-group. "
 			 :test #'equal)
       "This style groups events by type and periodically displays
 various statistics for events in each type-group. "
-    (list :text :name title :width 32 :alignment :left)
+    (list :constant
+	  :name      "Type"
+	  :value     value
+	  :width     32
+	  :alignment :left)
     :rate :throughput :latency :scope :origin :size)
 
   (define-monitor-style (size
-			 :key  #'rsb.stats:event-size/power-of-2
-			 :test #'equal)
+			 :key   #'rsb.stats:event-size/power-of-2
+			 :test  #'equal)
       "This style groups events by size (each corresponding to a power
 of 2) and periodically displays various statistics for events in each
 size-group."
-    (list :text :name title :width 12 :alignment :left)
+    (list :constant
+	  :name      "Size"
+	  :value     value
+	  :width     12
+	  :alignment :left)
     :rate :throughput :latency :scope :origin :type :size))
 
 
