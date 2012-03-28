@@ -48,10 +48,13 @@
   ;; Start the swank server.
   (funcall (find-symbol "START-SERVER" :swank) port-file))
 
-(defun enable-swank-on-signal (&key (signal #+sbcl sb-unix:SIGUSR1))
+(defun enable-swank-on-signal (&key (signal #+sbcl sb-posix:SIGUSR1))
   "Install a handler for SIGNAL that starts a swank server."
-  #+sbcl (sb-unix::enable-interrupt
-	  signal #'(lambda (signal info context)
-		     (declare (ignore signal info context))
-		     (start-swank)))
-  #-sbcl (error "Not implemented"))
+  #+(and sbcl (not win32))
+  (sb-unix::enable-interrupt
+   signal #'(lambda (signal info context)
+	      (declare (ignore signal info context))
+	      (start-swank)))
+  #-(and sbcl (not win32))
+  (warn "~@<Cannot install signal handler to enable SWANK on this ~
+implementation-platfom combination.~@:>"))
