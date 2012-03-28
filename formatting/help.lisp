@@ -51,7 +51,8 @@ currently available:
        (style-classes) stream
        :initarg-blacklist '(:stream :pretty-state
 			    :quantities :count
-			    :sub-styles :test :key))
+			    :sub-styles :test :key
+			    :sort-predicate :sort-key))
 
       (format stream "~%~%")
       (rsb.common:with-abbreviation (stream :columns show)
