@@ -55,7 +55,7 @@ it. Otherwise create a new sub-style and then dispatch to it.  "
       (let ((key (style-key style)))
 	(push (make-sub-style-entry style (funcall key event))
 	      (style-sub-styles style))
-	(sub-style-for style event))))
+	(call-next-method))))
 
 (defmethod format-event :around ((event  t)
 				 (style  sub-style-grouping-mixin)
