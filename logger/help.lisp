@@ -1,6 +1,6 @@
 ;;; help.lisp --- Help text generation for the logger program.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -68,41 +68,26 @@ when used within a shell):
 (defun make-examples-string (&key
 			     (program-name "logger"))
   "Make and return a string containing usage examples of the program."
-  (format nil "~A
+  (format nil "~2T~A
 
-  Use all enabled transports with their respective default ~
-configuration to access the bus. Receive and display all events ~
-exchanged on the entire bus (since the channel designated by the root ~
-scope, \"/\", is implicitly used).
+Use all enabled transports with their respective default configuration ~
+to access the bus. Receive and display all events exchanged on the ~
+entire bus (since the channel designated by the root scope, \"/\", is ~
+implicitly used).
 
-~:*~A spread://localhost:4811
+~2T~:*~A spread://localhost:4811
 
-  Use the Spread daemon listening on port 4811 on localhost to connect ~
-to the bus. Since no scope is specified, receive and print all events ~
+Use the Spread daemon listening on port 4811 on localhost to connect
+to the bus. Since no scope is specified, receive and print all events
 exchanged on the entire bus.
 
-~:*~A -f 'regex :regex \"^mypattern\" :fallback-policy :do-not-match' ~
+~2T~:*~A -f 'regex :regex \"^mypattern\" :fallback-policy :do-not-match' ~
 --style detailed spread:/my/channel
 
-  Use the default configuration of the Spread transport to connect to ~
+Use the default configuration of the Spread transport to connect to ~
 the bus. Receive events on the channel designated by ~
 \"/my/channel\" (and sub-channels) the payloads of which match the ~
-regular expression \"^mypattern\". Display matching event using the ~
+regular expression \"^mypattern\". Display matching events using the ~
 \"detailed\" display style.
-
-~:*~A -f \"$(cat my-complex-filter)\" -s \"$(cat my-complex-style)\" ~
-/some/scope
-
-  Use the contents of the files \"my-complex-filter\" and ~
-\"my-complex-style\" to specify a filter expression and an event ~
-formatting style respectively. Note that the syntactic details depend ~
-on the used shell and that the idiom is not specific to ~:*~A. As an ~
-example, a file with the following content would mimic the \"compact\" ~
-style when used as argument to the --style (-s) option:
-
-  columns
-  :columns (:now
-            :origin :sequence-number :method :id :scope :data :data-size
-            :newline)
 "
 	  program-name))
