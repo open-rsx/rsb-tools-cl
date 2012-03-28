@@ -1,6 +1,6 @@
 ;;; interactive.lisp --- Functions for interactive stuff.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -20,13 +20,14 @@
 (cl:in-package :rsb.common)
 
 (defmacro with-interactive-interrupt-exit ((&key
-					    (signals '(sb-unix:SIGINT
-						       sb-unix:SIGTERM)))
+					    (signals '(sb-posix:SIGINT
+						       sb-posix:SIGTERM)))
 					   &body body)
   "Run BODY with an interruption handler that exits non-locally and
 returns nil instead of entering the debugger."
   `(catch 'terminate
      ,@(iter (for signal in signals)
+	     #-win32
 	     (collect
 		 `(sb-unix::enable-interrupt
 		   ,signal
