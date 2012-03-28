@@ -1,21 +1,22 @@
 (load-system :asdf-system-connections)
 
-(load-system :cl-ppcre)    ;; for regex filter
+(load-system :cl-ppcre)          ;; for regex filter
 
 (load-system :cl-protobuf)
-(load-system :cl-spread)   ;; for spread transport
+#-win32 (load-system :cl-spread) ;; for spread transport
 
-(load-system :usocket)     ;; for socket transport
+(load-system :usocket)           ;; for socket transport
 
-(load-system :swank)       ;; for the lulz
+(load-system :swank)             ;; for the lulz
 
 (load-system :cl-rsb-tools-main)
 
 (asdf:clear-source-registry)
 (asdf:clear-output-translations)
-(cffi:close-foreign-library 'spread::libspread)
+#-win32 (cffi:close-foreign-library 'spread::libspread)
 
 (defun reload-spread-and-main ()
+  #-win32
   (handler-case
       (cffi:use-foreign-library spread::libspread)
     (error (condition)
