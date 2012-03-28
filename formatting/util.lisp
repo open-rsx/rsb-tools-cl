@@ -203,7 +203,7 @@ these values, if possible."
   (let* ((thread               (bt:current-thread))
 	 (*print-right-margin* (stream-line-width stream))
 	 (*print-miser-width*  nil))
-    #+sbcl
+    #+(and sbcl (not win32))
     (sb-unix::enable-interrupt
      sb-unix:SIGWINCH
      #'(lambda (signal info context)
