@@ -294,3 +294,28 @@ the value of the :key initarg."
 			 (stream t)
 			 &key &allow-other-keys)
   (format stream "~:D" (incf (column-count column))))
+
+
+;;; Some useful column and style specifications
+;;
+;; For use in `columns-mixin' and subclasses such as `style-compact/*'
+;; `style-statistics/*' and `style-monitor/*'.
+
+(defvar *basic-columns*
+  '(;; Quantities
+    (:rate/12       . '(:quantity :quantity :rate       :width 12))
+    (:throughput/13 . '(:quantity :quantity :throughput :width 13))
+    (:latency       . '(:quantity :quantity (:latency
+					     :from :create
+					     :to   :deliver
+					     :name "Latency")))
+    (:origin/48     . '(:quantity :quantity :origin     :width 48 :alignment :left))
+    (:scope/46      . '(:quantity :quantity :scope      :width 46 :alignment :left))
+    (:type/48       . '(:quantity :quantity :type       :width 48 :alignment :left))
+    (:size/20       . '(:quantity :quantity :size       :width 20)))
+  "Contains an alist of column specification entries of the form
+
+  (NAME . SPEC)
+
+where NAME names the column specification SPEC. See `columns-mixin'
+for information regarding the processing of SPEC.")

@@ -60,24 +60,6 @@ display information for events within each group."))
 ;;; Some concrete monitor styles
 ;;
 
-(eval-when (:compile-toplevel :execute)
-  (defvar *basic-columns*
-    '((:rate       . '(:quantity :quantity :rate       :width 12))
-      (:throughput . '(:quantity :quantity :throughput :width 16))
-      (:latency    . '(:quantity :quantity (:latency
-					    :from :create
-					    :to   :deliver
-					    :name "Latency")))
-      (:origin     . '(:quantity :quantity :origin     :width 48 :alignment :left))
-      (:scope      . '(:quantity :quantity :scope      :width 48 :alignment :left))
-      (:type       . '(:quantity :quantity :type       :width 48 :alignment :left))
-      (:size       . '(:quantity :quantity :size       :width 20)))
-    "Contains an alist of entries of the form
-
-  (NAME . SPEC)
-
-where NAME names the column specification SPEC."))
-
 (macrolet
     ((define-monitor-style ((kind
 			     &rest initargs
@@ -121,7 +103,7 @@ various statistics for events in each scope-group."
 			 (write-string (scope-string value) stream))
 	  :width     32
 	  :alignment :left)
-    :rate :throughput :latency :origin :type :size)
+    :rate/12 :throughput/13 :latency :origin/48 :type/48 :size/20)
 
   (define-monitor-style (origin
 			 :key  #'event-origin
@@ -133,7 +115,7 @@ various statistics for events in each origin-group. "
 	  :value     value
 	  :width     36
 	  :alignment :left)
-    :rate :throughput :latency :scope :type :size)
+    :rate/12 :throughput/13 :latency :scope/46 :type/48 :size/20)
 
   (define-monitor-style (type
 			 :key  #'rsb.stats:event-type/simple
@@ -145,7 +127,7 @@ various statistics for events in each type-group. "
 	  :value     value
 	  :width     32
 	  :alignment :left)
-    :rate :throughput :latency :scope :origin :size)
+    :rate/12 :throughput/13 :latency :scope/46 :origin/48 :size/20)
 
   (define-monitor-style (size
 			 :key   #'rsb.stats:event-size/power-of-2
@@ -158,7 +140,7 @@ size-group."
 	  :value     value
 	  :width     12
 	  :alignment :left)
-    :rate :throughput :latency :scope :origin :type :size))
+    :rate/12 :throughput/13 :latency :scope/46 :origin/48 :type/48 :size/20))
 
 
 ;;; Utility functions

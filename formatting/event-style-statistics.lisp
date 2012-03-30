@@ -79,7 +79,7 @@ manner."))
 				   header-printing-mixin)
 	      ()
 	      (:default-initargs
-	       :columns (list ,@column-specs))
+	       :columns (list ,@(sublis *basic-columns* column-specs)))
 	      (:documentation
 	       ,(apply #'concatenate 'string
 		      "This formatting style computes a number of
@@ -91,56 +91,22 @@ tabular manner."
 
   (define-statistics-style (statistics/80)
       "The output of this style is designed to fit into 80 columns."
-    :now/compact
-    '(:quantity :quantity :rate       :width 12)
-    '(:quantity :quantity :throughput :width 13)
-    '(:quantity :quantity (:latency
-			   :from :create
-			   :to   :deliver
-			   :name "Latency"))
-    '(:quantity :quantity :size       :width 20)
+    :now/compact :rate/12 :throughput/13 :latency :size/20
     :newline)
 
   (define-statistics-style (statistics/128)
       "The output of this style is designed to fit into 128 columns."
-    :now/compact
-    '(:quantity :quantity :rate       :width 12)
-    '(:quantity :quantity :throughput :width 13)
-    '(:quantity :quantity (:latency
-			   :from :create
-			   :to   :deliver
-			   :name "Latency"))
-    '(:quantity :quantity :scope      :width 46 :alignment :left)
-    '(:quantity :quantity :size       :width 20)
+    :now/compact :rate/12 :throughput/13 :latency :scope/46 :size/20
     :newline)
 
   (define-statistics-style (statistics/180)
       "The output of this style is designed to fit into 180 columns."
-    :now
-    '(:quantity :quantity :rate       :width 12)
-    '(:quantity :quantity :throughput :width 13)
-    '(:quantity :quantity (:latency
-			   :from :create
-			   :to   :deliver
-			   :name "Latency"))
-    '(:quantity :quantity :origin     :width 35 :alignment :left)
-    '(:quantity :quantity :scope      :width 46 :alignment :left)
-    '(:quantity :quantity :size       :width 20)
+    :now :rate/12 :throughput/13 :latency :origin/35 :scope/46 :size/20
     :newline)
 
   (define-statistics-style (statistics/220)
       "The output of this style is designed to fit into 180 columns."
-    :now
-    '(:quantity :quantity :rate       :width 12)
-    '(:quantity :quantity :throughput :width 13)
-    '(:quantity :quantity (:latency
-			   :from :create
-			   :to   :deliver
-			   :name "Latency"))
-    '(:quantity :quantity :origin     :width 35 :alignment :left)
-    '(:quantity :quantity :scope      :width 46 :alignment :left)
-    '(:quantity :quantity :type       :width 39 :alignment :left)
-    '(:quantity :quantity :size       :width 20)
+    :now :rate/12 :throughput/13 :latency :origin/35 :scope/46 :type/39 :size/20
     :newline))
 
 
