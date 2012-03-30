@@ -19,6 +19,35 @@
 
 (cl:in-package :rsb.formatting)
 
+
+;;; Class `basic-compact' style
+;;
+
+(defclass basic-compact-style (delegating-mixin
+			       header-printing-mixin)
+  ()
+  (:documentation
+   "This class is intended to be used as a superclass for compact
+style classes."))
+
+(defmethod sub-style-for ((style basic-compact-style)
+			  (event t))
+  "Return a singleton list containing the sub-style of STYLE whose
+predicate succeeds on EVENT."
+  (ensure-list
+   (cdr (find-if (rcurry #'funcall event) (style-sub-styles style)
+		 :key #'car))))
+
+(defmethod format-header ((style  basic-compact-style)
+			  (stream t))
+  (format-header
+   (cdr (lastcar (style-sub-styles style))) stream))
+
+
+;;; Classes `style-compact/*'
+;;
+;; These provide increasingly detailed "compact" event formatting.
+
 (macrolet
     ((define-compact-style (name &body doc-and-sub-styles)
        (let+ ((class-name (symbolicate :style "-" name))
@@ -33,25 +62,21 @@
 	   (defmethod find-style-class ((spec (eql ,name)))
 	     (find-class ',class-name))
 
-	   (defclass ,class-name (delegating-mixin
-				  header-printing-mixin)
+	   (defclass ,class-name (basic-compact-style)
 	     ()
 	     (:default-initargs
 	      :sub-styles (list ,@(map 'list #'make-sub-style
 				       sub-styles)))
-	     ,@(when documentation
-	         `((:documentation ,documentation))))
-
-	   (defmethod format-header ((style  ,class-name)
-				     (stream t))
-	     (format-header
-	      (cdr (lastcar (style-sub-styles style))) stream))))))
+	     (:documentation
+	      ,(apply #'concatenate 'string
+		      "This formatting style prints several properties
+of received events on a single line. Some events are formatted
+specially according to their role in a communication pattern."
+		      (when documentation
+			(list " " documentation)))))))))
 
   (define-compact-style :compact
-      "This formatting style prints several properties of received
-events on a single line. It is designed to fit into 80 columns. Some
-events are formatted specially according to their role in a
-communication pattern."
+      "It is designed to fit into 80 columns."
     (#'request-event? . ((:now    :width 26 :alignment :left)
 			 :origin
 			 (:call   :width 43)
@@ -68,10 +93,7 @@ communication pattern."
 			 :newline)))
 
   (define-compact-style :compact+
-      "This formatting style prints several properties of received
-events on a single line. It is designed to fit into 128 columns. Some
-events are formatted specially according to their role in a
-communication pattern."
+      "It is designed to fit into 128 columns."
     (#'request-event? . (:now
 			 :origin :sequence-number :id :call :data-size
 			 :newline))
