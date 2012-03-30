@@ -96,17 +96,17 @@ tabular manner."
 
   (define-statistics-style (statistics/128)
       "The output of this style is designed to fit into 128 columns."
-    :now/compact :rate/12 :throughput/13 :latency :scope/46 :size/20
+    :now/compact :rate/12 :throughput/13 :latency :scope/40 :size/20
     :newline)
 
   (define-statistics-style (statistics/180)
       "The output of this style is designed to fit into 180 columns."
-    :now :rate/12 :throughput/13 :latency :origin/35 :scope/46 :size/20
+    :now :rate/12 :throughput/13 :latency :origin/40 :scope/40 :size/20
     :newline)
 
   (define-statistics-style (statistics/220)
       "The output of this style is designed to fit into 180 columns."
-    :now :rate/12 :throughput/13 :latency :origin/35 :scope/46 :type/39 :size/20
+    :now :rate/12 :throughput/13 :latency :origin/40 :scope/40 :type/40 :size/20
     :newline))
 
 

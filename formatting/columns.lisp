@@ -309,9 +309,9 @@ the value of the :key initarg."
 					     :from :create
 					     :to   :deliver
 					     :name "Latency")))
-    (:origin/48     . '(:quantity :quantity :origin     :width 48 :alignment :left))
-    (:scope/46      . '(:quantity :quantity :scope      :width 46 :alignment :left))
-    (:type/48       . '(:quantity :quantity :type       :width 48 :alignment :left))
+    (:origin/40     . '(:quantity :quantity :origin     :width 40 :alignment :left))
+    (:scope/40      . '(:quantity :quantity :scope      :width 40 :alignment :left))
+    (:type/40       . '(:quantity :quantity :type       :width 40 :alignment :left))
     (:size/20       . '(:quantity :quantity :size       :width 20)))
   "Contains an alist of column specification entries of the form
 

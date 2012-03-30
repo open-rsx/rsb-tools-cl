@@ -103,7 +103,10 @@ various statistics for events in each scope-group."
 			 (write-string (scope-string value) stream))
 	  :width     32
 	  :alignment :left)
-    :rate/12 :throughput/13 :latency :origin/48 :type/48 :size/20)
+    :rate/12 :throughput/13 :latency :origin/40 :type/40 :size/20)
+
+  (defmethod find-style-class ((spec (eql :monitor)))
+    (find-style-class :monitor/scope))
 
   (define-monitor-style (origin
 			 :key  #'event-origin
@@ -115,7 +118,7 @@ various statistics for events in each origin-group. "
 	  :value     value
 	  :width     36
 	  :alignment :left)
-    :rate/12 :throughput/13 :latency :scope/46 :type/48 :size/20)
+    :rate/12 :throughput/13 :latency :scope/40 :type/40 :size/20)
 
   (define-monitor-style (type
 			 :key  #'rsb.stats:event-type/simple
@@ -127,7 +130,7 @@ various statistics for events in each type-group. "
 	  :value     value
 	  :width     32
 	  :alignment :left)
-    :rate/12 :throughput/13 :latency :scope/46 :origin/48 :size/20)
+    :rate/12 :throughput/13 :latency :scope/40 :origin/40 :size/20)
 
   (define-monitor-style (size
 			 :key   #'rsb.stats:event-size/power-of-2
@@ -140,7 +143,7 @@ size-group."
 	  :value     value
 	  :width     12
 	  :alignment :left)
-    :rate/12 :throughput/13 :latency :scope/46 :origin/48 :type/48 :size/20))
+    :rate/12 :throughput/13 :latency :scope/40 :origin/40 :type/40 :size/20))
 
 
 ;;; Utility functions
