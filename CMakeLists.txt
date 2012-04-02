@@ -63,14 +63,16 @@ ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
 ADD_CUSTOM_TARGET(binary ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}")
 
 # Create symlinks.
-SET(TOOLS info logger call send)
-FOREACH(TOOL ${TOOLS})
-    ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}"
-                       COMMAND "${CMAKE_COMMAND}" -E create_symlink "./${MAIN_NAME}" "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}"
-                       DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}"
-                       COMMENT "Creating symlink ${TOOL} -> ${MAIN_NAME}")
-ENDFOREACH()
-ADD_CUSTOM_TARGET(links ALL DEPENDS ${TOOLS})
+IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    SET(TOOLS info logger call send)
+    FOREACH(TOOL ${TOOLS})
+        ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}"
+                           COMMAND "${CMAKE_COMMAND}" -E create_symlink "./${MAIN_NAME}" "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}"
+                           DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}"
+                           COMMENT "Creating symlink ${TOOL} -> ${MAIN_NAME}")
+    ENDFOREACH()
+    ADD_CUSTOM_TARGET(links ALL DEPENDS ${TOOLS})
+ENDIF()
 
 # Tests
 ENABLE_TESTING()
