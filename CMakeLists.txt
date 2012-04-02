@@ -41,7 +41,7 @@ IF(LISP_INIT_CODE)
     SET(LISP_INIT "${LISP_INIT} --eval \"${LISP_INIT_CODE}\"")
 ENDIF()
 
-SET(CL_SOURCE_REGISTRY "${CMAKE_CURRENT_SOURCE_DIR}//:")
+SET(CL_SOURCE_REGISTRY       "(:source-registry (:tree \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\") :inherit-configuration)")
 SET(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t (\\\"${CMAKE_CURRENT_BINARY_DIR}/fasl-cache\\\" :implementation)) :ignore-inherited-configuration)")
 
 # Create binary.
