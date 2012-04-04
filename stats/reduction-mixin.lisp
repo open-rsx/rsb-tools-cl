@@ -21,9 +21,8 @@
 
 (defclass reduction-mixin ()
   ((empty-value :initarg  :empty-value
-		:allocation :class
-		:reader   quantity-empty-value
-		:initform :n/a
+		:accessor quantity-empty-value
+		:initform 0
 		:documentation
 		"This class allocated slot stores a value that should
 be produced when the quantity is queried when no values have been
@@ -31,6 +30,7 @@ collected.")
    (reduce-by   :initarg  :reduce-by
 		:type     function
 		:accessor quantity-reduce-by
+		:initform #'+
 		:documentation
 		"Stores the reduce function that produces the value of
 the quantity by reducing a collection of values."))
@@ -44,9 +44,5 @@ reduction function."))
 	   (empty-value quantity-empty-value)
 	   (values      quantity-values)
 	   (reduce-by   quantity-reduce-by)) quantity))
-    (if (emptyp values)
-	empty-value
-	(reduce reduce-by values))))
-
-(defmethod format-value ((quantity reduction-mixin) (stream t))
-  (format stream "~,3F" (quantity-value quantity)))
+    (reduce reduce-by values
+	    :initial-value empty-value)))

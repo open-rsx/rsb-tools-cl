@@ -29,7 +29,6 @@
 			       &key
 			       (designator  (make-keyword name))
 			       (pretty-name (format nil "~(~A~)" name))
-			       slots
 			       &allow-other-keys)
 			      super-classes
 			      &optional doc)
@@ -40,32 +39,52 @@
 
 	    (defclass ,class-name (named-mixin
 				   ,@super-classes)
-	      (,@slots)
+	      ()
 	      (:default-initargs
 	       :name ,pretty-name
 	       ,@(remove-from-plist initargs :designator :pretty-name :slots))
 	      ,@(when doc
 		  `((:documentation ,doc))))))))
 
-  (define-simple-quantity (rate
-			   :slots     ((empty-value :initform 0))
+  (define-simple-quantity (count
 			   :extractor (constantly 1)
-			   :reduce-by #'+)
+			   :format    "~:D")
       (extract-function-mixin
        collecting-mixin
        reduction-mixin
-       rate-mixin)
+       format-mixin)
+    "This quantity measures the event rate by counting the events
+arriving within a period of time.")
+
+  (define-simple-quantity (count/all-time
+			   :pretty-name "Count"
+			   :extractor   (constantly 1)
+			   :format      "~:D")
+      (extract-function-mixin
+       all-time-mixin
+       format-mixin)
+    "This quantity measures the event rate by counting the events
+arriving within a period of time.")
+
+  (define-simple-quantity (rate
+			   :extractor (constantly 1)
+			   :format    "~,3F")
+      (extract-function-mixin
+       collecting-mixin
+       reduction-mixin
+       rate-mixin
+       format-mixin)
     "This quantity measures the event rate by counting the events
 arriving within a period of time.")
 
   (define-simple-quantity (throughput
-			   :slots     ((empty-value :initform 0))
 			   :extractor (rcurry #'event-size 0)
-			   :reduce-by #'+)
+			   :format    "~,3F")
       (extract-function-mixin
        collecting-mixin
        reduction-mixin
-       rate-mixin)
+       rate-mixin
+       format-mixin)
     "This quantity measures the throughput by accumulating the sizes
 of event payloads over a period of time. Note that it is not always
 possible to determine the size of an event payload and that,
@@ -91,6 +110,31 @@ actual size statistics in some cases.")
 rounded to the nearest power of 2 - observed over a period of
 time. When output is produced, the most frequent sizes are printed
 first.")
+
+  (define-simple-quantity (size/all-time
+			   :pretty-name "Size"
+			   :extractor   (rcurry #'rsb.stats:event-size nil)
+			   :format      "~:D")
+      (extract-function-mixin
+       all-time-mixin
+       format-mixin)
+    "The value of this quantity consists of the accumulated sizes of
+all events.")
+
+  (define-simple-quantity
+      (notification-size
+       :extractor #'(lambda (event)
+		      (or (meta-data event :rsb.transport.notification-size)
+			  :n/a)))
+      (extract-function-mixin
+       collecting-mixin
+       moments-mixin)
+    "This quantity measures the size of notifications over a period of
+time and computes mean and variance of the collected values. Note that
+it is not always possible to determine the size the notification
+through which and events has been transmitted and that, consequently,
+the value of this quantity may not reflect the actual size statistics
+in some cases.")
 
   (define-simple-quantity (scope
 			   :extractor (compose #'scope-string

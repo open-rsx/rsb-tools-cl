@@ -60,6 +60,10 @@
   (:export
    :moments-mixin)
 
+  ;; `all-time-mixin' mixin class
+  (:export
+   :all-time-mixin)
+
   ;; `named-mixin'
   (:export
    :named-mixin)
@@ -77,8 +81,15 @@
   ;; `meta-data-mixin' mixin class
   (:export
    :meta-data-mixin
+
    :quantity-key
    :quantity-when-missing)
+
+  ;; `format-mixin' mixin class
+  (:export
+   :format-mixin
+
+   :quantity-format)
 
   ;; Quantity findable class family
   (:export
@@ -97,7 +108,9 @@
    "This package contains functions and classes for computing basic
 statistical quantities over properties of RSB events. Most quantities
 collect some event property over a period of time and produce some
-aggregated value from the collection. Examples include
+aggregated value from the collection.
+
+Examples include
 + Event frequency
 + Histogram of event origins
 + Histogram of event wire-schema

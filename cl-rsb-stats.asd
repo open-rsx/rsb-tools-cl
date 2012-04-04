@@ -84,6 +84,8 @@ RSB-related systems."
 			       :depends-on ("package" "protocol"))
 			      (:file       "moments-mixin"
 			       :depends-on ("package" "protocol"))
+			      (:file       "all-time-mixin"
+			       :depends-on ("package" "protocol"))
 			      (:file       "reduction-mixin"
 			       :depends-on ("package" "protocol"))
 			      (:file       "rate-mixin"
@@ -91,6 +93,8 @@ RSB-related systems."
 			      (:file       "meta-data-mixin"
 			       :depends-on ("package" "types"
 					    "protocol" "named-mixin"))
+			      (:file       "format-mixin"
+			       :depends-on ("package" "protocol"))
 
 			      ;; Quantity classes
 			      (:file       "quantities"
@@ -100,9 +104,11 @@ RSB-related systems."
 					    "histogram-mixin"
 					    "extract-function-mixin"
 					    "moments-mixin"
+					    "all-time-mixin"
 					    "reduction-mixin"
 					    "rate-mixin"
-					    "meta-data-mixin")))))
+					    "meta-data-mixin"
+					    "format-mixin")))))
 
   :in-order-to ((test-op (test-op :cl-rsb-stats-test))))
 

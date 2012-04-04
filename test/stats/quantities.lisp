@@ -42,6 +42,16 @@ CASES as body of `ensure-quantity-cases' in a test case for the
 	 (ensure-quantity-cases (,class-name)
 	   (progn ,@cases))))))
 
+(define-simple-quantity-suite (:count)
+  `((() ()                           "^0$")
+    (() (,(make-event "/foo" "bar")) "^1$")
+    (() (,(make-event "/foo" "bar")) "^1$")))
+
+(define-simple-quantity-suite (:count/all-time)
+  `((() ()                           "^0$")
+    (() (,(make-event "/foo" "bar")) "^1$")
+    (() (,(make-event "/foo" "bar")) "^1$")))
+
 (define-simple-quantity-suite (:rate)
   `((() ()                           "^0\\.000$")
     (() (,(make-event "/foo" "bar")) "^[0-9]+\\.[0-9]+$")))
@@ -49,6 +59,18 @@ CASES as body of `ensure-quantity-cases' in a test case for the
 (define-simple-quantity-suite (:throughput)
   `((() ()                           "^0\\.000$")
     (() (,(make-event "/foo" "bar")) "^[0-9]+\\.[0-9]+$")))
+
+(define-simple-quantity-suite (:size)
+    `((() ()                           "^N/A ± N/A")
+      (() (,(make-event "/foo" "bar")) "^[0-9]+\\.[0-9]+ ± [0-9]+\\.[0-9]+$")))
+
+(define-simple-quantity-suite (:size/log)
+    `((() ()                           "^N/A$")
+      (() (,(make-event "/foo" "bar")) "^4: 1$")))
+
+(define-simple-quantity-suite (:size/all-time)
+    `((() ()                           "^0$")
+      (() (,(make-event "/foo" "bar")) "^3$")))
 
 (define-simple-quantity-suite (:scope)
   `((() ()                           "^N/A$")
@@ -92,6 +114,10 @@ CASES as body of `ensure-quantity-cases' in a test case for the
        ,(make-event "/bar" "baz"
 		    :rsb.transport.wire-schema "b"))
      "^b: 2, a: 1$")))
+
+(define-simple-quantity-suite (:type)
+    `((() ()                       "^N/A$")
+      (() (,(make-event "/foo" 1)) "^BIT: 1$")))
 
 (define-simple-quantity-suite (:meta-data-moments)
   (let+ (((&flet event (&rest args &key &allow-other-keys)
