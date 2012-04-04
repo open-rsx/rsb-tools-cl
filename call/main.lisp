@@ -104,6 +104,8 @@ works if the called method accepts an argument of type string.
 		       :short-name    "w"
 		       :description
 		       "Do not wait for the result of the method call. Immediately return with zero status without printing a result to standard output."))
+   ;; Append IDL options.
+   :item    (make-idl-options)
    ;; Append RSB options.
    :item    (make-options
 	     :show? (or (eq show t)
@@ -117,9 +119,11 @@ works if the called method accepts an argument of type string.
   (cond
     ((emptyp string)
      rsb.converter:+no-value+)
+
     ((string= string "-")
      (with-output-to-string (stream)
        (copy-stream *standard-input* stream)))
+
     (t
      (let+ (((&values value consumed)
 	     (read-from-string string)))
@@ -138,11 +142,19 @@ works if the called method accepts an argument of type string.
    :return          #'(lambda () (return-from main)))
   (enable-swank-on-signal)
 
+  ;; Validate commandline options.
   (unless (length= 1 (remainder))
     (error "~@<Supply call specification of the form ~
 SERVER-URI/METHOD(ARG).~@:>"))
 
   (with-logged-warnings
+    ;; Load IDLs as specified on the commandline.
+    (process-idl-options)
+
+    ;; 1. Parse the method call specification
+    ;; 2. Call the method and
+    ;; 3. Potentially wait for a reply
+    ;;    Format it
     (let+ ((spec (first (remainder)))
 	   ((&values server-uri method arg)
 	    (ppcre:register-groups-bind (server-uri method arg)
@@ -161,6 +173,7 @@ SERVER-URI/METHOD(ARG).~@:>"))
 		 (handler-case
 		     (call server method arg :timeout timeout)
 		   (bt:timeout (condition)
+		     (declare (ignore condition))
 		     (error "~@<Method call timed out after ~S ~
 second~:P.~@:>"
 			    timeout))))))))
