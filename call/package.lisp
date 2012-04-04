@@ -27,6 +27,7 @@
    :rsb
    :rsb.patterns
    :rsb.common
+   :rsb.formatting
 
    :com.dvlsoft.clon)
 

@@ -103,7 +103,13 @@ works if the called method accepts an argument of type string.
 	      (flag    :long-name     "no-wait"
 		       :short-name    "w"
 		       :description
-		       "Do not wait for the result of the method call. Immediately return with zero status without printing a result to standard output."))
+		       "Do not wait for the result of the method call. Immediately return with zero status without printing a result to standard output.")
+	      (stropt  :long-name       "style"
+		       :short-name      "s"
+		       :default-value   "payload :separator nil"
+		       :argument-name   "SPEC"
+		       :description
+		       (make-style-help-string :show show)))
    ;; Append IDL options.
    :item    (make-idl-options)
    ;; Append RSB options.
@@ -162,21 +168,35 @@ SERVER-URI/METHOD(ARG).~@:>"))
 	      (values server-uri method (parse-argument arg))))
 	   (timeout (getopt :long-name "timeout"))
 	   (wait?   (not (getopt :long-name "no-wait")))
-	   ((&flet call (server)
+	   (style   (let+ (((class &rest args)
+			    (parse-instantiation-spec
+			     (getopt :long-name "style"))))
+		      (apply #'make-instance (find-style-class class)
+			     args)))
+	   ((&flet call/raw (server)
 	      (cond
 		((not wait?)
 		 (call server method arg :block? nil)
 		 (values))
 		((not timeout)
-		 (call server method arg))
+		 (call server method arg
+		       :return :event))
 		(t
 		 (handler-case
-		     (call server method arg :timeout timeout)
+		     (call server method arg
+			   :return  :event
+			   :timeout timeout)
+
 		   (bt:timeout (condition)
 		     (declare (ignore condition))
 		     (error "~@<Method call timed out after ~S ~
 second~:P.~@:>"
-			    timeout))))))))
+			    timeout)))))))
+	   ((&flet call/translate (server)
+	      (let ((event (call/raw server)))
+		(if (typep (event-data event) 'rsb.converter:no-value)
+		    (values)
+		    event)))))
 
       (unless (and server-uri method arg)
 	(error "~@<Parse error in call specification ~S.~@:>"
@@ -191,5 +211,5 @@ no-wait.~@:>"
 	    server-uri method arg)
       (with-interactive-interrupt-exit ()
 	(with-remote-server (server server-uri)
-	  (when-let* ((reply (multiple-value-list (call server))))
-	    (format t "~S~%"  (first reply))))))))
+	  (when-let ((reply (multiple-value-list (call/translate server))))
+	    (format-event (first reply) style *standard-output*)))))))
