@@ -64,51 +64,32 @@ RSB-related systems."
 		:local-time
 
 		(:version :cl-rsb #.(version/string)))
-  :components  ((:module     "stats"
+  :components  ((:module     "stats-early"
+		 :pathname   "stats"
+		 :serial     t
 		 :components ((:file       "package")
-			      (:file       "types"
-			       :depends-on ("package"))
-			      (:file       "protocol"
-			       :depends-on ("package"))
-			      (:file       "util"
-			       :depends-on ("package"))
+			      (:file       "types")
+			      (:file       "protocol")
+			      (:file       "util")))
 
-			      ;; Quantity mixin classes
-			      (:file       "named-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "collecting-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "histogram-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "extract-function-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "moments-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "all-time-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "reduction-mixin"
-			       :depends-on ("package" "protocol"))
-			      (:file       "rate-mixin"
-			       :depends-on ("package" "protocol"))
+		(:module     "stats-mixins"
+		 :pathname   "stats"
+		 :depends-on ("stats-early")
+		 :components ((:file       "named-mixin")
+			      (:file       "collecting-mixin")
+			      (:file       "histogram-mixin")
+			      (:file       "extract-function-mixin")
+			      (:file       "moments-mixin")
+			      (:file       "all-time-mixin")
+			      (:file       "reduction-mixin")
+			      (:file       "rate-mixin")
 			      (:file       "meta-data-mixin"
-			       :depends-on ("package" "types"
-					    "protocol" "named-mixin"))
-			      (:file       "format-mixin"
-			       :depends-on ("package" "protocol"))
+			       :depends-on ("named-mixin"))
+			      (:file       "format-mixin")))
 
-			      ;; Quantity classes
-			      (:file       "quantities"
-			       :depends-on ("package" "protocol" "util"
-					    "named-mixin"
-					    "collecting-mixin"
-					    "histogram-mixin"
-					    "extract-function-mixin"
-					    "moments-mixin"
-					    "all-time-mixin"
-					    "reduction-mixin"
-					    "rate-mixin"
-					    "meta-data-mixin"
-					    "format-mixin")))))
+		(:module     "stats"
+		 :depends-on ("stats-early" "stats-mixins")
+		 :components ((:file       "quantities"))))
 
   :in-order-to ((test-op (test-op :cl-rsb-stats-test))))
 
@@ -129,9 +110,7 @@ system."
 		 :pathname   "test/stats"
 		 :components ((:file       "package")
 			      (:file       "quantities"
-			       :depends-on ("package")))))
-
-  :in-order-to ((test-op (load-op :cl-rsb-stats-test))))
+			       :depends-on ("package"))))))
 
 (defmethod perform ((operation test-op)
 		    (component (eql (find-system :cl-rsb-stats-test))))
