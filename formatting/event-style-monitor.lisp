@@ -28,7 +28,12 @@
 			       sub-style-sorting-mixin
 			       header-printing-mixin
 			       separator-mixin)
-  ()
+  ((colums :initarg    :columns
+	   :type       function
+	   :reader     style-columns
+	   :documentation
+	   "Stores a specification for creating columns used by
+sub-styles of the style."))
   (:default-initargs
    :sub-styles       nil
 
@@ -37,11 +42,25 @@
 
    :header-frequency 1
 
-   :separator        :clear)
+   :separator        :clear
+
+   :columns          (missing-required-initarg
+		      'basic-monitor-style :columns))
   (:documentation
    "This class serves as a superclass for formatting style classes
 which group events according to some criterion and periodically
 display information for events within each group."))
+
+(defmethod make-sub-style-entry ((style basic-monitor-style)
+				 (value t))
+  (let+ (((&accessors-r/o (key     style-key)
+			  (test    style-test)
+			  (columns style-columns)) style))
+    (declare (type function key test columns))
+    (cons
+     #'(lambda (event) (funcall test (funcall key event) value))
+     (make-instance 'statistics-columns-mixin
+		    :columns (funcall columns value)))))
 
 (defmethod format-header ((style  basic-monitor-style)
 			  (stream t))
@@ -78,24 +97,49 @@ display information for events within each group."))
 
 	    (defclass ,class-name (basic-monitor-style)
 	      ()
-	      (:default-initargs ,@initargs)
+	      (:default-initargs
+	       :columns #'(lambda (value) (list ,@columns))
+	       ,@initargs)
 	      ,@(when documentation
-		  `((:documentation ,documentation))))
+		  `((:documentation ,documentation)))))))
 
-	    (defmethod make-sub-style-entry ((style ,class-name)
-					     (value t))
-	      (let+ (((&accessors-r/o (key  style-key)
-				      (test style-test)) style))
-		(cons
-		 #'(lambda (event) (funcall test (funcall key event) value))
-		 (make-instance 'statistics-columns-mixin
-				:columns (list ,@columns)))))))))
+     (define-dynamic-width-monitor-style ((kind &rest args)
+					  &body doc-and-specs)
+       (let+ (((&values (group-column-spec &rest other-specs)
+			nil documentation)
+	       (parse-body doc-and-specs :documentation t))
+	      (name (format-symbol *package* "~A/~A" :monitor kind))
+	      (dispatch-specs)
+	      ((&flet+ do-sub-style (((min &optional max) &rest spec))
+		 (let* ((name       (format-symbol
+				     *package* "~A/~:[*~;~:*~D~]"
+				     kind (when max (1- max))))
+			(class-name (format-symbol
+				     *package* "~A/~A"
+				     :style-monitor name)))
+		   (appendf dispatch-specs
+			    `(((,min ,@(when max `(,max)))
+			       (make-instance ',class-name
+					      :print-interval nil))))
+		   `(define-monitor-style (,name ,@args)
+			,(format nil "~A The output of this style is ~
+designed to fit into ~:[~D or more columns~;~:*~D columns~]."
+				 documentation (when max (1- max)) min)
+		      ,group-column-spec
+		      ,@spec)))))
+	 `(progn
+	    ,@(map 'list #'do-sub-style other-specs)
 
-  (define-monitor-style (scope
-			 :key   #'event-scope
-			 :test  #'sub-scope?)
+	    (define-dynamic-width-style (,name
+					 :superclasses (periodic-printing-mixin))
+	      ,@dispatch-specs)))))
+
+  (define-dynamic-width-monitor-style (scope
+				       :key   #'event-scope
+				       :test  #'sub-scope?)
       "This style groups events by scope and periodically displays
 various statistics for events in each scope-group."
+    ;; Specification for group column.
     (list :constant
 	  :name      "Scope"
 	  :value     value
@@ -103,47 +147,68 @@ various statistics for events in each scope-group."
 			 (write-string (scope-string value) stream))
 	  :width     32
 	  :alignment :left)
-    :rate/12 :throughput/13 :latency :origin/40 :type/40 :size/20)
+    ;; Width-dependent specifications for remaining columns.
+    ((  0  81) :rate/12 :throughput/13 :latency)
+    (( 81 129) :rate/12 :throughput/13 :latency :size/20)
+    ((129 181) :rate/12 :throughput/13 :latency :type/40 :size/20)
+    ((181    ) :rate/12 :throughput/13 :latency :origin/40 :type/40 :size/20))
 
   (defmethod find-style-class ((spec (eql :monitor)))
     (find-style-class :monitor/scope))
 
-  (define-monitor-style (origin
-			 :key  #'event-origin
-			 :test #'uuid:uuid=)
+  (define-dynamic-width-monitor-style (origin
+				       :key  #'event-origin
+				       :test #'uuid:uuid=)
       "This style groups events by origin and periodically displays
-various statistics for events in each origin-group. "
+various statistics for events in each origin-group."
+    ;; Specification for group column.
     (list :constant
 	  :name      "Origin"
 	  :value     value
 	  :width     36
 	  :alignment :left)
-    :rate/12 :throughput/13 :latency :scope/40 :type/40 :size/20)
+    ;; Width-dependent specifications for remaining columns.
+    ((  0  81) :rate/12 :throughput/13 :latency)
+    (( 81 129) :rate/12 :throughput/13 :latency :size/20)
+    ((129 181) :rate/12 :throughput/13 :latency :type/40 :size/20)
+    ((181    ) :rate/12 :throughput/13 :latency :scope/40 :type/40 :size/20 '(:timeline :width 100)))
 
-  (define-monitor-style (type
-			 :key  #'rsb.stats:event-type/simple
-			 :test #'equal)
+  (define-dynamic-width-monitor-style
+      (type
+       :key  #'rsb.stats:event-type/simple
+       :test #'equal)
       "This style groups events by type and periodically displays
-various statistics for events in each type-group. "
+various statistics for events in each type-group."
+    ;; Specification for group column.
     (list :constant
 	  :name      "Type"
 	  :value     value
 	  :width     32
 	  :alignment :left)
-    :rate/12 :throughput/13 :latency :scope/40 :origin/40 :size/20)
+    ;; Width-dependent specifications for remaining columns.
+    ((  0  81) :rate/12 :throughput/13 :latency)
+    (( 81 129) :rate/12 :throughput/13 :latency :size/20)
+    ((129 181) :rate/12 :throughput/13 :latency :scope/40 :size/20)
+    ((181    ) :rate/12 :throughput/13 :latency :scope/40 :origin/40 :size/20))
 
-  (define-monitor-style (size
-			 :key   #'rsb.stats:event-size/power-of-2
-			 :test  #'equal)
+  (define-dynamic-width-monitor-style
+      (size
+       :key  #'rsb.stats:event-size/power-of-2
+       :test #'equal)
       "This style groups events by size (each corresponding to a power
 of 2) and periodically displays various statistics for events in each
 size-group."
+    ;; Specification for group column.
     (list :constant
 	  :name      "Size"
 	  :value     value
 	  :width     12
 	  :alignment :left)
-    :rate/12 :throughput/13 :latency :scope/40 :origin/40 :type/40 :size/20))
+    ;; Width-dependent specifications for remaining columns.
+    ((  0  81) :rate/12 :throughput/13 :latency)
+    (( 81 129) :rate/12 :throughput/13 :latency :type/40)
+    ((129 181) :rate/12 :throughput/13 :latency :scope/40 :origin/40 :type/40)
+    ((181    ) :rate/12 :throughput/13 :latency :scope/40 :origin/40 :type/40 :size/20)))
 
 
 ;;; Utility functions
@@ -167,7 +232,7 @@ returned."
 	  ((and a-ok? b-ok?) (funcall predicate a b))
 	  (a-ok?             fallback)
 	  (b-ok?             (not fallback))
-	  (t nil)))))
+	  (t                 nil)))))
 
 (defun %make-column-key-function (column)
   "Return a function of one argument, a style object, that extracts
