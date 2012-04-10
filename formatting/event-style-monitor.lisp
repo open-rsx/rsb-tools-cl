@@ -171,7 +171,7 @@ various statistics for events in each origin-group."
     ((  0  81) :rate/12 :throughput/13 :latency)
     (( 81 129) :rate/12 :throughput/13 :latency :size/20)
     ((129 181) :rate/12 :throughput/13 :latency :type/40 :size/20)
-    ((181    ) :rate/12 :throughput/13 :latency :scope/40 :type/40 :size/20 '(:timeline :width 100)))
+    ((181    ) :rate/12 :throughput/13 :latency :scope/40 :type/40 :size/20))
 
   (define-dynamic-width-monitor-style
       (type
