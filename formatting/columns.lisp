@@ -276,7 +276,7 @@ the value of the :key initarg."
   (find-class 'column-count))
 
 (defclass column-count (width-mixin
-			name-mixin)
+			basic-column)
   ((count :initarg  :count
 	  :type     non-negative-integer
 	  :accessor column-count
