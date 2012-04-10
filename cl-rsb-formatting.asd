@@ -106,7 +106,6 @@ RSB-related systems."
 
 			      ;; Column classes
 			      (:file       "columns")
-			      (:file       "timeline")
 
 			      ;; Payload formatting classes
 			      (:file       "payload-collection"
@@ -150,7 +149,9 @@ cl-rsb-stats system."
   :requires    (cl-rsb-formatting
 		cl-rsb-stats)
   :components  ((:module     "formatting"
-		 :components ((:file       "quantity-column")
+		 :components ((:file       "timeline")
+			      (:file       "quantity-column")
+
 			      (:file       "event-style-statistics"
 			       :depends-on ("quantity-column"))
 			      (:file       "event-style-monitor"
