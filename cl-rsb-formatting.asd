@@ -96,7 +96,8 @@ RSB-related systems."
 			       :depends-on ("delegating-mixin"))
 			      (:file       "separator-mixin")
 			      (:file       "image-output-mixin")
-			      (:file       "data-consistency-mixin")))
+			      (:file       "data-consistency-mixin")
+			      (:file       "temporal-bounds-mixin")))
 
 		(:module     "formatting"
 		 :depends-on ("formatting-early"

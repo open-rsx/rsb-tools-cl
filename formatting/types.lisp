@@ -19,6 +19,47 @@
 
 (cl:in-package :rsb.formatting)
 
+
+;;; Time-related types
+;;
+
+(deftype timestamp/unix/nsec ()
+  "Time in nanoseconds since UNIX epoch."
+  'non-negative-integer)
+
+(deftype time-spec/variable ()
+  "Time specifications which refer to variables."
+  '(member :now :newest))
+
+(deftype time-spec/operator ()
+  "Operators which can occur in time specifications."
+  '(member + - * / mod))
+
+(deftype time-spec ()
+  "Time specification expressions allowing constants, variables and
+operators."
+  '(or time-spec/variable
+       real
+       (cons time-spec/operator
+	     (cons (satisfies time-spec-p)
+		   (cons (satisfies time-spec-p) null)))))
+
+(defun time-spec-p (thing)
+  "Return non-nil, if THING is of type `time-spec'."
+  (typep thing 'time-spec))
+
+(deftype bounds-spec ()
+  "A list of the form
+
+  (LOWER-BOUND UPPER-BOUND)
+
+where LOWER-BOUND and UPPER-BOUND are `time-spec's."
+  '(cons time-spec (cons time-spec null)))
+
+
+;;;
+;;
+
 (deftype rule-spec ()
   "A rule specification of the form (:RULE CHARACTER)."
   '(cons (eql :rule) (cons character null)))

@@ -133,6 +133,50 @@ the kind of output performed by STYLE. Return nil otherwise."))
 are not compatible for the kind of output performed by STYLE."))
 
 
+;;; Temporal bounds protocol
+;;
+
+(defgeneric lower-bound (thing)
+  (:documentation
+   "Return the lower temporal bound of THING. See type `time-spec'."))
+
+(defgeneric (setf lower-bound) (new-value thing)
+  (:documentation
+   "Set the lower temporal bound of THING to NEW-VALUE. See type
+`time-spec'."))
+
+(defgeneric upper-bound (thing)
+  (:documentation
+   "Return the upper temporal bound of THING. See type `time-spec'."))
+
+(defgeneric (setf upper-bound) (new-value thing)
+  (:documentation
+   "Set the upper temporal bound of THING to NEW-VALUE. See type
+`time-spec'."))
+
+(defgeneric bounds (thing)
+  (:documentation
+   "Return the temporal bounds of THING. See type `bounds-spec'."))
+
+(defgeneric (setf bounds) (new-value thing)
+  (:documentation
+   "Set the temporal bounds of THING to NEW-VALUE. See type
+`bounds-spec'."))
+
+(defgeneric bounds/expanded (thing)
+  (:documentation
+   "Return a list of the form
+
+  (LOWER UPPER)
+
+containing the temporal bounds of THING as `timestamp/unix/nsec'."))
+
+(defgeneric range/expanded (thing)
+  (:documentation
+   "Return the difference between the upper and lower temporal bound
+of THING in nanoseconds."))
+
+
 ;;; Header printing protocol
 ;;
 

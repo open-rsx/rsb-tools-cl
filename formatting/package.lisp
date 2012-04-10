@@ -28,6 +28,10 @@
 
   ;; Types
   (:export
+   :timestamp/unix/nsec
+   :time-spec
+   :bounds-spec
+
    :rule-spec
    :separator-spec
 
@@ -74,6 +78,14 @@
    :make-descriptor
    :compatible-descriptors?
    :incompatible-descriptors)
+
+  ;; Temporal bounds protocol
+  (:export
+   :lower-bound
+   :upper-bound
+   :bounds
+   :bounds/expanded
+   :range/expanded)
 
   ;; Column protocol
   (:export
@@ -179,6 +191,10 @@
   ;; `data-consistency-mixin' mixin class
   (:export
    :data-consistency-mixin)
+
+  ;; `temporal-bounds-mixin' mixin class
+  (:export
+   :temporal-bounds-mixin)
 
   ;; `style-meta-data' style class
   (:export
