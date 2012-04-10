@@ -102,11 +102,11 @@ RSB-related systems."
 		(:module     "formatting"
 		 :depends-on ("formatting-early"
 			      "formatting-mixins")
-			     :components (
-			      (:file       "payload")
+		 :components ((:file       "payload")
 
 			      ;; Column classes
 			      (:file       "columns")
+			      (:file       "timeline")
 
 			      ;; Payload formatting classes
 			      (:file       "payload-collection"
@@ -154,7 +154,9 @@ cl-rsb-stats system."
 			      (:file       "event-style-statistics"
 			       :depends-on ("quantity-column"))
 			      (:file       "event-style-monitor"
-			       :depends-on ("quantity-column"))))))
+			       :depends-on ("quantity-column"))
+			      (:file       "event-style-timeline"
+			       :depends-on ("event-style-monitor"))))))
 
 
 ;;; System connection with cl-rsb-common

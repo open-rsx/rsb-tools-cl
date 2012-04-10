@@ -108,7 +108,8 @@ ENDFOREACH()
 # programmable/script   :template #p"${CMAKE_CURRENT_SOURCE_DIR}/test/data/empty.lisp"
 FOREACH(STYLE discard meta-data payload detailed
               compact statistics
-              monitor/scope monitor/origin monitor/type monitor/size)
+              monitor monitor/scope monitor/origin monitor/type monitor/size
+              timeline/scope timeline/origin)
     ADD_TEST(NAME    "logger/${STYLE}"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
                      --debug --style "${STYLE}"

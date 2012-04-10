@@ -20,6 +20,22 @@
 (cl:in-package :rsb.formatting)
 
 
+;;; Timestamp handling
+;;
+
+(declaim (ftype (function (local-time:timestamp) timestamp/unix/nsec)
+		timestamp->unix/nsecs)
+	 (inline timestamp->unix/nsecs))
+
+(defun timestamp->unix/nsecs (timestamp)
+  "Return the number of nanoseconds since UNIX epoch for TIMESTAMP."
+  (let ((secs  (local-time:timestamp-to-unix timestamp))
+	(nsecs (local-time:nsec-of timestamp)))
+    (declare (type non-negative-integer  secs)
+	     (type (integer 0 999999999) nsecs))
+    (+ (* secs 1000000000) nsecs)))
+
+
 ;;; Predicates
 ;;
 
