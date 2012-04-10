@@ -90,6 +90,9 @@ timer-driven way."))
       #+sbcl (sb-ext:schedule-timer timer new-value
 				    :repeat-interval new-value))))
 
+(defmethod collects? ((style periodic-printing-mixin))
+  t)
+
 (defmethod format-event :around ((event  t)
 				 (style  periodic-printing-mixin)
 				 (stream t)

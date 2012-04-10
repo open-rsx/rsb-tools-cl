@@ -56,6 +56,22 @@ classes. Each class implements a particular style of formatting
 received events onto a given stream by specializing `format-event'.")
 
 
+;;; Collecting protocol
+;;
+
+(defgeneric collects? (thing)
+  (:documentation
+   "Return non-nil if THING collects data from events and only
+produces output for explicit trigger events."))
+
+
+;;; Default behavior
+;;
+
+(defmethod collects? ((thing t))
+  nil)
+
+
 ;;; Delegation protocol
 ;;
 

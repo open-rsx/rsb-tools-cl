@@ -43,9 +43,26 @@ provide a name and the printed value."))
 (defmethod column-name ((column quantity-column))
   (rsb.stats:quantity-name (column-quantity column)))
 
+(defmethod collects? ((column quantity-column))
+  t)
+
 (defmethod format-header ((column quantity-column)
 			  (stream t))
   (format stream "~@(~A~)~@[ [~A]~]" (column-name column) nil))
+
+(defmethod format-event :around ((event  t)
+				 (style  quantity-column)
+				 (stream t)
+				 &key &allow-other-keys)
+  (if (eq event :trigger)
+      (call-next-method)
+      (rsb.stats:update! (column-quantity style) event)))
+
+(defmethod format-event ((event  t)
+			 (style  quantity-column)
+			 (stream t)
+			 &key &allow-other-keys)
+  (error "Should not get called"))
 
 (defmethod format-event ((event  (eql :trigger))
 			 (style  quantity-column)

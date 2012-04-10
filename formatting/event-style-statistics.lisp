@@ -24,28 +24,14 @@
 ;;
 
 (defclass statistics-columns-mixin (columns-mixin)
-  ((quantities :type     list
-	       :accessor %style-quantities
-	       :initform nil
-	       :documentation
-	       "Stores the list of quantities printed by the
-formatting style."))
+  ()
   (:documentation
    "This class is intended to be mixed into formatting classes that
 present the values of statistical quantities in a column-based
 manner."))
 
-(defmethod (setf style-columns) :after ((new-value t)
-					(style     statistics-columns-mixin))
-  ;; Find columns in NEW-VALUE that contain a quantity. Extract and
-  ;; store these quantities for direct updates.
-  (let+ (((&flet quantity-column? (column)
-	    (closer-mop:compute-applicable-methods-using-classes
-	     (fdefinition 'column-quantity)
-	     (list (class-of column))))))
-    (setf (%style-quantities style)
-	  (map 'list #'column-quantity
-	       (remove-if-not #'quantity-column? (style-columns style))))))
+(defmethod collects? ((style statistics-columns-mixin))
+  t)
 
 (defmethod format-event :around ((event  t)
 				 (style  statistics-columns-mixin)
@@ -54,8 +40,11 @@ manner."))
   ;; Update quantities.
   (if (eq event :trigger)
       (call-next-method)
-      (map nil (rcurry #'rsb.stats:update! event)
-	   (%style-quantities style))))
+      (map nil #'(lambda (column)
+		   (when (collects? column)
+		     (format-event event column stream)))
+	   (style-columns style))))
+
 
 
 ;;; Classes `style-statistics/*'

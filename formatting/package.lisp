@@ -59,6 +59,10 @@
    :find-style-class
    :style-classes)
 
+  ;; Collecting protocol
+  (:export
+   :collects?)
+
   ;; Delegation protocol
   (:export
    :style-sub-styles
