@@ -186,31 +186,24 @@ system."
   :depends-on  (:cl-rsb-formatting
 		:cl-ppcre
 		:lift)
-  :components  ((:module     "formatting"
+  :components  ((:module     "formatting-early"
 		 :pathname   "test/formatting"
+		 :serial     t
 		 :components ((:file       "package")
-			      (:file       "mock-column"
-			       :depends-on ("package"))
+			      (:file       "mock-column")))
 
-			      (:file       "width-mixin"
-			       :depends-on ("package" "mock-column"))
-			      (:file       "delegating-mixin"
-			       :depends-on ("package" "mock-column"))
-			      (:file       "columns-mixin"
-			       :depends-on ("package" "mock-column"))
+		(:module     "formatting"
+		 :pathname   "test/formatting"
+		 :depends-on ("formatting-early")
+		 :components ((:file       "width-mixin")
+			      (:file       "delegating-mixin")
+			      (:file       "columns-mixin")
+			      (:file       "separator-mixin")
 
-			      (:file       "separator-mixin"
-			       :depends-on ("package"))
-			      (:file       "style-meta-data"
-			       :depends-on ("package"))
-			      (:file       "style-detailed"
-			       :depends-on ("package"))
-			      (:file       "style-compact"
-			       :depends-on ("package"))
-			      (:file       "style-programmable"
-			       :depends-on ("package")))))
-
-  :in-order-to ((test-op (load-op :cl-rsb-formatting-test))))
+			      (:file       "style-meta-data")
+			      (:file       "style-detailed")
+			      (:file       "style-compact")
+			      (:file       "style-programmable")))))
 
 (defmethod perform ((operation test-op)
 		    (component (eql (find-system :cl-rsb-formatting-test))))
