@@ -2,6 +2,9 @@
 		     (make-synonym-stream '*standard-input*)
 		     (make-synonym-stream '*standard-output*)))
 
+;;; TODO(jmoringe, 2012-04-11): until ASDF supports encodings
+(setf sb-impl::*default-external-format* :utf-8)
+
 (defun load-system (system)
   (let ((*compile-verbose* nil)
 	(*compile-print*   nil)
