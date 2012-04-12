@@ -48,7 +48,7 @@
   ;; Start the swank server.
   (funcall (find-symbol "START-SERVER" :swank) port-file))
 
-(defun enable-swank-on-signal (&key (signal #+sbcl sb-posix:SIGUSR1))
+(defun enable-swank-on-signal (&key (signal #+(and sbcl (not win32)) sb-posix:SIGUSR1))
   "Install a handler for SIGNAL that starts a swank server."
   #+(and sbcl (not win32))
   (sb-unix::enable-interrupt
