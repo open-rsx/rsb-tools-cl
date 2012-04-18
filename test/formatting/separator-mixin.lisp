@@ -1,6 +1,6 @@
 ;;; separator-mixin.lisp --- Unit tests for the `separator-mixin' class.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -74,8 +74,8 @@ on `format-event' for `separator-mixin'.")
 
     `((:separator (:rule #\-))
       (,(make-event "/a" "b") ,(make-event "/c" "d"))
-      "\\*--------------------------------------------------------------------------------\\*--------------------------------------------------------------------------------")
+      "--------------------------------------------------------------------------------\\*--------------------------------------------------------------------------------\\*")
 
     `((:separator "&&&")
       (,(make-event "/a" "b") ,(make-event "/c" "d"))
-      "\\*&&&\\*&&&")))
+      "&&&\\*&&&\\*")))

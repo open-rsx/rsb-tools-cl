@@ -41,13 +41,13 @@ print separators between output items."))
 					   (style     separator-mixin))
   (check-type new-value separator-spec "a valid separator specification"))
 
-(defmethod format-event :after ((event  t)
-				(style  separator-mixin)
-				(stream t)
-				&key
-				(max-columns (or *print-right-margin* 80))
-				&allow-other-keys)
-  "Print a separator after each event."
+(defmethod format-event :before ((event  t)
+				 (style  separator-mixin)
+				 (stream t)
+				 &key
+				 (max-columns (or *print-right-margin* 80))
+				 &allow-other-keys)
+  "Print a separator before each event."
   (print-separator (style-separator style) stream max-columns))
 
 

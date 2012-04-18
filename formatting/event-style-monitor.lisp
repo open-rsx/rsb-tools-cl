@@ -26,8 +26,8 @@
 (defclass basic-monitor-style (periodic-printing-mixin
 			       sub-style-grouping-mixin
 			       sub-style-sorting-mixin
-			       header-printing-mixin
-			       separator-mixin)
+			       separator-mixin
+			       header-printing-mixin)
   ((colums :initarg    :columns
 	   :type       function
 	   :reader     style-columns

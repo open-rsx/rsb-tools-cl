@@ -1,6 +1,6 @@
 ;;; style-meta-data.lisp --- Unit tests for the meta-data formatting style.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -37,7 +37,8 @@ on `format-event' for `style-meta-data'.")
 
     `(()
       (,(make-event "/foo" "bar"))
-      "Event
+      "--------------------------------------------------------------------------------
+Event
   Scope          : /foo/
   Id             : N/A
   Sequence-Number: N/A
@@ -48,12 +49,12 @@ Timestamps
   Send   : N/A
   Receive: N/A
   Deliver: N/A
---------------------------------------------------------------------------------
 ")
 
     `(()
       (,(make-event "/foo/bar/baz" 1 :fez "whoop"))
-      "Event
+      "--------------------------------------------------------------------------------
+Event
   Scope          : /foo/bar/baz/
   Id             : N/A
   Sequence-Number: N/A
@@ -66,5 +67,4 @@ Timestamps
   Deliver: N/A
 Meta-Data
   Fez: whoop
---------------------------------------------------------------------------------
 ")))
