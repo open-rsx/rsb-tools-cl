@@ -97,7 +97,8 @@ RSB-related systems."
 			      (:file       "separator-mixin")
 			      (:file       "image-output-mixin")
 			      (:file       "data-consistency-mixin")
-			      (:file       "temporal-bounds-mixin")))
+			      (:file       "temporal-bounds-mixin")
+			      (:file       "output-buffering-mixin")))
 
 		(:module     "formatting"
 		 :depends-on ("formatting-early"

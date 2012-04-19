@@ -23,7 +23,8 @@
 ;;; Class `basic-monitor-style'
 ;;
 
-(defclass basic-monitor-style (periodic-printing-mixin
+(defclass basic-monitor-style (output-buffering-mixin
+			       periodic-printing-mixin
 			       sub-style-grouping-mixin
 			       sub-style-sorting-mixin
 			       separator-mixin
