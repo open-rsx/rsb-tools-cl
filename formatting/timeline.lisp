@@ -186,10 +186,11 @@ can also be produced."))
 		  (in outer (next event))))
 
 	  ;; Collect all events for the bin [LOWER, UPPER].
-	  (iter (with events/bin = events/rest)
+	  (iter (with events/bin                      = events/rest)
+		(with (the non-negative-fixnum count) = 0)
 		(while (<= lower (key event) upper))
+		(incf count)
 		(in outer (next event))
-		(for (the non-negative-fixnum count) :from 1)
 		(finally-protected
 		 (setf (%cell-value cell)
 		       (glyph-for-events style events/bin :end count))))
