@@ -38,12 +38,28 @@
    "This class is intended to be used as a superclass for timeline
 formatting style classes."))
 
+(defmethod make-sub-style-entry :around ((style basic-timeline-style)
+					 (value t))
+  ;; Propagate to sub-style.
+  (let ((entry (call-next-method)))
+    (setf (bounds (cdr entry)) (bounds style))
+    entry))
+
 (macrolet
     ((define-delegating-method (name)
-       `(defmethod (setf ,name) :after ((new-value t)
-					(style     basic-timeline-style))
-	  (iter (for (_ . sub-style) each (style-sub-styles style))
-		(setf (,name sub-style) new-value)))))
+       `(progn
+	  (defmethod (setf ,name) ((new-value t)
+				   (style     columns-mixin) )
+	    (iter (for column each (style-columns style))
+		  (when (compute-applicable-methods
+			 (fdefinition '(setf ,name))
+			 (list new-value column))
+		    (setf (,name column) new-value))))
+
+	  (defmethod (setf ,name) :after ((new-value t)
+					  (style     basic-timeline-style))
+		     (iter (for (_ . sub-style) each (style-sub-styles style))
+			   (setf (bounds sub-style) new-value))))))
   (define-delegating-method lower-bound)
   (define-delegating-method upper-bound)
   (define-delegating-method bounds))
