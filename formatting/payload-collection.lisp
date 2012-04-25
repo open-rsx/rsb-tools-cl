@@ -23,8 +23,7 @@
 #.(asdf:load-system :usocket)
 
 (defvar *by-scope-formatting-converter*
-  (append (ensure-list
-	   (cdr (assoc 'octet-vector (rsb:default-converters))))
+  (append (ensure-list (rsb:default-converter 'octet-vector))
 	  '(:fundamental-null))
   "The converter that should be applied to inner payloads in event
 collection payloads.")
@@ -42,7 +41,8 @@ of events.")
   ;;; TODO(jmoringe, 2012-02-05): there should be a dedicated serialization
   (handler-case
       (let ((event (rsb.transport.socket::notification->event
-		    *by-scope-formatting-converter* data)))
+		    *by-scope-formatting-converter* data
+		    :expose-wire-schema? t)))
 	(format-event event *by-scope-formatting-event-style* stream))
     (error (condition)
       (pprint-logical-block (stream nil
