@@ -24,6 +24,7 @@
    :split-sequence
    :let-plus
    :iterate
+   :more-conditions
 
    :com.dvlsoft.clon
 
