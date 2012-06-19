@@ -236,7 +236,7 @@ value."))
 	      (find-class ',class-name))
 
 	    (defclass ,class-name (width-mixin
-				   name-mixin)
+				   basic-column)
 	      ((key :initarg  :key
 		    :type     symbol
 		    :reader   column-key
