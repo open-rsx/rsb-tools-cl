@@ -236,7 +236,7 @@ can also be produced."))
 	    ((zerop count) #\Space)
 	    ((= count 1)   (size-glyphs #\· #\▪ #\◾))
 	    ((= count 2)   (size-glyphs #\╌ #\╍ #\╍))
-	    ((= count 3)   (size-glyphs #\⋯ #\┅ #\┅))
+	    ((= count 3)   (size-glyphs #\┄ #\⋯ #\┅))
 	    (t             (size-glyphs #\─ #\━ #\▬)))
 	  (cond
 	    ((zerop count) #\Space)
