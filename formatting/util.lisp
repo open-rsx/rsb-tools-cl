@@ -203,7 +203,7 @@ objects.")
 determined."
   (when-let* ((package (find-package :com.dvlsoft.clon))
 	      (symbol  (find-symbol "STREAM-LINE-WIDTH" package)))
-	     (ignore-errors (funcall symbol stream))))
+    (ignore-errors (funcall symbol stream))))
 
 (defmacro with-print-limits ((stream) &body body)
   "Execute BODY with `*print-right-margin*' and `*print-miser-width*'
@@ -218,7 +218,8 @@ STREAM. Additionally, install a handler for SIGWINCH that updates
 these values, if possible."
   (let* ((thread               (bt:current-thread))
 	 (*print-right-margin* (stream-line-width stream))
-	 (*print-miser-width*  nil))
+	 (*print-miser-width*  nil)
+	 (*print-length*       64))
     #+(and sbcl (not win32))
     (sb-unix::enable-interrupt
      sb-unix:SIGWINCH
