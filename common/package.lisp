@@ -35,6 +35,10 @@
    :failed-to-load-idl
    :failed-to-load-idl-source)
 
+  ;; Variables
+  (:export
+   :*info-output*)
+
   ;; IDL loading
   (:export
    :load-idl)

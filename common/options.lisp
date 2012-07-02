@@ -34,6 +34,14 @@
 	    :argument-name "CATEGORY"
 	    :description
 	    "Print help for specified categories and exit. This option can be supplied multiple times.")
+    (enum   :long-name     "info-stream"
+	    :enum          '(:stdout :standard-output
+			     :stderr :error-output
+			     :none)
+	    :default-value :error-output
+	    :argument-name "STREAM-NAME"
+	    :description
+	    "Stream to information messages should be sent.")
     (enum   :long-name     "log-level"
 	    :enum          '(:off :trace :info :warn :error)
 	    :default-value :warn
@@ -135,6 +143,13 @@ TRANSFORM is applied to all option values."
   ./swank-port.txt"
   ;; Create a new global context.
   (make-context)
+
+  ;; Process output-related options
+  (setf *info-output*
+	(ecase (getopt :long-name "info-stream")
+	  ((:none)                          nil)
+	  ((:cout :stdout :standard-output) *standard-output*)
+	  ((:cerr :stderr :error-output)    *error-output*)))
 
   ;; Process logging-related options.
   (let ((level (getopt :long-name "log-level")))
