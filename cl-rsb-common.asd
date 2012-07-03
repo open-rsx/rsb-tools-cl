@@ -72,6 +72,8 @@ RSB-related systems."
 
 			      (:file       "conditions"
 			       :depends-on ("package"))
+			      (:file       "variables"
+			       :depends-on ("package"))
 
 			      (:file       "idl-loading"
 			       :depends-on ("package" "conditions"))
@@ -85,8 +87,8 @@ RSB-related systems."
 			      (:file       "help"
 			       :depends-on ("package"))
 			      (:file       "options"
-			       :depends-on ("package" "debugger"
-					    "logging" "help"))
+			       :depends-on ("package" "variables"
+					    "debugger" "logging" "help"))
 
 			      (:file       "idl-options"
 			       :depends-on ("package" "idl-loading"
