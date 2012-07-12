@@ -195,9 +195,9 @@ handling of commandline options."
   :license     "GPL3; see COPYING file for details."
   :description "This system contains tests for the cl-rsb-formatting
 system."
-  :depends-on  (:cl-rsb-formatting
+  :depends-on  ((:version :cl-rsb-formatting #.(version/string))
 		:cl-ppcre
-		:lift)
+		(:version :lift              "1.7.1"))
   :components  ((:module     "formatting"
 		 :pathname   "test/formatting"
 		 :components ((:file       "package")

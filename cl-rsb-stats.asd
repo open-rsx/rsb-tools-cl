@@ -117,8 +117,8 @@ RSB-related systems."
   :license     "GPL3; see COPYING file for details."
   :description "This system contains tests for the cl-rsb-stats
 system."
-  :depends-on  (:cl-rsb-stats
-		:lift)
+  :depends-on  ((:version :cl-rsb-stats #.(version/string))
+		(:version :lift         "1.7.1"))
   :components  ((:module     "stats"
 		 :pathname   "test/stats"
 		 :components ((:file       "package")
