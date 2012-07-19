@@ -32,7 +32,16 @@ returns nil instead of entering the debugger."
 		 `(sb-unix::enable-interrupt
 		   ,signal
 		   #'(lambda (signal info context)
-		       (declare (ignore signal info context))
+		       (declare (ignore info context))
+		       ;; Install a handler which warns about the
+		       ;; recursive signal and then ignores it.
+		       (sb-unix::enable-interrupt
+			signal
+			#'(lambda (signal info context)
+			    (declare (ignore info context))
+			    (log1 :warn "Caught signal ~D during ~
+signal-triggered shutdown; don't do this; ignoring the signal"
+				  signal)))
 		       (throw 'terminate nil)))) )
      ,@body))
 
