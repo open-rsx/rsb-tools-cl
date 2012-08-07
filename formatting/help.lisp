@@ -52,7 +52,8 @@ currently available:
        :initarg-blacklist '(:stream :pretty-state
 			    :quantities :count
 			    :sub-styles :test :key
-			    :sort-predicate :sort-key))
+			    :sort-predicate :sort-key
+			    :code))
 
       (format stream "~%~%")
       (rsb.common:with-abbreviation (stream :columns show)
