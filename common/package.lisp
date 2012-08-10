@@ -39,6 +39,16 @@
   (:export
    :*info-output*)
 
+  ;; Error handling
+  (:export
+   :abort/signal
+   :continue/verbose
+
+   :maybe-relay-to-thread
+
+   :invoke-with-error-policy
+   :with-error-policy)
+
   ;; IDL loading
   (:export
    :load-idl)
@@ -50,12 +60,15 @@
   ;; Commandline options
   (:export
    :make-common-options
-   :make-idl-options
    :process-commandline-options
 
-   :parse-instantiation-spec
+   :make-error-handling-options
+   :process-error-handling-options
 
-   :process-idl-options)
+   :make-idl-options
+   :process-idl-options
+
+   :parse-instantiation-spec)
 
   ;; Interactive stuff
   (:export

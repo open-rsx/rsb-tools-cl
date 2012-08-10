@@ -101,6 +101,28 @@ definitions."
 
 can be used to search directories recursively. If the file designated by FILE-OR-GLOB-EXPRESSION depend on additional data definition files (i.e. contain \"import\" statements), the list of directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times.")))
 
+(defun make-error-handling-options (&key
+				     (show :default))
+  "Return a `clon:group' instance program options related to error
+handling."
+  (declare (ignore show))
+  (defgroup (:header "Options related to Handling of Errors")
+      (enum    :long-name     "on-error"
+	       :enum          '(:abort
+				:continue)
+	       :default-value :abort
+	       :argument-name "STRATEGY"
+	       :description
+	       "Behavior in case (serious) errors are encountered.
+
+  abort
+
+    Save and cleanup as much as possible, then terminate with unsuccessful result indication.
+
+  continue
+
+    Try to recover from errors and produce best-effort results.")))
+
 
 ;;; Option processing
 ;;
@@ -215,6 +237,14 @@ TRANSFORM is applied to all option values."
       (if return
 	  (funcall return)
 	  (exit 0)))))
+
+(defun process-error-handling-options ()
+  "Process the \"on-error\" commandline option mapping abort to
+`abort/verbose' and continue to `continue/verbose' and returning the
+respective function."
+  (ecase (getopt :long-name "on-error")
+    (:abort    #'abort/signal)
+    (:continue #'continue/verbose)))
 
 
 ;;; Instantiation spec parsing
