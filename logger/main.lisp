@@ -27,6 +27,7 @@
    :postfix "[URI]"
    :item    (make-text :contents (make-help-string :show show))
    :item    (make-common-options :show show)
+   :item    (make-error-handling-options :show show)
    :item    (defgroup (:header "Logging Options"
 		       :hidden (not (show-help-for?
 				     '(:logging :filters :styles :columns :quantities)
@@ -71,34 +72,47 @@ the URI argument).~@:>"))
     (process-idl-options)
 
     ;; Create a reader and start the receiving and printing loop.
-    (let* ((uri         (or (first (remainder)) "/"))
-	   (filters     (iter (for spec next (getopt :long-name "filter"))
-			      (while spec)
-			      (collect (apply #'rsb.filter:filter
-					      (parse-instantiation-spec spec)))))
-	   (converters  (iter (for (wire-type . converter) in (default-converters))
-			      (collect
-				  (cons wire-type
-					(if (and (listp converter)
-						 (not (member :fundamental-null converter)))
-					    (append converter '(:fundamental-null))
-					    converter)))))
-	   (event-style (let+ (((class &rest args)
-				(parse-instantiation-spec
-				 (getopt :long-name "style"))))
-			  (apply #'make-instance (find-style-class class)
-				 args))))
+    (let* ((error-policy (maybe-relay-to-thread
+			  (process-error-handling-options)))
+	   (uri           (or (first (remainder)) "/"))
+	   (filters      (iter (for spec next (getopt :long-name "filter"))
+			       (while spec)
+			       (collect (apply #'rsb.filter:filter
+					       (parse-instantiation-spec spec)))))
+	   (converters   (iter (for (wire-type . converter) in (default-converters))
+			       (collect
+				   (cons wire-type
+					 (if (and (listp converter)
+						  (not (member :fundamental-null converter)))
+					     (append converter '(:fundamental-null))
+					     converter)))))
+	   (event-style  (let+ (((class &rest args)
+				 (parse-instantiation-spec
+				  (getopt :long-name "style"))))
+			   (apply #'make-instance (find-style-class class)
+				  args))))
 
       (with-print-limits (*standard-output*)
 	(log1 :info "Using URI ~S" uri)
 
-	(with-reader (reader uri
-			     :transports '((t :expose (:rsb.transport.wire-schema
-						       :rsb.transport.payload-size)))
-			     :converters converters)
-	  (setf (receiver-filters reader) filters)
-	  (log1 :info "Created reader ~A" reader)
-
+	(with-error-policy (error-policy)
 	  (with-interactive-interrupt-exit ()
-	    (iter (for event next (receive reader :block? t))
-		  (format-event event event-style *standard-output*))))))))
+	    (with-reader (reader uri
+				 :transports '((t :expose (:rsb.transport.wire-schema
+							   :rsb.transport.payload-size)
+						  &inherit))
+				 :converters converters)
+	      (hooks:add-to-hook (rsb:participant-error-hook reader)
+				 error-policy) ;;; TODO(jmoringe, 2012-08-10): support this in with-reader
+	      (setf (receiver-filters reader) filters)
+	      (log1 :info "Created reader ~A" reader)
+
+	      (iter (for event next (receive reader :block? t))
+		    (restart-case
+			(format-event event event-style *standard-output*)
+		      (continue (&optional condition)
+			:report (lambda (stream)
+				  (format stream "~@<Ignore the ~
+failure for ~A and continue processing.~@:>"
+					  event))
+			(declare (ignore condition))))))))))))
