@@ -77,6 +77,7 @@ payloads.
    :postfix "EVENT-SPEC DESTINATION-URI"
    :item    (make-text :contents (make-help-string :show show))
    :item    (make-common-options :show show)
+   :item    (make-error-handling-options :show show)
    ;; Append IDL options
    :item    (make-idl-options)
    ;; Append RSB options.
@@ -122,11 +123,16 @@ payloads.
     (error "~@<Supply event specification and destination URI.~@:>"))
 
   (with-logged-warnings
-    (let+ (((event-spec destination) (remainder))
+    (let+ ((error-policy (maybe-relay-to-thread
+			  (process-error-handling-options)))
+	   ((event-spec destination) (remainder))
 	   (payload (parse-event-spec event-spec)))
 
       (log1 :info "Using URI ~S payload ~A"
 	    destination payload)
       (with-interactive-interrupt-exit ()
-	(with-informer (informer destination t)
-	  (send informer payload))))))
+	(with-error-policy (error-policy)
+	  (with-informer (informer destination t)
+	    (hooks:add-to-hook (participant-error-hook informer)
+			       error-policy) ;;; TODO(jmoringe, 2012-08-09): support in with-informer
+	    (send informer payload)))))))

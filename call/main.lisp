@@ -93,6 +93,7 @@ works if the called method accepts an argument of type string.
    :postfix "SERVER-URI/METHOD(ARG)"
    :item    (make-text :contents (make-help-string :show show))
    :item    (make-common-options :show show)
+   :item    (make-error-handling-options :show show)
    :item    (defgroup (:header "Call options")
 	      (lispobj :long-name     "timeout"
 		       :short-name    "t"
@@ -161,7 +162,9 @@ SERVER-URI/METHOD(ARG).~@:>"))
     ;; 2. Call the method and
     ;; 3. Potentially wait for a reply
     ;;    Format it
-    (let+ ((spec (first (remainder)))
+    (let+ ((error-policy (maybe-relay-to-thread
+			  (process-error-handling-options)))
+	   (spec (first (remainder)))
 	   ((&values server-uri method arg)
 	    (ppcre:register-groups-bind (server-uri method arg)
 		("^([a-zA-Z0-9/:&?#=+;]*)/([a-zA-Z0-9]+)\\((.*)\\)$" spec)
@@ -210,6 +213,9 @@ no-wait.~@:>"
       (log1 :info "Using URI ~S method ~S arg ~A"
 	    server-uri method arg)
       (with-interactive-interrupt-exit ()
-	(with-remote-server (server server-uri)
-	  (when-let ((reply (multiple-value-list (call/translate server))))
-	    (format-event (first reply) style *standard-output*)))))))
+	(with-error-policy (error-policy)
+	  (with-remote-server (server server-uri)
+	    (hooks:add-to-hook (participant-error-hook server)
+			       error-policy);;; TODO(jmoringe, 2012-08-09): support in with-remote-server
+	    (when-let ((reply (multiple-value-list (call/translate server))))
+	      (format-event (first reply) style *standard-output*))))))))
