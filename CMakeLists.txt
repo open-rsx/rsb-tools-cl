@@ -131,22 +131,22 @@ ENDFOREACH()
 
 # All categories for info binary.
 FOREACH(CATEGORY verbose configuration connectors converters filters event-processing)
-    ADD_TEST(NAME    "info/${CATEGORY}"
+    ADD_TEST(NAME    "info/category=${CATEGORY}"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/info" --debug --${CATEGORY})
 ENDFOREACH()
 
 # All error policies for logger, send and call binaries.
 FOREACH(POLICY continue abort)
-    ADD_TEST(NAME   "logger/${POLICY}"
+    ADD_TEST(NAME   "logger/on-error=${POLICY}"
             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
                     --debug --on-error "${POLICY}"
                     --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                      inprocess:)
-    ADD_TEST(NAME   "send/${POLICY}"
+    ADD_TEST(NAME   "send/on-error=${POLICY}"
             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
                     --debug --on-error "${POLICY}"
                     1 inprocess:)
-    ADD_TEST(NAME   "call/${POLICY}"
+    ADD_TEST(NAME   "call/on-error=${POLICY}"
             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
                     --debug --on-error "${POLICY}"
                     --no-wait
@@ -161,12 +161,12 @@ FOREACH(STYLE discard meta-data payload detailed
               compact statistics
               monitor monitor/scope monitor/origin monitor/type monitor/size
               timeline/scope timeline/origin)
-    ADD_TEST(NAME    "logger/${STYLE}"
+    ADD_TEST(NAME    "logger/style=${STYLE}"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
                      --debug --style "${STYLE}"
                      --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                      inprocess:)
-    ADD_TEST(NAME   "call/${STYLE}"
+    ADD_TEST(NAME   "call/style=${STYLE}"
             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
                     --debug --style "${STYLE}"
                     --no-wait
