@@ -196,10 +196,14 @@ SERVER-URI/METHOD(ARG).~@:>"))
 second~:P.~@:>"
 			    timeout)))))))
 	   ((&flet call/translate (server)
-	      (let ((event (call/raw server)))
-		(if (typep (event-data event) 'rsb.converter:no-value)
-		    (values)
-		    event)))))
+	      (let+ (((&values (&optional event)) (call/raw server)))
+		(cond
+		  ((not event)
+		   (values))
+		  ((typep (event-data event) 'rsb.converter:no-value)
+		   (values))
+		  (t
+		   event))))))
 
       (unless (and server-uri method arg)
 	(error "~@<Parse error in call specification ~S.~@:>"
