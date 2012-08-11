@@ -102,6 +102,7 @@ ENDIF()
 # Tests
 ENABLE_TESTING()
 
+# Lift-based tests for formatting and stats systems.
 FOREACH(NAME formatting stats)
     SET(DO "--eval \"(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))\"
             --eval \"(asdf:test-system :cl-rsb-${NAME})\"
@@ -118,6 +119,7 @@ FOREACH(NAME formatting stats)
     SET_TESTS_PROPERTIES("rsb-${NAME}" PROPERTIES RUN_SERIAL TRUE)
 ENDFOREACH()
 
+# --help, --help-all and --version for all binaries.
 FOREACH(TOOL ${TOOLS})
     ADD_TEST(NAME    "${TOOL}/help"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}" --help)
@@ -127,11 +129,31 @@ FOREACH(TOOL ${TOOLS})
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}" --version)
 ENDFOREACH()
 
+# All categories for info binary.
 FOREACH(CATEGORY verbose configuration connectors converters filters event-processing)
     ADD_TEST(NAME    "info/${CATEGORY}"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/info" --debug --${CATEGORY})
 ENDFOREACH()
 
+# All error policies for logger, send and call binaries.
+FOREACH(POLICY continue abort)
+    ADD_TEST(NAME   "logger/${POLICY}"
+            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+                    --debug --on-error "${POLICY}"
+                    --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                     inprocess:)
+    ADD_TEST(NAME   "send/${POLICY}"
+            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+                    --debug --on-error "${POLICY}"
+                    1 inprocess:)
+    ADD_TEST(NAME   "call/${POLICY}"
+            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
+                    --debug --on-error "${POLICY}"
+                    --no-wait
+                    "inprocess:/foo/bar(1)")
+ENDFOREACH()
+
+# All styles for logger and call binaries.
 # TODO: add these:
 # programmable/template :template #p"${CMAKE_CURRENT_SOURCE_DIR}/test/data/empty.template"
 # programmable/script   :template #p"${CMAKE_CURRENT_SOURCE_DIR}/test/data/empty.lisp"
@@ -144,6 +166,11 @@ FOREACH(STYLE discard meta-data payload detailed
                      --debug --style "${STYLE}"
                      --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                      inprocess:)
+    ADD_TEST(NAME   "call/${STYLE}"
+            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
+                    --debug --style "${STYLE}"
+                    --no-wait
+                    "inprocess:/foo/bar(1)")
 ENDFOREACH()
 
 # Installation
