@@ -62,16 +62,16 @@ non-empty intersection with SHOW."
 (defun print-uri-synopsis (connector-class stream)
   "Return a synopsis string for the URI syntax of CONNECTOR-CLASS."
   (let+ (((&accessors-r/o
-	   (schema  rsb.transport:connector-schemas)
+	   (schemas rsb.transport:connector-schemas)
 	   (options rsb.transport:connector-options)) connector-class)
 	 (host  (find :host options :key #'first))
 	 (port  (find :port options :key #'first))
 	 (other (remove-if #'(lambda (option)
 			       (member (first option) '(:host :port)))
 			   options)))
-    (format stream
-	    "~(~A~):~:[~;[//HOST]~]~:[~;[:PORT]~]/SCOPE~@[[?~:{~(~A~)=A-~A~^;~}]~]"
-	    (first schema) host port other)))
+	(format stream
+		"~:{~&~(~A~):~:[~;[//HOST]~]~:[~;[:PORT]~]/SCOPE~@[[?~:{~(~A~)=A-~A~^;~}]~]~}"
+		(map-product #'cons schemas `((,host ,port ,other))))))
 
 (defun print-all-uri-synopsis (stream)
   "Print synopsis strings for all known transport implementation on
@@ -193,8 +193,8 @@ processed."
 		  (doc  (%format-documentation
 			 (documentation (class-name class) 'type))))
 	      (list name args doc)))))
-    (format stream "~{~{~(~A~)~<~#[~; [~@{~(~S~) ARG~}]~:; { ~
-~@{~(~S~) ARG~^ | ~} }*~]~:>~&~2T~@<~@;~A~:>~}~^~%~%~}"
+    (format stream "~{~{~(~2@T~A~)~<~#[~; [~@{~(~S~) ARG~}]~:; { ~
+~@{~(~S~) ARG~^ | ~} }*~]~:>~2&~4@T~@<~@;~A~:>~}~^~%~%~}"
 	    (map 'list (curry #'apply #'do-one) items))))
 
 (defun %class-valid-initargs (class)
@@ -235,8 +235,8 @@ layouted specifically. "
 		    (while index)
 		    (setf rest (subseq rest (+ index 2)))))))
 	 ((&flet has-layout? (string)
-	    (or (some (rcurry #'search string) '("  " "* " "+ " "- "))
-		(find #\Tab string))))
+	    (some (rcurry #'search string)
+		  `(,(string #\Tab) "  " "* " "+ " "\n- "))))
 	 ((&flet remove-newlines (string)
 	    (substitute #\Space #\Newline string))))
     (format nil "~{~A~^~%~%~}"
