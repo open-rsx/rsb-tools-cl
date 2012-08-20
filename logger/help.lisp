@@ -77,8 +77,8 @@ implicitly used).
 
 ~2T~:*~A spread://localhost:4811
 
-Use the Spread daemon listening on port 4811 on localhost to connect
-to the bus. Since no scope is specified, receive and print all events
+Use the Spread daemon listening on port 4811 on localhost to connect ~
+to the bus. Since no scope is specified, receive and print all events ~
 exchanged on the entire bus.
 
 ~2T~:*~A -f 'regex :regex \"^mypattern\" :fallback-policy :do-not-match' ~
