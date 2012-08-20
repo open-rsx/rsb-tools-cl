@@ -64,8 +64,6 @@ exchanged on a given RSB bus or channel."
 		:let-plus
 		:iterate
 
-		:cl-protobuf
-
 		:com.dvlsoft.clon
 
 		(:version :cl-rsb            #.(version/string))
@@ -74,8 +72,6 @@ exchanged on a given RSB bus or channel."
 		(:version :cl-rsb-formatting #.(version/string)))
   :components  ((:module     "logger"
 		 :components ((:file       "package")
-
-
 			      (:file       "help"
 			       :depends-on ("package"))
 			      (:file       "main"
