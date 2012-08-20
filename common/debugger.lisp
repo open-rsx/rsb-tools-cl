@@ -26,12 +26,21 @@
 
 (defun disable-debugger ()
   "Disable the debugger and return."
-  #+sbcl (setf sb-ext:*invoke-debugger-hook*
-	       (lambda (condition previous-value)
-		 (declare (ignore previous-value))
-		 (format *error-output* "~A~%" condition)
-		 (com.dvlsoft.clon:exit 1)))
-  #-sbcl (error "Not implemented"))
+  ;; Reenable the debugger which has been disabled when dumping the
+  ;; image.
+  #+sbcl (sb-ext:enable-debugger)
+  ;; Print condition with sane pretty printer state.
+  (setf *debugger-hook*
+	(lambda (condition previous-value)
+	  (declare (ignore previous-value))
+	  (let ((right-margin (max 80 (or *print-right-margin* 0)))
+		(miser-width  (min 20 (or *print-miser-width* 0))))
+	    (with-standard-io-syntax
+	      (let ((*print-pretty*       t)
+		    (*print-right-margin* right-margin)
+		    (*print-miser-width*  miser-width))
+		(format *error-output* "~&~@<~A~:>~%" condition))))
+	  (com.dvlsoft.clon:exit 1))))
 
 
 ;;; Swank

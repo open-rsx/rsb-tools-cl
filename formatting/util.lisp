@@ -228,6 +228,5 @@ these values, if possible."
 	 (bt:interrupt-thread
 	  thread
 	  #'(lambda ()
-	      (setf *print-right-margin* (stream-line-width stream)
-		    *print-miser-width*  nil)))))
+	      (setf *print-right-margin* (stream-line-width stream))))))
     (funcall thunk)))
