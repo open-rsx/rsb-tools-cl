@@ -68,7 +68,7 @@
   (update-synopsis)
   (setf *default-configuration* (options-from-default-sources))
   (process-commandline-options
-   :version         (cl-rsb-tools-info-system:version/list)
+   :version         (cl-rsb-tools-info-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
    :return          #'(lambda () (return-from main)))
   (enable-swank-on-signal)

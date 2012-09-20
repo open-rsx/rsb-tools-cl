@@ -153,7 +153,7 @@ associated versions that should be printed onto STREAM."
 		    `((,(lisp-implementation-type)
 			,(lisp-implementation-version))))
 		  (when include-rsb-version?
-		    `(("RSB" ,(cl-rsb-system:version/list))))
+		    `(("RSB" ,(cl-rsb-system:version/list :commit? t))))
 		  (iter (for (name version) on more-versions :by #'cddr)
 			(collect (list (string name) version)))))
 	 ;; Compute the common column for all versions to be printed
@@ -164,7 +164,7 @@ associated versions that should be printed onto STREAM."
 			    (length "version")
 			    1))
 	 ((&flet+ format-version ((name version))
-	    (format stream "~A version~VT~:[~{~D.~D.~D~}~;~A~]~&"
+	    (format stream "~A version~VT~:[~{~D.~D~^.~D~^-~A~}~;~A~]~&"
 		    name version-column (stringp version) version))))
     (map nil #'format-version versions)))
 

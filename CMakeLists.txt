@@ -24,18 +24,33 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-# Project definition (version is grovelled from an asd system definition)
-PROJECT(cl-rsb-tools)
-SET(SYSTEM_NAME "cl-rsb-tools-logger")
-MACRO(EXTRACT_COMPONENT NAME OUTPUT)
-    FILE(STRINGS "${CMAKE_SOURCE_DIR}/${SYSTEM_NAME}.asd" TEMP
-         REGEX   "defconstant +\\+version-${NAME}\\+")
-    STRING(REGEX REPLACE ".*\\+version-${NAME}\\+ +([0-9]+).*" "\\1"
-           CL_RSB_TOOLS_VERSION_${OUTPUT} ${TEMP})
+# Extract version components from an approximately "git describe"-like
+# formatted version string.
+MACRO(GIT_VERSION_COMPONENTS INPUT OUT_MAJOR OUT_MINOR OUT_REVISION OUT_COMMIT)
+    SET(REGEX "^[-.a-z0-9]*([0-9]+)\\.([0-9]+)[-.]([0-9]+)-?(g[a-f0-9]+(:?-dirty)?|)$")
+    STRING(REGEX REPLACE ${REGEX} "\\1" ${OUT_MAJOR}    "${INPUT}")
+    STRING(REGEX REPLACE ${REGEX} "\\2" ${OUT_MINOR}    "${INPUT}")
+    STRING(REGEX REPLACE ${REGEX} "\\3" ${OUT_REVISION} "${INPUT}")
+    STRING(REGEX REPLACE ${REGEX} "\\4" ${OUT_COMMIT}   "${INPUT}")
 ENDMACRO()
-EXTRACT_COMPONENT(major    MAJOR)
-EXTRACT_COMPONENT(minor    MINOR)
-EXTRACT_COMPONENT(revision PATCH)
+
+# Git-based version.
+FIND_PROGRAM(GIT_EXECUTABLE "git")
+IF(GIT_EXECUTABLE)
+    EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --dirty=-dirty
+                    RESULT_VARIABLE RESULT
+                    OUTPUT_VARIABLE GIT_DESCRIBE_OUTPUT
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    ERROR_QUIET)
+    IF(RESULT EQUAL 0)
+        GIT_VERSION_COMPONENTS(${GIT_DESCRIBE_OUTPUT} IGN1 IGN2 REVISION COMMIT)
+        FILE(WRITE "${CMAKE_SOURCE_DIR}/version.sexp" "${REVISION} \"${COMMIT}\"")
+    ELSE()
+        MESSAGE(STATUS "Not a git repository: ${CMAKE_SOURCE_DIR}")
+    ENDIF()
+ELSE()
+    MESSAGE(STATUS "git executable not found")
+ENDIF()
 
 # Find and check SBCL installation.
 SET(SBCL_HOME $ENV{SBCL_HOME})
@@ -68,20 +83,49 @@ ENDIF()
 SET(CL_SOURCE_REGISTRY       "(:source-registry (:tree \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\") :inherit-configuration)")
 SET(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t (\\\"${CMAKE_CURRENT_BINARY_DIR}/fasl-cache\\\" :implementation)) :ignore-inherited-configuration)")
 
+# Execute Lisp process
+MACRO(CONFIGURE_LISP NAME CODE)
+    SET(NAME "${NAME}")
+    SET(DO   "${CODE} --quit")
+    CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"
+                   @ONLY)
+    SET(REDIRECTIONS)
+ENDMACRO()
+MACRO(CONFIGURE_LISP_REDIRECT NAME CODE)
+    SET(REDIRECTIONS "OUTPUT_FILE \"${CMAKE_CURRENT_BINARY_DIR}/${NAME}.out\"
+                      ERROR_FILE  \"${CMAKE_CURRENT_BINARY_DIR}/${NAME}.err\"")
+    CONFIGURE_LISP(${NAME} ${CODE})
+ENDMACRO()
+MACRO(EXECUTE_LISP NAME CODE OUTPUT_VARIABLE)
+    CONFIGURE_LISP(${NAME} "${CODE}")
+    MESSAGE(STATUS "Executing Lisp process \"${NAME}\"")
+    EXECUTE_PROCESS(COMMAND cmake -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"
+                    OUTPUT_VARIABLE ${OUTPUT_VARIABLE}
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+ENDMACRO()
+
+# Project definition (version is grovelled from asd system definition
+# and, possibly in combination with version.sexp file written above).
+SET(SYSTEM_NAME "cl-rsb-tools-logger")
+PROJECT(rsb-tools)
+SET(REDIRECTIONS "ERROR_QUIET")
+EXECUTE_LISP("version"
+             "--eval \"(asdf:find-system :${SYSTEM_NAME})\"
+              --eval \"(princ (${SYSTEM_NAME}-system:version/string :commit? t))\""
+             VERSION_FROM_LISP)
+GIT_VERSION_COMPONENTS(${VERSION_FROM_LISP} RSB_TOOLS_VERSION_MAJOR
+                                            RSB_TOOLS_VERSION_MINOR
+                                            RSB_TOOLS_VERSION_PATCH
+                                            RSB_TOOLS_VERSION_COMMIT)
+MESSAGE(STATUS "Project is ${CMAKE_PROJECT_NAME} (${VERSION_FROM_LISP})")
+
 # Create binary.
 SET(MAIN_NAME "tools")
-SET(SCRIPT    "${CMAKE_CURRENT_SOURCE_DIR}/main/dump.lisp")
-SET(DO        "--load \"${SCRIPT}\"")
-SET(NAME      "tools")
-IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    SET(REDIRECTIONS "OUTPUT_FILE \"${CMAKE_CURRENT_BINARY_DIR}/${NAME}.log\"
-                      ERROR_FILE  \"${CMAKE_CURRENT_BINARY_DIR}/${NAME}.log\"")
-ENDIF()
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
-               "${CMAKE_CURRENT_BINARY_DIR}/sbcl.cmake"
-               @ONLY)
+CONFIGURE_LISP_REDIRECT("${MAIN_NAME}"
+                        "--load \"${CMAKE_CURRENT_SOURCE_DIR}/main/dump.lisp\"")
 ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-                   COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.cmake"
+                   COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${MAIN_NAME}.cmake"
                    DEPENDS "${SCRIPT}"
                    COMMENT "Creating Lisp image ${NAME} (this can take a long time)")
 ADD_CUSTOM_TARGET(binary ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}")
@@ -103,20 +147,13 @@ ENDIF()
 ENABLE_TESTING()
 
 # Lift-based tests for formatting and stats systems.
-FOREACH(NAME formatting stats)
-    SET(DO "--eval \"(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))\"
-            --eval \"(asdf:test-system :cl-rsb-${NAME})\"
-            --quit")
-    IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        SET(REDIRECTIONS "OUTPUT_FILE \"${CMAKE_CURRENT_BINARY_DIR}/test-${NAME}.log\"
-                          ERROR_FILE  \"${CMAKE_CURRENT_BINARY_DIR}/test-${NAME}.log\"")
-    ENDIF()
-    CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
-                   "${CMAKE_CURRENT_BINARY_DIR}/sbcl.test-${NAME}.cmake"
-                   @ONLY)
-    ADD_TEST(NAME    "rsb-${NAME}"
-             COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.test-${NAME}.cmake")
-    SET_TESTS_PROPERTIES("rsb-${NAME}" PROPERTIES RUN_SERIAL TRUE)
+FOREACH(SYSTEM formatting stats)
+    CONFIGURE_LISP_REDIRECT("test-${SYSTEM}"
+                            "--eval \"(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))\"
+                             --eval \"(asdf:test-system :cl-rsb-${SYSTEM})\"")
+    ADD_TEST(NAME    "test-${SYSTEM}"
+             COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.test-${SYSTEM}.cmake")
+    SET_TESTS_PROPERTIES("test-${SYSTEM}" PROPERTIES RUN_SERIAL TRUE)
 ENDFOREACH()
 
 # --help, --help-all and --version for all binaries.
@@ -175,7 +212,7 @@ ENDFOREACH()
 
 # Installation
 SET(BINARY_PREFIX    "rsb-")
-SET(VERSION_SUFFIX   "cl${CL_RSB_TOOLS_VERSION_MAJOR}.${CL_RSB_TOOLS_VERSION_MINOR}")
+SET(VERSION_SUFFIX   "cl${RSB_TOOLS_VERSION_MAJOR}.${RSB_TOOLS_VERSION_MINOR}")
 SET(MAIN_BINARY_NAME ${BINARY_PREFIX}${MAIN_NAME}${VERSION_SUFFIX})
 INSTALL(PROGRAMS    "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}"
         DESTINATION "bin"
@@ -202,10 +239,10 @@ IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
 ENDIF()
 
 # Packaging
-SET(PACKAGE_BASE_NAME           "rsb-tools-${VERSION_SUFFIX}")
-SET(CPACK_PACKAGE_VERSION_MAJOR ${CL_RSB_TOOLS_VERSION_MAJOR})
-SET(CPACK_PACKAGE_VERSION_MINOR ${CL_RSB_TOOLS_VERSION_MINOR})
-SET(CPACK_PACKAGE_VERSION_PATCH ${CL_RSB_TOOLS_VERSION_PATCH})
+SET(PACKAGE_BASE_NAME           "${CMAKE_PROJECT_NAME}-${VERSION_SUFFIX}")
+SET(CPACK_PACKAGE_VERSION_MAJOR ${RSB_TOOLS_VERSION_MAJOR})
+SET(CPACK_PACKAGE_VERSION_MINOR ${RSB_TOOLS_VERSION_MINOR})
+SET(CPACK_PACKAGE_VERSION_PATCH ${RSB_TOOLS_VERSION_PATCH})
 SET(CPACK_PACKAGE_VERSION       "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 SET(CPACK_PACKAGE_VENDOR        "CoR-Lab, Bielefeld University")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")

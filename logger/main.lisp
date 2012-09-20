@@ -57,7 +57,7 @@
   (update-synopsis)
   (setf *default-configuration* (options-from-default-sources))
   (process-commandline-options
-   :version         (cl-rsb-tools-logger-system:version/list)
+   :version         (cl-rsb-tools-logger-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
    :return          #'(lambda () (return-from main)))
 
