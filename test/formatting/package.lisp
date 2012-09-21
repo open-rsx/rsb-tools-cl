@@ -46,7 +46,8 @@
   (:documentation
    "Root unit test suite for the formatting module."))
 
-(defmacro ensure-style-cases ((class) &body cases)
+(defmacro ensure-style-cases ((class &key (formatter ''format-event))
+			      &body cases)
   "Generate tests cases for methods on `format-event' for CLASS
 according to CASES. Each element of cases has to be of the form
 
@@ -55,20 +56,25 @@ according to CASES. Each element of cases has to be of the form
 For each case, an instance of CLASS is constructed with INITARGS,
 `format-event' is applied to each element of DATA and the resulting
 output is compared to EXPECTED-OUTPUT."
-  `(ensure-cases (args data expected)
-       (list ,@cases)
+  (let ((formatter (case formatter
+		     (:format-header '(lambda (event style stream)
+				       (declare (ignore event))
+				       (format-header style stream)))
+		     (t              formatter))))
+    `(ensure-cases (args data expected)
+	 (list ,@cases)
 
-     (let+ ((instance (apply #'make-instance ',class args))
-	    ((&flet do-it ()
-	       (with-output-to-string (stream)
-		 (map nil (rcurry #'format-event instance stream)
-		      data)))))
-       (if (eq expected :error)
-	   (ensure-condition error (do-it))
-	   (let ((output (do-it)))
-	     (ensure-same (concatenate 'string "^" expected "$") output
-			  :test      #'ppcre:scan
-			  :report    "~@<The formatting style ~A, when ~
+       (let+ ((instance (apply #'make-instance ',class args))
+	      ((&flet do-it ()
+		 (with-output-to-string (stream)
+		   (map nil (rcurry ,formatter instance stream)
+			data)))))
+	 (if (eq expected :error)
+	     (ensure-condition error (do-it))
+	     (let ((output (do-it)))
+	       (ensure-same (concatenate 'string "^" expected "$") output
+			    :test      #'ppcre:scan
+			    :report    "~@<The formatting style ~A, when ~
 applied to ~:[no data~:;the data ~:*~{~S~^, ~}~], produced the output ~
 ~S, not ~S.~@:>"
-			  :arguments (instance data output expected)))))))
+			    :arguments (instance data output expected))))))))

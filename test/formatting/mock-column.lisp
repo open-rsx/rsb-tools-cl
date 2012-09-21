@@ -1,6 +1,6 @@
 ;;; mock-column.lisp --- A mock column class for tests.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -25,8 +25,12 @@
 (defclass mock-column (width-mixin)
   ())
 
+(defmethod format-header ((thing  mock-column)
+			  (target t))
+  (format target "My mock header"))
+
 (defmethod format-event ((event  t)
 			 (style  mock-column)
-			 (stream t)
+			 (target t)
 			 &key &allow-other-keys)
-  (format stream "~A" event))
+  (format target "~A" event))

@@ -1,6 +1,6 @@
 ;;; columns-mixin.lisp --- Unit tests for the columns-mixin class.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -30,10 +30,12 @@
   construction
 
   (ensure-cases (args expected)
-      '(((:columns (5))                     :error)
+      '(;; Invalid constructions
+	((:columns (5))                     :error)
 	((:columns (()))                    :error)
 	((:columns (:no-such-column-class)) :error)
 
+	;; These are ok
 	(()                                 nil)
 	((:columns   ())                    nil)
 	((:separator "=")                   nil)
@@ -77,3 +79,37 @@ style.")
        :separator "!")
       ("/foo/bar/")
       "       /foo/bar/!/foo/ba…")))
+
+(addtest (columns-mixin-root
+          :documentation
+	  "Test the method on `format-header' for `columns-mixin'
+which should format headers according to the column specification of
+the style.")
+  format-header
+
+  (ensure-style-cases (columns-mixin :formatter :format-header)
+      ;; no columns, no events => no output
+      '(()
+	()
+	"")
+
+      ;; events, but no columns => no output
+      '(()
+	("/foo/bar")
+	"")
+
+      ;; single column => separator should not be printed
+      '((:columns ((:mock :width 16 :alignment :left)) :separator "!")
+	("/foo/bar/")
+	"My mock header  ")
+
+      ;; two columns => separator should be printed
+      '((:columns   ((:mock :width 16 :alignment :right)
+		     (:mock :width 8  :alignment :left))
+	 :separator "!")
+	("/foo/bar/")
+	"My mock header  !My mock…")))
+
+;; Local Variables:
+;; coding: utf-8
+;; End:

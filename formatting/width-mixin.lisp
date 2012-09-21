@@ -38,6 +38,13 @@ formatter instance."))
    "This class is intended to be mixed into formatting classes that
 should produce output of a fixed width."))
 
+(defmethod format-header :around ((column width-mixin)
+				  (stream t))
+  (invoke-with-width-limit
+   stream (column-width column) :left
+   #'(lambda (stream)
+       (call-next-method column stream))))
+
 (defmethod format-event :around ((event  t)
 				 (style  width-mixin)
 				 (stream t)
