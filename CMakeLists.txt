@@ -147,7 +147,7 @@ ENDIF()
 ENABLE_TESTING()
 
 # Lift-based tests for formatting and stats systems.
-FOREACH(SYSTEM formatting stats)
+FOREACH(SYSTEM common formatting stats)
     CONFIGURE_LISP_REDIRECT("test-${SYSTEM}"
                             "--eval \"(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))\"
                              --eval \"(asdf:test-system :cl-rsb-${SYSTEM})\"")

@@ -126,4 +126,34 @@ RSB-related systems."
 
 			      (:file       "idl-options"
 			       :depends-on ("package" "idl-loading"
-					    "options"))))))
+					    "options")))))
+
+  :in-order-to ((test-op (test-op :cl-rsb-common-test))))
+
+
+;;; System definition for test of the cl-rsb-common system
+;;
+
+(defsystem :cl-rsb-common-test
+  :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :version     #.(version/string)
+  :license     "GPL3; see COPYING file for details."
+  :description "This system contains tests for the cl-rsb-common
+system."
+  :depends-on  (:let-plus
+
+		(:version :lift          "1.7.1")
+
+		(:version :cl-rsb-common #.(version/string)))
+  :components  ((:module     "common"
+		 :pathname   "test/common"
+		 :components ((:file       "package")
+			      (:file       "error-handling"
+			       :depends-on ("package"))))))
+
+(defmethod perform ((operation test-op)
+		    (component (eql (find-system :cl-rsb-common-test))))
+  (funcall (find-symbol "RUN-TESTS" :lift)
+	   :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
+			    "lift-rsb-common.config")))
