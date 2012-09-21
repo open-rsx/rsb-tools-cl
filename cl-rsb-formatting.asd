@@ -90,7 +90,9 @@ See `version/list' for details on keyword parameters."
   :license     "GPL3; see COPYING file for details."
   :description "This system provides some formatting functions for
 RSB-related systems."
-  :depends-on  (:let-plus
+  :depends-on  (:alexandria
+		:let-plus
+		:more-conditions
 		:cl-interpol
 
 		(:version :cl-rsb #.(version/string :revision? nil)))
