@@ -101,6 +101,7 @@ RSB-related systems."
 		 :serial     t
 		 :components ((:file       "package")
 			      (:file       "types")
+			      (:file       "conditions")
 			      (:file       "variables")
 			      (:file       "util")
 

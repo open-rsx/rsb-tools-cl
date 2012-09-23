@@ -47,6 +47,15 @@
    :template-designator
    :script-designator)
 
+  ;; Conditions
+  (:export
+   :format-code-error ;; condition class and function
+   :format-code-error-code
+
+   :simple-format-code-error
+
+   :format-code-read-error)
+
   ;; Variables
   (:export
    :*textual-output-can-use-utf-8?*)

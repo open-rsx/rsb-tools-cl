@@ -128,46 +128,53 @@ By default, the following bindings are available:
   ;; caller.
   (let+ ((conditions '())
 	 ((&values function nil failed?)
-	  (handler-bind
-	      (#+sbcl
-	       (sb-ext:compiler-note
-		#'(lambda (condition)
-		    (log1 :info "Compiler said: ~A" condition)
-		    (muffle-warning)))
-	       (style-warning
-		#'(lambda (condition)
-		    (log1 :warn "Compiler said: ~A" condition)
-		    (muffle-warning)))
-	       ((or error warning)
-		#'(lambda (condition)
-		    (push condition conditions)
-		    (muffle-warning condition))))
-	    (with-compilation-unit (:override t)
-	      (compile nil
-		       `(lambda (event stream)
-			  (declare (ignorable event stream))
-			  (symbol-macrolet (,@bindings)
-			    (catch 'skip-event
-			      ,@code))))))))
-    ;;; TODO(jmoringe, 2012-01-30): get format string right ...
+	  (block compile
+	    (handler-bind
+		(#+sbcl
+		 (sb-ext:compiler-note
+		   #'(lambda (condition)
+		       (log1 :info "Compiler said: ~A" condition)
+		       (muffle-warning)))
+		 (style-warning
+		   #'(lambda (condition)
+		       (log1 :warn "Compiler said: ~A" condition)
+		       (muffle-warning)))
+		 ((or error warning)
+		   #'(lambda (condition)
+		       (push condition conditions)
+		       (if (find-restart 'muffle-warning)
+			   (muffle-warning condition)
+			   (return-from
+			    compile (values nil nil t))))))
+	      (with-compilation-unit (:override t)
+		(compile nil
+			 `(lambda (event stream)
+			    (declare (ignorable event stream))
+			    (symbol-macrolet (,@bindings)
+			      (catch 'skip-event
+				,@code)))))))))
     (when (or failed? conditions)
-      (error "~@<Failed to compile code ~_~S~_.~@[ Compiler said: ~
-~:{~_+ ~@<~@;~A~:@>~}~]~@:>"
-	     code conditions)) function))
+      (format-code-error code
+			 "~@<Failed to compile.~@[ Compiler said: ~
+~:{~&+_~@<~@;~A~:>~}~]~@:>"
+			 (mapcar #'list conditions)))
+function))
 
 (defmethod format-event ((event  event)
 			 (style  style-programmable)
 			 (stream stream)
 			 &key &allow-other-keys)
-  (handler-bind
-      (((and error (not stream-error))
-	(lambda (condition)
-	  (error "~@<Failed to format event ~A using specified ~
-bindings ~_~{~2T~{~24A -> ~A~_~}~}and code ~_~2T~S~_: ~A~@:>"
-		 event
-		 (style-bindings style) (style-code style)
-		 condition))))
-    (funcall (%style-lambda style) event stream)))
+  (let+ (((&accessors-r/o (bindings style-bindings)
+			  (code     style-code)) style))
+   (handler-bind
+       (((and error (not stream-error))
+	  (lambda (condition)
+	    (format-code-error code
+			       "~@<Failed to format event ~A using ~
+specified bindings ~_~{~2T~{~24A -> ~A~_~}~}and code ~_~2T~S~_: ~
+~A~@:>"
+			       event bindings code condition))))
+     (funcall (%style-lambda style) event stream))))
 
 (defmethod print-object ((object style-programmable) stream)
   (print-unreadable-object (object stream :type t :identity t)
@@ -220,9 +227,13 @@ By default, the following bindings are available:
 
 (defmethod (setf style-script) ((new-value stream)
 				(style     style-programmable/script))
-  (setf (style-script style) (let ((*package* #.*package*))
-			       (iter (for token in-stream new-value)
-				     (collect token))))
+  (setf (style-script style)
+	(with-condition-translation
+	    (((error format-code-read-error)
+	      :code new-value))
+	  (let ((*package* #.*package*))
+	    (iter (for token in-stream new-value)
+		  (collect token)))))
   new-value)
 
 (defmethod (setf style-script) ((new-value string)
@@ -233,8 +244,12 @@ By default, the following bindings are available:
 
 (defmethod (setf style-script) ((new-value pathname)
 				(style     style-programmable/script))
-  (with-input-from-file (stream new-value)
-    (setf (style-script style) stream))
+  (with-condition-translation
+      ((((and error (not format-code-error))
+	 format-code-read-error)
+	:code new-value))
+    (with-input-from-file (stream new-value)
+      (setf (style-script style) stream)))
   new-value)
 
 
@@ -281,14 +296,13 @@ By default, the following PROPERTY names are available:
 
 (defmethod (setf style-template) :before ((new-value string)
 					  (style     style-programmable/template))
-  (let ((form (handler-bind
-		  ((error (lambda (condition)
-			    (error "~@<Failed to read template string ~S: ~A~@:>"
-				   new-value condition))))
-		  (let ((*package* #.*package*))
-		    (with-interpol-syntax ()
-		      (read-from-string
-		       (format nil "#?\"~A\"" new-value)))))))
+  (let ((form (with-condition-translation
+		  (((error format-code-read-error)
+		    :code new-value))
+		(let ((*package* #.*package*))
+		  (with-interpol-syntax ()
+		    (read-from-string
+		     (format nil "#?\"~A\"" new-value)))))))
     (setf (style-code style) `((princ ,form stream)))))
 
 (defmethod (setf style-template) ((new-value t)
@@ -304,10 +318,9 @@ By default, the following PROPERTY names are available:
 (defmethod (setf style-template) ((new-value pathname)
 				  (style     style-programmable/template))
   (setf (style-template style)
-	(handler-bind
-	    ((error (lambda (condition)
-		      (error "~@<Failed to read template from file ~S: ~A~:@>"
-			     new-value condition))))
+	(with-condition-translation
+	    (((error format-code-read-error)
+	      :code new-value))
 	  (read-file-into-string new-value)))
   new-value)
 
@@ -351,7 +364,7 @@ bindings ~_~{~2T~{~16A -> ~A~_~}~}and template ~_~2T~S~_: ~A~@:>"
       (setf (documentation class 'type)
 	    (format nil "~A~{+ ~(~A~)~^~%~}"
 		    (documentation class 'type)
-		    (map 'list #'first *style-programmable-default-bindings*))))
+		    (mapcar #'first *style-programmable-default-bindings*))))
 
 ;; Local Variables:
 ;; coding: utf-8
