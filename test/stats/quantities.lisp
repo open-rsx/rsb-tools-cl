@@ -123,9 +123,9 @@ CASES as body of `ensure-quantity-cases' in a test case for the
   (let+ (((&flet event (&rest args &key &allow-other-keys)
 	    (apply #'make-event "/foo" "baz" args))))
     `(;; missing required initarg :key
-      (()             ()                                    :error)
+      (()             ()                                    error)
       ;; cannot compute moment on meta-data keys
-      ((:key :keys)   ()                                    :error)
+      ((:key :keys)   ()                                    error)
       ;; some key
       ((:key :foo)    ()                                    "^N/A ± N/A$")
       ((:key :foo)    (,(event :foo "1"))                   "^1\\.000 ± 0\\.000$")
@@ -144,9 +144,9 @@ CASES as body of `ensure-quantity-cases' in a test case for the
 		,@(when-let ((value (second keys)))
 			    `(:to ,value))))))
     `(;; missing :from and :to initargs
-      (()                      ()                           :error)
-      (,(args :create)         ()                           :error)
-      (,(args nil :create)     ()                           :error)
+      (()                      ()                           error)
+      (,(args :create)         ()                           error)
+      (,(args nil :create)     ()                           error)
       ;; valid cases
       (,(args :create :create) ()                           "^N/A ± N/A$")
       (,(args :create :create) (,(make-event "/foo" "baz")) "^[0-9]\\.[0-9]{3} ± [0-9]\\.[0-9]{3}$"))))

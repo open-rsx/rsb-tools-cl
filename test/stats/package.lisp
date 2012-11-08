@@ -54,17 +54,21 @@ EXPECTED-OUTPUT."
   `(ensure-cases (args events expected)
        (progn ,@cases)
 
-     (if (eq expected :error)
+     (if (eq expected 'error)
 	 (ensure-condition 'error
 	   (apply #'make-instance ',class args))
 	 (let* ((instance (apply #'make-instance ',class args))
 		(output   (progn
 			    (reset! instance)
-			    (map nil (curry #'update! instance) events)
+			    ;; Wait 1 ms to the sake of time-based
+			    ;; quantities.
+			    (sleep .001)
+			    (mapc (curry #'update! instance) events)
 			    (with-output-to-string (stream)
 			      (format-value instance stream)))))
 	   (ensure-same expected output
 			:test      #'ppcre:scan
-			:report    "~@<The quantity ~A, when updated with ~
-data ~{~S~^, ~}, produced the output ~S, not ~S.~@:>"
+			:report    "~@<The quantity ~A, when ~:[not ~
+updated with any data~;~:*updated with data ~{~S~^, ~}~], produced the ~
+output ~S, not ~S.~@:>"
 			:arguments (instance events output expected))))))
