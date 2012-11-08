@@ -96,32 +96,14 @@ RSB-related systems."
 		:local-time
 
 		(:version :cl-rsb #.(version/string :revision? nil)))
-  :components  ((:module     "stats-early"
-		 :pathname   "stats"
+  :components  ((:module     "stats"
 		 :serial     t
 		 :components ((:file       "package")
 			      (:file       "types")
 			      (:file       "protocol")
-			      (:file       "util")))
-
-		(:module     "stats-mixins"
-		 :pathname   "stats"
-		 :depends-on ("stats-early")
-		 :components ((:file       "named-mixin")
-			      (:file       "collecting-mixin")
-			      (:file       "histogram-mixin")
-			      (:file       "extract-function-mixin")
-			      (:file       "moments-mixin")
-			      (:file       "all-time-mixin")
-			      (:file       "reduction-mixin")
-			      (:file       "rate-mixin")
-			      (:file       "meta-data-mixin"
-			       :depends-on ("named-mixin"))
-			      (:file       "format-mixin")))
-
-		(:module     "stats"
-		 :depends-on ("stats-early" "stats-mixins")
-		 :components ((:file       "quantities"))))
+			      (:file       "util")
+			      (:file       "quantity-mixins")
+			      (:file       "quantities"))))
 
   :in-order-to ((test-op (test-op :cl-rsb-stats-test))))
 
@@ -141,9 +123,9 @@ system."
 		(:version :cl-rsb-stats #.(version/string)))
   :components  ((:module     "stats"
 		 :pathname   "test/stats"
+		 :serial     t
 		 :components ((:file       "package")
-			      (:file       "quantities"
-			       :depends-on ("package"))))))
+			      (:file       "quantities")))))
 
 (defmethod perform ((operation test-op)
 		    (component (eql (find-system :cl-rsb-stats-test))))
