@@ -1,6 +1,6 @@
 ;;; event-style-progammable.lisp --- A programmable formatting style.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -49,12 +49,11 @@ resulting compiled function."))
     ,@(iter (for timestamp in '(create send receive deliver))
 	    (collect `(,timestamp (timestamp event ,(make-keyword timestamp))))
 	    (collect `(,(symbolicate timestamp "-UNIX")
-			(local-time:timestamp-to-unix
-			 (timestamp event ,(make-keyword timestamp)))))
-	    (collect `(,(symbolicate timestamp "-UNIX-NSEC")
-			(let ((ts (timestamp event ,(make-keyword timestamp))))
-			  (+ (* (expt 10 9) (local-time:timestamp-to-unix ts))
-			     (local-time:nsec-of ts))))))
+		       (timestamp->unix
+			(timestamp event ,(make-keyword timestamp)))))
+	    (collect `(,(symbolicate timestamp "-UNIX/NSEC")
+		       (timestamp->unix/nsec
+			(timestamp event ,(make-keyword timestamp))))))
     (causes/event-id (event-causes event))
     (causes/uuid     (map 'list #'event-id->uuid (event-causes event)))
     (skip-event      (throw 'skip-event nil)))
@@ -127,6 +126,19 @@ By default, the following bindings are available:
   ;; errors and warnings since we do not want to leak these to the
   ;; caller.
   (let+ ((conditions '())
+	 ((&flet wrap-code (code)
+	    `(lambda (event stream)
+	       (declare (ignorable event stream))
+	       (flet ((timestamp->unix (timestamp)
+			(local-time:timestamp-to-unix timestamp))
+		      (timestamp->unix/nsec (timestamp)
+			(+ (* (expt 10 9)
+			      (local-time:timestamp-to-unix timestamp))
+			   (local-time:nsec-of timestamp))))
+		 (declare (ignorable #'timestamp->unix
+				     #'timestamp->unix/nsec))
+		 (symbol-macrolet (,@bindings)
+		   (catch 'skip-event ,@code))))))
 	 ((&values function nil failed?)
 	  (block compile
 	    (handler-bind
@@ -147,12 +159,7 @@ By default, the following bindings are available:
 			   (return-from
 			    compile (values nil nil t))))))
 	      (with-compilation-unit (:override t)
-		(compile nil
-			 `(lambda (event stream)
-			    (declare (ignorable event stream))
-			    (symbol-macrolet (,@bindings)
-			      (catch 'skip-event
-				,@code)))))))))
+		(compile nil (wrap-code code)))))))
     (when (or failed? conditions)
       (format-code-error code
 			 "~@<Failed to compile.~@[ Compiler said: ~
