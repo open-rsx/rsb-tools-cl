@@ -1,6 +1,6 @@
 ;;; payload-wav.lisp --- Format event data as WAV files.
 ;;
-;; Copyright (C) 2012 Jan Moringen
+;; Copyright (C) 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -38,13 +38,13 @@ payloads containing audio data."))
 		      ((:sample-s24 :sample-u24) 3)))
 	 (byte-rate (* channels sample-rate width))
 	 ;; The non-constant fields have the following meanings:
-	 ;; 0 Size
-	 ;; 2 Number of Channels
-	 ;; 3 Sample Rate
-	 ;; 4 Byte Rate
-	 ;; 5 Block Alignment
-	 ;; 6 Bits per Sample
-	 ;; 7 Sub Chunk Size
+	 ;; 0 (offset  4 size 4) Size
+	 ;; 2 (offset 22 size 2) Number of Channels
+	 ;; 3 (offset 24 size 4) Sample Rate
+	 ;; 4 (offset 28 size 4) Byte Rate
+	 ;; 5 (offset 32 size 2) Block Alignment
+	 ;; 6 (offset 34 size 2) Bits per Sample
+	 ;; 7 (offset 40 size 4) Sub Chunk Size
 	 (wave-header-template
 	  (vector #x52 #x49 #x46 #x46    0    0    0    0 #x57 #x41 #x56 #x45
 		  #x66 #x6d #x74 #x20 #x10 #x00 #x00 #x00 #x01 #x00    2    2
@@ -61,19 +61,19 @@ payloads containing audio data."))
 
       ;; Regarding "Size" and "Sub chunk size": We use
       ;;
-      ;;   Size:           fake-size
-      ;;   Sub chunk size: (- fake-size 44)
+      ;;   Size:           FAKE-SIZE
+      ;;   Sub chunk size: (- FAKE-SIZE 44)
       ;;
-      ;; where SIZE is the assumed maximum size, since we cannot know
-      ;; the file size in advance. This seems to make most software do
-      ;; the right thing.
-      (set-field  4 4 fake-size)         ;; Size
-      (set-field 22 2 channels)          ;; Number of channels
-      (set-field 24 4 sample-rate)       ;; Sample rate
-      (set-field 28 4 byte-rate)         ;; Byte rate
-      (set-field 32 2 width)             ;; Block alignment
-      (set-field 34 2 (* width 8))       ;; Bits per sample
-      (set-field 40 4 (- fake-size 44))) ;; Sub chunk size
+      ;; where FAKE-SIZE is the assumed maximum size (#0x7fffffff),
+      ;; since we cannot know the file size in advance. This seems to
+      ;; make most software do the right thing.
+      (set-field  4 4 fake-size)          ;; Size
+      (set-field 22 2 channels)           ;; Number of channels
+      (set-field 24 4 sample-rate)        ;; Sample rate
+      (set-field 28 4 byte-rate)          ;; Byte rate
+      (set-field 32 2 (* channels width)) ;; Block alignment
+      (set-field 34 2 (* width 8))        ;; Bits per sample
+      (set-field 40 4 (- fake-size 44)))  ;; Sub chunk size
     (write-sequence wave-header-template target)))
 
 (defmethod (setf descriptor-for-target) :after ((new-value list)
