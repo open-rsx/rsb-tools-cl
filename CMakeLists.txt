@@ -1,6 +1,6 @@
 # CMakeLists.txt --- CMake build description file.
 #
-# Copyright (C) 2011, 2012 Jan Moringen
+# Copyright (C) 2011, 2012, 2013 Jan Moringen
 #
 # Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
@@ -203,10 +203,15 @@ FOREACH(STYLE discard meta-data payload detailed
                      --debug --style "${STYLE}"
                      --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                      inprocess:)
-    ADD_TEST(NAME   "call/style=${STYLE}"
+    ADD_TEST(NAME   "call/style=${STYLE}/no-wait"
             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
                     --debug --style "${STYLE}"
                     --no-wait
+                    "inprocess:/foo/bar(1)")
+    ADD_TEST(NAME   "call/style=${STYLE}/wait"
+            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
+                    --debug --style "${STYLE}"
+                    --eval "(progn (bt:make-thread (lambda () (rsb.patterns:with-local-server (s \"inprocess:/foo\") (rsb.patterns:with-methods (s) ((\"bar\" (x integer) x)) (sleep 2))))) (sleep 1))"
                     "inprocess:/foo/bar(1)")
 ENDFOREACH()
 
