@@ -1,6 +1,6 @@
 ;;; main.lisp --- Entry point of the send tool.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -63,7 +63,7 @@ Spread transport instead of specifying host and port.
 cat my-data.txt | ~:*~A - 'socket:/printer'
 
   Send the content of the file \"my-data.txt\" to the listener at ~
-scope \"/printer\" using the socket transform (with its default ~
+scope \"/printer\" using the socket transport (with its default ~
 configuration). This form can only be used for sending string ~
 payloads.
 "
@@ -74,10 +74,34 @@ payloads.
   "Create and return a commandline option tree."
   (make-synopsis
    ;; Basic usage and specific options.
-   :postfix "EVENT-SPEC DESTINATION-URI"
+   :postfix "EVENT-SPEC [DESTINATION-URI]"
    :item    (make-text :contents (make-help-string :show show))
    :item    (make-common-options :show show)
    :item    (make-error-handling-options :show show)
+   :item    (defgroup (:header "Event Options"
+		       :hidden (not (show-help-for? '(:event)
+						    :default t
+						    :show    show)))
+	      (stropt :long-name       "method"
+		      :short-name      "m"
+		      :argument-name   "METHOD"
+		      :description
+		      "Set the method field of the event being sent to METHOD. Default behavior is sending an event without method field.")
+	      (stropt :long-name       "meta-data"
+		      :short-name      "D"
+		      :argument-name   "NAME=VALUE"
+		      :description
+		      "Set the meta-data item NAME to VALUE in the event being sent. This option can be specified multiple times for distinct NAMEs.")
+	      (stropt :long-name       "timestamp"
+		      :short-name      "T"
+		      :argument-name   "NAME=YYYY-MM-DD[THH:MM:SS[.µµµµµµ[+ZH:ZM]]]"
+		      :description
+		      "Set the timestamp named NAME to the timestamp YYYY-MM-DD[THH:MM:SS[.µµµµµµ[+ZH:ZM]]] in the event being sent. This option can be specified multiple times for distinct NAMEs.")
+	      (stropt :long-name       "cause"
+		      :short-name      "c"
+		      :argument-name   "PARTICIPANT-ID:SEQUENCE-NUMBER"
+		      :description
+		      "Add the event id described by PARTICIPANT-ID:SEQUENCE-NUMBER to the cause vector of the event being sent. This option can be specified multiple times."))
    ;; Append IDL options
    :item    (make-idl-options)
    ;; Append RSB options.
@@ -109,6 +133,30 @@ payloads.
 		(subseq spec consumed)))
        value))))
 
+(defun parse-pair (pair
+		   &key
+		   (separator        #\=)
+		   (first-transform  #'identity)
+		   (second-transform #'identity))
+  (let ((index (or (position separator pair)
+		   (error "~@<~S is not of the form KEY~CVALUE.~@:>"
+			  pair separator))))
+    (list (funcall first-transform (subseq pair 0 index))
+	  (funcall second-transform (subseq pair (1+ index))))))
+
+(defun parse-meta-data (value)
+  (parse-pair value :first-transform #'make-keyword))
+
+(defun parse-timestamp (value)
+  (parse-pair value :first-transform  #'make-keyword
+		    :second-transform #'local-time:parse-timestring))
+
+(defun parse-cause (value)
+  (apply #'cons
+	 (parse-pair value :separator        #\:
+			   :first-transform  #'uuid:make-uuid-from-string
+			   :second-transform #'parse-integer)))
+
 (defun main ()
   "Entry point function of the cl-rsb-tools-send system."
   (update-synopsis)
@@ -125,7 +173,17 @@ payloads.
   (with-logged-warnings
     (let+ ((error-policy (maybe-relay-to-thread
 			  (process-error-handling-options)))
-	   ((event-spec destination) (remainder))
+	   (method     (make-keyword (getopt :long-name "method")))
+	   (meta-data  (iter (for value next (getopt :long-name "meta-data"))
+			     (while value)
+			     (appending (parse-meta-data value))))
+	   (timestamps (iter (for value next (getopt :long-name "timestamp"))
+			     (while value)
+			     (appending (parse-timestamp value))))
+	   (causes     (iter (for value next (getopt :long-name "cause"))
+			     (while value)
+			     (collect (parse-cause value))))
+	   ((event-spec &optional (destination "/")) (remainder))
 	   (payload (parse-event-spec event-spec)))
 
       (log1 :info "Using URI ~S payload ~A"
@@ -135,4 +193,8 @@ payloads.
 	  (with-informer (informer destination t)
 	    (hooks:add-to-hook (participant-error-hook informer)
 			       error-policy) ;;; TODO(jmoringe, 2012-08-09): support in with-informer
-	    (send informer payload)))))))
+	    (apply #'send informer payload
+		   (nconc (when method     (list :method     method))
+			  (when timestamps (list :timestamps timestamps))
+			  (when causes     (list :causes     causes))
+			  meta-data))))))))

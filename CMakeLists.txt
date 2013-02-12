@@ -209,10 +209,20 @@ foreach(POLICY continue abort)
                     --debug --on-error "${POLICY}"
                     --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                      inprocess:)
-    add_test(NAME   "send/on-error=${POLICY}"
-            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
-                    --debug --on-error "${POLICY}"
-                    1 inprocess:)
+    foreach(ARG ""
+                "--method=foo"
+                "--meta-data=foo=bar"
+                "--timestamp=foo=2013-03-27T01:32:43.158404+01:00"
+                "--timestamp=foo=2013-03-27T01:32:43.158404"
+                "--timestamp=foo=2013-03-27T01:32:43"
+                "--timestamp=foo=2013-03-27"
+                "--cause=12345678-1234-1234-1234-567899999999:1")
+        string(REGEX REPLACE "[- ]" "" CLEAN_ARG "${ARG}")
+        add_test(NAME   "send/on-error=${POLICY}/${CLEAN_ARG}"
+                 COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+                         --debug --on-error "${POLICY}"
+                         ${ARG} 1 inprocess:)
+    endforeach()
     add_test(NAME   "call/on-error=${POLICY}"
             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
                     --debug --on-error "${POLICY}"
