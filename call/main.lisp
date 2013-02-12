@@ -196,7 +196,7 @@ SERVER-URI/METHOD(ARG).~@:>"))
 second~:P.~@:>"
 			    timeout)))))))
 	   ((&flet call/translate (server)
-	      (let+ (((&values (&optional event)) (call/raw server)))
+	      (let+ (((&values event) (call/raw server)))
 		(cond
 		  ((not event)
 		   (values))
