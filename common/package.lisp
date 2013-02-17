@@ -1,6 +1,6 @@
 ;;; package.lisp --- Package definition for common module.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -72,8 +72,7 @@
 
   ;; Interactive stuff
   (:export
-   :with-interactive-interrupt-exit
-   :interrupt)
+   :with-interactive-interrupt-exit)
 
   ;; Help text generation
   (:export
