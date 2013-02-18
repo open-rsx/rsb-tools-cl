@@ -1,6 +1,6 @@
 ;;; error-handling.lisp --- Toplevel error handling functions.
 ;;
-;; Copyright (C) 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+;; Copyright (C) 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
 ;; This file may be licensed under the terms of the
 ;; GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -37,7 +37,7 @@ This function is intended to be used as toplevel error policy."
 
 (defun continue/verbose (&optional condition)
   "Like `cl:continue' but log a warning if `cl:continue' restart is
-established and a different warning if it does not.
+established and a different warning if it is not.
 
 This function is intended to be used as toplevel error policy."
   (if-let ((restart (find-restart 'continue condition)))
@@ -70,51 +70,54 @@ condition after invoking the restart.
 
 POLICY has to accept a condition as its sole argument.
 
-TARGET-THREAD has to be a `bt:thread' object and defaults
-to (bt:current-thread)."
-  #'(lambda (condition)
-      (let ((thread (bt:current-thread)))
-	(if (eq thread target-thread)
-
-	    ;; When executing in TARGET-THREAD, the error cannot be
-	    ;; transferred. Thus, we install no restarts.
-	    ;;
-	    ;; When POLICY is `abort/signal', we can just unwind,
-	    ;; preserving the backtrace.
-	   (if (eq policy #'abort/signal)
-	       (log1 :info "Error policy ~S in thread ~A; unwinding normally."
-		     policy thread)
-	       (progn
-		 (funcall policy condition)
-		 ;; If POLICY did not handle CONDITION, abort
-		 ;; TARGET-THREAD, signaling CONDITION.
-		 (invoke-restart 'abort/signal condition)))
-
-	   ;; When executing in a different thread, the error can be
-	   ;; transferred to TARGET-THREAD.
-	   (progn
-	     (log1 :info "Applying error policy ~A in background thread ~A"
-		   policy thread)
-	     (restart-case
-		 (funcall policy condition)
-	       (abort (&optional condition)
-		 (declare (ignore condition))
-		 (bt:interrupt-thread
-		  target-thread #'(lambda () (invoke-restart 'abort))))
-	       (abort/signal (condition)
-		 (log1 :warn "Error policy ~A aborted with condition ~
-in background thread ~A. Aborting with condition in main thread. ~
+TARGET-THREAD has to be a `bt:thread' object and defaults to the value
+of (bt:current-thread) in the thread calling this function."
+  (lambda (condition)
+    (let ((thread (bt:current-thread)))
+      (cond
+	;; When executing in a different thread, CONDITION can be
+	;; transferred to TARGET-THREAD. We establish restarts for
+	;; that.
+	((not (eq thread target-thread))
+	 (log1 :info "Applying error policy ~A in background thread ~A"
+	       policy thread)
+	 (restart-case
+	     (funcall policy condition)
+	   (abort (&optional condition)
+	     (declare (ignore condition))
+	     (bt:interrupt-thread target-thread #'abort))
+	   (abort/signal (condition)
+	     (log1 :warn "Error policy ~A aborted with condition in ~
+background thread ~A. Aborting with condition in main thread. ~
 Condition was:~
 ~2&~<| ~@;~A~:>~
 ~2&."
-		       policy thread (list condition))
+		   policy thread (list condition))
 
-		 (bt:interrupt-thread
-		  target-thread #'
-		  (lambda ()
-		    (invoke-restart 'abort/signal condition)))))
-	     (log1 :info "Aborting background thread ~A" thread)
-	     (abort))))))
+	     (bt:interrupt-thread
+	      target-thread
+	      (lambda ()
+		(invoke-restart 'abort/signal condition)))))
+	 ;; IF POLICY did not handle CONDITION or used one of our
+	 ;; restarts, we still have to abort the background thread.
+	 (log1 :info "Aborting background thread ~A" thread)
+	 (abort))
+
+	;; When executing in TARGET-THREAD, CONDITION cannot be
+	;; transferred. Thus, we do not establish any restarts.
+
+	;; When POLICY is `abort/signal', we can just unwind,
+	;; preserving the backtrace.
+	((eq policy #'abort/signal)
+	 (log1 :info "Error policy ~S in thread ~A; unwinding normally."
+	       policy thread))
+
+	;; Otherwise, we give POLICY a chance to handle CONDITION.
+	(t
+	 (funcall policy condition)
+	 ;; If POLICY did not handle CONDITION, just we can just
+	 ;; unwind preserving the backtrace (as above).
+	 )))))
 
 (declaim (ftype (function (function function) *)
 		invoke-with-error-policy))
@@ -127,7 +130,8 @@ handle it."
       (handler-bind
 	  ((error policy))
 	(funcall thunk))
-    (abort ()
+    (abort (&optional condition)
+      (declare (ignore condition))
       (error "Aborted."))
     (abort/signal (condition)
       (error condition))))
