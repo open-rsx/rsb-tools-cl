@@ -173,7 +173,8 @@ payloads.
   (with-logged-warnings
     (let+ ((error-policy (maybe-relay-to-thread
 			  (process-error-handling-options)))
-	   (method     (make-keyword (getopt :long-name "method")))
+	   (method     (when-let ((value (getopt :long-name "method")))
+			 (make-keyword value)))
 	   (meta-data  (iter (for value next (getopt :long-name "meta-data"))
 			     (while value)
 			     (appending (parse-meta-data value))))
