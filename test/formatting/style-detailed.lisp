@@ -1,6 +1,6 @@
 ;;; style-detailed.lisp --- Unit tests for the detailed formatting style.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -37,7 +37,7 @@ on `format-event' for `style-detailed'.")
 
     `(()
       (,(make-event "/foo" "bar"))
-      "--------------------------------------------------------------------------------
+      ,(format nil "~80,,,VA
 Event
   Scope          : /foo/
   Id             : N/A
@@ -51,11 +51,12 @@ Timestamps
   Deliver: N/A
 Payload \\(SB-KERNEL::SIMPLE-CHARACTER-STRING\\)
   \"bar\"
-")
+"
+	       (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
 
     `(()
       (,(make-event "/foo/bar/baz" 1 :fez "whoop"))
-      "--------------------------------------------------------------------------------
+      ,(format nil "~80,,,VA
 Event
   Scope          : /foo/bar/baz/
   Id             : N/A
@@ -71,4 +72,5 @@ Meta-Data
   Fez: whoop
 Payload \\(.*\\)
   1
-")))
+"
+	       (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))

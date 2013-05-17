@@ -1,6 +1,6 @@
 ;;; event-style-meta-data.lisp --- Meta-data-only formatting style class.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -50,7 +50,8 @@ pairs be printed?")
 		  :documentation
 		  "Should the causes of the event be printed?"))
   (:default-initargs
-   :separator '((:rule #\-) #\Newline))
+   :separator `((:rule ,(if *textual-output-can-use-utf-8?* #\─ #\-))
+		#\Newline))
   (:documentation
    "Format the meta-data of each event on multiple lines, but do not
 format event payloads."))
