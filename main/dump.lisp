@@ -23,7 +23,7 @@
 (rsb:enable-id-random-state-reseed)
 
 ;; Try to reload Spread library
-(network.spread::enable-reload-spread-library :if-fails #'warn)
+#-win32 (network.spread::enable-reload-spread-library :if-fails #'warn)
 
 (com.dvlsoft.clon:dump "tools" rsb.tools.main:main
 		       :compression :best)
