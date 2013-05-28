@@ -69,4 +69,24 @@ Timestamps
 Meta-Data
   Fez: whoop
 "
-	       (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))
+	       (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
+
+    `(()
+      (,(let ((event (make-event "/foo/bar/baz" 1)))
+	  (setf (timestamp event :foo) (local-time:now))
+	  event))
+      ,(format nil "~80,,,VA
+Event
+  Scope          : /foo/bar/baz/
+  Id             : N/A
+  Sequence-Number: N/A
+  Origin         : N/A
+  Method         : N/A
+Timestamps
+  Create : .*
+  Send   : N/A
+  Receive: N/A
+  Deliver: N/A
+  \\*Foo   : .*
+"
+				 (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))

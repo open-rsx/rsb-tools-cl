@@ -87,7 +87,9 @@ format event payloads."))
 			    (set-difference (timestamp-keys event)
 					    *framework-timestamps*))))
 	  (format-aligned-items
-	   stream keys (map 'list (curry #'timestamp event) keys)))))
+	   stream
+	   (mapcar #'timestamp-name keys)
+	   (mapcar (curry #'timestamp event) keys)))))
 
     ;; Meta-data.
     (when (and user-items? meta-data (> max-lines 10))

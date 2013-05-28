@@ -1,6 +1,6 @@
 ;;; util.lisp --- Utility functions for event formatting.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -35,6 +35,12 @@
 	     (type (integer 0 999999999) nsecs))
     (+ (* secs 1000000000) nsecs)))
 
+(defun timestamp-name (name)
+  "For non-framework timestamps return \"*NAME\"."
+  (if (framework-timestamp? name)
+      name
+      (concatenate 'string "*" (string name))))
+
 
 ;;; Predicates
 ;;
@@ -50,6 +56,10 @@
 (defun error-event? (event)
   "Return non-nil if EVENT is a reply indicating an error."
   (meta-data event :|rsb:error?|))
+
+(defun framework-timestamp? (name)
+  "Return non-nil if NAME names a framework timestamp."
+  (member name *framework-timestamps*))
 
 
 ;;; Formatting functions
