@@ -96,6 +96,7 @@ RSB-related systems."
 		:cl-interpol
 
 		(:version :cl-rsb #.(version/string :revision? nil)))
+  :encoding    :utf-8
   :components  ((:module     "formatting-early"
 		 :pathname   "formatting"
 		 :serial     t
@@ -182,6 +183,7 @@ formatting style, the columns of which are quantities defined in the
 cl-rsb-stats system."
   :requires    (cl-rsb-formatting
 		cl-rsb-stats)
+  :encoding    :utf-8
   :components  ((:module     "formatting"
 		 :components ((:file       "timeline")
 			      (:file       "quantity-column")
@@ -206,6 +208,7 @@ cl-rsb-stats system."
 handling of commandline options."
   :requires    (cl-rsb-formatting
 		cl-rsb-common)
+  :encoding    :utf-8
   :components  ((:file       "help"
 		 :pathname   "formatting/help")))
 
@@ -225,6 +228,7 @@ system."
 		(:version :lift              "1.7.1")
 
 		(:version :cl-rsb-formatting #.(version/string)))
+  :encoding    :utf-8
   :components  ((:module     "formatting-early"
 		 :pathname   "test/formatting"
 		 :serial     t

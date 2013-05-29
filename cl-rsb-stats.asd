@@ -96,6 +96,7 @@ RSB-related systems."
 		:local-time
 
 		(:version :cl-rsb #.(version/string :revision? nil)))
+  :encoding    :utf-8
   :components  ((:module     "stats"
 		 :serial     t
 		 :components ((:file       "package")
@@ -121,6 +122,7 @@ system."
   :depends-on  ((:version :lift         "1.7.1")
 
 		(:version :cl-rsb-stats #.(version/string)))
+  :encoding    :utf-8
   :components  ((:module     "stats"
 		 :pathname   "test/stats"
 		 :serial     t
