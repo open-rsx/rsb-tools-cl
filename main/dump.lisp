@@ -22,8 +22,9 @@
 ;; Reseed RSB id generator
 (rsb:enable-id-random-state-reseed)
 
-;; Try to reload Spread library
-#-win32 (network.spread::enable-reload-spread-library :if-fails #'warn)
+;; As a default, try reloading foreign libraries on startup. If
+;; necessary, users can change this by "redumping".
+(rsb.tools.main:make-dynamic)
 
 (com.dvlsoft.clon:dump "tools" rsb.tools.main:main
 		       :compression :best)
