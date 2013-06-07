@@ -23,9 +23,17 @@ set(PRERM_SCRIPT         "${CMAKE_CURRENT_BINARY_DIR}/prerm")
 file(WRITE "${POSTINST_SCRIPT}" "#!/bin/sh\n\nset -e\n")
 file(WRITE "${PRERM_SCRIPT}"    "#!/bin/sh\n\nset -e\n")
 
-# Uncompress binary.
+# Uncompress binary. Create symbolic links.
 file(APPEND "${POSTINST_SCRIPT}"
-            "/usr/bin/${MAIN_BINARY_NAME} redump /usr/bin/${MAIN_BINARY_NAME}\n\n")
+            "(                                                      \\
+               cd /usr/bin                                          \\
+               && ./${MAIN_BINARY_NAME} redump                      \\
+             )\n\n
+             (                                                      \\
+               cd /usr/bin                                          \\
+               && ./${MAIN_BINARY_NAME}                             \\
+                    create-links ${BINARY_PREFIX} ${VERSION_SUFFIX} \\
+             )\n\n")
 
 # Update alternatives.
 foreach(TOOL ${TOOLS})
