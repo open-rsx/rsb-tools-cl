@@ -94,6 +94,19 @@ if(LISP_INIT_CODE)
     set(LISP_INIT "${LISP_INIT} --eval \"${LISP_INIT_CODE}\"")
 endif()
 
+function(add_silent_load SYSTEM)
+    set(LISP_INIT "${LISP_INIT} --eval \"(let* ((*standard-output* (make-broadcast-stream)) (*trace-output* *standard-output*)) (ql:quickload :${SYSTEM}))\"" PARENT_SCOPE)
+endfunction()
+
+option(WITH_ROS_TRANSPORT "Enable support for ROS transport." ON)
+if(WITH_ROS_TRANSPORT)
+    add_silent_load(rsb-ros)
+endif()
+option(WITH_YARP_TRANSPORT "Enable support for ROS transport." ON)
+if(WITH_YARP_TRANSPORT)
+    add_silent_load(rsb-yarp)
+endif()
+
 set(CL_SOURCE_REGISTRY       "(:source-registry (:tree \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\") :inherit-configuration)")
 set(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t (\\\"${FASL_CACHE_DIR}\\\" :implementation)) :ignore-inherited-configuration)")
 
