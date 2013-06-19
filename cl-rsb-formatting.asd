@@ -147,9 +147,6 @@ RSB-related systems."
 			       :depends-on ("event-style-detailed"))
 
 			      (:file       "rst-forward")
-			      (:file       "payload-image-png"
-			       :depends-on ("rst-forward"))
-
 			      (:file       "payload-audio"
 			       :depends-on ("rst-forward"))
 			      (:file       "payload-audio-wav"
@@ -225,9 +222,10 @@ handling of commandline options."
 system."
   :depends-on  (:cl-ppcre
 
-		(:version :lift              "1.7.1")
+		(:version :lift                  "1.7.1")
 
-		(:version :cl-rsb-formatting #.(version/string)))
+		(:version :cl-rsb-formatting     #.(version/string))
+		(:version :cl-rsb-formatting-png #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
 		 :pathname   "test/formatting"
