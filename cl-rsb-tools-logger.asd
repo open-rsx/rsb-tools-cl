@@ -96,10 +96,13 @@ exchanged on a given RSB bus or channel."
 
 		:com.dvlsoft.clon
 
-		(:version :cl-rsb            #.(version/string :revision? nil))
-		(:version :cl-rsb-common     #.(version/string))
-		(:version :cl-rsb-stats      #.(version/string))
-		(:version :cl-rsb-formatting #.(version/string)))
+		(:version :cl-rsb                        #.(version/string :revision? nil))
+
+		(:version :cl-rsb-common                 #.(version/string))
+		(:version :cl-rsb-stats                  #.(version/string))
+		(:version :cl-rsb-formatting             #.(version/string))
+		(:version :rsb-formatting-and-rsb-common #.(version/string))
+		(:version :rsb-formatting-and-rsb-stats  #.(version/string)))
   :components  ((:module     "logger"
 		 :components ((:file       "package")
 			      (:file       "help"

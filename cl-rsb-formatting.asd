@@ -167,50 +167,7 @@ RSB-related systems."
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
 
 
-;;; System connection with cl-rsb-stats
-;;
-
-(defsystem-connection :cl-rsb-formatting-and-cl-rsb-stats
-  :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
-  :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
-  :version     #.(version/string)
-  :license     "GPL3; see COPYING file for details."
-  :description "This system connection adds a column-based event
-formatting style, the columns of which are quantities defined in the
-cl-rsb-stats system."
-  :requires    (cl-rsb-formatting
-		cl-rsb-stats)
-  :encoding    :utf-8
-  :components  ((:module     "formatting"
-		 :components ((:file       "timeline")
-			      (:file       "quantity-column")
-
-			      (:file       "event-style-statistics"
-			       :depends-on ("quantity-column"))
-			      (:file       "event-style-monitor"
-			       :depends-on ("quantity-column"))
-			      (:file       "event-style-timeline"
-			       :depends-on ("event-style-monitor"))))))
-
-
-;;; System connection with cl-rsb-common
-;;
-
-(defsystem-connection :cl-rsb-formatting-and-cl-rsb-common
-  :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
-  :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
-  :version     #.(version/string)
-  :license     "GPL3; see COPYING file for details."
-  :description "This system connection adds formatting-related
-handling of commandline options."
-  :requires    (cl-rsb-formatting
-		cl-rsb-common)
-  :encoding    :utf-8
-  :components  ((:file       "help"
-		 :pathname   "formatting/help")))
-
-
-;;; System definition for test of the cl-rsb-formatting system
+;;; System definition for tests of the cl-rsb-formatting system
 ;;
 
 (defsystem :cl-rsb-formatting-test

@@ -97,9 +97,11 @@ via RSB."
 		:cl-ppcre
 		:com.dvlsoft.clon
 
-		(:version :cl-rsb            #.(version/string :revision? nil))
-		(:version :cl-rsb-common     #.(version/string))
-		(:version :cl-rsb-formatting #.(version/string)))
+		(:version :cl-rsb                        #.(version/string :revision? nil))
+
+		(:version :cl-rsb-common                 #.(version/string))
+		(:version :cl-rsb-formatting             #.(version/string))
+		(:version :rsb-formatting-and-rsb-common #.(version/string)))
   :components  ((:module     "call"
 		 :components ((:file       "package")
 
