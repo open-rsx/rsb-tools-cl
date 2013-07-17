@@ -1,6 +1,6 @@
 ;;; event-style-monitor.lisp --- Style that aggregates events in sub-styles.
 ;;
-;; Copyright (C) 2012 Jan Moringen
+;; Copyright (C) 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -72,7 +72,7 @@ display information for events within each group."))
 			 (style  basic-monitor-style)
 			 (stream t)
 			 &key &allow-other-keys)
-  (iter (for sub-style each (style-sub-styles/sorted style))
+  (iter (for sub-style in-sequence (style-sub-styles/sorted style))
 	(format-event event sub-style stream)
 	(terpri stream)))
 

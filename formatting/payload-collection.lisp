@@ -1,6 +1,6 @@
 ;;; payload-collections.lisp --- Format event collections.
 ;;
-;; Copyright (C) 2012 Jan Moringen
+;; Copyright (C) 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -63,7 +63,7 @@ of events.")
     (with-indented-section (stream (format nil "Scope ~S"
 					   (sb-ext:octets-to-string scope))
 				   :final-fresh-line? nil)
-      (iter (for notification each notifications)
+      (iter (for notification in-sequence notifications)
 	    (unless (first-iteration-p)
 	      (fresh-line stream))
 	    (format-payload notification style stream)))))
@@ -76,7 +76,7 @@ of events.")
     (with-indented-section (stream (format nil "Events by Scope (~D Scope~:P)"
 					   (length sets))
 				   :final-fresh-line? nil)
-      (iter (for set each sets)
+      (iter (for set in-sequence sets)
 	    (unless (first-iteration-p)
 	      (fresh-line stream))
 	    (format-payload set style stream)))))

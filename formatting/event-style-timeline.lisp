@@ -1,6 +1,6 @@
 ;;; event-style-timeline.lisp --- Event indicators on a simple timeline.
 ;;
-;; Copyright (C) 2012 Jan Moringen
+;; Copyright (C) 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -50,7 +50,7 @@ formatting style classes."))
        `(progn
 	  (defmethod (setf ,name) ((new-value t)
 				   (style     columns-mixin) )
-	    (iter (for column each (style-columns style))
+	    (iter (for column in-sequence (style-columns style))
 		  (when (compute-applicable-methods
 			 (fdefinition '(setf ,name))
 			 (list new-value column))
@@ -58,7 +58,7 @@ formatting style classes."))
 
 	  (defmethod (setf ,name) :after ((new-value t)
 					  (style     basic-timeline-style))
-		     (iter (for (_ . sub-style) each (style-sub-styles style))
+		     (iter (for (_ . sub-style) in-sequence (style-sub-styles style))
 			   (setf (bounds sub-style) new-value))))))
   (define-delegating-method lower-bound)
   (define-delegating-method upper-bound)
