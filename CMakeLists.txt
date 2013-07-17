@@ -82,6 +82,11 @@ set(FASL_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/fasl-cache"
 # Configure Lisp environment.
 set(LISP_RUNTIME_OPTIONS "" CACHE STRING
     "Runtime options to pass to the Lisp system.")
+set(LISP_SOURCE_REGISTRY_ENTRIES "" CACHE STRING
+    "Additional entries to place on ASDF source registry.")
+set(LISP_FASL_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/fasl-cache"
+    CACHE PATH
+    "Directory in which the fasl cache should be created.")
 set(LISP_INIT_FILE       "" CACHE FILEPATH
     "File to load as Lisp init file.")
 set(LISP_INIT_CODE       "" CACHE STRING
@@ -115,8 +120,13 @@ if(WITH_PNG_SUPPORT)
     add_silent_load(cl-rsb-formatting-png)
 endif()
 
-set(CL_SOURCE_REGISTRY       "(:source-registry (:tree \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\") :inherit-configuration)")
-set(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t (\\\"${FASL_CACHE_DIR}\\\" :implementation)) :ignore-inherited-configuration)")
+set(CL_SOURCE_REGISTRY       "(:source-registry
+                                (:tree \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\")
+                                ${LISP_SOURCE_REGISTRY_ENTRIES}
+                                :inherit-configuration)")
+set(ASDF_OUTPUT_TRANSLATIONS "(:output-translations
+                                (t (\\\"${LISP_FASL_CACHE_DIR}\\\" :implementation))
+                                :ignore-inherited-configuration)")
 
 # Execute Lisp processes, potentially with output redirection.
 function(configure_lisp NAME CODE)
