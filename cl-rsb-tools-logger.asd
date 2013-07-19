@@ -103,6 +103,7 @@ exchanged on a given RSB bus or channel."
 		(:version :cl-rsb-formatting             #.(version/string))
 		(:version :rsb-formatting-and-rsb-common #.(version/string))
 		(:version :rsb-formatting-and-rsb-stats  #.(version/string)))
+  :encoding    :utf-8
   :components  ((:module     "logger"
 		 :components ((:file       "package")
 			      (:file       "help"

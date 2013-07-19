@@ -102,6 +102,7 @@ via RSB."
 		(:version :cl-rsb-common                 #.(version/string))
 		(:version :cl-rsb-formatting             #.(version/string))
 		(:version :rsb-formatting-and-rsb-common #.(version/string)))
+  :encoding    :utf-8
   :components  ((:module     "call"
 		 :components ((:file       "package")
 

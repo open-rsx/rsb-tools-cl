@@ -97,6 +97,7 @@ RSB-related systems."
 		:cl-protobuf
 
 		(:version :cl-rsb #.(version/string :revision? nil)))
+  :encoding    :utf-8
   :components  ((:module     "common"
 		 :components ((:file       "package")
 
@@ -146,6 +147,7 @@ system."
 		(:version :lift          "1.7.1")
 
 		(:version :cl-rsb-common #.(version/string)))
+  :encoding    :utf-8
   :components  ((:module     "common"
 		 :pathname   "test/common"
 		 :components ((:file       "package")

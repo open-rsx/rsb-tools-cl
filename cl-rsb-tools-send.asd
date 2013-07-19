@@ -99,6 +99,7 @@ via RSB."
 
 		(:version :cl-rsb        #.(version/string :revision? nil))
 		(:version :cl-rsb-common #.(version/string)))
+  :encoding    :utf-8
   :components  ((:module     "send"
 		 :components ((:file       "package")
 

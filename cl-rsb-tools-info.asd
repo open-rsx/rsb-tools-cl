@@ -98,6 +98,7 @@ via RSB."
 		(:version :cl-rsb            #.(version/string :revision? nil))
 		(:version :cl-rsb-common     #.(version/string))
 		(:version :cl-rsb-formatting #.(version/string)))
+  :encoding    :utf-8
   :components  ((:module     "info"
 		 :components ((:file       "package")
 
