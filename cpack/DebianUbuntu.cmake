@@ -25,28 +25,28 @@ file(WRITE "${PRERM_SCRIPT}"    "#!/bin/sh\n\nset -e\n")
 
 # Uncompress binary. Create symbolic links.
 file(APPEND "${POSTINST_SCRIPT}"
-            "(                                                      \\
-               cd /usr/bin                                          \\
-               && ./${MAIN_BINARY_NAME} redump                      \\
+            "(                                                     \\
+               cd /usr/bin                                         \\
+               && ./${MAIN_BINARY_NAME} redump                     \\
              )\n\n
-             (                                                      \\
-               cd /usr/bin                                          \\
-               && ./${MAIN_BINARY_NAME}                             \\
-                    create-links ${BINARY_PREFIX} ${VERSION_SUFFIX} \\
+             (                                                     \\
+               cd /usr/bin                                         \\
+               && ./${MAIN_BINARY_NAME}                            \\
+                    create-links ${BINARY_PREFIX} ${BINARY_SUFFIX} \\
              )\n\n")
 
 # Update alternatives.
 foreach(TOOL ${TOOLS})
     file(APPEND "${POSTINST_SCRIPT}"
-                "update-alternatives --install                       \\
-                   /usr/bin/${BINARY_PREFIX}${TOOL}                  \\
-                   ${BINARY_PREFIX}${TOOL}                           \\
-                   /usr/bin/${BINARY_PREFIX}${TOOL}${VERSION_SUFFIX} \\
+                "update-alternatives --install                      \\
+                   /usr/bin/${BINARY_PREFIX}${TOOL}                 \\
+                   ${BINARY_PREFIX}${TOOL}                          \\
+                   /usr/bin/${BINARY_PREFIX}${TOOL}${BINARY_SUFFIX} \\
                    ${PACKAGE_ALT_PRIORITY}\n\n")
     file(APPEND "${PRERM_SCRIPT}"
-                "update-alternatives --remove                            \\
-                   ${BINARY_PREFIX}${TOOL}                               \\
-                   /usr/bin/${BINARY_PREFIX}${TOOL}${VERSION_SUFFIX}\n\n")
+                "update-alternatives --remove                           \\
+                   ${BINARY_PREFIX}${TOOL}                              \\
+                   /usr/bin/${BINARY_PREFIX}${TOOL}${BINARY_SUFFIX}\n\n")
 endforeach()
 execute_process(COMMAND chmod 755 "${POSTINST_SCRIPT}" "${PRERM_SCRIPT}")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${POSTINST_SCRIPT};${PRERM_SCRIPT}")
