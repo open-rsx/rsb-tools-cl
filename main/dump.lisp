@@ -27,4 +27,5 @@
 (rsb.tools.main:make-dynamic)
 
 (com.dvlsoft.clon:dump "tools" rsb.tools.main:main
-		       :compression :best)
+		       #+sb-core-compression :compression
+		       #+sb-core-compression 9)
