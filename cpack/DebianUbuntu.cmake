@@ -15,6 +15,18 @@ set(CPACK_DEBIAN_PACKAGE_SECTION     "devel")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS     "libc6")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS    "libzmq1 (>= 2.1.9), spread (>= 4.0)")
 
+# Generate system links.
+set(COMMANDS "")
+if(CMAKE_VERSION VERSION_LESS "2.8.7")
+    set(PREFIX "\\\${CMAKE_INSTALL_PREFIX}")
+else()
+    set(PREFIX "\\\${CMAKE_INSTALL_PREFIX}/usr")
+endif()
+foreach(NAME ${ASD_FILES} )
+    set(COMMANDS "${COMMANDS} && ln -fs \\\"../source/${CMAKE_PROJECT_NAME}/${NAME}\\\" \\\"${PREFIX}/share/common-lisp/systems/${NAME}\\\"")
+endforeach()
+set(CPACK_INSTALL_COMMANDS "sh -c 'mkdir -p \\\"${PREFIX}/share/common-lisp/systems\\\" ${COMMANDS}'")
+
 # Generate postinst and prerm hooks
 set(PACKAGE_ALT_PRIORITY "100")
 
@@ -35,6 +47,15 @@ file(APPEND "${POSTINST_SCRIPT}"
                     create-links ${BINARY_PREFIX} ${BINARY_SUFFIX} \\
              )\n\n")
 
+foreach(ASD_FILE ${ASD_FILES})
+    string(REGEX REPLACE "\\.asd$" "" SYSTEM ${ASD_FILE})
+    file(APPEND "${POSTINST_SCRIPT}"
+                "if [ \"$1\" = \"configure\" ] &&                           \\
+                      which register-common-lisp-source > /dev/null; then\n \\
+                   register-common-lisp-source \"${SYSTEM}\"\n              \\
+                 fi\n\n")
+endforeach()
+
 # Update alternatives.
 foreach(TOOL ${TOOLS})
     file(APPEND "${POSTINST_SCRIPT}"
@@ -48,6 +69,19 @@ foreach(TOOL ${TOOLS})
                    ${BINARY_PREFIX}${TOOL}                              \\
                    /usr/bin/${BINARY_PREFIX}${TOOL}${BINARY_SUFFIX}\n\n")
 endforeach()
+
+foreach(ASD_FILE ${ASD_FILES})
+    string(REGEX REPLACE "\\.asd$" "" SYSTEM ${ASD_FILE})
+    file(APPEND "${PRERM_SCRIPT}"
+                "if [ \"$1\" = \"remove\" ]                                   \\
+                      || [ \"$1\" = \"upgrade\" ]                             \\
+                      || [ \"$1\" = \"deconfigure\" ]; then\n                 \\
+                   if which unregister-common-lisp-source > /dev/null; then\n \\
+                     unregister-common-lisp-source \"${SYSTEM}\"\n            \\
+                   fi\n                                                       \\
+                 fi\n\n")
+endforeach()
+
 execute_process(COMMAND chmod 755 "${POSTINST_SCRIPT}" "${PRERM_SCRIPT}")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${POSTINST_SCRIPT};${PRERM_SCRIPT}")
 

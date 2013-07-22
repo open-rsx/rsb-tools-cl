@@ -295,6 +295,25 @@ install(PROGRAMS    "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}"
         DESTINATION "bin"
         RENAME      "${MAIN_BINARY_NAME}")
 
+file(GLOB ASD_FILES
+     RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+     "*.asd")
+file(GLOB SEXP_FILES
+     RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+     "*.sexp")
+foreach(directory common formatting stats)
+    install(DIRECTORY      "${CMAKE_CURRENT_SOURCE_DIR}/${directory}"
+            DESTINATION    "share/common-lisp/source/${CMAKE_PROJECT_NAME}"
+            FILES_MATCHING PATTERN "*.lisp")
+endforeach()
+install(DIRECTORY      "${CMAKE_CURRENT_SOURCE_DIR}/test"
+        DESTINATION    "share/common-lisp/source/${CMAKE_PROJECT_NAME}"
+        FILES_MATCHING PATTERN "*.lisp")
+install(DIRECTORY
+        DESTINATION "share/common-lisp/source/${CMAKE_PROJECT_NAME}")
+install(FILES       ${ASD_FILES} ${SEXP_FILES}
+        DESTINATION "share/common-lisp/source/${CMAKE_PROJECT_NAME}/")
+
 # Packaging
 set(PACKAGE_BASE_NAME           "${CMAKE_PROJECT_NAME}-${BINARY_SUFFIX}")
 set(CPACK_PACKAGE_VERSION_MAJOR ${RSB_TOOLS_VERSION_MAJOR})
