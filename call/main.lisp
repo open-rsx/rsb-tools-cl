@@ -210,8 +210,7 @@
                 no-wait.~@:>"
                timeout))
 
-      (log1 :info "Using URI ~S method ~S arg ~A"
-	    server-uri method arg)
+      (log:info "~@<Using URI ~S method ~S arg ~A~@:>" server-uri method arg)
       (with-interactive-interrupt-exit ()
         (with-error-policy (error-policy)
           (with-remote-server (server server-uri)

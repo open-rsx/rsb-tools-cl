@@ -30,7 +30,7 @@
             :description
             "Stream to information messages should be sent.")
     (enum   :long-name     "log-level"
-            :enum          '(:off :trace :info :warn :error)
+            :enum          '(:off :trace :debug :info :warn :error :fatal)
             :default-value :warn
             :argument-name "LEVEL"
             :description
@@ -160,8 +160,7 @@ TRANSFORM is applied to all option values."
 
   ;; Process logging-related options.
   (let ((level (getopt :long-name "log-level")))
-    (unless (eq level :off)
-      (setf (log-level) level)))
+    (setf (log-level) level))
 
   ;; Process --trace options.
   (let ((trace-specs

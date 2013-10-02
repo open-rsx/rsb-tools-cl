@@ -179,8 +179,7 @@
            ((event-spec &optional (destination "/")) (remainder))
            (payload (parse-event-spec event-spec)))
 
-      (log1 :info "Using URI ~S payload ~A"
-	    destination payload)
+      (log:info "~@<Using URI ~S payload ~A~@:>" destination payload)
       (with-interactive-interrupt-exit ()
         (with-error-policy (error-policy)
           (with-informer (informer destination t)

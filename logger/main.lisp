@@ -80,7 +80,7 @@
                                   args))))
 
       (with-print-limits (*standard-output*)
-        (log1 :info "Using URI ~S" uri)
+        (log:info "~@<Using URI ~S~@:>" uri)
 
         (with-error-policy (error-policy)
           (with-interactive-interrupt-exit ()
@@ -92,7 +92,7 @@
               (hooks:add-to-hook (rsb:participant-error-hook reader)
                                  error-policy) ; TODO(jmoringe, 2012-08-10): support this in with-reader
               (setf (receiver-filters reader) filters)
-              (log1 :info "Created reader ~A" reader)
+              (log:info "~@<Created reader ~A~@:>" reader)
 
               (iter (for event next (receive reader :block? t))
                     (restart-case

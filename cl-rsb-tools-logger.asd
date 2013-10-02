@@ -76,6 +76,7 @@ exchanged on a given RSB bus or channel."
   :depends-on  (:alexandria
                 :let-plus
                 :iterate
+                (:version :log4cl                        "1.1.1")
 
                 :com.dvlsoft.clon
 

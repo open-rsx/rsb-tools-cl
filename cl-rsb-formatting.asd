@@ -77,6 +77,7 @@ RSB-related systems."
                 :let-plus
                 :more-conditions
                 :cl-interpol
+                (:version :log4cl "1.1.1")
 
                 (:version :cl-rsb #.(version/string :revision? nil)))
   :encoding    :utf-8

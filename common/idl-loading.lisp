@@ -48,7 +48,7 @@ combination SOURCE and KIND."
                      &key &allow-other-keys)
   "Load an IDL definition from the file SOURCE. The IDL kind is
 inferred form the file type of SOURCE."
-  (log1 :info "Processing IDL file ~S" source)
+  (log:info "~@<Processing IDL file ~S~@:>" source)
   (apply #'load-idl
          source (make-keyword (string-upcase
                                (pathname-type source)))
@@ -59,7 +59,7 @@ inferred form the file type of SOURCE."
                      &key &allow-other-keys)
   "Load IDL definitions from all files matching the wildcard pathname
 SOURCE."
-  (log1 :info "Processing IDL files matching ~S" source)
+  (log:info "~@<Processing IDL files matching ~S~@:>" source)
   (map 'list (lambda (file) (apply #'load-idl file :file args))
        (directory source)))
 
@@ -100,8 +100,8 @@ otherwise."
                            &key
                            (emit '(:deserializer :extractor :offset)))
   "Emit a data-holder class and deserializer code for DESCRIPTOR."
-  (log1 :info "Emitting data holder~@[ and ~(~{~A~^, ~}~)~] for ~A"
-        emit descriptor)
+  (log:info "~@<Emitting data holder~@[ and ~(~{~A~^, ~}~)~] for ~A~@:>"
+            emit descriptor)
   (prog1
       (pbb:emit descriptor :class)
     (map nil (curry #'pbb:emit descriptor) emit)))
@@ -113,7 +113,7 @@ otherwise."
                              &key
                              (purpose nil purpose-supplied?)
                              &allow-other-keys)
-          (log1 :info "Parsing data definition from ~A" source)
+          (log:info "~@<Parsing data definition from ~A~@:>" source)
           (apply #'process-descriptor
                  (apply #',func source (remove-from-plist args :purpose))
                  (when purpose-supplied?

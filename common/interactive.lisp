@@ -30,9 +30,10 @@ returns nil instead of entering the debugger."
                       signal
                       (lambda (signal info context)
                         (declare (ignore info context))
-                        (log1 :warn "Caught signal ~D during ~
-signal-triggered shutdown; don't do this; ignoring the signal"
-                              signal)))
+                        (log:warn "~@<Caught signal ~D during ~
+                                   signal-triggered shutdown; don't do ~
+                                   this; ignoring the signal~@:>"
+                                  signal)))
                      ;; If TARGET-THREAD is being interrupted by the
                      ;; signal, just abort. Otherwise interrupt
                      ;; TARGET-THREAD with `abort'.

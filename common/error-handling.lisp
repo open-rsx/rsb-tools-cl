@@ -24,18 +24,21 @@ established and a different warning if it is not.
 This function is intended to be used as toplevel error policy."
   (if-let ((restart (find-restart 'continue condition)))
     (progn
-      (log1 :warn "Error encountered; Recovering via restart~
-~2&~<| ~@;~S: ~A~:>~
-~2&. Further processing may yield partial or incorrect results.~@[ Error was:~
-~2&~<| ~@;~A~:>~
-~2&.~]"
-            (list (restart-name restart) restart)
-            (when condition (list condition)))
+      ;; TODO format string
+      (log:warn "Error encountered; Recovering via restart ~
+                 ~2&~<| ~@;~S: ~A~:>~
+                 ~2&. Further processing may yield partial or ~
+                 incorrect results.~@[ Error was:~
+                 ~2&~<| ~@;~A~:>~
+                 ~2&.~]"
+                (list (restart-name restart) restart)
+                (when condition (list condition)))
       (invoke-restart restart))
-    (log1 :warn "No ~S restart; Cannot recover~@[. Error:~
-~2&~<| ~@;~A~:>~
-~2&.~]"
-          'continue (when condition (list condition)))))
+    ;; TODO format string
+    (log:warn "No ~S restart; Cannot recover~@[. Error:~
+               ~2&~<| ~@;~A~:>~
+               ~2&.~]"
+              'continue (when condition (list condition)))))
 
 ;;; Toplevel utility functions and macros
 
@@ -59,20 +62,21 @@ of (bt:current-thread) in the thread calling this function."
         ;; transferred to TARGET-THREAD. We establish restarts for
         ;; that.
         ((not (eq thread target-thread))
-         (log1 :info "Applying error policy ~A in background thread ~A"
-               policy thread)
+         (log:info "~@<Applying error policy ~A in background thread ~A~@:>"
+                   policy thread)
          (restart-case
              (funcall policy condition)
            (abort (&optional condition)
              (declare (ignore condition))
              (bt:interrupt-thread target-thread #'abort))
            (abort/signal (condition)
-             (log1 :warn "Error policy ~A aborted with condition in ~
-background thread ~A. Aborting with condition in main thread. ~
-Condition was:~
-~2&~<| ~@;~A~:>~
-~2&."
-                   policy thread (list condition))
+             ;; TODO format string
+             (log:warn "Error policy ~A aborted with condition in ~
+                        background thread ~A. Aborting with condition ~
+                        in main thread. Condition was:~
+                        ~2&~<| ~@;~A~:>~
+                        ~2&."
+                       policy thread (list condition))
 
              (bt:interrupt-thread
               target-thread
@@ -80,7 +84,7 @@ Condition was:~
                 (invoke-restart 'abort/signal condition)))))
          ;; IF POLICY did not handle CONDITION or used one of our
          ;; restarts, we still have to abort the background thread.
-         (log1 :info "Aborting background thread ~A" thread)
+         (log:info "~@<Aborting background thread ~A~@:>" thread)
          (abort))
 
         ;; When executing in TARGET-THREAD, CONDITION cannot be
@@ -89,8 +93,8 @@ Condition was:~
         ;; When POLICY is `abort/signal', we can just unwind,
         ;; preserving the backtrace.
         ((eq policy #'abort/signal)
-         (log1 :info "Error policy ~S in thread ~A; unwinding normally."
-               policy thread))
+         (log:info "~@<Error policy ~S in thread ~A; unwinding normally~@:>"
+                   policy thread))
 
         ;; Otherwise, we give POLICY a chance to handle CONDITION.
         (t

@@ -104,7 +104,7 @@ By default, the following bindings are available:
 (defmethod compile-code ((style    style-programmable)
                          (code     t)
                          (bindings list))
-  (log1 :info style "Compiling code ~S" code)
+  (log:info "~@<~A compiles code ~S~@:>" style code)
   ;; Try to compile CODE collecting and subsequently muffling all
   ;; errors and warnings since we do not want to leak these to the
   ;; caller.
@@ -127,7 +127,7 @@ By default, the following bindings are available:
             (handler-bind
                 (((or style-warning #+sbcl sb-ext:compiler-note)
                    (lambda (condition)
-                     (log1 :warn "Compiler said: ~A" condition)
+                     (log:warn "~@<Compiler said: ~A~@:>" condition)
                      (muffle-warning)))
                  ((or error warning)
                    (lambda (condition)
@@ -143,7 +143,7 @@ By default, the following bindings are available:
                          "~@<Failed to compile.~@[ Compiler said: ~
                           ~:{~&+_~@<~@;~A~:>~}~]~@:>"
                          (mapcar #'list conditions)))
-function))
+    function))
 
 (defmethod format-event ((event  event)
                          (style  style-programmable)

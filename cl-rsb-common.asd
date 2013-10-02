@@ -74,6 +74,7 @@ See `version/list' for details on keyword parameters."
   :description "This system provides some common functions for
 RSB-related systems."
   :depends-on  (:let-plus
+                (:version :log4cl "1.1.1")
 
                 :com.dvlsoft.clon
 
