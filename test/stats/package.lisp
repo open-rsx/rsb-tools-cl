@@ -42,20 +42,20 @@ EXPECTED-OUTPUT."
        (progn ,@cases)
 
      (if (eq expected 'error)
-	 (ensure-condition 'error
-	   (apply #'make-instance ',class args))
-	 (let* ((instance (apply #'make-instance ',class args))
-		(output   (progn
-			    (reset! instance)
-			    ;; Wait 1 ms to the sake of time-based
-			    ;; quantities.
-			    (sleep .001)
-			    (mapc (curry #'update! instance) events)
-			    (with-output-to-string (stream)
-			      (format-value instance stream)))))
-	   (ensure-same expected output
-			:test      #'ppcre:scan
-			:report    "~@<The quantity ~A, when ~:[not ~
+         (ensure-condition 'error
+           (apply #'make-instance ',class args))
+         (let* ((instance (apply #'make-instance ',class args))
+                (output   (progn
+                            (reset! instance)
+                            ;; Wait 1 ms to the sake of time-based
+                            ;; quantities.
+                            (sleep .001)
+                            (mapc (curry #'update! instance) events)
+                            (with-output-to-string (stream)
+                              (format-value instance stream)))))
+           (ensure-same expected output
+                        :test      #'ppcre:scan
+                        :report    "~@<The quantity ~A, when ~:[not ~
 updated with any data~;~:*updated with data ~{~S~^, ~}~], produced the ~
 output ~S, not ~S.~@:>"
-			:arguments (instance events output expected))))))
+                        :arguments (instance events output expected))))))

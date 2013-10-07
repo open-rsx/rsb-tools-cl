@@ -13,7 +13,7 @@
 
 (addtest (delegating-mixin-root
           :documentation
-	  "Test method on `format-event' for `delegating-mixin' mixin
+          "Test method on `format-event' for `delegating-mixin' mixin
 class.")
   format-event
 
@@ -23,20 +23,20 @@ class.")
 
     ;; Unconditionally dispatch to a single sub-style
     `((:sub-styles ((,(constantly t) . ,(make-instance 'mock-column
-						       :width 8))))
+                                                       :width 8))))
       ("foo" "bar")
       "     foo     bar")
 
     ;; No matching sub-style is not an error
     `((:sub-styles ((,#'stringp . ,(make-instance 'mock-column
-						  :width 4))))
+                                                  :width 4))))
       ("foo" 5 t)
       " foo")
 
     ;; Two sub-styles
     `((:sub-styles ((,#'oddp  . ,(make-instance 'mock-column
-						:width 8 :alignment :left))
-		    (,#'evenp . ,(make-instance 'mock-column
-						:width 8 :alignment :right))))
+                                                :width 8 :alignment :left))
+                    (,#'evenp . ,(make-instance 'mock-column
+                                                :width 8 :alignment :right))))
       (1 2 3 4)
       "1              23              4")))

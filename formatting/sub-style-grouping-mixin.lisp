@@ -8,19 +8,19 @@
 
 (defclass sub-style-grouping-mixin (delegating-mixin)
   ((key  :initarg  :key
-	 :type     function
-	 :accessor style-key
-	 :initform #'identity
-	 :documentation
-	 "Stores a function that is called on events to derive a key
+         :type     function
+         :accessor style-key
+         :initform #'identity
+         :documentation
+         "Stores a function that is called on events to derive a key
 objects which identify the sub-style that should be used for the
 respective events.")
    (test :initarg  :test
-	 :type     function
-	 :accessor style-test
-	 :initform #'eql
-	 :documentation
-	 "Stores a function which is used to compare keys when
+         :type     function
+         :accessor style-test
+         :initform #'eql
+         :documentation
+         "Stores a function which is used to compare keys when
 searching for the sub-style that should be used for a particular
 events."))
   (:documentation
@@ -35,19 +35,19 @@ whenever the key extracted from an event does not match the key of any
 previously created sub-styles."))
 
 (defmethod sub-style-for ((style sub-style-grouping-mixin)
-			  (event t))
+                          (event t))
   "If there is a sub-style suitable for handling EVENT, dispatch to
 it. Otherwise create a new sub-style and then dispatch to it.  "
   (or (call-next-method)
       (let ((key (style-key style)))
-	(push (make-sub-style-entry style (funcall key event))
-	      (style-sub-styles style))
-	(call-next-method))))
+        (push (make-sub-style-entry style (funcall key event))
+              (style-sub-styles style))
+        (call-next-method))))
 
 (defmethod format-event :around ((event  t)
-				 (style  sub-style-grouping-mixin)
-				 (stream t)
-				 &key &allow-other-keys)
+                                 (style  sub-style-grouping-mixin)
+                                 (stream t)
+                                 &key &allow-other-keys)
   (if (eq event :trigger)
       (call-next-method)
       (delegate event style stream)))

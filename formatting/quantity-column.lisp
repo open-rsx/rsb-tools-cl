@@ -11,8 +11,8 @@
 
 (defclass quantity-column (width-mixin)
   ((quantity :accessor column-quantity
-	     :documentation
-	     "Stores the underlying quantity instances printed by this
+             :documentation
+             "Stores the underlying quantity instances printed by this
 column."))
   (:default-initargs
    :quantity (missing-required-initarg 'quantity-column :quantity))
@@ -23,7 +23,7 @@ provide a name and the printed value."))
 (defmethod shared-initialize :after ((instance   quantity-column)
                                      (slot-names t)
                                      &key
-				     quantity)
+                                     quantity)
   (when quantity
     (setf (column-quantity instance) (make-quantity quantity))))
 
@@ -34,27 +34,27 @@ provide a name and the printed value."))
   t)
 
 (defmethod format-header ((column quantity-column)
-			  (stream t))
+                          (stream t))
   (format stream "~@(~A~)~@[ [~A]~]" (column-name column) nil))
 
 (defmethod format-event :around ((event  t)
-				 (style  quantity-column)
-				 (stream t)
-				 &key &allow-other-keys)
+                                 (style  quantity-column)
+                                 (stream t)
+                                 &key &allow-other-keys)
   (if (eq event :trigger)
       (call-next-method)
       (rsb.stats:update! (column-quantity style) event)))
 
 (defmethod format-event ((event  t)
-			 (style  quantity-column)
-			 (stream t)
-			 &key &allow-other-keys)
+                         (style  quantity-column)
+                         (stream t)
+                         &key &allow-other-keys)
   (error "Should not get called"))
 
 (defmethod format-event ((event  (eql :trigger))
-			 (style  quantity-column)
-			 (stream t)
-			 &key &allow-other-keys)
+                         (style  quantity-column)
+                         (stream t)
+                         &key &allow-other-keys)
   (let+ (((&accessors-r/o (quantity column-quantity)) style))
     (rsb.stats:format-value quantity stream)
     (rsb.stats:reset! quantity)))
@@ -64,9 +64,7 @@ provide a name and the printed value."))
     (format stream "~A = " (column-name object))
     (rsb.stats:format-value (column-quantity object) stream)))
 
-
 ;;; Utility functions
-;;
 
 (defun make-quantity (spec)
   "Make and return a quantity instance according to SPEC. SPEC can

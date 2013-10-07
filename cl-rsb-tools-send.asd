@@ -15,9 +15,7 @@
 
 (cl:in-package :cl-rsb-tools-send-system)
 
-
 ;;; Version stuff
-;;
 
 (defparameter +version-major+ 0
   "Major component of version number.")
@@ -39,8 +37,8 @@
   (when stream (close stream)))
 
 (defun version/list (&key
-		     (revision? t)
-		     commit?)
+                     (revision? t)
+                     commit?)
   "Return a version of the form (MAJOR MINOR [REVISION [COMMIT]])
 where REVISION and COMMIT are optional.
 
@@ -50,14 +48,14 @@ behavior is to include REVISION.
 COMMIT? controls whether COMMIT should be included. Default behavior
 is to not include COMMIT."
   (append (list +version-major+ +version-minor+)
-	  (when revision? (list +version-revision+))
-	  (when (and commit? +version-commit+)
-	    (list +version-commit+))))
+          (when revision? (list +version-revision+))
+          (when (and commit? +version-commit+)
+            (list +version-commit+))))
 
 (defun version/string (&rest args
-		       &key
-		       revision?
-		       commit?)
+                       &key
+                       revision?
+                       commit?)
   "Return a version string of the form
 \"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
 optional.
@@ -66,9 +64,7 @@ See `version/list' for details on keyword parameters."
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
-
 ;;; System definition
-;;
 
 (defsystem :cl-rsb-tools-send
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -78,17 +74,17 @@ See `version/list' for details on keyword parameters."
   :description "A simple utility for sending remote methods exposed
 via RSB."
   :depends-on  (:alexandria
-		:let-plus
-		:iterate
+                :let-plus
+                :iterate
 
-		:cl-ppcre
-		:com.dvlsoft.clon
+                :cl-ppcre
+                :com.dvlsoft.clon
 
-		(:version :cl-rsb        #.(version/string :revision? nil))
-		(:version :cl-rsb-common #.(version/string)))
+                (:version :cl-rsb        #.(version/string :revision? nil))
+                (:version :cl-rsb-common #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "send"
-		 :components ((:file       "package")
+                 :components ((:file       "package")
 
-			      (:file       "main"
-			       :depends-on ("package"))))))
+                              (:file       "main"
+                               :depends-on ("package"))))))

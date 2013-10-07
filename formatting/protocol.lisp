@@ -6,14 +6,12 @@
 
 (cl:in-package :rsb.formatting)
 
-
 ;;; Event formatting protocol
-;;
 
 (defgeneric format-event (event style stream
-			  &key
-			  max-lines
-			  max-columns)
+                          &key
+                          max-lines
+                          max-columns)
   (:documentation
    "Format EVENT onto STREAM using a style designated by STYLE.
 MAX-LINES controls specifies the maximum number of lines the produced
@@ -22,9 +20,9 @@ MAX-COLUMNS limits the number of columns individual output lines are
 allowed to take up."))
 
 (defgeneric format-payload (data style stream
-			    &key
-			    max-lines
-			    max-columns)
+                            &key
+                            max-lines
+                            max-columns)
   (:documentation
    "Format the event payload DATA onto STREAM using a formatting style
 designated by STYLE.
@@ -33,34 +31,26 @@ output is allowed to take up.
 MAX-COLUMNS limits the number of columns individual output lines are
 allowed to take up."))
 
-
 ;;; Formatting style class family
-;;
 
 (dynamic-classes:define-findable-class-family style
     "This class family consists of event formatting style
 classes. Each class implements a particular style of formatting
 received events onto a given stream by specializing `format-event'.")
 
-
 ;;; Collecting protocol
-;;
 
 (defgeneric collects? (thing)
   (:documentation
    "Return non-nil if THING collects data from events and only
 produces output for explicit trigger events."))
 
-
-;;; Default behavior
-;;
+;; Default behavior
 
 (defmethod collects? ((thing t))
   nil)
 
-
 ;;; Delegation protocol
-;;
 
 (defgeneric sub-style-for (style event)
   (:documentation
@@ -82,21 +72,17 @@ formatted, which decides whether the sub-style SUB-STYLE of STYLE is
 suitable for formatting the object. VALUE depends on how STYLE
 organizes its sub-styles. See `sub-style-for' and `delegate'."))
 
-
 ;;; Sub-style sorting protocol
-;;
 
 (defgeneric style-sub-styles/sorted (style
-				     &key
-				     predicate
-				     key)
+                                     &key
+                                     predicate
+                                     key)
   (:documentation
    "Return a list of style object which are sub-styles of STYLE,
 sorted according to PREDICATE and KEY."))
 
-
 ;;; Data consistency protocol
-;;
 
 (defgeneric descriptor-for-target (style target)
   (:documentation
@@ -135,9 +121,7 @@ the kind of output performed by STYLE. Return nil otherwise."))
    "Signal an error which indicates that DESCRIPTOR-1 and DESCRIPTOR-2
 are not compatible for the kind of output performed by STYLE."))
 
-
 ;;; Temporal bounds protocol
-;;
 
 (defgeneric lower-bound (thing)
   (:documentation
@@ -179,17 +163,13 @@ containing the temporal bounds of THING as `timestamp/unix/nsec'."))
    "Return the difference between the upper and lower temporal bound
 of THING in nanoseconds."))
 
-
 ;;; Header printing protocol
-;;
 
 (defgeneric format-header (thing target)
   (:documentation
    "Format a header for THING into TARGET."))
 
-
 ;;; Column protocol
-;;
 
 (defgeneric column-name (column)
   (:documentation
@@ -206,18 +186,14 @@ something. This can be nil for example the width of COLUMN has been
 set to zero or if COLUMN is actually a pseudo-column producing things
 like linebreaks."))
 
-
 ;;; Default behavior
-;;
 
 (defmethod column-produces-output? ((column t))
   "Default implementation assumes that COLUMN produces output if its
 width is positive."
   (plusp (column-width column)))
 
-
 ;;; Column class family
-;;
 
 (dynamic-classes:define-findable-class-family column
     "This class family consists of column classes, instances of which

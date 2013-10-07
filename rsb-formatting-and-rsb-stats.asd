@@ -8,9 +8,7 @@
 
 (cl:in-package #:cl-rsb-formatting-system)
 
-
 ;;; System definition
-;;
 
 (defsystem :rsb-formatting-and-rsb-stats
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -21,15 +19,15 @@
 style, the columns of which are quantities defined in the cl-rsb-stats
 system."
   :depends-on  ((:version :cl-rsb-formatting #.(version/string))
-		(:version :cl-rsb-stats      #.(version/string)))
+                (:version :cl-rsb-stats      #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "formatting"
-		 :components ((:file       "timeline")
-			      (:file       "quantity-column")
+                 :components ((:file       "timeline")
+                              (:file       "quantity-column")
 
-			      (:file       "event-style-statistics"
-			       :depends-on ("quantity-column"))
-			      (:file       "event-style-monitor"
-			       :depends-on ("quantity-column"))
-			      (:file       "event-style-timeline"
-			       :depends-on ("event-style-monitor"))))))
+                              (:file       "event-style-statistics"
+                               :depends-on ("quantity-column"))
+                              (:file       "event-style-monitor"
+                               :depends-on ("quantity-column"))
+                              (:file       "event-style-timeline"
+                               :depends-on ("event-style-monitor"))))))

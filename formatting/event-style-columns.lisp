@@ -10,7 +10,7 @@
   (find-class 'style-columns))
 
 (defclass style-columns (header-printing-mixin
-			 columns-mixin)
+                         columns-mixin)
   ()
   (:documentation
    "This formatting style prints configurable properties of received

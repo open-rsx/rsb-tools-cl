@@ -7,7 +7,7 @@
 (cl:in-package :rsb.formatting)
 
 (defun make-style-help-string (&key
-			       (show :default))
+                               (show :default))
   "Return a help string that explains how to specify a formatting
 style and its parameters."
   (with-output-to-string (stream)
@@ -29,7 +29,7 @@ explanation of the :columns argument\)
 
 ")
     (rsb.common:with-abbreviation
-	(stream '(:styles :columns :quantities) show)
+        (stream '(:styles :columns :quantities) show)
       (format stream "The following formatting styles are ~
 currently available:
 
@@ -37,14 +37,14 @@ currently available:
       (rsb.common:print-classes-help-string
        (style-classes) stream
        :initarg-blacklist '(:stream :pretty-state
-			    :quantities :count
-			    :sub-styles :test :key
-			    :sort-predicate :sort-key
-			    :code))
+                            :quantities :count
+                            :sub-styles :test :key
+                            :sort-predicate :sort-key
+                            :code))
 
       (format stream "~%~%")
       (rsb.common:with-abbreviation (stream :columns show)
-	(format stream "In column-based formatting styles, columns can ~
+        (format stream "In column-based formatting styles, columns can ~
 be selected and configured using the :columns argument and a syntax of ~
 the form
 
@@ -57,15 +57,15 @@ where
 The following columns are available:
 
 ")
-	(rsb.common:print-classes-help-string
-	 (column-classes) stream))
+        (rsb.common:print-classes-help-string
+         (column-classes) stream))
 
       (when-let* ((package (find-package :rsb.stats))
-		  (symbol  (find-symbol "QUANTITY-CLASSES" package))
-		  (classes (fdefinition symbol)))
-	(format stream "~%~%")
-	(rsb.common:with-abbreviation (stream :quantities show)
-	  (format stream "In the statistics style, statistical ~
+                  (symbol  (find-symbol "QUANTITY-CLASSES" package))
+                  (classes (fdefinition symbol)))
+        (format stream "~%~%")
+        (rsb.common:with-abbreviation (stream :quantities show)
+          (format stream "In the statistics style, statistical ~
 quantities are used in columns. These columns can be configured using ~
 the :columns argument and a syntax of the form
 
@@ -80,6 +80,6 @@ VALUE2 ...)
 The following quantities are available:
 
 ")
-	  (rsb.common:print-classes-help-string
-	   (funcall classes) stream
-	   :initarg-blacklist '(:extractor :reduce-by :start-time :values)))))))
+          (rsb.common:print-classes-help-string
+           (funcall classes) stream
+           :initarg-blacklist '(:extractor :reduce-by :start-time :values)))))))

@@ -13,7 +13,7 @@
 
 (addtest (style-meta-data-root
           :documentation
-	  "Test some simple cases of formatting events using methods
+          "Test some simple cases of formatting events using methods
 on `format-event' for `style-meta-data'.")
   smoke
 
@@ -37,7 +37,7 @@ Timestamps
   Receive: N/A
   Deliver: N/A
 "
-	       (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
+               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
 
     `(()
       (,(make-event "/foo/bar/baz" 1 :fez "whoop"))
@@ -56,12 +56,12 @@ Timestamps
 Meta-Data
   Fez: whoop
 "
-	       (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
+               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
 
     `(()
       (,(let ((event (make-event "/foo/bar/baz" 1)))
-	  (setf (timestamp event :foo) (local-time:now))
-	  event))
+          (setf (timestamp event :foo) (local-time:now))
+          event))
       ,(format nil "~80,,,VA
 Event
   Scope          : /foo/bar/baz/
@@ -76,4 +76,4 @@ Timestamps
   Deliver: N/A
   \\*Foo   : .*
 "
-				 (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))
+                                 (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))

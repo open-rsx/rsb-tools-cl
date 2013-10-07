@@ -6,9 +6,7 @@
 
 (cl:in-package :rsb.formatting)
 
-
 ;;; Time-related types
-;;
 
 (deftype timestamp/unix/nsec ()
   "Time in nanoseconds since UNIX epoch."
@@ -28,8 +26,8 @@ operators."
   '(or time-spec/variable
        real
        (cons time-spec/operator
-	     (cons (satisfies time-spec-p)
-		   (cons (satisfies time-spec-p) null)))))
+             (cons (satisfies time-spec-p)
+                   (cons (satisfies time-spec-p) null)))))
 
 (defun time-spec-p (thing)
   "Return non-nil, if THING is of type `time-spec'."
@@ -43,9 +41,7 @@ operators."
 where LOWER-BOUND and UPPER-BOUND are `time-spec's."
   '(cons time-spec (cons time-spec null)))
 
-
 ;;;
-;;
 
 (deftype rule-spec ()
   "A rule specification of the form (:RULE CHARACTER)."
@@ -59,17 +55,13 @@ where LOWER-BOUND and UPPER-BOUND are `time-spec's."
        (eql :clear)
        (cons (not keyword) list)))
 
-
 ;;; Periodic printing
-;;
 
 (deftype print-interval ()
   "Print interval specifications."
   '(or null positive-real))
 
-
 ;;; Image-related types.
-;;
 
 (deftype dimension-spec/short ()
   "Short specification of an image dimension."
@@ -88,9 +80,7 @@ where LOWER-BOUND and UPPER-BOUND are `time-spec's."
   '(or dimension-spec/short
        dimension-spec/full))
 
-
 ;;;
-;;
 
 (deftype template-designator ()
   "A thing that can be converted into a formatting template."

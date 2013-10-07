@@ -15,5 +15,5 @@
    "Ignore all events."))
 
 (defmethod format-event ((event t) (style style-discard) (stream t)
-			 &key &allow-other-keys)
+                         &key &allow-other-keys)
   (values))

@@ -6,9 +6,7 @@
 
 (cl:in-package :rsb.formatting.test)
 
-
 ;;; Test suite for `style-programmable' class
-;;
 
 (deftestsuite style-programmable-root (formatting-root)
   ()
@@ -17,39 +15,39 @@
 
 (addtest (style-programmable-root
           :documentation
-	  "Test constructing `style-programmable' instances.")
+          "Test constructing `style-programmable' instances.")
   construct
 
   (ensure-cases (args expected)
       '(;; Missing required initargs.
-	(()                           error)
-	((:bindings nil)              error)
+        (()                           error)
+        ((:bindings nil)              error)
 
-	;; Invalid initarg types.
-	((:bindings 5)                error)
+        ;; Invalid initarg types.
+        ((:bindings 5)                error)
 
-	;; Invalid initarg values.
-	((:code (no-such-variable))   error)
-	((:code (data) :bindings nil) error)
+        ;; Invalid initarg values.
+        ((:code (no-such-variable))   error)
+        ((:code (data) :bindings nil) error)
 
-	;; Produces a warning.
-	((:code ((no-such-function))) ((no-such-function)))
+        ;; Produces a warning.
+        ((:code ((no-such-function))) ((no-such-function)))
 
-	;; These are OK.
-	((:code ())                   ())
-	((:code (data))               (data))
-	((:code (skip-event))         (skip-event)))
+        ;; These are OK.
+        ((:code ())                   ())
+        ((:code (data))               (data))
+        ((:code (skip-event))         (skip-event)))
 
     (if (eq expected 'error)
-	(ensure-condition error
-	  (apply #'make-instance 'style-programmable args))
-	(let ((style (apply #'make-instance 'style-programmable
-			    args)))
-	  (ensure-same (style-code style) expected :test #'equal)))))
+        (ensure-condition error
+          (apply #'make-instance 'style-programmable args))
+        (let ((style (apply #'make-instance 'style-programmable
+                            args)))
+          (ensure-same (style-code style) expected :test #'equal)))))
 
 (addtest (style-programmable-root
           :documentation
-	  "Test some simple cases of formatting events using methods
+          "Test some simple cases of formatting events using methods
 on `format-event' for `style-programmable'.")
   smoke
 
@@ -60,9 +58,9 @@ on `format-event' for `style-programmable'.")
     `((:code ((princ data stream))) (,*simple-event*) "bar")
 
     `((:code ((princ scope stream)
-	      (princ " " stream)
-	      (princ data stream)
-	      (terpri stream)))
+              (princ " " stream)
+              (princ data stream)
+              (terpri stream)))
       ,*simple-events*
       "/foo/ bar
 /baz/ fez
@@ -73,9 +71,7 @@ on `format-event' for `style-programmable'.")
       (,*simple-event*)
       :error)))
 
-
 ;;; Test suite for `style-programmable/script' class
-;;
 
 (deftestsuite style-programmable/script-root (formatting-root)
   ()
@@ -85,53 +81,53 @@ class."))
 
 (addtest (style-programmable/script-root
           :documentation
-	  "Test constructing `style-programmable/script' instances.")
+          "Test constructing `style-programmable/script' instances.")
   construct
 
   (ensure-cases (args expected)
       `(;; Missing initargs.
-	(()                                error)
-	((:bindings nil)                   error)
+        (()                                error)
+        ((:bindings nil)                   error)
 
-	;; Invalid combination of initargs.
-	((:script "data" :code (data))     error)
+        ;; Invalid combination of initargs.
+        ((:script "data" :code (data))     error)
 
-	;; Invalid initarg types.
-	((:script 5)                       error)
-	((:bindings 5)                     error)
+        ;; Invalid initarg types.
+        ((:script 5)                       error)
+        ((:bindings 5)                     error)
 
-	;; Invalid initarg values.
-	((:script "reader:error")          format-code-error)
-	((:script "no-such-variable")      format-code-error)
-	((:script "data" :bindings nil)    format-code-error)
-	((:script #P"no-such-file-i-hope") format-code-error)
+        ;; Invalid initarg values.
+        ((:script "reader:error")          format-code-error)
+        ((:script "no-such-variable")      format-code-error)
+        ((:script "data" :bindings nil)    format-code-error)
+        ((:script #P"no-such-file-i-hope") format-code-error)
 
-	;; Produces warning.
-	((:script "(no-such-function)")    ((rsb.formatting::no-such-function)))
+        ;; Produces warning.
+        ((:script "(no-such-function)")    ((rsb.formatting::no-such-function)))
 
-	;; These are OK.
-	((:script "data")                  (data))
-	((:script ,(make-string-input-stream "data"))
-	 (data)))
+        ;; These are OK.
+        ((:script "data")                  (data))
+        ((:script ,(make-string-input-stream "data"))
+         (data)))
 
     (case expected
       (error
        (ensure-condition error
-	 (apply #'make-instance 'style-programmable/script args)))
+         (apply #'make-instance 'style-programmable/script args)))
 
       (format-code-error
        (ensure-condition format-code-error
-	 (apply #'make-instance 'style-programmable/script args)))
+         (apply #'make-instance 'style-programmable/script args)))
 
       (t
        (let ((style (apply #'make-instance 'style-programmable/script
-			   args)))
-	 (ensure-same (style-script style) expected
-		      :test #'equal))))))
+                           args)))
+         (ensure-same (style-script style) expected
+                      :test #'equal))))))
 
 (addtest (style-programmable/script-root
           :documentation
-	  "Test some simple cases of formatting events using methods
+          "Test some simple cases of formatting events using methods
 on `format-event' for `style-programmable/script'.")
   smoke
 
@@ -152,9 +148,7 @@ on `format-event' for `style-programmable/script'.")
       (,*simple-event*)
       :error)))
 
-
 ;;; Test suite for `style-programmable/template' class
-;;
 
 (deftestsuite style-programmable/template-root (formatting-root)
   ()
@@ -164,56 +158,56 @@ class."))
 
 (addtest (style-programmable/template-root
           :documentation
-	  "Test constructing `style-programmable/template'
+          "Test constructing `style-programmable/template'
 instances.")
   construct
 
   (ensure-cases (args expected)
       `(;; Missing initargs.
-	(()                                  error)
-	((:bindings nil)                     error)
+        (()                                  error)
+        ((:bindings nil)                     error)
 
-	;; Invalid combination of initargs.
-	((:template "${data}" :code (data))  error)
+        ;; Invalid combination of initargs.
+        ((:template "${data}" :code (data))  error)
 
-	;; Invalid initarg types.
-	((:template 5)                       error)
-	((:bindings 5)                       error)
+        ;; Invalid initarg types.
+        ((:template 5)                       error)
+        ((:bindings 5)                       error)
 
-	;; Invalid initarg values.
-	((:template "${")                    format-code-error)
-	((:template "${reader:error}")       format-code-error)
-	((:template "${no-such-variable}")   format-code-error)
-	((:template "${data}" :bindings nil) format-code-error)
-	((:template #P"no-such-file-i-hope") format-code-error)
+        ;; Invalid initarg values.
+        ((:template "${")                    format-code-error)
+        ((:template "${reader:error}")       format-code-error)
+        ((:template "${no-such-variable}")   format-code-error)
+        ((:template "${data}" :bindings nil) format-code-error)
+        ((:template #P"no-such-file-i-hope") format-code-error)
 
-	;; Produces a warning.
-	((:template "${(no-such-function)}") "${(no-such-function)}")
+        ;; Produces a warning.
+        ((:template "${(no-such-function)}") "${(no-such-function)}")
 
-	;; These are OK.
-	((:template "literal")               "literal")
-	((:template "${data}")               "${data}")
-	((:template ,(make-string-input-stream "${data}"))
-	 "${data}"))
+        ;; These are OK.
+        ((:template "literal")               "literal")
+        ((:template "${data}")               "${data}")
+        ((:template ,(make-string-input-stream "${data}"))
+         "${data}"))
 
     (case expected
       (error
        (ensure-condition error
-	 (apply #'make-instance 'style-programmable/template args)))
+         (apply #'make-instance 'style-programmable/template args)))
 
       (format-code-error
        (ensure-condition format-code-error
-	 (apply #'make-instance 'style-programmable/template args)))
+         (apply #'make-instance 'style-programmable/template args)))
 
       (t
        (let ((style (apply #'make-instance 'style-programmable/template
-			   args)))
-	 (ensure-same (style-template style) expected
-		      :test #'string=))))))
+                           args)))
+         (ensure-same (style-template style) expected
+                      :test #'string=))))))
 
 (addtest (style-programmable/template-root
           :documentation
-	  "Test some simple cases of formatting events using methods
+          "Test some simple cases of formatting events using methods
 on `format-event' for `style-programmable/template'.")
   smoke
 

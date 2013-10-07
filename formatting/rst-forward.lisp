@@ -4,9 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-
 ;;; rst.vision Types
-;;
 
 (cl:defpackage :rst.vision
   (:use
@@ -27,9 +25,7 @@
    (height     :reader image-height)
    (data       :reader image-data)))
 
-
 ;;; rst.audition Types
-;;
 
 (cl:defpackage :rst.audition
   (:use

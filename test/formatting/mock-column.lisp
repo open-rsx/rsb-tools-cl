@@ -13,11 +13,11 @@
   ())
 
 (defmethod format-header ((thing  mock-column)
-			  (target t))
+                          (target t))
   (format target "My mock header"))
 
 (defmethod format-event ((event  t)
-			 (style  mock-column)
-			 (target t)
-			 &key &allow-other-keys)
+                         (style  mock-column)
+                         (target t)
+                         &key &allow-other-keys)
   (format target "~A" event))

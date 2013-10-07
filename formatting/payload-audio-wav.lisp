@@ -16,35 +16,35 @@
 payloads containing audio data."))
 
 (defmethod write-header ((descriptor list)
-			 (style      style-audio-stream/wav)
-			 (target     t))
+                         (style      style-audio-stream/wav)
+                         (target     t))
   (let+ (((channels sample-rate sample-format) descriptor)
-	 (width     (ecase sample-format
-		      ((:sample-s8  :sample-u8)  1)
-		      ((:sample-s16 :sample-u16) 2)
-		      ((:sample-s24 :sample-u24) 3)))
-	 (byte-rate (* channels sample-rate width))
-	 ;; The non-constant fields have the following meanings:
-	 ;; 0 (offset  4 size 4) Size
-	 ;; 2 (offset 22 size 2) Number of Channels
-	 ;; 3 (offset 24 size 4) Sample Rate
-	 ;; 4 (offset 28 size 4) Byte Rate
-	 ;; 5 (offset 32 size 2) Block Alignment
-	 ;; 6 (offset 34 size 2) Bits per Sample
-	 ;; 7 (offset 40 size 4) Sub Chunk Size
-	 (wave-header-template
-	  (vector #x52 #x49 #x46 #x46    0    0    0    0 #x57 #x41 #x56 #x45
-		  #x66 #x6d #x74 #x20 #x10 #x00 #x00 #x00 #x01 #x00    2    2
-		     3    3    3    3    4    4    4    4    5    5    6    6
-		  #x64 #x61 #x74 #x61    7    7    7    7))
-	 ;; Assumed maximum possible size
-	 (fake-size #x7fffffff))
+         (width     (ecase sample-format
+                      ((:sample-s8  :sample-u8)  1)
+                      ((:sample-s16 :sample-u16) 2)
+                      ((:sample-s24 :sample-u24) 3)))
+         (byte-rate (* channels sample-rate width))
+         ;; The non-constant fields have the following meanings:
+         ;; 0 (offset  4 size 4) Size
+         ;; 2 (offset 22 size 2) Number of Channels
+         ;; 3 (offset 24 size 4) Sample Rate
+         ;; 4 (offset 28 size 4) Byte Rate
+         ;; 5 (offset 32 size 2) Block Alignment
+         ;; 6 (offset 34 size 2) Bits per Sample
+         ;; 7 (offset 40 size 4) Sub Chunk Size
+         (wave-header-template
+          (vector #x52 #x49 #x46 #x46    0    0    0    0 #x57 #x41 #x56 #x45
+                  #x66 #x6d #x74 #x20 #x10 #x00 #x00 #x00 #x01 #x00    2    2
+                     3    3    3    3    4    4    4    4    5    5    6    6
+                  #x64 #x61 #x74 #x61    7    7    7    7))
+         ;; Assumed maximum possible size
+         (fake-size #x7fffffff))
     (macrolet
-	((set-field (start size value)
-	   (once-only (value)
-	     `(iter (for (the fixnum i) :below ,size)
-		    (setf (aref wave-header-template (+ ,start i))
-			  (ldb (byte 8 (* i 8)) ,value))))))
+        ((set-field (start size value)
+           (once-only (value)
+             `(iter (for (the fixnum i) :below ,size)
+                    (setf (aref wave-header-template (+ ,start i))
+                          (ldb (byte 8 (* i 8)) ,value))))))
 
       ;; Regarding "Size" and "Sub chunk size": We use
       ;;
@@ -64,8 +64,8 @@ payloads containing audio data."))
     (write-sequence wave-header-template target)))
 
 (defmethod (setf descriptor-for-target) :after ((new-value list)
-						(style     style-audio-stream/wav)
-						(target    t))
+                                                (style     style-audio-stream/wav)
+                                                (target    t))
   ;; Write WAV header, since we have not done that yet if a descriptor
   ;; for TARGET is installed.
   (write-header new-value style target))

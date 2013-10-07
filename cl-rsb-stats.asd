@@ -15,9 +15,7 @@
 
 (cl:in-package :cl-rsb-stats-system)
 
-
 ;;; Version stuff
-;;
 
 (defparameter +version-major+ 0
   "Major component of version number.")
@@ -39,8 +37,8 @@
   (when stream (close stream)))
 
 (defun version/list (&key
-		     (revision? t)
-		     commit?)
+                     (revision? t)
+                     commit?)
   "Return a version of the form (MAJOR MINOR [REVISION [COMMIT]])
 where REVISION and COMMIT are optional.
 
@@ -50,14 +48,14 @@ behavior is to include REVISION.
 COMMIT? controls whether COMMIT should be included. Default behavior
 is to not include COMMIT."
   (append (list +version-major+ +version-minor+)
-	  (when revision? (list +version-revision+))
-	  (when (and commit? +version-commit+)
-	    (list +version-commit+))))
+          (when revision? (list +version-revision+))
+          (when (and commit? +version-commit+)
+            (list +version-commit+))))
 
 (defun version/string (&rest args
-		       &key
-		       revision?
-		       commit?)
+                       &key
+                       revision?
+                       commit?)
   "Return a version string of the form
 \"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
 optional.
@@ -66,9 +64,7 @@ See `version/list' for details on keyword parameters."
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
-
 ;;; System definition
-;;
 
 (defsystem :cl-rsb-stats
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -78,26 +74,24 @@ See `version/list' for details on keyword parameters."
   :description "This system provides some stats functions for
 RSB-related systems."
   :depends-on  (:alexandria
-		:let-plus
-		:more-conditions
-		:local-time
+                :let-plus
+                :more-conditions
+                :local-time
 
-		(:version :cl-rsb #.(version/string :revision? nil)))
+                (:version :cl-rsb #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "stats"
-		 :serial     t
-		 :components ((:file       "package")
-			      (:file       "types")
-			      (:file       "protocol")
-			      (:file       "util")
-			      (:file       "quantity-mixins")
-			      (:file       "quantities"))))
+                 :serial     t
+                 :components ((:file       "package")
+                              (:file       "types")
+                              (:file       "protocol")
+                              (:file       "util")
+                              (:file       "quantity-mixins")
+                              (:file       "quantities"))))
 
   :in-order-to ((test-op (test-op :cl-rsb-stats-test))))
 
-
 ;;; System definition for test of the cl-rsb-stats system
-;;
 
 (defsystem :cl-rsb-stats-test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -108,16 +102,16 @@ RSB-related systems."
 system."
   :depends-on  ((:version :lift         "1.7.1")
 
-		(:version :cl-rsb-stats #.(version/string)))
+                (:version :cl-rsb-stats #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "stats"
-		 :pathname   "test/stats"
-		 :serial     t
-		 :components ((:file       "package")
-			      (:file       "quantities")))))
+                 :pathname   "test/stats"
+                 :serial     t
+                 :components ((:file       "package")
+                              (:file       "quantities")))))
 
 (defmethod perform ((operation test-op)
-		    (component (eql (find-system :cl-rsb-stats-test))))
+                    (component (eql (find-system :cl-rsb-stats-test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
-	   :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
-			    "lift-rsb-stats.config")))
+           :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
+                            "lift-rsb-stats.config")))

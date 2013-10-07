@@ -13,7 +13,7 @@
 
 (addtest (style-detailed-root
           :documentation
-	  "Test some simple cases of formatting events using methods
+          "Test some simple cases of formatting events using methods
 on `format-event' for `style-detailed'.")
   smoke
 
@@ -39,7 +39,7 @@ Timestamps
 Payload \\(SB-KERNEL::SIMPLE-CHARACTER-STRING\\)
   \"bar\"
 "
-	       (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
+               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
 
     `(()
       (,(make-event "/foo/bar/baz" 1 :fez "whoop"))
@@ -60,4 +60,4 @@ Meta-Data
 Payload \\(.*\\)
   1
 "
-	       (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))
+               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))

@@ -8,10 +8,10 @@
 
 (defclass name-mixin ()
   ((name :initarg  :name
-	 :type     string
-	 :accessor column-name
-	 :documentation
-	 "Stores the name of the column."))
+         :type     string
+         :accessor column-name
+         :documentation
+         "Stores the name of the column."))
   (:documentation
    "This class is intended to be mixed into column classes in order to
 handle the column name."))

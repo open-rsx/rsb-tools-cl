@@ -13,7 +13,7 @@
 
 (addtest (style-compact/80-root
           :documentation
-	  "Test some simple cases of formatting events using methods
+          "Test some simple cases of formatting events using methods
 on `format-event' for `style-compact/80'.")
   smoke
 
@@ -40,7 +40,7 @@ on `format-event' for `style-compact/80'.")
 
 (addtest (style-compact/128-root
           :documentation
-	  "Test some simple cases of formatting events using methods
+          "Test some simple cases of formatting events using methods
 on `format-event' for `style-compact/128'.")
   smoke
 

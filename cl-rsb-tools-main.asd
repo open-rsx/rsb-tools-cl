@@ -15,9 +15,7 @@
 
 (cl:in-package :cl-rsb-tools-main-system)
 
-
 ;;; Version stuff
-;;
 
 (defparameter +version-major+ 0
   "Major component of version number.")
@@ -39,8 +37,8 @@
   (when stream (close stream)))
 
 (defun version/list (&key
-		     (revision? t)
-		     commit?)
+                     (revision? t)
+                     commit?)
   "Return a version of the form (MAJOR MINOR [REVISION [COMMIT]])
 where REVISION and COMMIT are optional.
 
@@ -50,14 +48,14 @@ behavior is to include REVISION.
 COMMIT? controls whether COMMIT should be included. Default behavior
 is to not include COMMIT."
   (append (list +version-major+ +version-minor+)
-	  (when revision? (list +version-revision+))
-	  (when (and commit? +version-commit+)
-	    (list +version-commit+))))
+          (when revision? (list +version-revision+))
+          (when (and commit? +version-commit+)
+            (list +version-commit+))))
 
 (defun version/string (&rest args
-		       &key
-		       revision?
-		       commit?)
+                       &key
+                       revision?
+                       commit?)
   "Return a version string of the form
 \"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
 optional.
@@ -66,9 +64,7 @@ See `version/list' for details on keyword parameters."
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
-
 ;;; System definition
-;;
 
 (defsystem :cl-rsb-tools-main
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -78,11 +74,11 @@ See `version/list' for details on keyword parameters."
   :description "Main program and dispatch function for all cl-rsb
 tools."
   :depends-on  ((:version :cl-rsb-tools-info   #.(version/string))
-		(:version :cl-rsb-tools-logger #.(version/string))
-		(:version :cl-rsb-tools-call   #.(version/string))
-		(:version :cl-rsb-tools-send   #.(version/string)))
+                (:version :cl-rsb-tools-logger #.(version/string))
+                (:version :cl-rsb-tools-call   #.(version/string))
+                (:version :cl-rsb-tools-send   #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "main"
-		 :components ((:file       "package")
-			      (:file       "main"
-			       :depends-on ("package"))))))
+                 :components ((:file       "package")
+                              (:file       "main"
+                               :depends-on ("package"))))))

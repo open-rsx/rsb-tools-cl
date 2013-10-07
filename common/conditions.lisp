@@ -7,17 +7,17 @@
 (cl:in-package :rsb.common)
 
 (define-condition failed-to-load-idl (rsb-error
-				      chainable-condition)
+                                      chainable-condition)
   ((source :initarg  :source
-	   :reader   failed-to-load-idl-source
-	   :documentation
-	   ""))
+           :reader   failed-to-load-idl-source
+           :documentation
+           ""))
   (:report
    (lambda (condition stream)
      (format stream "~@<Failed to load data definition from source ~
 ~A.~/more-conditions::maybe-print-cause/~@:>"
-	     (failed-to-load-idl-source condition)
-	     condition)))
+             (failed-to-load-idl-source condition)
+             condition)))
   (:documentation
    "This error is signaled when an attempt to load a data definition
 from some source fails."))
@@ -25,6 +25,6 @@ from some source fails."))
 (defun failed-to-load-idl (source &optional cause)
   "Convenience function for signaling `failed-to-load-idl'."
   (apply #'error 'failed-to-load-idl
-	 :source source
-	 (when cause
-	   (list :cause cause))))
+         :source source
+         (when cause
+           (list :cause cause))))

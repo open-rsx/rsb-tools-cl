@@ -15,9 +15,7 @@
 
 (cl:in-package :cl-rsb-common-system)
 
-
 ;;; Version stuff
-;;
 
 (defparameter +version-major+ 0
   "Major component of version number.")
@@ -39,8 +37,8 @@
   (when stream (close stream)))
 
 (defun version/list (&key
-		     (revision? t)
-		     commit?)
+                     (revision? t)
+                     commit?)
   "Return a version of the form (MAJOR MINOR [REVISION [COMMIT]])
 where REVISION and COMMIT are optional.
 
@@ -50,14 +48,14 @@ behavior is to include REVISION.
 COMMIT? controls whether COMMIT should be included. Default behavior
 is to not include COMMIT."
   (append (list +version-major+ +version-minor+)
-	  (when revision? (list +version-revision+))
-	  (when (and commit? +version-commit+)
-	    (list +version-commit+))))
+          (when revision? (list +version-revision+))
+          (when (and commit? +version-commit+)
+            (list +version-commit+))))
 
 (defun version/string (&rest args
-		       &key
-		       revision?
-		       commit?)
+                       &key
+                       revision?
+                       commit?)
   "Return a version string of the form
 \"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
 optional.
@@ -66,9 +64,7 @@ See `version/list' for details on keyword parameters."
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
-
 ;;; System definition
-;;
 
 (defsystem :cl-rsb-common
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -79,48 +75,46 @@ See `version/list' for details on keyword parameters."
 RSB-related systems."
   :depends-on  (:let-plus
 
-		:com.dvlsoft.clon
+                :com.dvlsoft.clon
 
-		:cl-protobuf
+                :cl-protobuf
 
-		(:version :cl-rsb #.(version/string :revision? nil)))
+                (:version :cl-rsb #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "common"
-		 :components ((:file       "package")
+                 :components ((:file       "package")
 
-			      (:file       "conditions"
-			       :depends-on ("package"))
-			      (:file       "variables"
-			       :depends-on ("package"))
+                              (:file       "conditions"
+                               :depends-on ("package"))
+                              (:file       "variables"
+                               :depends-on ("package"))
 
-			      (:file       "error-handling"
-			       :depends-on ("package"))
+                              (:file       "error-handling"
+                               :depends-on ("package"))
 
-			      (:file       "idl-loading"
-			       :depends-on ("package" "conditions"))
+                              (:file       "idl-loading"
+                               :depends-on ("package" "conditions"))
 
-			      (:file       "logging"
-			       :depends-on ("package"))
-			      (:file       "debugger"
-			       :depends-on ("package"))
-			      (:file       "interactive"
-			       :depends-on ("package"))
-			      (:file       "help"
-			       :depends-on ("package"))
-			      (:file       "options"
-			       :depends-on ("package" "variables"
-					    "error-handling" "debugger"
-					    "logging" "help"))
+                              (:file       "logging"
+                               :depends-on ("package"))
+                              (:file       "debugger"
+                               :depends-on ("package"))
+                              (:file       "interactive"
+                               :depends-on ("package"))
+                              (:file       "help"
+                               :depends-on ("package"))
+                              (:file       "options"
+                               :depends-on ("package" "variables"
+                                            "error-handling" "debugger"
+                                            "logging" "help"))
 
-			      (:file       "idl-options"
-			       :depends-on ("package" "idl-loading"
-					    "options")))))
+                              (:file       "idl-options"
+                               :depends-on ("package" "idl-loading"
+                                            "options")))))
 
   :in-order-to ((test-op (test-op :cl-rsb-common-test))))
 
-
 ;;; System definition for test of the cl-rsb-common system
-;;
 
 (defsystem :cl-rsb-common-test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -131,18 +125,18 @@ RSB-related systems."
 system."
   :depends-on  (:let-plus
 
-		(:version :lift          "1.7.1")
+                (:version :lift          "1.7.1")
 
-		(:version :cl-rsb-common #.(version/string)))
+                (:version :cl-rsb-common #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "common"
-		 :pathname   "test/common"
-		 :components ((:file       "package")
-			      (:file       "error-handling"
-			       :depends-on ("package"))))))
+                 :pathname   "test/common"
+                 :components ((:file       "package")
+                              (:file       "error-handling"
+                               :depends-on ("package"))))))
 
 (defmethod perform ((operation test-op)
-		    (component (eql (find-system :cl-rsb-common-test))))
+                    (component (eql (find-system :cl-rsb-common-test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
-	   :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
-			    "lift-rsb-common.config")))
+           :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
+                            "lift-rsb-common.config")))

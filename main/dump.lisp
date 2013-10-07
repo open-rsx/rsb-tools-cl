@@ -1,14 +1,14 @@
 (load-system :iterate)
 (setf iterate::*always-declare-variables* t)
 
-(load-system :cl-ppcre)          ;; for regex filter
+(load-system :cl-ppcre)               ; for regex filter
 
 (load-system :cl-protobuf)
-#-win32 (load-system :network.spread) ;; for spread transport
+#-win32 (load-system :network.spread) ; for spread transport
 
-(load-system :usocket)           ;; for socket transport
+(load-system :usocket)                ; for socket transport
 
-(load-system :swank)             ;; for the lulz
+(load-system :swank)                  ; for the lulz
 
 (load-system :cl-rsb-tools-main)
 
@@ -26,5 +26,5 @@
 (rsb.tools.main:make-dynamic)
 
 (com.dvlsoft.clon:dump "tools" rsb.tools.main:main
-		       #+sb-core-compression :compression
-		       #+sb-core-compression 9)
+                       #+sb-core-compression :compression
+                       #+sb-core-compression 9)

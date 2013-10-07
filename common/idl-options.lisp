@@ -10,7 +10,7 @@
   "Signal an error unless PATHNAME designates an existing directory."
   (if-let ((truename (probe-file pathname)))
     (when (or (pathname-name truename)
-	      (pathname-type truename))
+              (pathname-type truename))
       (error "~@<Not a directory: ~A.~@:>" truename))
     (error "~@<Directory does not exist: ~A.~@:>" pathname)))
 
@@ -19,12 +19,12 @@
 specified IDL files."
   ;; Extend data definition source path.
   (iter (for paths next (getopt :long-name "idl-path"))
-	(while paths)
-	(iter (for path in paths)
-	      (existing-directory-or-lose path)
-	      (pushnew path pbf:*proto-load-path*)))
+        (while paths)
+        (iter (for path in paths)
+              (existing-directory-or-lose path)
+              (pushnew path pbf:*proto-load-path*)))
 
   ;; Load specified data definitions.
   (map 'list (rcurry #'load-idl :auto)
        (collect-option-values :long-name "load-idl"
-			      :transform #'identity)))
+                              :transform #'identity)))

@@ -13,7 +13,7 @@ between MIN and MAX columns."
       (declare (ignore event))
 
       (and (not (columns-exhausted? min))
-	   (or (not max) (columns-exhausted? max)))))
+           (or (not max) (columns-exhausted? max)))))
 
 (defmacro define-dynamic-width-style
     ((name
@@ -25,21 +25,21 @@ between MIN and MAX columns."
   "Define an event formatting style named NAME that dispatches event
 formatting to sub-styles based on the available horizontal room."
   (let+ (((&values specs nil documentation)
-	  (parse-body specs-and-doc :documentation t))
-	 ((&flet+ make-sub-style (((min &optional max) style))
-	    `(cons (number-of-columns ,min ,@(when max `(,max)))
-		   ,style))))
+          (parse-body specs-and-doc :documentation t))
+         ((&flet+ make-sub-style (((min &optional max) style))
+            `(cons (number-of-columns ,min ,@(when max `(,max)))
+                   ,style))))
     `(progn
        (defmethod find-style-class ((spec (eql ,spec)))
-	 (find-class ',class-name))
+         (find-class ',class-name))
 
        (defclass ,class-name (delegating-mixin
-			      ,@superclasses)
-	 ()
-	 (:default-initargs
-	  :sub-styles (list ,@(map 'list #'make-sub-style specs)))
-	 (:documentation
-	  ,(or documentation
-	       (format nil "~@(~A~) meta-style that dispatches to one ~
+                              ,@superclasses)
+         ()
+         (:default-initargs
+          :sub-styles (list ,@(map 'list #'make-sub-style specs)))
+         (:documentation
+          ,(or documentation
+               (format nil "~@(~A~) meta-style that dispatches to one ~
 of the ~:*~(~A~) styles based on available horizontal room."
-		       name)))))))
+                       name)))))))

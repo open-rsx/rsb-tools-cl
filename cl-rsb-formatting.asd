@@ -15,9 +15,7 @@
 
 (cl:in-package :cl-rsb-formatting-system)
 
-
 ;;; Version stuff
-;;
 
 (defparameter +version-major+ 0
   "Major component of version number.")
@@ -39,8 +37,8 @@
   (when stream (close stream)))
 
 (defun version/list (&key
-		     (revision? t)
-		     commit?)
+                     (revision? t)
+                     commit?)
   "Return a version of the form (MAJOR MINOR [REVISION [COMMIT]])
 where REVISION and COMMIT are optional.
 
@@ -50,14 +48,14 @@ behavior is to include REVISION.
 COMMIT? controls whether COMMIT should be included. Default behavior
 is to not include COMMIT."
   (append (list +version-major+ +version-minor+)
-	  (when revision? (list +version-revision+))
-	  (when (and commit? +version-commit+)
-	    (list +version-commit+))))
+          (when revision? (list +version-revision+))
+          (when (and commit? +version-commit+)
+            (list +version-commit+))))
 
 (defun version/string (&rest args
-		       &key
-		       revision?
-		       commit?)
+                       &key
+                       revision?
+                       commit?)
   "Return a version string of the form
 \"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
 optional.
@@ -66,9 +64,7 @@ See `version/list' for details on keyword parameters."
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
-
 ;;; System definition
-;;
 
 (defsystem :cl-rsb-formatting
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -78,84 +74,82 @@ See `version/list' for details on keyword parameters."
   :description "This system provides some formatting functions for
 RSB-related systems."
   :depends-on  (:alexandria
-		:let-plus
-		:more-conditions
-		:cl-interpol
+                :let-plus
+                :more-conditions
+                :cl-interpol
 
-		(:version :cl-rsb #.(version/string :revision? nil)))
+                (:version :cl-rsb #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
-		 :pathname   "formatting"
-		 :serial     t
-		 :components ((:file       "package")
-			      (:file       "types")
-			      (:file       "conditions")
-			      (:file       "variables")
-			      (:file       "util")
+                 :pathname   "formatting"
+                 :serial     t
+                 :components ((:file       "package")
+                              (:file       "types")
+                              (:file       "conditions")
+                              (:file       "variables")
+                              (:file       "util")
 
-			      (:file       "protocol")
+                              (:file       "protocol")
 
-			      (:file       "format-functions")
-			      (:file       "dynamic-width")))
+                              (:file       "format-functions")
+                              (:file       "dynamic-width")))
 
-		(:module     "formatting-mixins"
-		 :pathname   "formatting"
-		 :depends-on ("formatting-early")
-		 :components ((:file       "width-mixin")
-			      (:file       "name-mixin")
-			      (:file       "counting-mixin")
-			      (:file       "header-printing-mixin"
-			       :depends-on ("counting-mixin"))
-			      (:file       "columns-mixin"
-			       :depends-on ("header-printing-mixin"
-					    "width-mixin"))
-			      (:file       "periodic-printing-mixin")
-			      (:file       "delegating-mixin")
-			      (:file       "sub-style-grouping-mixin"
-			       :depends-on ("delegating-mixin"))
-			      (:file       "sub-style-sorting-mixin"
-			       :depends-on ("delegating-mixin"))
-			      (:file       "separator-mixin")
-			      (:file       "image-output-mixin")
-			      (:file       "data-consistency-mixin")
-			      (:file       "temporal-bounds-mixin")
-			      (:file       "output-buffering-mixin")))
+                (:module     "formatting-mixins"
+                 :pathname   "formatting"
+                 :depends-on ("formatting-early")
+                 :components ((:file       "width-mixin")
+                              (:file       "name-mixin")
+                              (:file       "counting-mixin")
+                              (:file       "header-printing-mixin"
+                               :depends-on ("counting-mixin"))
+                              (:file       "columns-mixin"
+                               :depends-on ("header-printing-mixin"
+                                            "width-mixin"))
+                              (:file       "periodic-printing-mixin")
+                              (:file       "delegating-mixin")
+                              (:file       "sub-style-grouping-mixin"
+                               :depends-on ("delegating-mixin"))
+                              (:file       "sub-style-sorting-mixin"
+                               :depends-on ("delegating-mixin"))
+                              (:file       "separator-mixin")
+                              (:file       "image-output-mixin")
+                              (:file       "data-consistency-mixin")
+                              (:file       "temporal-bounds-mixin")
+                              (:file       "output-buffering-mixin")))
 
-		(:module     "formatting"
-		 :depends-on ("formatting-early"
-			      "formatting-mixins")
-		 :components ((:file       "payload")
+                (:module     "formatting"
+                 :depends-on ("formatting-early"
+                              "formatting-mixins")
+                 :components ((:file       "payload")
 
-			      ;; Column classes
-			      (:file       "columns")
+                              ;; Column classes
+                              (:file       "columns")
 
-			      ;; Payload formatting classes
-			      (:file       "payload-collection"
-			       :depends-on ("event-style-detailed"))
+                              ;; Payload formatting classes
+                              (:file       "payload-collection"
+                               :depends-on ("event-style-detailed"))
 
-			      (:file       "rst-forward")
-			      (:file       "payload-audio"
-			       :depends-on ("rst-forward"))
-			      (:file       "payload-audio-wav"
-			       :depends-on ("payload-audio"))
+                              (:file       "rst-forward")
+                              (:file       "payload-audio"
+                               :depends-on ("rst-forward"))
+                              (:file       "payload-audio-wav"
+                               :depends-on ("payload-audio"))
 
-			      ;; Event formatting style classes
-			      (:file       "event-style-discard")
-			      (:file       "event-style-meta-data")
-			      (:file       "event-style-payload")
-			      (:file       "event-style-detailed"
-			       :depends-on ("event-style-meta-data"))
-			      (:file       "event-style-compact"
-			       :depends-on ("columns"))
-			      (:file       "event-style-columns"
-			       :depends-on ("columns"))
-			      (:file       "event-style-programmable"))))
+                              ;; Event formatting style classes
+                              (:file       "event-style-discard")
+                              (:file       "event-style-meta-data")
+                              (:file       "event-style-payload")
+                              (:file       "event-style-detailed"
+                               :depends-on ("event-style-meta-data"))
+                              (:file       "event-style-compact"
+                               :depends-on ("columns"))
+                              (:file       "event-style-columns"
+                               :depends-on ("columns"))
+                              (:file       "event-style-programmable"))))
 
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
 
-
 ;;; System definition for tests of the cl-rsb-formatting system
-;;
 
 (defsystem :cl-rsb-formatting-test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -166,32 +160,32 @@ RSB-related systems."
 system."
   :depends-on  (:cl-ppcre
 
-		(:version :lift                  "1.7.1")
+                (:version :lift                  "1.7.1")
 
-		(:version :cl-rsb-formatting     #.(version/string))
-		(:version :cl-rsb-formatting-png #.(version/string)))
+                (:version :cl-rsb-formatting     #.(version/string))
+                (:version :cl-rsb-formatting-png #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
-		 :pathname   "test/formatting"
-		 :serial     t
-		 :components ((:file       "package")
-			      (:file       "mock-column")))
+                 :pathname   "test/formatting"
+                 :serial     t
+                 :components ((:file       "package")
+                              (:file       "mock-column")))
 
-		(:module     "formatting"
-		 :pathname   "test/formatting"
-		 :depends-on ("formatting-early")
-		 :components ((:file       "width-mixin")
-			      (:file       "delegating-mixin")
-			      (:file       "columns-mixin")
-			      (:file       "separator-mixin")
+                (:module     "formatting"
+                 :pathname   "test/formatting"
+                 :depends-on ("formatting-early")
+                 :components ((:file       "width-mixin")
+                              (:file       "delegating-mixin")
+                              (:file       "columns-mixin")
+                              (:file       "separator-mixin")
 
-			      (:file       "style-meta-data")
-			      (:file       "style-detailed")
-			      (:file       "style-compact")
-			      (:file       "style-programmable")))))
+                              (:file       "style-meta-data")
+                              (:file       "style-detailed")
+                              (:file       "style-compact")
+                              (:file       "style-programmable")))))
 
 (defmethod perform ((operation test-op)
-		    (component (eql (find-system :cl-rsb-formatting-test))))
+                    (component (eql (find-system :cl-rsb-formatting-test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
-	   :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
-			    "lift-rsb-formatting.config")))
+           :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
+                            "lift-rsb-formatting.config")))

@@ -10,9 +10,7 @@
 
 (cl:in-package :cl-rsb-formatting-system)
 
-
 ;;; System definition
-;;
 
 (defsystem :cl-rsb-formatting-png
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -21,14 +19,14 @@
   :license     "GPL3; see COPYING file for details."
   :description "This system provides some formatting of PNG payloads."
   :depends-on  (:alexandria
-		:let-plus
-		:iterate
+                :let-plus
+                :iterate
 
-		:zpng
+                :zpng
 
-		(:version :cl-rsb-formatting #.(version/string :revision? nil)))
+                (:version :cl-rsb-formatting #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting"
-		 :components ((:file       "payload-image-png"))))
+                 :components ((:file       "payload-image-png"))))
 
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))

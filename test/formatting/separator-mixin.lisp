@@ -6,9 +6,7 @@
 
 (cl:in-package :rsb.formatting.test)
 
-
 ;;; Mock formatter class
-;;
 
 (defclass mock-style-separator (separator-mixin)
   ()
@@ -16,14 +14,12 @@
    "Unit tests for the `separator-mixin' formatting style class."))
 
 (defmethod format-event ((event  event)
-			 (style  mock-style-separator)
-			 (stream stream)
-			 &key &allow-other-keys)
+                         (style  mock-style-separator)
+                         (stream stream)
+                         &key &allow-other-keys)
   (princ #\* stream))
 
-
 ;;; Test suite
-;;
 
 (deftestsuite separator-mixin-root (formatting-root)
   ()
@@ -32,25 +28,25 @@
 
 (addtest (separator-mixin-root
           :documentation
-	  "Test constructing `separator-mixin' instances.")
+          "Test constructing `separator-mixin' instances.")
   construction
 
   (ensure-cases (args expected)
       '(((:separator 5)            :error)
-	((:separator (:hrule #\-)) :error)
-	((:separator (:rule))      :error)
+        ((:separator (:hrule #\-)) :error)
+        ((:separator (:rule))      :error)
 
-	((:separator "bla")        nil)
-	((:separator ("a" #\-))    nil)
-	((:separator (:rule #\=))  nil))
+        ((:separator "bla")        nil)
+        ((:separator ("a" #\-))    nil)
+        ((:separator (:rule #\=))  nil))
 
     (when (eq expected :error)
       (ensure-condition 'error
-	(apply #'make-instance 'separator-mixin args)))))
+        (apply #'make-instance 'separator-mixin args)))))
 
 (addtest (separator-mixin-root
           :documentation
-	  "Test some simple cases of formatting events using methods
+          "Test some simple cases of formatting events using methods
 on `format-event' for `separator-mixin'.")
   smoke
 

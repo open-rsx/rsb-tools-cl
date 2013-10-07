@@ -8,9 +8,7 @@
 
 (cl:in-package #:cl-rsb-formatting-system)
 
-
 ;;; System definition
-;;
 
 (defsystem :rsb-formatting-and-rsb-common
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -20,7 +18,7 @@
   :description "This system adds formatting-related handling of
 commandline options."
   :depends-on  ((:version :cl-rsb-formatting #.(version/string))
-		(:version :cl-rsb-common     #.(version/string)))
+                (:version :cl-rsb-common     #.(version/string)))
   :encoding    :utf-8
   :components  ((:file       "help"
-		 :pathname   "formatting/help")))
+                 :pathname   "formatting/help")))

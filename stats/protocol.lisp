@@ -6,9 +6,7 @@
 
 (cl:in-package :rsb.stats)
 
-
 ;;; Quantity protocol
-;;
 
 (defgeneric quantity-name (quantitiy)
   (:documentation
@@ -35,9 +33,7 @@ the collection of accumulated values."))
   (:documentation
    "Format the value of QUANTITY onto STREAM."))
 
-
 ;;; Collecting quantity protocol
-;;
 
 (defgeneric quantity-values (quantity)
   (:documentation
@@ -45,9 +41,7 @@ the collection of accumulated values."))
 value of quantity. Only applicable to quantities that accumulate
 values in some way."))
 
-
 ;;; Quantity class family
-;;
 
 (dynamic-classes:define-findable-class-family quantity
     "This class family consists of quantity classes.")

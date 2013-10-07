@@ -6,9 +6,7 @@
 
 (cl:in-package :rsb.common)
 
-
 ;;; Output-related variables
-;;
 
 (declaim (special *info-output*))
 

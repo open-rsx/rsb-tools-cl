@@ -7,7 +7,7 @@
 (cl:in-package :rsb.tools.logger)
 
 (defun make-help-string (&key
-			 (show :default))
+                         (show :default))
   "Return a help that explains the commandline option interface."
   (with-output-to-string (stream)
     (format stream "Show events exchanged on the RSB channel ~
@@ -25,7 +25,7 @@ logged and the transport that should be used to attach to channel.
       (print-uri-help stream))))
 
 (defun make-filter-help-string (&key
-				(show :default))
+                                (show :default))
   "Return a help string that explains how to specify filters and lists
 the available filters."
   (with-output-to-string (stream)
@@ -53,7 +53,7 @@ when used within a shell):
       (print-filter-help stream))))
 
 (defun make-examples-string (&key
-			     (program-name "logger"))
+                             (program-name "logger"))
   "Make and return a string containing usage examples of the program."
   (format nil "~2T~A
 
@@ -77,4 +77,4 @@ the bus. Receive events on the channel designated by ~
 regular expression \"^mypattern\". Display matching events using the ~
 \"detailed\" display style.
 "
-	  program-name))
+          program-name))

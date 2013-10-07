@@ -13,7 +13,7 @@
 
 (addtest (width-mixin-root
           :documentation
-	  "Test method on `format-event' for `width-mixin'.")
+          "Test method on `format-event' for `width-mixin'.")
   format-event
 
   (ensure-style-cases (mock-column)
@@ -44,7 +44,7 @@
 
 (addtest (width-mixin-root
           :documentation
-	  "Test method on `format-header' for `width-mixin'.")
+          "Test method on `format-header' for `width-mixin'.")
   format-header
 
   (ensure-style-cases (mock-column :formatter :format-header)

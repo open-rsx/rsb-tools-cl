@@ -13,25 +13,25 @@
 classes that produce streams of audio data from event payloads."))
 
 (defmethod format-event ((event  event)
-			 (style  style-audio-stream)
-			 (target t)
-			 &key &allow-other-keys)
+                         (style  style-audio-stream)
+                         (target t)
+                         &key &allow-other-keys)
   (format-payload (event-data event) style target))
 
 (defmethod make-descriptor ((style  style-audio-stream)
-			    (data   rst.audition:sound-chunk)
-			    (target t))
+                            (data   rst.audition:sound-chunk)
+                            (target t))
   (list (rst.audition:sound-chunk-channels    data)
-	(rst.audition:sound-chunk-rate        data)
-	(rst.audition:sound-chunk-sample-type data)))
+        (rst.audition:sound-chunk-rate        data)
+        (rst.audition:sound-chunk-sample-type data)))
 
 (defmethod incompatible-descriptors ((style        style-audio-stream)
-				     (descriptor-1 list)
-				     (descriptor-2 list))
+                                     (descriptor-1 list)
+                                     (descriptor-2 list))
   (error "~@<Data format of current sound chunk (~{~A x ~A Hz, ~
 ~A~}) is different from the format of previous chunks (~{~A x ~A Hz, ~
 ~A~}).~@:>"
-	 descriptor-1 descriptor-2))
+         descriptor-1 descriptor-2))
 
 (defmethod find-style-class ((spec (eql :audio-stream/raw)))
   (find-class 'style-audio-stream/raw))
@@ -44,7 +44,7 @@ header or other format information) from event payloads containing
 audio data."))
 
 (defmethod format-payload ((data   rst.audition:sound-chunk)
-			   (style  style-audio-stream/raw)
-			   (target t)
-			   &key &allow-other-keys)
+                           (style  style-audio-stream/raw)
+                           (target t)
+                           &key &allow-other-keys)
   (write-sequence (rst.audition:sound-chunk-data data) target))
