@@ -121,4 +121,4 @@ handle it."
 established. When an error is signaled, call POLICY to (potentially)
 handle it."
   `(invoke-with-error-policy
-    (coerce ,policy 'function) #'(lambda () ,@body)))
+    (coerce ,policy 'function) (lambda () ,@body)))

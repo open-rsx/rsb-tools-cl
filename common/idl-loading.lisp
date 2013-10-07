@@ -60,8 +60,7 @@ inferred form the file type of SOURCE."
   "Load IDL definitions from all files matching the wildcard pathname
 SOURCE."
   (log1 :info "Processing IDL files matching ~S" source)
-  (map 'list #'(lambda (file)
-                 (apply #'load-idl file :file args))
+  (map 'list (lambda (file) (apply #'load-idl file :file args))
        (directory source)))
 
 (defmethod load-idl ((source pathname) (kind (eql :auto))
@@ -92,7 +91,7 @@ otherwise."
                      &rest args
                      &key &allow-other-keys)
   "Process all elements of SOURCE sequentially."
-  (map 'list #'(lambda (source) (apply #'load-idl source kind args))
+  (map 'list (lambda (source) (apply #'load-idl source kind args))
        source))
 
 ;;; Protocol buffer specific stuff

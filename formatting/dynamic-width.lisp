@@ -9,11 +9,11 @@
 (defun number-of-columns (min &optional max)
   "Return a predicate that matches if the current stream line width is
 between MIN and MAX columns."
-  #'(lambda (event)
-      (declare (ignore event))
+  (lambda (event)
+    (declare (ignore event))
 
-      (and (not (columns-exhausted? min))
-           (or (not max) (columns-exhausted? max)))))
+    (and (not (columns-exhausted? min))
+         (or (not max) (columns-exhausted? max)))))
 
 (defmacro define-dynamic-width-style
     ((name

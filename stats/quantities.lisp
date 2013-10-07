@@ -108,9 +108,9 @@ all events.")
 
   (define-simple-quantity
       (notification-size
-       :extractor #'(lambda (event)
-                      (or (meta-data event :rsb.transport.notification-size)
-                          :n/a)))
+       :extractor (lambda (event)
+                    (or (meta-data event :rsb.transport.notification-size)
+                        :n/a)))
       (extract-function-mixin
        collecting-mixin
        moments-mixin)
@@ -148,8 +148,8 @@ observed over a period of time. When output is produced, the most
 frequent event origins are printed first.")
 
   (define-simple-quantity (wire-schema
-                           :extractor #'(lambda (event)
-                                          (meta-data event :rsb.transport.wire-schema)))
+                           :extractor (lambda (event)
+                                        (meta-data event :rsb.transport.wire-schema)))
       (extract-function-mixin
        histogram-mixin)
     "The value of this quantity is a histogram of event wire-schemas

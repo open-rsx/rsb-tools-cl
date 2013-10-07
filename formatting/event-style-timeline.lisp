@@ -70,7 +70,7 @@ formatting style classes."))
             (defclass ,class-name (basic-timeline-style)
               ()
               (:default-initargs
-               :columns #'(lambda (value) (list ,@columns))
+               :columns (lambda (value) (list ,@columns))
                ,@initargs)
               ,@(when documentation
                  `((:documentation ,documentation))))))))
@@ -90,8 +90,8 @@ grouped by scope."
     (list :constant
           :name      "Scope"
           :value     value
-          :formatter #'(lambda (value stream)
-                         (write-string (scope-string value) stream))
+          :formatter (lambda (value stream)
+                       (write-string (scope-string value) stream))
           :width     33
           :alignment :left)
     (list :timeline

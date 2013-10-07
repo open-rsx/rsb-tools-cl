@@ -196,7 +196,7 @@ determined."
   "Execute BODY with `*print-right-margin*' and `*print-miser-width*'
 bound to the line width of STREAM. Additionally, install a handler for
 SIGWINCH that updates these values, if possible."
-  `(invoke-with-print-limits ,stream #'(lambda () ,@body)))
+  `(invoke-with-print-limits ,stream (lambda () ,@body)))
 
 (defun invoke-with-print-limits (stream thunk)
   "Call THUNK with `*print-right-margin*' and ``*print-miser-width*'
@@ -210,10 +210,9 @@ these values, if possible."
     #+(and sbcl (not win32))
     (sb-unix::enable-interrupt
      sb-unix:SIGWINCH
-     #'(lambda (signal info context)
-         (declare (ignore signal info context))
-         (bt:interrupt-thread
-          thread
-          #'(lambda ()
-              (setf *print-right-margin* (stream-line-width stream))))))
+     (lambda (signal info context)
+       (declare (ignore signal info context))
+       (bt:interrupt-thread
+        thread
+        (lambda () (setf *print-right-margin* (stream-line-width stream))))))
     (funcall thunk)))

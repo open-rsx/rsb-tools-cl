@@ -57,15 +57,15 @@
   (process-commandline-options
    :version         (cl-rsb-tools-info-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
-   :return          #'(lambda () (return-from main)))
+   :return          (lambda () (return-from main)))
   (enable-swank-on-signal)
 
   (let+ ((stream   *standard-output*)
          (verbose? (getopt :long-name "verbose"))
          ((version? configuration? connectors? converters? filters?
            event-processing?)
-          (mapcar #'(lambda (name)
-                      (or (getopt :long-name name) verbose?))
+          (mapcar (lambda (name)
+                    (or (getopt :long-name name) verbose?))
                   '("version" "configuration" "connectors" "converters"
                     "filters" "event-processing"))))
     (with-print-limits (stream)

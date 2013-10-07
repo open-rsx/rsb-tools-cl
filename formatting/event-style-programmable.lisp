@@ -127,20 +127,20 @@ By default, the following bindings are available:
             (handler-bind
                 (#+sbcl
                  (sb-ext:compiler-note
-                   #'(lambda (condition)
-                       (log1 :info "Compiler said: ~A" condition)
-                       (muffle-warning)))
+                   (lambda (condition)
+                     (log1 :info "Compiler said: ~A" condition)
+                     (muffle-warning)))
                  (style-warning
-                   #'(lambda (condition)
-                       (log1 :warn "Compiler said: ~A" condition)
-                       (muffle-warning)))
+                   (lambda (condition)
+                     (log1 :warn "Compiler said: ~A" condition)
+                     (muffle-warning)))
                  ((or error warning)
-                   #'(lambda (condition)
-                       (push condition conditions)
-                       (if (find-restart 'muffle-warning)
-                           (muffle-warning condition)
-                           (return-from
-                            compile (values nil nil t))))))
+                   (lambda (condition)
+                     (push condition conditions)
+                     (if (find-restart 'muffle-warning)
+                         (muffle-warning condition)
+                         (return-from
+                          compile (values nil nil t))))))
               (with-compilation-unit (:override t)
                 (compile nil (wrap-code code)))))))
     (when (or failed? conditions)

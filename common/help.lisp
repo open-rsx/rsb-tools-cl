@@ -49,8 +49,8 @@ non-empty intersection with SHOW."
            (options rsb.transport:connector-options)) connector-class)
          (host  (find :host options :key #'first))
          (port  (find :port options :key #'first))
-         (other (remove-if #'(lambda (option)
-                               (member (first option) '(:host :port)))
+         (other (remove-if (lambda (option)
+                             (member (first option) '(:host :port)))
                            options)))
         (format stream
                 "~:{~&~(~A~):~:[~;[//HOST]~]~:[~;[:PORT]~]/SCOPE~@[[?~:{~(~A~)=A-~A~^;~}]~]~}"
@@ -213,8 +213,8 @@ layouted specifically. "
          ((&flet remove-newlines (string)
             (substitute #\Space #\Newline string))))
     (format nil "~{~A~^~%~%~}"
-            (map 'list #'(lambda (paragraph)
-                           (if (has-layout? paragraph)
-                               paragraph
-                               (remove-newlines paragraph)))
+            (map 'list (lambda (paragraph)
+                         (if (has-layout? paragraph)
+                             paragraph
+                             (remove-newlines paragraph)))
                  (split-into-paragraphs string)))))

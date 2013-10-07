@@ -46,9 +46,9 @@
   "Install a handler for SIGNAL that starts a swank server."
   #+(and sbcl (not win32))
   (sb-unix::enable-interrupt
-   signal #'(lambda (signal info context)
-              (declare (ignore signal info context))
-              (start-swank)))
+   signal (lambda (signal info context)
+            (declare (ignore signal info context))
+            (start-swank)))
   #-(and sbcl (not win32))
   (warn "~@<Cannot install signal handler to enable SWANK on this ~
 implementation-platfom combination.~@:>"))

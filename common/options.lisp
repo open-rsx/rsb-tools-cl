@@ -114,9 +114,9 @@ handling."
 
 (defun collect-option-values (&rest spec
                               &key
-                              (transform #'(lambda (string)
-                                             (let ((*read-eval* nil))
-                                               (read-from-string string))))
+                              (transform (lambda (string)
+                                           (let ((*read-eval* nil))
+                                             (read-from-string string))))
                               &allow-other-keys)
   "Return a list of all values that have been supplied for the option
 specified by SPEC.

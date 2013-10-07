@@ -44,7 +44,7 @@ display information for events within each group."))
                           (columns style-columns)) style))
     (declare (type function key test columns))
     (cons
-     #'(lambda (event) (funcall test (funcall key event) value))
+     (lambda (event) (funcall test (funcall key event) value))
      (make-instance 'statistics-columns-mixin
                     :columns (funcall columns value)))))
 
@@ -82,7 +82,7 @@ display information for events within each group."))
             (defclass ,class-name (basic-monitor-style)
               ()
               (:default-initargs
-               :columns #'(lambda (value) (list ,@columns))
+               :columns (lambda (value) (list ,@columns))
                ,@initargs)
               ,@(when documentation
                   `((:documentation ,documentation)))))))
@@ -127,8 +127,8 @@ various statistics for events in each scope-group."
     (list :constant
           :name      "Scope"
           :value     value
-          :formatter #'(lambda (value stream)
-                         (write-string (scope-string value) stream))
+          :formatter (lambda (value stream)
+                       (write-string (scope-string value) stream))
           :width     32
           :alignment :left)
     ;; Width-dependent specifications for remaining columns.
@@ -207,14 +207,14 @@ returned respectively. If neither argument is of type TYPE, `nil' is
 returned."
   (declare (type (function (t t) t) predicate))
 
-  #'(lambda (a b)
-      (let ((a-ok? (typep a type))
-            (b-ok? (typep b type)))
-        (cond
-          ((and a-ok? b-ok?) (funcall predicate a b))
-          (a-ok?             fallback)
-          (b-ok?             (not fallback))
-          (t                 nil)))))
+  (lambda (a b)
+    (let ((a-ok? (typep a type))
+          (b-ok? (typep b type)))
+      (cond
+        ((and a-ok? b-ok?) (funcall predicate a b))
+        (a-ok?             fallback)
+        (b-ok?             (not fallback))
+        (t                 nil)))))
 
 (defun %make-column-key-function (column)
   "Return a function of one argument, a style object, that extracts

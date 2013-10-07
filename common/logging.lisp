@@ -44,7 +44,7 @@
   "Execute BODY with unhandled warnings translated to log messages
 with warning category."
   `(handler-bind
-       ((warning #'(lambda (condition)
-                     (log1 :warn "~A" condition)
-                     (muffle-warning))))
+       ((warning (lambda (condition)
+                   (log1 :warn "~A" condition)
+                   (muffle-warning))))
      ,@body))

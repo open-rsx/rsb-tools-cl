@@ -133,7 +133,7 @@ works if the called method accepts an argument of type string.
   (process-commandline-options
    :version         (cl-rsb-tools-call-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
-   :return          #'(lambda () (return-from main)))
+   :return          (lambda () (return-from main)))
   (enable-swank-on-signal)
 
   ;; Validate commandline options.

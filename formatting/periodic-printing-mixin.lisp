@@ -60,7 +60,7 @@ timer-driven way."))
     ;; Register a finalizer to stop the timer. We need the timer*
     ;; variable since the finalizer closure must not perform slot
     ;; accesses on INSTANCE.
-    (tg:finalize instance #'(lambda () (sb-ext:unschedule-timer timer*)))))
+    (tg:finalize instance (lambda () (sb-ext:unschedule-timer timer*)))))
 
 (defmethod (setf style-print-interval) :before ((new-value t)
                                                 (style     periodic-printing-mixin))
@@ -100,10 +100,10 @@ in timer-driven output."
   "Return a function that is weakly-closed over STYLE and tries to run
 STYLE's `format-event' function when called."
   (let ((weak-style (tg:make-weak-pointer style)))
-    #'(lambda ()
-        (when-let ((style  (tg:weak-pointer-value weak-style))
-                   (stream (%style-stream style)))
-          (let+ (((*print-right-margin* *print-miser-width*)
-                  (%style-pretty-state style)))
-            (ignore-some-conditions (stream-error)
-              (format-event :trigger style stream)))))))
+    (lambda ()
+      (when-let ((style  (tg:weak-pointer-value weak-style))
+                 (stream (%style-stream style)))
+        (let+ (((*print-right-margin* *print-miser-width*)
+                (%style-pretty-state style)))
+          (ignore-some-conditions (stream-error)
+            (format-event :trigger style stream)))))))

@@ -223,7 +223,7 @@ that accumulate values in form of a histogram."))
 (defmethod format-value ((quantity histogram-mixin)
                          (stream   t))
   (format stream "~:[N/A~;~:*~{~{~A: ~D~}~^, ~}~]"
-          (map 'list #'(lambda (cons) (list (car cons) (cdr cons)))
+          (map 'list (lambda (cons) (list (car cons) (cdr cons)))
                (sort (quantity-value quantity) #'> :key #'cdr))))
 
 ;;; `rate-mixin' mixin class

@@ -29,8 +29,7 @@ should produce output of a fixed width."))
                                   (stream t))
   (invoke-with-width-limit
    stream (column-width column) :left
-   #'(lambda (stream)
-       (call-next-method column stream))))
+   (lambda (stream) (call-next-method column stream))))
 
 (defmethod format-event :around ((event  t)
                                  (style  width-mixin)
@@ -38,8 +37,7 @@ should produce output of a fixed width."))
                                  &key &allow-other-keys)
   (invoke-with-width-limit
    stream (column-width style) (column-alignment style)
-   #'(lambda (stream)
-       (call-next-method event style stream))))
+   (lambda (stream) (call-next-method event style stream))))
 
 (defmethod print-object ((object width-mixin) stream)
   (print-unreadable-object (object stream :type t :identity t)
@@ -86,7 +84,7 @@ printed to the value of STREAM-VAR in BODY on the previous value of
 STREAM-VAR ensuring a width limit LIMIT and alignment according to
 ALIGN. ALIGN can be :left or :right."
   `(invoke-with-width-limit ,stream-var ,limit ,align
-                            #'(lambda (,stream-var) ,@body)))
+                            (lambda (,stream-var) ,@body)))
 
 ;; Local Variables:
 ;; coding: utf-8

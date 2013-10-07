@@ -46,7 +46,7 @@
   (process-commandline-options
    :version         (cl-rsb-tools-logger-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
-   :return          #'(lambda () (return-from main)))
+   :return          (lambda () (return-from main)))
 
 
   ;; Validate commandline options.

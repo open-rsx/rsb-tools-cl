@@ -25,9 +25,9 @@ manner."))
   ;; Update quantities.
   (if (eq event :trigger)
       (call-next-method)
-      (map nil #'(lambda (column)
-                   (when (collects? column)
-                     (format-event event column stream)))
+      (map nil (lambda (column)
+                 (when (collects? column)
+                   (format-event event column stream)))
            (style-columns style))))
 
 
