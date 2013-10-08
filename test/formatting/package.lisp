@@ -62,6 +62,7 @@ output is compared to EXPECTED-OUTPUT."
                (ensure-same (concatenate 'string "^" expected "$") output
                             :test      #'ppcre:scan
                             :report    "~@<The formatting style ~A, when ~
-applied to ~:[no data~:;the data ~:*~{~S~^, ~}~], produced the output ~
-~S, not ~S.~@:>"
+                                        applied to ~:[no data~:;the data ~
+                                        ~:*~{~S~^, ~}~], produced the output ~
+                                        ~S, not ~S.~@:>"
                             :arguments (instance data output expected))))))))

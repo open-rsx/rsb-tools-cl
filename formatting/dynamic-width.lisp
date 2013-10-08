@@ -41,5 +41,6 @@ formatting to sub-styles based on the available horizontal room."
          (:documentation
           ,(or documentation
                (format nil "~@(~A~) meta-style that dispatches to one ~
-of the ~:*~(~A~) styles based on available horizontal room."
+                            of the ~:*~(~A~) styles based on available ~
+                            horizontal room."
                        name)))))))

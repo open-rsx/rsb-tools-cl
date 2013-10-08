@@ -38,7 +38,7 @@ and compared to detect incompatible events."))
                                      (descriptor-1 t)
                                      (descriptor-2 t))
   (error "~@<Data format of current event (~A) is different from the ~
-format of previous events (~A).~@:>"
+          format of previous events (~A).~@:>"
          descriptor-1 descriptor-2))
 
 (defmethod format-payload :before ((data   t)

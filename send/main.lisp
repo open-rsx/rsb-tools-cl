@@ -11,49 +11,54 @@
   "Return a help that explains the commandline option interface."
   (with-output-to-string (stream)
     (format stream "Send an event constructed according to EVENT-SPEC ~
-to listeners on scopes specified by DESTINATION-URI.
-
-EVENT-SPEC is parsed as string when surrounded with double-quotes and ~
-as integer or float number when consisting of digits without and with ~
-decimal point respectively.
-
-If EVENT-SPEC is the single character \"-\", the entire \"contents\" ~
-of standard input (until end of file) is read as a string and used as ~
-argument for the method send.
-
-DESTINATION-URI designates the destination scope to which the event ~
-should be sent and the transport configuration which should be used ~
-for sending the event.
-
-")
+                    to listeners on scopes specified by ~
+                    DESTINATION-URI.~@
+                    ~@
+                    EVENT-SPEC is parsed as string when surrounded ~
+                    with double-quotes and as integer or float number ~
+                    when consisting of digits without and with decimal ~
+                    point respectively.~@
+                    ~@
+                    If EVENT-SPEC is the single character \"-\", the ~
+                    entire \"contents\" of standard input (until end ~
+                    of file) is read as a string and used as argument ~
+                    for the method send.~@
+                    ~@
+                    DESTINATION-URI designates the destination scope ~
+                    to which the event should be sent and the ~
+                    transport configuration which should be used for ~
+                    sending the event.~@
+                    ~@
+                    ")
     (with-abbreviation (stream :uri show)
       (progn
-        (format stream "A DESTINATION-URI is of the form
-
-  ")
+        (format stream "A DESTINATION-URI is of the form~@
+                        ~@
+                        ~2@T")
         (print-uri-help stream :uri-var "DESTINATION-URI")))))
 
 (defun make-examples-string (&key
                              (program-name #+does-not-work (progname) "send"))
   "Make and return a string containing usage examples of the program."
   (format nil
-          "~A 5 'spread://localhost:4811/whoever/listens/here'
-
-  Use the spread transport to send an event containing the integer ~
-\"5\".
-
-~:*~A 5 'spread:/same/as/before?name=4803'
-
-  Like the previous example, but use the \"daemon name\" option of the ~
-Spread transport instead of specifying host and port.
-
-cat my-data.txt | ~:*~A - 'socket:/printer'
-
-  Send the content of the file \"my-data.txt\" to the listener at ~
-scope \"/printer\" using the socket transport (with its default ~
-configuration). This form can only be used for sending string ~
-payloads.
-"
+          "~2@T~A 5 'spread://localhost:4811/whoever/listens/here'~@
+           ~@
+           Use the spread transport to send an event containing the ~
+           integer \"5\".~@
+           ~@
+           ~2@T~:*~A 5 'spread:/same/as/before?name=4803'~@
+           ~@
+           Like the previous example, but use the \"daemon name\" ~
+           option of the Spread transport instead of specifying host ~
+           and port.~@
+           ~@
+           ~2@Tcat my-data.txt | ~:*~A - 'socket:/printer'~@
+           ~@
+           Send the content of the file \"my-data.txt\" to the ~
+           listener at scope \"/printer\" using the socket ~
+           transport (with its default configuration). This form can ~
+           only be used for sending string payloads.~@
+           "
           program-name))
 
 (defun update-synopsis (&key

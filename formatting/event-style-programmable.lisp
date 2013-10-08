@@ -146,7 +146,7 @@ By default, the following bindings are available:
     (when (or failed? conditions)
       (format-code-error code
                          "~@<Failed to compile.~@[ Compiler said: ~
-~:{~&+_~@<~@;~A~:>~}~]~@:>"
+                          ~:{~&+_~@<~@;~A~:>~}~]~@:>"
                          (mapcar #'list conditions)))
 function))
 
@@ -161,8 +161,8 @@ function))
           (lambda (condition)
             (format-code-error code
                                "~@<Failed to format event ~A using ~
-specified bindings ~_~{~2T~{~24A -> ~A~_~}~}and code ~_~2T~S~_: ~
-~A~@:>"
+                                specified bindings ~_~{~2T~{~24A -> ~
+                                ~A~_~}~}and code ~_~2T~S~_: ~A~@:>"
                                event bindings code condition))))
      (funcall (%style-lambda style) event stream))))
 
@@ -318,7 +318,8 @@ By default, the following PROPERTY names are available:
       (((and error (not stream-error))
         (lambda (condition)
           (error "~@<Failed to format event ~A using specified ~
-bindings ~_~{~2T~{~16A -> ~A~_~}~}and template ~_~2T~S~_: ~A~@:>"
+                  bindings ~_~{~2T~{~16A -> ~A~_~}~}and template ~
+                  ~_~2T~S~_: ~A~@:>"
                  event
                  (style-bindings style) (style-template style)
                  condition))))

@@ -12,28 +12,29 @@
 style and its parameters."
   (with-output-to-string (stream)
     (format stream "Specify a formatting style that should be used to ~
-print events. SPEC has to be of the form
-
-  KIND KEY1 VALUE1 KEY2 VALUE2 ...
-
-where keys and values are optional and depend on KIND. Examples (note ~
-that the single quotes have to be included only when used within a ~
-shell):
-
-  --style detailed
-  -s compact
-  --style 'compact :separator \"|\"'
-  --style 'columns :columns (:now (:scope :width 12) :id :newline)'
-    \(see extended help, enable with --help-for=columns, for an ~
-explanation of the :columns argument\)
-
-")
+                    print events. SPEC has to be of the form~@
+                    ~@
+                    ~2@TKIND KEY1 VALUE1 KEY2 VALUE2 ...~@
+                    ~@
+                    where keys and values are optional and depend on ~
+                    KIND. Examples (note that the single quotes have ~
+                    to be included only when used within a shell):~@
+                    ~@
+                    ~2@T--style detailed~@
+                    ~2@T-s compact~@
+                    ~2@T--style 'compact :separator \"|\"'~@
+                    ~2@T--style 'columns :columns (:now (:scope :width 12) :id :newline)'~@
+                    ~2@T\(see extended help, enable with ~
+                      --help-for=columns, for an explanation of ~
+                      the :columns argument\)~@
+                    ~@
+                    ")
     (rsb.common:with-abbreviation
         (stream '(:styles :columns :quantities) show)
       (format stream "The following formatting styles are ~
-currently available:
-
-")
+                      currently available:~@
+                      ~@
+                      ")
       (rsb.common:print-classes-help-string
        (style-classes) stream
        :initarg-blacklist '(:stream :pretty-state
@@ -45,18 +46,20 @@ currently available:
       (format stream "~%~%")
       (rsb.common:with-abbreviation (stream :columns show)
         (format stream "In column-based formatting styles, columns can ~
-be selected and configured using the :columns argument and a syntax of ~
-the form
+                        be selected and configured using the :columns ~
+                        argument and a syntax of the form~@
+                        ~@
+                        ~2@T:columns (COLSPEC1 COLSPEC2 ...)~@
+                        ~@
+                        where~@
+                        ~@
 
-  :columns (COLSPEC1 COLSPEC2 ...)
-
-where
-
-  COLSPEC ::= KIND | (KIND KEY1 VALUE1 KEY2 VALUE2 ...)
-
-The following columns are available:
-
-")
+                        ~2@TCOLSPEC ::= KIND | (KIND KEY1 VALUE1 KEY2 ~
+                          VALUE2 ...)~@
+                        ~@
+                        The following columns are available:~@
+                        ~@
+                        ")
         (rsb.common:print-classes-help-string
          (column-classes) stream))
 
@@ -66,20 +69,23 @@ The following columns are available:
         (format stream "~%~%")
         (rsb.common:with-abbreviation (stream :quantities show)
           (format stream "In the statistics style, statistical ~
-quantities are used in columns. These columns can be configured using ~
-the :columns argument and a syntax of the form
+                          quantities are used in columns. These ~
+                          columns can be configured using the :columns ~
+                          argument and a syntax of the form~@
+                          ~@
+                          ~2@T:columns (COLSPEC1 COLSPEC2 ...)~@
+                          ~@
+                          where~@
+                          ~@
 
-  :columns (COLSPEC1 COLSPEC2 ...)
-
-where
-
-  COLSPEC      ::= (:quantity :quantity QUANTITYSPEC KEY1 VALUE1 KEY2 ~
-VALUE2 ...)
-  QUANTITYSPEC ::= KIND | (KIND KEY1 VALUE1 KEY2 VALUE2 ...)
-
-The following quantities are available:
-
-")
+                          ~2@TCOLSPEC      ::= (:quantity :quantity ~
+                            QUANTITYSPEC KEY1 VALUE1 KEY2 VALUE2 ...)~@
+                          ~2@TQUANTITYSPEC ::= KIND | (KIND KEY1 VALUE1 ~
+                            KEY2 VALUE2 ...)~@
+                          ~@
+                          The following quantities are available:~@
+                          ~@
+                          ")
           (rsb.common:print-classes-help-string
            (funcall classes) stream
            :initarg-blacklist '(:extractor :reduce-by :start-time :values)))))))

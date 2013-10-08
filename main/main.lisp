@@ -68,11 +68,11 @@
       ;; necessary.
       (t
        (format *error-output* "~@<Invoke this program as~_~_~
-~5@T~A create-links [PREFIX [SUFFIX]]~
-~_ or ~:*~A redump [FILENAME (compress|dynamic)*]~
-~{~_ or ~A~}~_~_(not ~2:*~S). The latter invocations are usually ~
-done by creating symbolic links~_~_~
-~{~2@T~A -> tools~_~}~@:>~%"
+                               ~5@T~A create-links [PREFIX [SUFFIX]]~
+                               ~_ or ~:*~A redump [FILENAME (compress|dynamic)*]~
+                               ~{~_ or ~A~}~_~_(not ~2:*~S). The latter invocations are usually ~
+                               done by creating symbolic links~_~_~
+                               ~{~2@T~A -> tools~_~}~@:>~%"
                name
                (mapcar #'car *filename->entry-point*))
        (unless (every (compose #'probe-file #'car) *filename->entry-point*)
@@ -89,7 +89,7 @@ done by creating symbolic links~_~_~
   ;; Do not reload Spread library.
   #-win32 (unless (network.spread-system:spread-library-pathname)
     (error "~@<Spread library pathname not provided (use ~
-SPREAD_LIBRARY environment variable).~@:>"))
+            SPREAD_LIBRARY environment variable).~@:>"))
 
   #-win32 (network.spread:use-spread-library
            :pathname (network.spread-system:spread-library-pathname))
@@ -111,7 +111,9 @@ NAME can prevent the creation of the symbolic link."
   (let ((name (format nil "~@[~A~]~A~@[~A~]" prefix name suffix)))
     (unless (probe-file name)
       #-(and sbcl (not win32)) (error "~@<Don't know how to create ~
-symbolic links on this implementation-platform combination.~@:>")
+                                       symbolic links on this  ~
+                                       implementation-platform ~
+                                       combination.~@:>")
       (format t "~@<Creating symbolic link ~A -> ~A~@:>~%"
               name target)
       #+(and sbcl (not win32)) (sb-posix:symlink target name))))

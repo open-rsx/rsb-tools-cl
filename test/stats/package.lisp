@@ -56,6 +56,7 @@ EXPECTED-OUTPUT."
            (ensure-same expected output
                         :test      #'ppcre:scan
                         :report    "~@<The quantity ~A, when ~:[not ~
-updated with any data~;~:*updated with data ~{~S~^, ~}~], produced the ~
-output ~S, not ~S.~@:>"
+                                    updated with any data~;~:*updated ~
+                                    with data ~{~S~^, ~}~], produced the ~
+                                    output ~S, not ~S.~@:>"
                         :arguments (instance events output expected))))))

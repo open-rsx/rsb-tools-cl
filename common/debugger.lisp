@@ -51,4 +51,4 @@
             (start-swank)))
   #-(and sbcl (not win32))
   (warn "~@<Cannot install signal handler to enable SWANK on this ~
-implementation-platfom combination.~@:>"))
+         implementation-platfom combination.~@:>"))

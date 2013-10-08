@@ -170,7 +170,7 @@ events that actually are replies to method calls."
 events that actually are replies to method calls."
     (let ((*print-length* most-positive-fixnum))
       (format stream "> ~/rsb.formatting::format-method/ ~
-~:[=>~;ERROR:~] ~/rsb::print-event-data/"
+                      ~:[=>~;ERROR:~] ~/rsb::print-event-data/"
               event (error-event? event) (event-data event)))))
 
 ;;; Constant column
@@ -228,7 +228,7 @@ be extracted from events."))
                :alignment :left)
               (:documentation
                ,(format nil "Emit the ~(~A~) of the event designated by ~
-the value of the :key initarg."
+                             the value of the :key initarg."
                         name)))
 
             (defmethod shared-initialize :after ((instance   ,class-name)

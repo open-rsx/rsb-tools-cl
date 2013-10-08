@@ -15,7 +15,7 @@
   (:report
    (lambda (condition stream)
      (format stream "~@<Failed to load data definition from source ~
-~A.~/more-conditions::maybe-print-cause/~@:>"
+                     ~A.~/more-conditions::maybe-print-cause/~@:>"
              (failed-to-load-idl-source condition)
              condition)))
   (:documentation

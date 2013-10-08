@@ -36,8 +36,9 @@ non-empty intersection with SHOW."
                          :show    ,show
                          :default ,default)
          (progn ,@body)
-         (format ,stream "Use the ~{--help-for=~(~A~) or ~}~
---help-for=all options to display the full help text for this item."
+         (format ,stream "Use the ~{--help-for=~(~A~) or ~} ~
+                          --help-for=all options to display ~
+                          the full help text for this item."
                  (ensure-list ,category)))))
 
 ;;; URI synopsis for connectors
@@ -76,22 +77,22 @@ STREAM."
   "Print an explanatory string regarding the interpretation of URIS
 onto STREAM."
   (format stream
-          "SCHEME:[//HOST][:PORT][/PATH][?QUERY][#FRAGMENT]
-
-is interpreted as follows:
-
-+ SCHEME   -> Transport name
-+ HOST     -> Transport option :HOST (not always supported)
-+ PORT     -> Transport option :PORT (not always supported)
-+ PATH     -> Scope
-+ QUERY    -> \"freestyle\" transport options. Has to be of the form ~
-KEY1=VALUE1;KEY2=VALUE2;...
-+ FRAGMENT -> not processed
-
-For the currently available transports, ~A should match the ~
-following patterns:
-
-~2T"
+          "SCHEME:[//HOST][:PORT][/PATH][?QUERY][#FRAGMENT]~@
+           ~@
+           is interpreted as follows:~@
+           ~@
+           + SCHEME   -> Transport name~@
+           + HOST     -> Transport option :HOST (not always supported)~@
+           + PORT     -> Transport option :PORT (not always supported)~@
+           + PATH     -> Scope~@
+           + QUERY    -> \"freestyle\" transport options. Has to be of ~@
+                         the form KEY1=VALUE1;KEY2=VALUE2;...~@
+           + FRAGMENT -> not processed~@
+           ~@
+           For the currently available transports, ~A should match the ~
+           following patterns:~@
+           ~@
+           ~2@T"
           uri-var)
   (print-all-uri-synopsis stream))
 
@@ -169,7 +170,7 @@ processed."
                          (documentation (class-name class) 'type))))
               (list name args doc)))))
     (format stream "~{~{~(~2@T~A~)~<~#[~; [~@{~(~S~) ARG~}]~:; { ~
-~@{~(~S~) ARG~^ | ~} }*~]~:>~2&~4@T~@<~@;~A~:>~}~^~%~%~}"
+                    ~@{~(~S~) ARG~^ | ~} }*~]~:>~2&~4@T~@<~@;~A~:>~}~^~%~%~}"
             (map 'list (curry #'apply #'do-one) items))))
 
 (defun %class-valid-initargs (class)

@@ -52,7 +52,7 @@
   ;; Validate commandline options.
   (when (> (length (remainder)) 1)
     (error "~@<Specify at most one URI (also, options cannot follow ~
-the URI argument).~@:>"))
+            the URI argument).~@:>"))
 
   (with-logged-warnings
     ;; Load IDLs as specified on the commandline.
@@ -100,6 +100,8 @@ the URI argument).~@:>"))
                       (continue (&optional condition)
                         :report (lambda (stream)
                                   (format stream "~@<Ignore the ~
-failure for ~A and continue processing.~@:>"
+                                                  failure for ~A and ~
+                                                  continue ~
+                                                  processing.~@:>"
                                           event))
                         (declare (ignore condition))))))))))))

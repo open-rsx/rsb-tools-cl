@@ -22,7 +22,8 @@ CASES as body of `ensure-quantity-cases' in a test case for the
        (addtest (,suite-name
                  :documentation
                  ,(format nil "Test methods on `update!' and ~
-`format-value' for the `~(~A~)' quantity class."
+                               `format-value' for the `~(~A~)' ~
+                               quantity class."
                           class-name))
          update!-and-format-value
 

@@ -107,7 +107,8 @@ display information for events within each group."))
                                               :print-interval nil))))
                    `(define-monitor-style (,name ,@args)
                         ,(format nil "~A The output of this style is ~
-designed to fit into ~:[~D or more columns~;~:*~D columns~]."
+                                      designed to fit into ~:[~D or ~
+                                      more columns~;~:*~D columns~]."
                                  documentation (when max (1- max)) min)
                       ,group-column-spec
                       ,@spec)))))

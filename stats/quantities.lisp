@@ -180,7 +180,7 @@ values."))
                                         key)
   (when (eq key :keys)
     (error "~@<Value ~S specified for ~S initarg of ~S quantity, but ~
-moments cannot be computed over meta-data keys.~@:>"
+            moments cannot be computed over meta-data keys.~@:>"
            key :key 'meta-data-moments)))
 
 (defmethod update! ((quantity meta-data-moments)

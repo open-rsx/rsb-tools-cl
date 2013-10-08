@@ -11,65 +11,74 @@
   "Return a help that explains the commandline option interface."
   (with-output-to-string (stream)
     (format stream "Call METHOD of the server at SERVER-URI with ~
-argument ARG.
-
-ARG is parsed as string when surrounded with double-quotes and as ~
-integer or float number when consisting of digits without and with ~
-decimal point respectively.
-
-If ARG is the single character \"-\", the entire \"contents\" of ~
-standard input (until end of file) is read as a string and used as ~
-argument for the method call.
-
-If ARG is the empty string, i.e. the call specification is of the form ~
-SERVER-URI/METHOD(), the method is called without argument.
-
-SERVER-URI designates the root scope of the remote server and the ~
-transport that should be used.
-
-")
+                    argument ARG.~@
+                    ~@
+                    ARG is parsed as string when surrounded with ~
+                    double-quotes and as integer or float number when ~
+                    consisting of digits without and with decimal ~
+                    point respectively.~@
+                    ~@
+                    If ARG is the single character \"-\", the entire ~
+                    \"contents\" of standard input (until end of file) ~
+                    is read as a string and used as argument for the ~
+                    method call.~@
+                    ~@
+                    If ARG is the empty string, i.e. the call ~
+                    specification is of the form ~
+                    SERVER-URI/METHOD(), the method is called without ~
+                    argument.~@
+                    ~@
+                    SERVER-URI designates the root scope of the remote ~
+                    server and the transport that should be used.~@
+                    ~@
+                    ")
     (with-abbreviation (stream :uri show)
       (progn
-        (format stream "A SERVER-URI of the form
-
-  ")
+        (format stream "A SERVER-URI of the form~@
+                        ~@
+                        ")
         (print-uri-help stream :uri-var "SERVER-URI")))))
 
 (defun make-examples-string (&key
                              (program-name #+does-not-work (progname) "call"))
   "Make and return a string containing usage examples of the program."
   (format nil
-          "~A 'spread://localhost:4811/my/interface/method(5)'
-
-  Use the spread transport to call the method \"method\" of the server ~
-at \"/my/inferface\" passing it the integer argument \"5\". Note the ~
-quotes to prevent the shell from interpreting the \"(\" and \")\".
-
-~:*~A 'spread:/interface?name=4803/method(5)'
-
-  Like the previous example, but use the \"daemon name\" option of the ~
-Spread transport instead of specifying host and port. Note how URI ~
-options, being part of the server URI, are inserted between the URI ~
-path component and the method name.
-
-~:*~A '/my/interface/noarg()'
-
-  Use the default transport configuration to call the \"noarg\" method ~
-of the server at scope \"/my/inferface\" without argument.
-
-~:*~A --no-wait '/remotecontrol/stop(\"now\")'
-
-  Use the default transport configuration to call the \"stop\" method ~
-of the server at scope \"/remotecontrol\" passing it the string ~
-argument \"now\". Do not wait for a result of the method call.
-
-cat my-arg.txt | ~:*~A 'socket:/printer/print(-)'
-
-  Call the \"print\" method of the server at scope \"/printer\" using ~
-the socket transform (with its default configuration) using the ~
-content of the file \"my-arg.txt\" as argument of the call. This only ~
-works if the called method accepts an argument of type string.
-"
+          "~2@T~A 'spread://localhost:4811/my/interface/method(5)'~@
+           ~@
+           Use the spread transport to call the method \"method\" of ~
+           the server at \"/my/inferface\" passing it the integer ~
+           argument \"5\". Note the quotes to prevent the shell from ~
+           interpreting the \"(\" and \")\".~@
+           ~@
+           ~2@T~:*~A 'spread:/interface?name=4803/method(5)'~@
+           ~@
+           Like the previous example, but use the \"daemon name\" ~
+           option of the Spread transport instead of specifying host ~
+           and port. Note how URI options, being part of the server ~
+           URI, are inserted between the URI path component and the ~
+           method name.~@
+           ~@
+           ~2@T~:*~A '/my/interface/noarg()'~@
+           ~@
+           Use the default transport configuration to call the ~
+           \"noarg\" method of the server at scope \"/my/interface\" ~
+           without argument.~@
+           ~@
+           ~2@T~:*~A --no-wait '/remotecontrol/stop(\"now\")'~@
+           ~@
+           Use the default transport configuration to call the ~
+           \"stop\" method of the server at scope \"/remotecontrol\" ~
+           passing it the string argument \"now\". Do not wait for a ~
+           result of the method call.~@
+           ~@
+           ~2@Tcat my-arg.txt | ~:*~A 'socket:/printer/print(-)'~@
+           ~@
+           Call the \"print\" method of the server at scope ~
+           \"/printer\" using the socket transform (with its default ~
+           configuration) using the content of the file \"my-arg.txt\" ~
+           as argument of the call. This only works if the called ~
+           method accepts an argument of type string.~@
+           "
           program-name))
 
 (defun update-synopsis (&key
@@ -139,7 +148,7 @@ works if the called method accepts an argument of type string.
   ;; Validate commandline options.
   (unless (length= 1 (remainder))
     (error "~@<Supply call specification of the form ~
-SERVER-URI/METHOD(ARG).~@:>"))
+            SERVER-URI/METHOD(ARG).~@:>"))
 
   (with-logged-warnings
     ;; Load IDLs as specified on the commandline.
@@ -180,7 +189,7 @@ SERVER-URI/METHOD(ARG).~@:>"))
                    (bt:timeout (condition)
                      (declare (ignore condition))
                      (error "~@<Method call timed out after ~S ~
-second~:P.~@:>"
+                             second~:P.~@:>"
                             timeout)))))))
            ((&flet call/translate (server)
               (let+ (((&values event) (call/raw server)))
@@ -198,7 +207,7 @@ second~:P.~@:>"
 
       (when (and timeout (not wait?))
         (error "~@<Cannot specify timeout ~S in conjunction with
-no-wait.~@:>"
+                no-wait.~@:>"
                timeout))
 
       (log1 :info "Using URI ~S method ~S arg ~A"

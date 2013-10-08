@@ -28,9 +28,9 @@ classes that produce streams of audio data from event payloads."))
 (defmethod incompatible-descriptors ((style        style-audio-stream)
                                      (descriptor-1 list)
                                      (descriptor-2 list))
-  (error "~@<Data format of current sound chunk (~{~A x ~A Hz, ~
-~A~}) is different from the format of previous chunks (~{~A x ~A Hz, ~
-~A~}).~@:>"
+  (error "~@<Data format of current sound chunk (~{~A x ~A Hz, ~A~}) ~
+          is different from the format of previous chunks (~{~A x ~A ~
+          Hz, ~A~}).~@:>"
          descriptor-1 descriptor-2))
 
 (defmethod find-style-class ((spec (eql :audio-stream/raw)))
