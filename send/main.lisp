@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.tools.send)
+(cl:in-package #:rsb.tools.send)
 
 (defun make-help-string (&key
                          (show :default))

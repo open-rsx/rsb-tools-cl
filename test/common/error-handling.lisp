@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.common.test)
+(cl:in-package #:rsb.common.test)
 
 (define-condition foo-error (error) ()
   (:documentation

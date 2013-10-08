@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.tools.main)
+(cl:in-package #:rsb.tools.main)
 
 (defvar *filename->entry-point*
   '(("info"   . rsb.tools.info:main)

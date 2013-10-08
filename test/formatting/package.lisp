@@ -4,23 +4,23 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage :rsb.formatting.test
+(cl:defpackage #:rsb.formatting.test
   (:use
-   :cl
-   :alexandria
-   :let-plus
-   :lift
+   #:cl
+   #:alexandria
+   #:let-plus
+   #:lift
 
-   :rsb
-   :rsb.formatting)
+   #:rsb
+   #:rsb.formatting)
 
   (:export
-   :formatting-root)
+   #:formatting-root)
 
   (:documentation
    "This package contains unit tests for the formatting module."))
 
-(cl:in-package :rsb.formatting.test)
+(cl:in-package #:rsb.formatting.test)
 
 (defvar *simple-event* (make-event "/foo" "bar")
   "A simple event for use in tests.")

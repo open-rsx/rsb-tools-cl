@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.tools.info)
+(cl:in-package #:rsb.tools.info)
 
 (defun update-synopsis (&key
                         (show :default))

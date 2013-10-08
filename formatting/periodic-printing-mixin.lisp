@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.formatting)
+(cl:in-package #:rsb.formatting)
 
 (defclass periodic-printing-mixin ()
   ((print-interval :initarg  :print-interval

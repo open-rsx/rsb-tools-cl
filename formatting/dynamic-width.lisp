@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.formatting)
+(cl:in-package #:rsb.formatting)
 
 (defun number-of-columns (min &optional max)
   "Return a predicate that matches if the current stream line width is

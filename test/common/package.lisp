@@ -4,21 +4,21 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage :rsb.common.test
+(cl:defpackage #:rsb.common.test
   (:use
-   :cl
-   :let-plus
-   :lift
+   #:cl
+   #:let-plus
+   #:lift
 
-   :rsb.common)
+   #:rsb.common)
 
   (:export
-   :common-root)
+   #:common-root)
 
   (:documentation
    "This package contains unit tests for the cl-rsb-common system"))
 
-(cl:in-package :rsb.common.test)
+(cl:in-package #:rsb.common.test)
 
 (deftestsuite common-root ()
   ()

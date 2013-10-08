@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.formatting)
+(cl:in-package #:rsb.formatting)
 
 ;; TODO(jmoringe, 2012-02-06): hack
 #.(asdf:load-system :usocket)

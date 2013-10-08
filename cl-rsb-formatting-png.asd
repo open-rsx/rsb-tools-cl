@@ -8,7 +8,7 @@
     (load (merge-pathnames "cl-rsb-formatting.asd" *load-truename*))
     (values))
 
-(cl:in-package :cl-rsb-formatting-system)
+(cl:in-package #:cl-rsb-formatting-system)
 
 ;;; System definition
 

@@ -4,23 +4,23 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage :rsb.stats.test
+(cl:defpackage #:rsb.stats.test
   (:use
-   :cl
-   :alexandria
-   :let-plus
-   :lift
+   #:cl
+   #:alexandria
+   #:let-plus
+   #:lift
 
-   :rsb
-   :rsb.stats)
+   #:rsb
+   #:rsb.stats)
 
   (:export
-   :stats-root)
+   #:stats-root)
 
   (:documentation
    "This package contains unit tests for the stats module"))
 
-(cl:in-package :rsb.stats.test)
+(cl:in-package #:rsb.stats.test)
 
 (deftestsuite stats-root ()
   ()

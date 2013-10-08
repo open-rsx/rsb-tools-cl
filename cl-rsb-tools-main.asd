@@ -4,16 +4,16 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage :cl-rsb-tools-main-system
+(cl:defpackage #:cl-rsb-tools-main-system
   (:use
-   :cl
-   :asdf)
+   #:cl
+   #:asdf)
 
   (:export
-   :version/list
-   :version/string))
+   #:version/list
+   #:version/string))
 
-(cl:in-package :cl-rsb-tools-main-system)
+(cl:in-package #:cl-rsb-tools-main-system)
 
 ;;; Version stuff
 

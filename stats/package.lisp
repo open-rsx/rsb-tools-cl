@@ -4,93 +4,93 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage :rsb.stats
+(cl:defpackage #:rsb.stats
   (:use
-   :cl
-   :alexandria
-   :let-plus
-   :more-conditions
+   #:cl
+   #:alexandria
+   #:let-plus
+   #:more-conditions
 
-   :rsb)
+   #:rsb)
 
   ;; Types
   (:export
-   :meta-data-selector
-   :when-missing-policy)
+   #:meta-data-selector
+   #:when-missing-policy)
 
   ;; Quantity protocol
   (:export
-   :quantity-name
-   :quantity-value
+   #:quantity-name
+   #:quantity-value
 
-   :update!
-   :reset!
+   #:update!
+   #:reset!
 
-   :format-value)
+   #:format-value)
 
   ;; `collecting-mixin' mixin class
   (:export
-   :quantity-values
+   #:quantity-values
 
-   :collecting-mixin)
+   #:collecting-mixin)
 
   ;; `extract-function-mixin' mixin class
   (:export
-   :quantity-extractor
+   #:quantity-extractor
 
-   :extract-function-mixin)
+   #:extract-function-mixin)
 
   ;; `histogram-mixin' mixin class
   (:export
-   :histogram-mixin)
+   #:histogram-mixin)
 
   ;; `moments-mixin' mixin class
   (:export
-   :moments-mixin)
+   #:moments-mixin)
 
   ;; `all-time-mixin' mixin class
   (:export
-   :all-time-mixin)
+   #:all-time-mixin)
 
   ;; `named-mixin'
   (:export
-   :named-mixin)
+   #:named-mixin)
 
   ;; `reduction-mixin' mixin class
   (:export
-   :quantity-reduce-by
+   #:quantity-reduce-by
 
-   :reduction-mixin)
+   #:reduction-mixin)
 
   ;; `rate-mixin' mixin class
   (:export
-   :rate-mixin)
+   #:rate-mixin)
 
   ;; `meta-data-mixin' mixin class
   (:export
-   :meta-data-mixin
+   #:meta-data-mixin
 
-   :quantity-key
-   :quantity-when-missing)
+   #:quantity-key
+   #:quantity-when-missing)
 
   ;; `format-mixin' mixin class
   (:export
-   :format-mixin
+   #:format-mixin
 
-   :quantity-format)
+   #:quantity-format)
 
   ;; Quantity findable class family
   (:export
-   :no-such-quantity-class
-   :find-quantity-class
-   :quantity-classes)
+   #:no-such-quantity-class
+   #:find-quantity-class
+   #:quantity-classes)
 
   ;; Extractor utilities
   (:export
-   :event-size
-   :event-size/power-of-2
+   #:event-size
+   #:event-size/power-of-2
 
-   :event-type/simple)
+   #:event-type/simple)
 
   (:documentation
    "This package contains functions and classes for computing basic

@@ -4,20 +4,20 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage :rsb.tools.info
+(cl:defpackage #:rsb.tools.info
   (:use
-   :cl
-   :alexandria
-   :let-plus
+   #:cl
+   #:alexandria
+   #:let-plus
 
-   :rsb
-   :rsb.common
-   :rsb.formatting
+   #:rsb
+   #:rsb.common
+   #:rsb.formatting
 
-   :com.dvlsoft.clon)
+   #:com.dvlsoft.clon)
 
   (:export
-   :main)
+   #:main)
 
   (:documentation
    "Main package of the `cl-rsb-tools-info' system."))

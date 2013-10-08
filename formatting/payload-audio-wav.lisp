@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.formatting)
+(cl:in-package #:rsb.formatting)
 
 (defmethod find-style-class ((spec (eql :audio-stream/wav)))
   (find-class 'style-audio-stream/wav))

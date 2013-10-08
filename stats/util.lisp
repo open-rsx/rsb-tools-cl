@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.stats)
+(cl:in-package #:rsb.stats)
 
 (defun event-size (event &optional (replacement-value :n/a))
   "Try to determine and return the size of the payload of EVENT in

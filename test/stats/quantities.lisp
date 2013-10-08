@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.stats.test)
+(cl:in-package #:rsb.stats.test)
 
 (defmacro define-simple-quantity-suite ((name) &body cases)
   "Define a test suite for the quantity class designated by NAME. Use

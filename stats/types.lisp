@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.stats)
+(cl:in-package #:rsb.stats)
 
 (deftype meta-data-selector ()
   "Either the name of a meta-data item or one of the special

@@ -4,16 +4,16 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage :cl-rsb-formatting-system
+(cl:defpackage #:cl-rsb-formatting-system
   (:use
-   :cl
-   :asdf)
+   #:cl
+   #:asdf)
 
   (:export
-   :version/list
-   :version/string))
+   #:version/list
+   #:version/string))
 
-(cl:in-package :cl-rsb-formatting-system)
+(cl:in-package #:cl-rsb-formatting-system)
 
 ;;; Version stuff
 

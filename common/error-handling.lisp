@@ -4,7 +4,7 @@
 ;;;;
 ;;;; This file may be licensed under the terms of the
 
-(cl:in-package :rsb.common)
+(cl:in-package #:rsb.common)
 
 ;;; Toplevel error handling strategies
 

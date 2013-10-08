@@ -6,18 +6,18 @@
 
 ;;; rst.vision Types
 
-(cl:defpackage :rst.vision
+(cl:defpackage #:rst.vision
   (:use
-   :cl)
+   #:cl)
 
   (:export
-   :image
-   :image-color-mode
-   :image-width
-   :image-height
-   :image-data))
+   #:image
+   #:image-color-mode
+   #:image-width
+   #:image-height
+   #:image-data))
 
-(cl:in-package :rst.vision)
+(cl:in-package #:rst.vision)
 
 (defclass image ()
   ((color-mode :reader image-color-mode)
@@ -27,18 +27,18 @@
 
 ;;; rst.audition Types
 
-(cl:defpackage :rst.audition
+(cl:defpackage #:rst.audition
   (:use
-   :cl)
+   #:cl)
 
   (:export
-   :sound-chunk
-   :sound-chunk-channels
-   :sound-chunk-rate
-   :sound-chunk-sample-type
-   :sound-chunk-data))
+   #:sound-chunk
+   #:sound-chunk-channels
+   #:sound-chunk-rate
+   #:sound-chunk-sample-type
+   #:sound-chunk-data))
 
-(cl:in-package :rst.audition)
+(cl:in-package #:rst.audition)
 
 (defclass sound-chunk ()
   ((channels    :reader sound-chunk-channels)

@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.common)
+(cl:in-package #:rsb.common)
 
 (defun existing-directory-or-lose (pathname)
   "Signal an error unless PATHNAME designates an existing directory."

@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package :rsb.common)
+(cl:in-package #:rsb.common)
 
 (define-condition failed-to-load-idl (rsb-error
                                       chainable-condition)

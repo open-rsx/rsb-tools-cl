@@ -4,82 +4,82 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage :rsb.common
+(cl:defpackage #:rsb.common
   (:use
-   :cl
-   :alexandria
-   :split-sequence
-   :let-plus
-   :iterate
-   :more-conditions
+   #:cl
+   #:alexandria
+   #:split-sequence
+   #:let-plus
+   #:iterate
+   #:more-conditions
 
-   :com.dvlsoft.clon
+   #:com.dvlsoft.clon
 
-   :rsb)
+   #:rsb)
 
   ;; Conditions
   (:export
-   :failed-to-load-idl
-   :failed-to-load-idl-source)
+   #:failed-to-load-idl
+   #:failed-to-load-idl-source)
 
   ;; Variables
   (:export
-   :*info-output*)
+   #:*info-output*)
 
   ;; Error handling
   (:export
-   :abort/signal
-   :continue/verbose
+   #:abort/signal
+   #:continue/verbose
 
-   :maybe-relay-to-thread
+   #:maybe-relay-to-thread
 
-   :invoke-with-error-policy
-   :with-error-policy)
+   #:invoke-with-error-policy
+   #:with-error-policy)
 
   ;; IDL loading
   (:export
-   :load-idl)
+   #:load-idl)
 
   ;; Logging
   (:export
-   :with-logged-warnings)
+   #:with-logged-warnings)
 
   ;; Commandline options
   (:export
-   :make-common-options
-   :process-commandline-options
+   #:make-common-options
+   #:process-commandline-options
 
-   :make-error-handling-options
-   :process-error-handling-options
+   #:make-error-handling-options
+   #:process-error-handling-options
 
-   :make-idl-options
-   :process-idl-options
+   #:make-idl-options
+   #:process-idl-options
 
-   :parse-instantiation-spec)
+   #:parse-instantiation-spec)
 
   ;; Interactive stuff
   (:export
-   :with-interactive-interrupt-exit)
+   #:with-interactive-interrupt-exit)
 
   ;; Help text generation
   (:export
-   :show-help-for?
-   :with-abbreviation
+   #:show-help-for?
+   #:with-abbreviation
 
-   :print-uri-help
-   :print-filter-help
+   #:print-uri-help
+   #:print-filter-help
 
-   :print-version
+   #:print-version
 
-   :print-classes-help-string)
+   #:print-classes-help-string)
 
   ;; Debugging
   (:export
-   :trace-things
-   :disable-debugger
+   #:trace-things
+   #:disable-debugger
 
-   :start-swank
-   :enable-swank-on-signal)
+   #:start-swank
+   #:enable-swank-on-signal)
 
   (:documentation
    "This package contains some common utility functions for RSB:
