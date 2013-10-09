@@ -10,7 +10,7 @@
   ((sub-styles :initarg  :sub-styles
                :type     list
                :accessor style-sub-styles
-               :initform nil
+               :initform '()
                :documentation
                "Stores predicates and corresponding sub-styles as an
 alist of items of the form (PREDICATE . SUB-STYLE)."))

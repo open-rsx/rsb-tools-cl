@@ -125,12 +125,7 @@ By default, the following bindings are available:
          ((&values function nil failed?)
           (block compile
             (handler-bind
-                (#+sbcl
-                 (sb-ext:compiler-note
-                   (lambda (condition)
-                     (log1 :info "Compiler said: ~A" condition)
-                     (muffle-warning)))
-                 (style-warning
+                (((or style-warning #+sbcl sb-ext:compiler-note)
                    (lambda (condition)
                      (log1 :warn "Compiler said: ~A" condition)
                      (muffle-warning)))

@@ -47,7 +47,7 @@ EXPECTED-OUTPUT."
          (let* ((instance (apply #'make-instance ',class args))
                 (output   (progn
                             (reset! instance)
-                            ;; Wait 1 ms to the sake of time-based
+                            ;; Wait 1 ms for the sake of time-based
                             ;; quantities.
                             (sleep .001)
                             (mapc (curry #'update! instance) events)

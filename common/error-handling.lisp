@@ -107,9 +107,7 @@ Condition was:~
 established. When an error is signaled, call POLICY to (potentially)
 handle it."
   (restart-case
-      (handler-bind
-          ((error policy))
-        (funcall thunk))
+      (handler-bind ((error policy)) (funcall thunk))
     (abort (&optional condition)
       (declare (ignore condition))
       (error "Aborted."))

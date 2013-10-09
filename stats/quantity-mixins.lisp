@@ -11,7 +11,7 @@
 (defclass named-mixin ()
   ((name :initarg  :name
          :type     string
-         :accessor quantity-name
+         :reader   quantity-name
          :initform (missing-required-initarg 'named-mixin :name)
          :documentation
          "Stores the name of the quantity."))
@@ -113,18 +113,18 @@ events."))
 
 (defmethod update! ((quantity collecting-mixin)
                     (value    (eql nil)))
-  "Ignore nil value by default."
+  ;; Ignore nil value by default.
   (values))
 
 (defmethod update! ((quantity collecting-mixin)
                     (value    t))
-  "Add VALUE to the collected values."
+  ;; Add VALUE to the collected values.
   (vector-push-extend value (quantity-values quantity))
   (when (next-method-p)
     (call-next-method)))
 
 (defmethod reset! ((quantity collecting-mixin))
-  "Clear the collection of values in QUANTITY."
+  ;; Clear the collection of values in QUANTITY.
   (setf (fill-pointer (quantity-values quantity)) 0)
   (when (next-method-p)
     (call-next-method)))
@@ -152,12 +152,8 @@ which compute the quantity value from a collection of values using a
 reduction function."))
 
 (defmethod quantity-value ((quantity reduction-mixin))
-  (let+ (((&accessors-r/o
-           (empty-value quantity-empty-value)
-           (values      quantity-values)
-           (reduce-by   quantity-reduce-by)) quantity))
-    (reduce reduce-by values
-            :initial-value empty-value)))
+  (reduce (quantity-reduce-by quantity) (quantity-values quantity)
+          :initial-value (quantity-empty-value quantity)))
 
 ;;; `all-time-mixin' mixin class
 
