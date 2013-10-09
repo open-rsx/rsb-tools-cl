@@ -321,15 +321,15 @@ By default, the following PROPERTY names are available:
     (funcall (%style-lambda style) event stream)))
 
 (defmethod print-object ((object style-programmable/template) stream)
-  (print-unreadable-object (object stream :type t :identity t)
-    (if (slot-boundp object 'template)
+  (if (slot-boundp object 'template)
+      (print-unreadable-object (object stream :type t :identity t)
         (let+ (((&accessors-r/o (template style-template)
                                 (bindings style-bindings)) object)
                (length (length template)))
           (format stream "\"~A~:[~;…~]\" "
                   (subseq template 0 (min 8 length)) (> length 8))
-          (%print-bindings bindings stream))
-        (call-next-method))))
+          (%print-bindings bindings stream)))
+      (call-next-method)))
 
 ;;; Utility functions
 
