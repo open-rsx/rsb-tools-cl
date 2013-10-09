@@ -100,9 +100,9 @@ Condition was:~
          )))))
 
 (declaim (ftype (function (function function) *)
-                invoke-with-error-policy))
+                call-with-error-policy))
 
-(defun invoke-with-error-policy (policy thunk)
+(defun call-with-error-policy (policy thunk)
   "Call THUNK with `cl:abort' and `abort/signal' restarts
 established. When an error is signaled, call POLICY to (potentially)
 handle it."
@@ -118,5 +118,5 @@ handle it."
   "Execute BODY with `cl:abort' and `abort/signal' restarts
 established. When an error is signaled, call POLICY to (potentially)
 handle it."
-  `(invoke-with-error-policy
+  `(call-with-error-policy
     (coerce ,policy 'function) (lambda () ,@body)))

@@ -33,7 +33,7 @@
 
    #:maybe-relay-to-thread
 
-   #:invoke-with-error-policy
+   #:call-with-error-policy
    #:with-error-policy)
 
   ;; IDL loading

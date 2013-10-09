@@ -112,7 +112,7 @@
 
    #:column-alignment
 
-   #:invoke-width-width-limit
+   #:call-width-width-limit
    #:with-width-limit)
 
   ;; `name-mixin' mixin class
@@ -289,7 +289,7 @@
    #:stream-line-width
 
    #:with-print-limits
-   #:invoke-with-print-limits)
+   #:call-with-print-limits)
 
   ;; Help text generation
   (:export

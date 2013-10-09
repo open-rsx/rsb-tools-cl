@@ -196,9 +196,9 @@ determined."
   "Execute BODY with `*print-right-margin*' and `*print-miser-width*'
 bound to the line width of STREAM. Additionally, install a handler for
 SIGWINCH that updates these values, if possible."
-  `(invoke-with-print-limits ,stream (lambda () ,@body)))
+  `(call-with-print-limits ,stream (lambda () ,@body)))
 
-(defun invoke-with-print-limits (stream thunk)
+(defun call-with-print-limits (stream thunk)
   "Call THUNK with `*print-right-margin*' and ``*print-miser-width*'
 bound to the suitable values for the line width of
 STREAM. Additionally, install a handler for SIGWINCH that updates

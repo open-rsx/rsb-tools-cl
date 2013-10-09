@@ -27,7 +27,7 @@ should produce output of a fixed width."))
 
 (defmethod format-header :around ((column width-mixin)
                                   (stream t))
-  (invoke-with-width-limit
+  (call-with-width-limit
    stream (column-width column) :left
    (lambda (stream) (call-next-method column stream))))
 
@@ -35,7 +35,7 @@ should produce output of a fixed width."))
                                  (style  width-mixin)
                                  (stream t)
                                  &key &allow-other-keys)
-  (invoke-with-width-limit
+  (call-with-width-limit
    stream (column-width style) (column-alignment style)
    (lambda (stream) (call-next-method event style stream))))
 
@@ -46,7 +46,7 @@ should produce output of a fixed width."))
 
 ;;; Utility functions
 
-(defun invoke-with-width-limit (stream limit align thunk)
+(defun call-with-width-limit (stream limit align thunk)
   "Call THUNK with a single argument that is a stream. Format things
 printed to the stream by THUNK on STREAM ensuring a width limit LIMIT
 and alignment according to ALIGN. ALIGN can be :left or :right."
@@ -83,8 +83,8 @@ and alignment according to ALIGN. ALIGN can be :left or :right."
 printed to the value of STREAM-VAR in BODY on the previous value of
 STREAM-VAR ensuring a width limit LIMIT and alignment according to
 ALIGN. ALIGN can be :left or :right."
-  `(invoke-with-width-limit ,stream-var ,limit ,align
-                            (lambda (,stream-var) ,@body)))
+  `(call-with-width-limit ,stream-var ,limit ,align
+                          (lambda (,stream-var) ,@body)))
 
 ;; Local Variables:
 ;; coding: utf-8
