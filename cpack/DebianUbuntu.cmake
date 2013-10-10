@@ -28,7 +28,9 @@ endforeach()
 set(CPACK_INSTALL_COMMANDS "sh -c 'mkdir -p \\\"${PREFIX}/share/common-lisp/systems\\\" ${COMMANDS}'")
 
 # Generate postinst and prerm hooks
-set(PACKAGE_ALT_PRIORITY "100")
+math(EXPR PACKAGE_ALT_PRIORITY "100
+                                + (100 * ${RSB_TOOLS_VERSION_MAJOR})
+                                + (  1 * ${RSB_TOOLS_VERSION_MINOR})")
 
 set(POSTINST_SCRIPT      "${CMAKE_CURRENT_BINARY_DIR}/postinst")
 set(PRERM_SCRIPT         "${CMAKE_CURRENT_BINARY_DIR}/prerm")
