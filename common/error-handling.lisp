@@ -24,20 +24,18 @@ established and a different warning if it is not.
 This function is intended to be used as toplevel error policy."
   (if-let ((restart (find-restart 'continue condition)))
     (progn
-      ;; TODO format string
       (log:warn "Error encountered; Recovering via restart ~
-                 ~2&~<| ~@;~S: ~A~:>~
-                 ~2&. Further processing may yield partial or ~
+                 ~:@_~:@_~<| ~@;~S: ~A~:>~
+                 ~:@_~:@_. Further processing may yield partial or ~
                  incorrect results.~@[ Error was:~
-                 ~2&~<| ~@;~A~:>~
-                 ~2&.~]"
+                 ~:@_~:@_~<| ~@;~A~:>~
+                 ~:@_~:@_.~]"
                 (list (restart-name restart) restart)
                 (when condition (list condition)))
       (invoke-restart restart))
-    ;; TODO format string
     (log:warn "No ~S restart; Cannot recover~@[. Error:~
-               ~2&~<| ~@;~A~:>~
-               ~2&.~]"
+               ~:@_~:@_~<| ~@;~A~:>~
+               ~:@_~:@_.~]"
               'continue (when condition (list condition)))))
 
 ;;; Toplevel utility functions and macros
@@ -70,12 +68,11 @@ of (bt:current-thread) in the thread calling this function."
              (declare (ignore condition))
              (bt:interrupt-thread target-thread #'abort))
            (abort/signal (condition)
-             ;; TODO format string
              (log:warn "Error policy ~A aborted with condition in ~
                         background thread ~A. Aborting with condition ~
                         in main thread. Condition was:~
-                        ~2&~<| ~@;~A~:>~
-                        ~2&."
+                        ~:@_~:@_~<| ~@;~A~:>~
+                        ~:@_~:@_."
                        policy thread (list condition))
 
              (bt:interrupt-thread
