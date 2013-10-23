@@ -69,7 +69,7 @@ SOURCE."
   "Load IDL definitions from the pathname SOURCE treating it as a wild
 pathname, as directory or as a file depending on its properties."
   (cond
-    ((eq (pathname-name source) :wild)
+    ((and (pathname-name source) (wild-pathname-p source))
      (apply #'load-idl source :wild args))
     ((null (pathname-name source))
      (append
