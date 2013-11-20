@@ -38,8 +38,7 @@
        collecting-mixin
        reduction-mixin
        format-mixin)
-    "This quantity measures the event rate by counting the events
-arriving within a period of time.")
+    "This quantity counts events arriving within a period of time.")
 
   (define-simple-quantity (count/all-time
                            :pretty-name "Count"
@@ -48,8 +47,7 @@ arriving within a period of time.")
       (extract-function-mixin
        all-time-mixin
        format-mixin)
-    "This quantity measures the event rate by counting the events
-arriving within a period of time.")
+    "This quantity counts all arriving events.")
 
   (define-simple-quantity (rate
                            :extractor (constantly 1)

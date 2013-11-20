@@ -14,11 +14,11 @@
                                sub-style-sorting-mixin
                                separator-mixin
                                header-printing-mixin)
-  ((colums :initarg    :columns
-           :type       function
-           :reader     style-columns
-           :documentation
-           "Stores a specification for creating columns used by
+  ((columns :initarg    :columns
+            :type       function
+            :reader     style-columns
+            :documentation
+            "Stores a specification for creating columns used by
 sub-styles of the style."))
   (:default-initargs
    :sub-styles       nil

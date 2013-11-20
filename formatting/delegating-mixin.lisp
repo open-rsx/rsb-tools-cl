@@ -13,7 +13,9 @@
                :initform '()
                :documentation
                "Stores predicates and corresponding sub-styles as an
-alist of items of the form (PREDICATE . SUB-STYLE)."))
+alist of items of the form
+
+  (PREDICATE . SUB-STYLE)."))
   (:documentation
    "This class is intended to be used in formatting classes that
 delegate to sub-styles based on dispatch predicates."))

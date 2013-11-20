@@ -69,7 +69,7 @@
       (t
        (format *error-output* "~@<Invoke this program as~_~_~
                                ~5@T~A create-links [PREFIX [SUFFIX]]~
-                               ~_ or ~:*~A redump [FILENAME (compress|dynamic)*]~
+                               ~_ or ~:*~A redump [FILENAME (compress|static)*]~
                                ~{~_ or ~A~}~_~_(not ~2:*~S). The latter invocations are usually ~
                                done by creating symbolic links~_~_~
                                ~{~2@T~A -> tools~_~}~@:>~%"
