@@ -198,10 +198,28 @@ width is positive."
 ;;; Column class family
 
 (dynamic-classes:define-findable-class-family column
-    "This class family consists of column classes, instances of which
-can be used in column-based formatting styles. Column classes have to
-implement the column protocol consisting of:
-+ `column-name'
-+ `column-width'
-+ [`column-produces-output?' default implementation available]
-+ `format-event'")
+  "This class family consists of column classes, instances of which
+   can be used in column-based formatting styles. Column classes have
+   to implement the column protocol consisting of:
+   + `column-name'
+   + `column-width'
+   + [`column-produces-output?' default implementation available]
+   + `format-event'")
+
+(defun make-column (spec)
+  "Make and return a column instance according to SPEC. SPEC can
+   either be a keyword, designating a column class, a list of the form
+
+     (CLASS KEY1 VALUE1 KEY2 VALUE2 ...)
+
+   designating a column class and specifying initargs, or a column
+   instance."
+  (etypecase spec
+    (keyword
+     (make-instance (find-column-class spec)))
+    (list
+     (check-type spec (cons keyword list) "a keyword followed by initargs")
+     (let+ (((class &rest args) spec))
+       (apply #'make-instance (find-column-class class) args)))
+    (standard-object
+     spec)))

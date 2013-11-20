@@ -100,7 +100,9 @@
   (:export
    #:no-such-column-class
    #:find-column-class
-   #:column-classes)
+   #:column-classes
+
+   #:make-column)
 
   ;; Header protocol
   (:export
@@ -147,9 +149,7 @@
    #:columns-mixin
 
    #:style-columns
-   #:style-separator
-
-   #:make-column)
+   #:style-separator)
 
   ;; `periodic-printing-mixin' mixin class
   (:export

@@ -113,26 +113,6 @@ designated by CLASS."))
   (print-unreadable-object (object stream :type t :identity t)
     (format stream "(~D)" (length (style-columns object)))))
 
-;;; Utility function
-
-(defun make-column (spec)
-  "Make and return a column instance according to SPEC. SPEC can
-either be a keyword, designating a column class, a list of the form
-
-  (CLASS KEY1 VALUE1 KEY2 VALUE2 ...)
-
-designating a column class and specifying initargs, or a column
-instance."
-  (etypecase spec
-    (keyword
-     (make-instance (find-column-class spec)))
-    (list
-     (check-type spec (cons keyword list) "a keyword followed by initargs")
-     (let+ (((class &rest args) spec))
-       (apply #'make-instance (find-column-class class) args)))
-    (standard-object
-     spec)))
-
 ;; Local Variables:
 ;; coding: utf-8
 ;; End:
