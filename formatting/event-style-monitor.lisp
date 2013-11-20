@@ -43,10 +43,11 @@ display information for events within each group."))
                           (test    style-test)
                           (columns style-columns)) style))
     (declare (type function key test columns))
-    (cons
-     (lambda (event) (funcall test (funcall key event) value))
-     (make-instance 'statistics-columns-mixin
-                    :columns (funcall columns value)))))
+    (when-let ((columns (funcall columns value)))
+      (cons
+       (lambda (event) (funcall test (funcall key event) value))
+       (make-instance 'statistics-columns-mixin
+                      :columns columns)))))
 
 (defmethod format-header ((style  basic-monitor-style)
                           (stream t))

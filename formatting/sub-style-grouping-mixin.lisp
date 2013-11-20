@@ -36,13 +36,13 @@ previously created sub-styles."))
 
 (defmethod sub-style-for ((style sub-style-grouping-mixin)
                           (event t))
-  "If there is a sub-style suitable for handling EVENT, dispatch to
-it. Otherwise create a new sub-style and then dispatch to it.  "
+  ;; If there is a sub-style suitable for handling EVENT, dispatch to
+  ;; it. Otherwise create a new sub-style and then dispatch to it.
   (or (call-next-method)
       (let ((key (style-key style)))
-        (push (make-sub-style-entry style (funcall key event))
-              (style-sub-styles style))
-        (call-next-method))))
+        (when-let ((sub-style (make-sub-style-entry style (funcall key event))))
+          (push sub-style (style-sub-styles style))
+          (call-next-method)))))
 
 (defmethod format-event :around ((event  t)
                                  (style  sub-style-grouping-mixin)

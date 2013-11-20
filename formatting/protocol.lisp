@@ -55,7 +55,8 @@ produces output for explicit trigger events."))
 (defgeneric sub-style-for (style event)
   (:documentation
    "Return a sub-style object of STYLE or a sequence of such style
-objects for formatting EVENT."))
+objects for formatting EVENT. nil indicates that EVENT should not be
+processed in any sub-style."))
 
 (defgeneric delegate (event style stream)
   (:documentation
@@ -69,8 +70,9 @@ objects for formatting EVENT."))
 
 where PREDICATE is a function of one parameter, a thing to be
 formatted, which decides whether the sub-style SUB-STYLE of STYLE is
-suitable for formatting the object. VALUE depends on how STYLE
-organizes its sub-styles. See `sub-style-for' and `delegate'."))
+suitable for formatting the object. Return nil when no sub-style entry
+should be created for VALUE. VALUE depends on how STYLE organizes its
+sub-styles. See `sub-style-for' and `delegate'."))
 
 ;;; Sub-style sorting protocol
 
