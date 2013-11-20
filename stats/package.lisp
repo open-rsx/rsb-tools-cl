@@ -83,7 +83,9 @@
   (:export
    #:no-such-quantity-class
    #:find-quantity-class
-   #:quantity-classes)
+   #:quantity-classes
+
+   #:make-quantity)
 
   ;; Extractor utilities
   (:export

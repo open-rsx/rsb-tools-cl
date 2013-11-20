@@ -25,7 +25,7 @@ provide a name and the printed value."))
                                      &key
                                      quantity)
   (when quantity
-    (setf (column-quantity instance) (make-quantity quantity))))
+    (setf (column-quantity instance) (rsb.stats:make-quantity quantity))))
 
 (defmethod column-name ((column quantity-column))
   (rsb.stats:quantity-name (column-quantity column)))
@@ -63,23 +63,3 @@ provide a name and the printed value."))
   (print-unreadable-object (object stream :type t :identity t)
     (format stream "~A = " (column-name object))
     (rsb.stats:format-value (column-quantity object) stream)))
-
-;;; Utility functions
-
-(defun make-quantity (spec)
-  "Make and return a quantity instance according to SPEC. SPEC can
-either be a keyword, designating a quantity class, a list of the form
-
-  (CLASS KEY1 VALUE1 KEY2 VALUE2 ...)
-
-designating a quantity class and specifying initargs, or a quantity
-instance."
-  (etypecase spec
-    (keyword
-     (make-instance (rsb.stats:find-quantity-class spec)))
-    (list
-     (check-type spec (cons keyword list) "a keyword followed by initargs")
-     (let+ (((class &rest args) spec))
-       (apply #'make-instance (rsb.stats:find-quantity-class class) args)))
-    (standard-object
-     spec)))
