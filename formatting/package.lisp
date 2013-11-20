@@ -56,7 +56,9 @@
   (:export
    #:no-such-style-class
    #:find-style-class
-   #:style-classes)
+   #:style-classes
+
+   #:make-style)
 
   ;; Collecting protocol
   (:export

@@ -73,11 +73,8 @@
                                                   (not (member :fundamental-null converter)))
                                              (append converter '(:fundamental-null))
                                              converter)))))
-           (event-style  (let+ (((class &rest args)
-                                 (parse-instantiation-spec
-                                  (getopt :long-name "style"))))
-                           (apply #'make-instance (find-style-class class)
-                                  args))))
+           (event-style  (make-style (parse-instantiation-spec
+                                      (getopt :long-name "style")))))
 
       (with-print-limits (*standard-output*)
         (log:info "~@<Using URI ~S~@:>" uri)

@@ -167,11 +167,8 @@
               (values server-uri method (parse-argument arg))))
            (timeout (getopt :long-name "timeout"))
            (wait?   (not (getopt :long-name "no-wait")))
-           (style   (let+ (((class &rest args)
-                            (parse-instantiation-spec
-                             (getopt :long-name "style"))))
-                      (apply #'make-instance (find-style-class class)
-                             args)))
+           (style   (make-style (parse-instantiation-spec
+                                 (getopt :long-name "style"))))
            ((&flet call/raw (server)
               (cond
                 ((not wait?)

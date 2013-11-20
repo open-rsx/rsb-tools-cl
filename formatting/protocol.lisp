@@ -38,6 +38,24 @@ allowed to take up."))
 classes. Each class implements a particular style of formatting
 received events onto a given stream by specializing `format-event'.")
 
+(defun make-style (spec)
+  "Make and return a style instance according to SPEC. SPEC can either
+   be a keyword, designating a style class, a list of the form
+
+     (CLASS KEY1 VALUE1 KEY2 VALUE2 ...)
+
+   designating a style class and specifying initargs, or a style
+   instance."
+  (etypecase spec
+    (keyword
+     (make-instance (find-style-class spec)))
+    (list
+     (check-type spec (cons keyword list) "a keyword followed by initargs")
+     (let+ (((class &rest args) spec))
+       (apply #'make-instance (find-style-class class) args)))
+    (standard-object
+     spec)))
+
 ;;; Collecting protocol
 
 (defgeneric collects? (thing)
