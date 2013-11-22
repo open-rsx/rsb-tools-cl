@@ -15,6 +15,8 @@
    "This formatting style output image data in PNG format for event
 payloads consisting of image data."))
 
+(deftype %image-index () '(unsigned-byte 24))
+
 (defmethod format-payload ((data   rst.vision:image)
                            (style  style-image/png)
                            (stream stream)
@@ -39,12 +41,15 @@ payloads consisting of image data."))
           (apply-dimension-spec/integer-factor in-height height))
 
          ;; Create the output PNG object.
-         (png (make-instance 'zpng:pixel-streamed-png
+         (png (make-instance 'zpng:streamed-png
                              :color-type :truecolor-alpha
                              :width      out-width
                              :height     out-height))
          (row (zpng:row-data png)))
-    (declare (type positive-fixnum scale-x scale-y out-width out-height))
+    (declare (type %image-index scale-x scale-y
+                                in-width out-width out-height)
+             (type nibbles:simple-octet-vector in-pixels row)
+             (dynamic-extent row))
 
     (zpng:start-png png stream)
     (fill row 255)
@@ -53,40 +58,47 @@ payloads consisting of image data."))
     ;; requested resizing.
     (macrolet
         ((define-decoders (var &body body)
-           (let+ (((&flet+ define-decoder ((pixel-format &rest body))
+           (let+ (((&flet+ define-decoder (((pixel-format bytes-per-pixel
+                                             &optional (units-per-row 'out-width))
+                                            &rest body))
                      `(,pixel-format
-                       (iter outer
-                             (repeat out-height)
-                             ,@body
-                             (zpng:write-row row png)
-                             (unless (= 1 scale-y)
-                               (incf from-offset (* 2 in-width (1- scale-y)))))))))
+                       (locally
+                           (declare #.cl-rsb-system:+optimization-fast+unsafe+)
+                         (let ((row-fixup (- (* ,bytes-per-pixel in-width)
+                                             (* ,bytes-per-pixel scale-x ,units-per-row))))
+                           (iter outer
+                                 (repeat out-height)
+                                 ,@body
+                                 (zpng:write-row row png)
+                                 (incf from-offset row-fixup)
+                                 (unless (= 1 scale-y)
+                                   (incf from-offset (* ,bytes-per-pixel in-width (1- scale-y)))))))))))
              `(ecase ,var
                 ,@(mapcar #'define-decoder body)))))
       (define-decoders in-color
-        (:color-rgb
-          (generate (the fixnum from-offset) :from 0 :by (* 3 scale-x))
-          (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 4)
-                (in outer (next from-offset))
-                (replace row in-pixels
-                         :start1 to-offset   :end1 (+ to-offset 3)
-                         :start2 from-offset :end2 (+ from-offset 3))))
+        ((:color-rgb 3)
+         (generate (the fixnum from-offset) :from 0 :by (* 3 scale-x))
+         (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 4)
+               (in outer (next from-offset))
+               (replace row in-pixels
+                        :start1 to-offset   :end1 (+ to-offset 3)
+                        :start2 from-offset :end2 (+ from-offset 3))))
 
-        (:color-bgr
-          (generate (the fixnum from-offset) :from 0 :by (* 3 scale-x))
-          (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 4)
-                (in outer (next from-offset))
-                (setf (aref row (+ to-offset 0)) (aref in-pixels (+ from-offset 2))
-                      (aref row (+ to-offset 1)) (aref in-pixels (+ from-offset 1))
-                      (aref row (+ to-offset 2)) (aref in-pixels (+ from-offset 0)))))
+        ((:color-bgr 3)
+         (generate (the fixnum from-offset) :from 0 :by (* 3 scale-x))
+         (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 4)
+               (in outer (next from-offset))
+               (setf (aref row (+ to-offset 0)) (aref in-pixels (+ from-offset 2))
+                     (aref row (+ to-offset 1)) (aref in-pixels (+ from-offset 1))
+                     (aref row (+ to-offset 2)) (aref in-pixels (+ from-offset 0)))))
 
-        (:color-yuv422
-          (generate (the fixnum from-offset) :from 0 :by (* 4 scale-x))
-          (iter (for (the fixnum to-offset)
-                     :from 0 :below (* 4 out-width) :by 8)
-                (in outer (next from-offset))
-                (%yuv422->rgba in-pixels from-offset row to-offset)))))
+        ((:color-yuv422 2 (* 2 (ceiling out-width 2)))
+         (generate (the fixnum from-offset) :from 0 :by (* 4 scale-x))
+         (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 8)
+               (in outer (next from-offset))
+               (%yuv422->rgba in-pixels from-offset row to-offset)))))
 
     (zpng:finish-png png)
 
-    (force-output stream)))
+    (force-output stream)
+    (values)))

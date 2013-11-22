@@ -86,25 +86,25 @@ dimension and the integer scaling factor."
     (values (floor input scale) scale)))
 
 (declaim (inline %yuv422->rgba)
-         (ftype (function ((simple-array (unsigned-byte 8) (*)) fixnum
-                           (simple-array (unsigned-byte 8) (*)) fixnum)
+         (ftype (function ((nibbles:simple-octet-vector) fixnum
+                           (nibbles:simple-octet-vector) fixnum)
                           (values))
                 %yuv422->rgba))
 
 (defun %yuv422->rgba (yuv-array yuv-start rgb-array rgb-start)
-  (declare (optimize (speed 3) (safety 0) (debug 0) (space 0) (compilation-speed 0)))
+  (declare #.cl-rsb-system:+optimization-fast+unsafe+)
 
-  (let* ((c     (- (aref yuv-array (+ yuv-start 0))  16))
-         (d     (- (aref yuv-array (+ yuv-start 1)) 128))
-         (c2    (- (aref yuv-array (+ yuv-start 2))  16))
-         (e     (- (aref yuv-array (+ yuv-start 3)) 128))
+  (let* ((c     (aref yuv-array (+ yuv-start 0)))
+         (d     (aref yuv-array (+ yuv-start 1)))
+         (c2    (aref yuv-array (+ yuv-start 2)))
+         (e     (aref yuv-array (+ yuv-start 3)))
 
-         (valc1 (+ (* 298 c)  128))
-         (valc2 (+ (* 298 c2) 128))
+         (valc1 (+ (* 298 c)  128 (* 298 -16)))
+         (valc2 (+ (* 298 c2) 128 (* 298 -16)))
 
-         (blue  (* 517 d))
-         (green (- (* -208 d) (* 100 e)))
-         (red   (* 409 e)))
+         (blue  (+ (* 517 d)              (* 517 -128)))
+         (green (- (+ (* 208 d) (* 100 e) (* 208 -128) (* 100 -128))))
+         (red   (+ (* 409 e)              (* 409 -128))))
     (macrolet
         ((store (offset form)
            `(setf (aref rgb-array (+ rgb-start ,offset))
