@@ -76,6 +76,14 @@ payloads consisting of image data."))
              `(ecase ,var
                 ,@(mapcar #'define-decoder body)))))
       (define-decoders in-color
+        ((:color-rgba 4)
+         (generate (the fixnum from-offset) :from 0 :by (* 4 scale-x))
+         (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 4)
+               (in outer (next from-offset))
+               (replace row in-pixels
+                        :start1 to-offset   :end1 (+ to-offset   4)
+                        :start2 from-offset :end2 (+ from-offset 4))))
+
         ((:color-rgb 3)
          (generate (the fixnum from-offset) :from 0 :by (* 3 scale-x))
          (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 4)
