@@ -1,10 +1,12 @@
-;;;; util.lisp --- Extractor utility functions.
+;;;; util.lisp --- Utility functions used by the stats module.
 ;;;;
 ;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:rsb.stats)
+
+;;; Extractor functions
 
 (defun event-size (event &optional (replacement-value :n/a))
   "Try to determine and return the size of the payload of EVENT in
@@ -31,3 +33,11 @@
   "Return an object designating the type of EVENT."
   (or (meta-data event :rsb.transport.wire-schema)
       (type-of (event-data event))))
+
+;;; Printer
+
+(defun print-quantity-value (stream quantity &optional colon? at?)
+  "Print value of QUANTITY to STREAM.
+   colon? and at? are ignored."
+  (declare (ignore colon? at?))
+  (format-value quantity stream))

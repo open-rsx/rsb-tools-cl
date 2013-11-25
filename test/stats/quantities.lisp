@@ -136,6 +136,19 @@
       (,(args :create :create) ()                           "^N/A ± N/A$")
       (,(args :create :create) (,(make-event "/foo" "baz")) "^[0-9]\\.[0-9]{3} ± [0-9]\\.[0-9]{3}$"))))
 
+(define-simple-quantity-suite (:expected)
+  `(;; missing :target and :expected initargs
+    (()                                         ()         error)
+    ((:target :does-not-matter)                 ()         error)
+    ((:expected :does-not-matter)               ()         error)
+    ;; valid cases
+    ((:target :count :expected 0)               ()         "^0$")
+    ((:target :count :expected 1)               ()         "^!1: 0$")
+    ((:target :count :expected 1)               (,(event)) "^1$")
+    ((:target :count :expected (:type (eql 0))) ()         "^0$")
+    ((:target :count :expected (:type (eql 1))) ()         "^not a \\(EQL 1\\): 0$")
+    ((:target :count :expected (:type (eql 1))) (,(event)) "^1$")))
+
 ;; Local Variables:
 ;; coding: utf-8
 ;; End:

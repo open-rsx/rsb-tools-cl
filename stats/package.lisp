@@ -95,6 +95,10 @@
 
    #:event-type/simple)
 
+  ;; Printer
+  (:export
+   #:print-quantity-value)
+
   (:documentation
    "This package contains functions and classes for computing basic
     statistical quantities over properties of RSB events. Most

@@ -287,10 +287,13 @@
   '(;; Quantities
     (:rate/12       . (:quantity :quantity :rate       :width 12))
     (:throughput/13 . (:quantity :quantity :throughput :width 13))
-    (:latency       . (:quantity :quantity (:latency
-                                            :from :send
-                                            :to   :receive
-                                            :name "Latency")))
+    (:latency       . (:quantity :quantity (:expected
+                                            :name     "Latency"
+                                            :target   (:latency
+                                                       :from :send
+                                                       :to   :receive)
+                                            :expected (:type (or (eql :n/a)
+                                                                 (real (0) 0.010))))))
     (:origin/40     . (:quantity :quantity :origin     :width 40 :alignment :left))
     (:scope/40      . (:quantity :quantity :scope      :width 40 :alignment :left))
     (:type/40       . (:quantity :quantity :type       :width 40 :alignment :left))

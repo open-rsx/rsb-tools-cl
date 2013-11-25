@@ -275,3 +275,100 @@
     (when-let ((later   (timestamp event to))
                (earlier (timestamp event from)))
       (local-time:timestamp-difference later earlier))))
+
+;;; Expected quantity
+
+(defmethod find-quantity-class ((spec (eql :expected)))
+  (find-class 'expected))
+
+(defclass expected (named-mixin)
+  ((target   :accessor quantity-target
+             :documentation
+             "Stores a quantity the value of which should be checked
+              in order to determine whether something seems faulty.")
+   (expected :reader   quantity-expected
+             :writer   (setf quantity-%expected)
+             :documentation
+             "Stores a specification of the expected value of the
+              TARGET quantity. Such a specification can be
+              1. a function
+              2. a list of the form
+
+                   (:type TYPE)
+
+              3. a value")
+   (check    :type     function
+             :accessor quantity-%check
+             :documentation
+             "Stores a function which implements the check specified
+              by EXPECTED."))
+  (:default-initargs
+   :name     "expected"
+   :target   (missing-required-initarg 'expected :target)
+   :expected (missing-required-initarg 'expected :expected))
+  (:documentation
+   "This quantity checks the value of a \"slave quantity\" against a
+    supplied specification of acceptable values to determine whether
+    an unexpected (normally meaning suspicious or even faulty) value
+    has been encountered."))
+
+(defmethod shared-initialize :after ((instance   expected)
+                                     (slot-names t)
+                                     &key
+                                     target
+                                     (expected nil expected-supplied?))
+  (when target
+    (setf (quantity-target instance) (make-quantity target)))
+  (when expected-supplied?
+    (setf (quantity-expected instance) expected)))
+
+(defgeneric (setf quantity-expected) (new-value quantity)
+  (:method  ((new-value function) (quantity  expected))
+    (setf (quantity-%check quantity) new-value))
+
+  (:method ((new-value cons) (quantity  expected))
+    (unless (typep new-value '(cons (eql :type)))
+      (return-from quantity-expected
+        (call-next-method)))
+
+    (let+ (((&structure quantity- target (check %check)) quantity)
+           ((&ign type) new-value))
+      (setf check (lambda (value)
+                    (if (typep value type)
+                        (values t   value)
+                        (values nil value
+                                (lambda (stream)
+                                  (format stream "~@<not a ~S: ~
+                                                  ~/rsb.stats:print-quantity-value/~@:>"
+                                          type target))))))))
+
+  (:method ((new-value t) (quantity  expected))
+    (let+ (((&structure quantity- target (check %check)) quantity))
+      (setf check (lambda (value)
+                    (if (equal value new-value)
+                        (values t   value)
+                        (values nil value
+                                (lambda (stream)
+                                  (format stream "~@<!~S: ~
+                                                  ~/rsb.stats:print-quantity-value/~@:>"
+                                          new-value target))))))))
+
+  (:method :after ((new-value t) (quantity expected))
+    (setf (quantity-%expected quantity) new-value)))
+
+(defmethod quantity-value ((quantity expected))
+  (let+ (((&structure-r/o quantity- target (check %check)) quantity))
+    (funcall check (quantity-value target))))
+
+(defmethod reset! ((quantity expected))
+  (reset! (quantity-target quantity)))
+
+(defmethod update! ((quantity expected) (event t))
+  (update! (quantity-target quantity) event))
+
+(defmethod format-value ((quantity expected) (stream t))
+  (let+ (((&structure-r/o
+           quantity- target ((&values ok? &ign description) value)) quantity))
+    (if ok?
+        (format-value target stream)
+        (funcall description stream))))
