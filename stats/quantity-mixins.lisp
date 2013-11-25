@@ -101,6 +101,7 @@ process meta-data items of events."))
   ((values :initarg  :values
            :type     vector
            :reader   quantity-values
+           :accessor quantity-%values
            :initform (make-array 0
                                  :fill-pointer 0
                                  :adjustable   t)
@@ -119,15 +120,53 @@ events."))
 (defmethod update! ((quantity collecting-mixin)
                     (value    t))
   ;; Add VALUE to the collected values.
-  (vector-push-extend value (quantity-values quantity))
+  (vector-push-extend value (quantity-%values quantity))
   (when (next-method-p)
     (call-next-method)))
 
 (defmethod reset! ((quantity collecting-mixin))
   ;; Clear the collection of values in QUANTITY.
-  (setf (fill-pointer (quantity-values quantity)) 0)
+  (setf (fill-pointer (quantity-%values quantity)) 0)
   (when (next-method-p)
     (call-next-method)))
+
+;;; `filter-mixin' class
+
+(defclass filter-mixin ()
+  ((order  :initarg  :order
+           :type     non-negative-integer
+           :accessor quantity-order
+           :initform 1
+           :documentation
+           "Stores the order of the filter that should be applied to
+            ORDER-tuples of the collected data.")
+   (filter :initarg  :filter
+           :type     function
+           :accessor quantity-filter
+           :documentation
+           "Stores a function which is called with ORDER-tuples of the
+            collected data to implement the actual filter."))
+  (:default-initargs
+   :filter (missing-required-initarg 'filter-mixin :filter))
+  (:documentation
+   "This class is intended to be mixed into collecting quantity
+    classes which apply a filter to collected values before further
+    processing."))
+
+(defmethod quantity-values ((quantity filter-mixin))
+  (let+ (((&accessors-r/o (order  quantity-order)
+                          (filter quantity-filter)) quantity)
+         (values (call-next-method)))
+    (declare (type fixnum order) (type function filter))
+    ;; When enough data has been collected, apply the filter function
+    ;; and return filtered data.
+    (when (>= (length values) order)
+      (locally (declare #.cl-rsb-system:+optimization-fast+unsafe+)
+        (let ((cell (make-list order)))
+          (declare (dynamic-extent cell))
+          (iter (for (the fixnum i) to (- (length values) order))
+                (replace cell values :start2 i :end2 (+ i order))
+                (collect (apply filter cell))))))))
 
 ;;; `reduction-mixin' mixin class
 

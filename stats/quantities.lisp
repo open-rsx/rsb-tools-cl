@@ -60,6 +60,21 @@
     "This quantity measures the event rate by counting the events
 arriving within a period of time.")
 
+  (define-simple-quantity (period-time
+                           :extractor (rcurry #'timestamp :create)
+                           :order     2
+                           :filter    (lambda (x y)
+                                        (local-time:timestamp-difference y x))
+                           :format    "~,3F")
+      (extract-function-mixin
+       filter-mixin
+       collecting-mixin
+       moments-mixin
+       format-mixin)
+    "This quantity measures the period time based on event
+     timestamps. The default behavior consists in using creation
+     timestamps.")
+
   (define-simple-quantity (throughput
                            :extractor (rcurry #'event-size 0)
                            :format    "~,3F")

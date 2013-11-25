@@ -44,6 +44,14 @@ CASES as body of `ensure-quantity-cases' in a test case for the
   `((() ()                           "^0\\.000$")
     (() (,(make-event "/foo" "bar")) "^[0-9]+\\.[0-9]+$")))
 
+(define-simple-quantity-suite (:period-time)
+  `((() ()                              "^N/A ± N/A$")
+    (() (,(make-event "/foo" "bar"))    "^N/A ± N/A$")
+    (() (,(make-event "/foo" "bar")
+         ,(progn
+            (sleep .001)
+            (make-event "/foo" "bar"))) "^0\\.[0-9][0-9][0-9] ± [0-9]\\.[0-9][0-9][0-9]$")))
+
 (define-simple-quantity-suite (:throughput)
   `((() ()                           "^0\\.000$")
     (() (,(make-event "/foo" "bar")) "^[0-9]+\\.[0-9]+$")))
