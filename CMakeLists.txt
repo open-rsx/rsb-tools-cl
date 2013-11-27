@@ -269,7 +269,7 @@ foreach(STYLE discard meta-data payload detailed
                     "inprocess:/foo/bar(1)")
 endforeach()
 
-# Installation
+# Install binary
 set(BINARY_PREFIX    "rsb-")
 set(BINARY_SUFFIX    "cl${VERSION_SUFFIX}")
 set(MAIN_BINARY_NAME ${BINARY_PREFIX}${MAIN_NAME}${BINARY_SUFFIX})
@@ -277,6 +277,11 @@ install(PROGRAMS    "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}"
         DESTINATION "bin"
         RENAME      "${MAIN_BINARY_NAME}")
 
+# Install scripts
+install(DIRECTORY   "scripts"
+        DESTINATION "share/${CMAKE_PROJECT_NAME}${BINARY_SUFFIX}/")
+
+# Install source
 file(GLOB ASD_FILES
      RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
      "*.asd")
