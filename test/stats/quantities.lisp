@@ -8,9 +8,12 @@
 
 (defmacro define-simple-quantity-suite ((name &key (reset? t)) &body cases)
   "Define a test suite for the quantity class designated by NAME. Use
-   CASES as body of `ensure-quantity-cases' in a test case for the
-   `update!' and `format-value' methods."
-  (let ((class-name (class-name (find-quantity-class name)))
+CASES as body of `ensure-quantity-cases' in a test case for the
+`update!' and `format-value' methods."
+  (let ((class-name (class-name
+                     (service-provider:provider-class
+                      (service-provider:find-provider
+                       'rsb.stats::quantity name))))
         (suite-name (symbolicate name "-ROOT")))
     `(progn
        (deftestsuite ,suite-name (stats-root)

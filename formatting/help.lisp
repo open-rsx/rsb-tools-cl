@@ -63,9 +63,14 @@
         (rsb.common:print-classes-help-string
          (column-classes) stream))
 
-      (when-let* ((package (find-package :rsb.stats))
-                  (symbol  (find-symbol "QUANTITY-CLASSES" package))
-                  (classes (fdefinition symbol)))
+      (when-let* ((package   (find-package :rsb.stats))
+                  (symbol    (find-symbol "QUANTITY" :rsb.stats))
+                  (providers (service-provider:service-providers symbol))
+                  (classes   (mapcar (lambda (provider)
+                                       (list
+                                        (service-provider:provider-name provider)
+                                        (service-provider:provider-class provider)))
+                                     providers)))
         (format stream "~%~%")
         (rsb.common:with-abbreviation (stream :quantities show)
           (format stream "In the statistics style, statistical ~
@@ -87,5 +92,5 @@
                           ~@
                           ")
           (rsb.common:print-classes-help-string
-           (funcall classes) stream
+           classes stream
            :initarg-blacklist '(:extractor :reduce-by :start-time :values)))))))

@@ -1,6 +1,6 @@
 ;;;; cl-rsb-stats.asd --- Stats functions for cl-rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -76,14 +76,16 @@ RSB-related systems."
   :depends-on  (:alexandria
                 :let-plus
                 :more-conditions
+                (:version :architecture.service-provider "0.1")
                 :local-time
 
-                (:version :cl-rsb #.(version/string :revision? nil)))
+                (:version :cl-rsb                        #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "stats"
                  :serial     t
                  :components ((:file       "package")
                               (:file       "types")
+                              (:file       "conditions")
                               (:file       "protocol")
                               (:file       "util")
                               (:file       "quantity-mixins")
@@ -108,6 +110,7 @@ system."
                  :pathname   "test/stats"
                  :serial     t
                  :components ((:file       "package")
+                              (:file       "protocol")
                               (:file       "quantities")))))
 
 (defmethod perform ((operation test-op)

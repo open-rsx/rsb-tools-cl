@@ -19,6 +19,11 @@
    #:meta-data-selector
    #:when-missing-policy)
 
+  ;; Conditions
+  (:export
+   #:quantity-creation-error
+   #:quantity-creation-error-specification)
+
   ;; Quantity protocol
   (:export
    #:quantity-name
@@ -80,12 +85,8 @@
 
    #:quantity-format)
 
-  ;; Quantity findable class family
+  ;; Quantity creation protocol
   (:export
-   #:no-such-quantity-class
-   #:find-quantity-class
-   #:quantity-classes
-
    #:make-quantity)
 
   ;; Extractor utilities

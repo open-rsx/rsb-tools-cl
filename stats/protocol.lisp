@@ -41,26 +41,38 @@
     value of quantity. Only applicable to quantities that accumulate
     values in some way."))
 
-;;; Quantity class family
+;;; Quantity service and creation
 
-(dynamic-classes:define-findable-class-family quantity
-  "This class family consists of quantity classes.")
+(service-provider:define-service quantity
+  (:documentation
+   "Providers of this service are classes implementing the quantity
+    protocol."))
 
-(defun make-quantity (spec)
-  "Make and return a quantity instance according to SPEC. SPEC can
-   either be a keyword, designating a quantity class, a list of the
-   form
+(defgeneric make-quantity (spec &rest args)
+  (:documentation
+   "Make and return a quantity instance according to SPEC. SPEC can
+    either be a keyword, designating a quantity class, a list of the
+    form
 
-     (CLASS KEY1 VALUE1 KEY2 VALUE2 ...)
+      (CLASS KEY1 VALUE1 KEY2 VALUE2 ...)
 
-   designating a quantity class and specifying initargs, or a quantity
-   instance."
-  (etypecase spec
-    (keyword
-     (make-instance (rsb.stats:find-quantity-class spec)))
-    (list
-     (check-type spec (cons keyword list) "a keyword followed by initargs")
-     (let+ (((class &rest args) spec))
-       (apply #'make-instance (rsb.stats:find-quantity-class class) args)))
-    (standard-object
-     spec)))
+    designating a quantity class and specifying initargs, or a
+    quantity instance."))
+
+(define-condition-translating-method make-quantity (spec &rest args)
+  ((error quantity-creation-error)
+   :specification (append (ensure-list spec) args)))
+
+(defmethod make-quantity ((spec symbol) &rest args)
+  (apply #'service-provider:make-provider 'quantity spec args))
+
+(defmethod make-quantity ((spec cons) &rest args)
+  (check-type spec (cons keyword list) "a keyword followed by initargs")
+  (if args
+      (apply #'make-quantity (first spec) (append args (rest spec)))
+      (apply #'make-quantity spec)))
+
+(defmethod make-quantity ((spec standard-object) &rest args)
+  (when args
+    (apply #'incompatible-arguments :spec spec args))
+  spec)

@@ -19,9 +19,6 @@
                               &optional doc)
        (let ((class-name (symbolicate "QUANTITY-" name)))
          `(progn
-            (defmethod find-quantity-class ((spec (eql ,designator)))
-              (find-class ',class-name))
-
             (defclass ,class-name (named-mixin
                                    ,@super-classes)
               ()
@@ -29,7 +26,10 @@
                :name ,pretty-name
                ,@(remove-from-plist initargs :designator :pretty-name))
               ,@(when doc
-                  `((:documentation ,doc))))))))
+                  `((:documentation ,doc))))
+
+            (service-provider:register-provider/class 'quantity ',designator
+              :class ',class-name)))))
 
   (define-simple-quantity (count
                            :extractor (constantly 1)
@@ -188,6 +188,9 @@
     period of time and computes mean and variance of the collected
     values."))
 
+(service-provider:register-provider/class
+ 'quantity :meta-data-moments :class 'meta-data-moments)
+
 (defmethod initialize-instance :before ((instance meta-data-moments)
                                         &key
                                         key)
@@ -200,9 +203,6 @@
                     (event    string))
   (update! quantity (read-from-string event)))
 
-(defmethod find-quantity-class ((spec (eql :meta-data-histogram)))
-  (find-class 'meta-data-histogram))
-
 (defclass meta-data-histogram (meta-data-mixin
                                histogram-mixin)
   ()
@@ -211,10 +211,10 @@
     meta-data item extracted from events over a period of time. When
     output is produced, the most frequent values are printed first."))
 
-;;; Latency quantity
+(service-provider:register-provider/class
+ 'quantity :meta-data-histogram :class 'meta-data-histogram)
 
-(defmethod find-quantity-class ((spec (eql :latency)))
-  (find-class 'latency))
+;;; Latency quantity
 
 (defclass latency (named-mixin
                    extract-function-mixin
@@ -240,6 +240,9 @@
    "This quantity collects the differences between specified
     timestamps and computes the mean and variance of the resulting
     latency values."))
+
+(service-provider:register-provider/class
+ 'quantity :latency :class 'latency)
 
 (defmethod shared-initialize :around ((instance   latency)
                                       (slot-names t)
@@ -278,9 +281,6 @@
 
 ;;; Expected quantity
 
-(defmethod find-quantity-class ((spec (eql :expected)))
-  (find-class 'expected))
-
 (defclass expected (named-mixin)
   ((target   :accessor quantity-target
              :documentation
@@ -311,6 +311,9 @@
     supplied specification of acceptable values to determine whether
     an unexpected (normally meaning suspicious or even faulty) value
     has been encountered."))
+
+(service-provider:register-provider/class
+ 'quantity :expected :class 'expected)
 
 (defmethod shared-initialize :after ((instance   expected)
                                      (slot-names t)
