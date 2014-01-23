@@ -126,11 +126,9 @@ CASES as body of `ensure-quantity-cases' in a test case for the
                        ,(event :foo "3") ,(event :foo "4")) "^2\\.500 ± 1\\.118$"))))
 
 (define-simple-quantity-suite (:latency)
-  (let+ (((&flet args (&rest keys)
-            `(,@(when-let ((value (first keys)))
-                  `(:from ,value))
-              ,@(when-let ((value (second keys)))
-                  `(:to ,value))))))
+  (let+ (((&flet args (&optional from to)
+            `(,@(when from `(:from ,from))
+              ,@(when to   `(:to ,to))))))
     `(;; missing :from and :to initargs
       (()                      ()                           error)
       (,(args :create)         ()                           error)
