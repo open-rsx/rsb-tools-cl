@@ -1,6 +1,6 @@
 ;;;; plot-statistics.lisp --- Plot timing-related statistics for multiple scopes.
 ;;;;
-;;;; Copyright (C) 2013 Jan Moringen
+;;;; Copyright (C) 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -98,8 +98,8 @@
           (maybe-do-quantity (+ index 2) :send-receive)
           (maybe-do-quantity (+ index 4) :receive-deliver)
           (maybe-do-quantity (+ index 6) :rate)
-          (maybe-do-quantity (+ index 7) :delay/create)
-          (maybe-do-quantity (+ index 9) :delay/send))))
+          (maybe-do-quantity (+ index 7) :period-time/create)
+          (maybe-do-quantity (+ index 9) :period-time/send))))
 
     (defun write-plot-commands (scopes output script
                                 &key
@@ -144,7 +144,8 @@
                                 #\- #\/
                                 (format nil "~@[~A-~]~(~A~)" nil which))
                         which))
-                    '(:create-send :send-receive :rate :delay/create :delay/send))
+                    '(:create-send :send-receive :rate
+                      :period-time/create :period-time/send))
               (when (probe-file data-file) (delete-file data-file))))
           sb-ext:*exit-hooks*)))
 
