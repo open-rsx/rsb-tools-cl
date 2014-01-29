@@ -1,6 +1,6 @@
 ;;;; rsb-formatting-and-rsb-stats.asd --- Formatting styles based on cl-rsb-stats.
 ;;;;
-;;;; Copyright (C) 2013 Jan Moringen
+;;;; Copyright (C) 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -22,12 +22,10 @@ system."
                 (:version :cl-rsb-stats      #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "formatting"
+                 :serial     t
                  :components ((:file       "timeline")
                               (:file       "quantity-column")
 
-                              (:file       "event-style-statistics"
-                               :depends-on ("quantity-column"))
-                              (:file       "event-style-monitor"
-                               :depends-on ("quantity-column"))
-                              (:file       "event-style-timeline"
-                               :depends-on ("event-style-monitor"))))))
+                              (:file       "event-style-statistics")
+                              (:file       "event-style-monitor")
+                              (:file       "event-style-timeline")))))
