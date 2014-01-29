@@ -1,6 +1,6 @@
 ;;;; event-style-monitor.lisp --- Style that aggregates events in sub-styles.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -121,8 +121,8 @@
               ,@dispatch-specs)))))
 
   (define-dynamic-width-monitor-style (scope
-                                       :key   #'event-scope
-                                       :test  #'sub-scope?)
+                                       :key  #'event-scope
+                                       :test #'scope=)
       "This style groups events by scope and periodically displays
        various statistics for events in each scope-group."
     ;; Specification for group column.
