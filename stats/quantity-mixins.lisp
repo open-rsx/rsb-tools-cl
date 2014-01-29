@@ -1,6 +1,6 @@
 ;;;; quantity-mixins.lisp --- Mixin classes for quantity classes.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -234,7 +234,7 @@
 (defclass histogram-mixin ()
   ((values :initarg  :values
            :type     hash-table
-           :reader   %quantity-values
+           :reader   quantity-%values
            :initform (make-hash-table :test #'equalp)
            :documentation
            "Stores a mapping from values in the quantity's domain to
@@ -244,17 +244,17 @@
     that accumulate values in form of a histogram."))
 
 (defmethod quantity-values ((quantity histogram-mixin))
-  (hash-table-values (%quantity-values quantity)))
+  (hash-table-values (quantity-%values quantity)))
 
 (defmethod quantity-value ((quantity histogram-mixin))
-  (hash-table-alist (%quantity-values quantity)))
+  (hash-table-alist (quantity-%values quantity)))
 
 (defmethod update! ((quantity histogram-mixin)
                     (value    t))
-  (incf (gethash value (%quantity-values quantity) 0)))
+  (incf (gethash value (quantity-%values quantity) 0)))
 
 (defmethod reset! ((quantity histogram-mixin))
-  (clrhash (%quantity-values quantity)))
+  (clrhash (quantity-%values quantity)))
 
 (defmethod format-value ((quantity histogram-mixin)
                          (stream   t))
@@ -266,7 +266,7 @@
 
 (defclass rate-mixin ()
   ((start-time :initarg  :start-time
-               :accessor %quantity-start-time
+               :accessor quantity-%start-time
                :initform nil
                :documentation
                "Stores the start time of the current computation
@@ -280,7 +280,7 @@
 
 (defmethod quantity-value :around ((quantity rate-mixin))
   (let+ ((value (call-next-method))
-         ((&accessors-r/o (start-time %quantity-start-time)) quantity)
+         ((&accessors-r/o (start-time quantity-%start-time)) quantity)
          (now  (local-time:now))
          (diff (when start-time
                  (local-time:timestamp-difference now start-time))))
@@ -296,7 +296,7 @@
        (/ value diff)))))
 
 (defmethod reset! ((quantity rate-mixin))
-  (setf (%quantity-start-time quantity) (local-time:now))
+  (setf (quantity-%start-time quantity) (local-time:now))
   (when (next-method-p)
     (call-next-method)))
 

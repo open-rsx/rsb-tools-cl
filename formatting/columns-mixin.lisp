@@ -26,7 +26,7 @@
 (defclass columns-mixin ()
   ((columns   :type     list
               :accessor style-columns
-              :accessor %style-columns ;; does not process column specs
+              :accessor style-%columns ; does not process column specs
               :initform nil
               :documentation
               "Stores the list of columns of which the formatting

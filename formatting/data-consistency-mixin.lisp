@@ -8,7 +8,7 @@
 
 (defclass data-consistency-mixin ()
   ((target-descriptors :type     hash-table
-                       :accessor %style-descriptors
+                       :accessor style-%descriptors
                        :initform (make-hash-table :test #'eq)
                        :documentation
                        "Stores a mapping of output target to format
@@ -23,12 +23,12 @@
 
 (defmethod descriptor-for-target ((style  data-consistency-mixin)
                                   (target t))
-  (gethash target (%style-descriptors style)))
+  (gethash target (style-%descriptors style)))
 
 (defmethod (setf descriptor-for-target) ((new-value t)
                                          (style     data-consistency-mixin)
                                          (target    t))
-  (setf (gethash target (%style-descriptors style)) new-value))
+  (setf (gethash target (style-%descriptors style)) new-value))
 
 (defmethod compatible-descriptors? ((style        data-consistency-mixin)
                                     (descriptor-1 t)
@@ -58,4 +58,4 @@
 (defmethod print-object ((object data-consistency-mixin) stream)
   (print-unreadable-object (object stream :type t :identity t)
     (format stream "(~D)" (hash-table-count
-                           (%style-descriptors object)))))
+                           (style-%descriptors object)))))

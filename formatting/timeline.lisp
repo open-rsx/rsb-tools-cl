@@ -61,7 +61,7 @@
                  "Stores a list of events which have not been rendered
                   yet.")
    (cache        :type     (or null (cons %timeline-cache-cell t))
-                 :accessor %style-cache
+                 :accessor style-%cache
                  :initform nil
                  :documentation
                  "Stores information regarding previously rendered
@@ -102,11 +102,11 @@
   ;; since its content is preliminary: more events for the cell may
   ;; arrive.
   (let+ (((&accessors-r/o (width column-width)
-                          (cache %style-cache)) style)
+                          (cache style-%cache)) style)
          (output (make-string width)))
     (declare (type list cache))
     (map-into output #'%cell-value cache)
-    (pop (%style-cache style))
+    (pop (style-%cache style))
     (write-string output target)))
 
 (defmethod format-event ((event  t)
@@ -130,7 +130,7 @@
            ((lower-bound upper-bound) bounds/expanded)
            (width                     column-width)) style)
          (delta       (floor (- upper-bound lower-bound) width))
-         ((&accessors (cache %style-cache)) style)
+         ((&accessors (cache style-%cache)) style)
          (cache-upper (or (when (first cache)
                             (%cell-upper (first cache)))
                           lower-bound)))
@@ -146,7 +146,7 @@
 
 (defmethod fill-cache! ((style timeline))
   (let+ (((&accessors-r/o (events style-events)
-                          (cache  %style-cache)) style)
+                          (cache  style-%cache)) style)
          ((&flet key (event)
             (timestamp->unix/nsecs (timestamp event :send)))) ; TODO(jmoringe, 2012-04-10): make configurable
          (events/cutoff)

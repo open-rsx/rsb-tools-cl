@@ -15,21 +15,21 @@
                    "Stores the amount of time in seconds between
                     successive print operations.")
    (stream         :type     (or null stream)
-                   :accessor %style-stream
+                   :accessor style-%stream
                    :initform nil
                    :documentation
                    "Stores the stream that should be used for periodic
                     printing.")
    (pretty-state   :type     list
-                   :accessor %style-pretty-state
+                   :accessor style-%pretty-state
                    :documentation
                    "Stores the pretty-printer state that should be
                     used for periodic printing.")
-   (timer          :accessor %style-timer
+   (timer          :accessor style-%timer
                    :documentation
                    "Stores the timer used to trigger periodic
                     printing.")
-   (lock           :reader   %style-lock
+   (lock           :reader   style-%lock
                    :initform (bt:make-recursive-lock
                               "Periodic printing lock")
                    :documentation
@@ -47,7 +47,7 @@
 
 (defmethod initialize-instance :after ((instance periodic-printing-mixin)
                                        &key)
-  (let+ (((&accessors (timer          %style-timer)
+  (let+ (((&accessors (timer          style-%timer)
                       (print-interval style-print-interval)) instance)
          (timer* #+sbcl (sb-ext:make-timer (%make-timer-function instance)
                                            :thread t)
@@ -69,7 +69,7 @@
 (defmethod (setf style-print-interval) :after ((new-value t)
                                                (style     periodic-printing-mixin))
   "After storing the new print-interval value, reschedule the timer."
-  (let+ (((&accessors-r/o (timer %style-timer)) style))
+  (let+ (((&accessors-r/o (timer style-%timer)) style))
     #-sbcl #.(error "not implemented")
     #+sbcl (sb-ext:unschedule-timer timer)
     (when new-value
@@ -85,10 +85,10 @@
                                  &key &allow-other-keys)
   "Protect against concurrent access to STYLE and store STREAM for use
    in timer-driven output."
-  (bt:with-recursive-lock-held ((%style-lock style))
+  (bt:with-recursive-lock-held ((style-%lock style))
     (unless (eq event :trigger)
-      (setf (%style-stream style)       stream
-            (%style-pretty-state style) (list *print-right-margin*
+      (setf (style-%stream style)       stream
+            (style-%pretty-state style) (list *print-right-margin*
                                               *print-miser-width*)))
 
     (call-next-method)))
@@ -101,8 +101,8 @@
   (let ((weak-style (tg:make-weak-pointer style)))
     (lambda ()
       (when-let ((style  (tg:weak-pointer-value weak-style))
-                 (stream (%style-stream style)))
+                 (stream (style-%stream style)))
         (let+ (((*print-right-margin* *print-miser-width*)
-                (%style-pretty-state style)))
+                (style-%pretty-state style)))
           (ignore-some-conditions (stream-error)
             (format-event :trigger style stream)))))))

@@ -52,19 +52,19 @@
   ((bindings :initarg  :bindings
              :type     list
              :accessor style-bindings
-             :accessor %style-bindings
+             :accessor style-%bindings
              :initform *style-programmable-default-bindings*
              :documentation
              "Stores the bindings available in the output format
               specification.")
    (lambda   :type     function
-             :accessor %style-lambda
+             :accessor style-%lambda
              :documentation
              "Stores the compiled output formatting function for the
               style instance.")
    (code     :type     list
              :accessor style-code
-             :accessor %style-code
+             :accessor style-%code
              :documentation
              "Stores the code producing the output of the style
               instance."))
@@ -92,14 +92,14 @@
 
 (defmethod (setf style-code) :before ((new-value t)
                                       (style     style-programmable))
-  (let+ (((&accessors (lambda   %style-lambda)
-                      (bindings %style-bindings)) style))
+  (let+ (((&accessors (lambda   style-%lambda)
+                      (bindings style-%bindings)) style))
     (setf lambda (compile-code style new-value bindings))))
 
 (defmethod (setf style-bindings) :before ((new-value list)
                                           (style     style-programmable))
-  (let+ (((&accessors (lambda %style-lambda)
-                      (code   %style-code)) style))
+  (let+ (((&accessors (lambda style-%lambda)
+                      (code   style-%code)) style))
     (setf lambda (compile-code style code new-value))))
 
 (defmethod compile-code ((style    style-programmable)
@@ -160,7 +160,7 @@
                                 specified bindings ~_~{~2T~{~24A -> ~
                                 ~A~_~}~}and code ~_~2T~S~_: ~A~@:>"
                                event bindings code condition))))
-     (funcall (%style-lambda style) event stream))))
+     (funcall (style-%lambda style) event stream))))
 
 (defmethod print-object ((object style-programmable) stream)
   (print-unreadable-object (object stream :type t :identity t)
@@ -244,7 +244,7 @@
 (defclass style-programmable/template (style-programmable)
   ((template :type     string
              :accessor style-template
-             :writer   (setf %style-template)
+             :writer   (setf style-%template)
              :documentation
              "Stores the template which is used for producing the
               output of the style."))
@@ -290,7 +290,7 @@
 (defmethod (setf style-template) ((new-value t)
                                   (style     style-programmable/template))
   (check-type new-value string)
-  (setf (%style-template style) new-value))
+  (setf (style-%template style) new-value))
 
 (defmethod (setf style-template) ((new-value stream)
                                   (style     style-programmable/template))
@@ -319,7 +319,7 @@
                  event
                  (style-bindings style) (style-template style)
                  condition))))
-    (funcall (%style-lambda style) event stream)))
+    (funcall (style-%lambda style) event stream)))
 
 (defmethod print-object ((object style-programmable/template) stream)
   (if (slot-boundp object 'template)
