@@ -20,8 +20,7 @@
                    :documentation
                    "Stores the stream that should be used for periodic
                     printing.")
-   (pretty-state   :initarg  :pretty-state
-                   :type     list
+   (pretty-state   :type     list
                    :accessor %style-pretty-state
                    :documentation
                    "Stores the pretty-printer state that should be

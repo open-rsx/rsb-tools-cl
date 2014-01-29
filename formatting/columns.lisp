@@ -36,11 +36,11 @@
                                            '(width-mixin))
                                          basic-column)
                     ()
-                    ,@(when width
-                        `((:default-initargs
-                           :width     ,width
-                           :alignment ,alignment
-                           :name      ,print-name)))
+                    (:default-initargs
+                     :name ,print-name
+                     ,@(when width
+                         `(:width     ,width
+                           :alignment ,alignment)))
                     ,@(when doc
                         `((:documentation ,doc))))
 

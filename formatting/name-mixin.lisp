@@ -12,6 +12,8 @@
          :accessor column-name
          :documentation
          "Stores the name of the column."))
+  (:default-initargs
+   :name (missing-required-initarg 'name-mixin :name))
   (:documentation
    "This class is intended to be mixed into column classes in order to
     handle the column name."))

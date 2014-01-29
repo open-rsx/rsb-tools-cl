@@ -56,7 +56,7 @@
    (events       :initarg  :events
                  :type     list
                  :accessor style-events
-                 :initform nil
+                 :initform '()
                  :documentation
                  "Stores a list of events which have not been rendered
                   yet.")

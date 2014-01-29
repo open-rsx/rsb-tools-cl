@@ -12,6 +12,8 @@
          :documentation
          "Stores the user-supplied format code that caused the
           problem."))
+  (:default-initargs
+   :code (missing-required-initarg 'format-code-error :code))
   (:report
    (lambda (condition stream)
      (format stream "~@<Failed to use format code ~S.~@:>"
