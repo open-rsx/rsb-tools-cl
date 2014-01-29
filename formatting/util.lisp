@@ -1,6 +1,6 @@
 ;;;; util.lisp --- Utility functions for event formatting.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -64,10 +64,10 @@
                           (initial-fresh-line? t)
                           (final-fresh-line?   t))
                          &body body)
-    "Execute BODY with the stream of the current emit target bound to a
-pretty-printing stream that indents all output produced within BODY to
-a certain depth. In addition, a scope of kind KIND and name NAME is
-printed around the output."
+    "Execute BODY with the stream of the current emit target bound to
+     a pretty-printing stream that indents all output produced within
+     BODY to a certain depth. In addition, a scope of kind KIND and
+     name NAME is printed around the output."
     `(let ((previous *print-right-margin*))
        (unwind-protect
             (progn
@@ -88,7 +88,7 @@ printed around the output."
                                     (final-fresh-line? t))
                                    &body body)
     "Execute BODY with STREAM-VAR bound to a stream that indents all
-content by AMOUNT."
+     content by AMOUNT."
     `(progn
        ,@(when title
                `((format ,stream-var (format nil "~A~~&" ,title))))
@@ -105,7 +105,7 @@ content by AMOUNT."
                              &key
                              (value-formatter #'format-maybe))
   "Format KEYS and VALUES onto STREAM such that keys and values align
-vertically across output lines."
+   vertically across output lines."
   (let ((width (reduce #'max keys
                        :key           (compose #'length #'string)
                        :initial-value 0)))
@@ -120,15 +120,15 @@ vertically across output lines."
                                    &key
                                    value-formatter)
   "Format ITEMS in which each item is of the form (KEY . VALUE) onto
-STREAM such that keys and values align vertically across output
-lines."
+   STREAM such that keys and values align vertically across output
+   lines."
   (format-aligned-items
    stream (map 'list #'car items) (map 'list #'cdr items))
   :value-formatter value-formatter)
 
 (defun format-pairs/plist (stream &rest items)
   "Format keys and values of the plist ITEMS onto STREAM such that
-keys and values align vertically across output lines."
+   keys and values align vertically across output lines."
   (format-aligned-items
    stream
    (iter (for item in items        :by #'cddr) (collect item))
@@ -138,8 +138,8 @@ keys and values align vertically across output lines."
 
 (defvar *tracker* nil
   "This variable should be dynamically bound to a hash-table which is
-then used by `format-recursively' to detect already formatted
-objects.")
+   then used by `format-recursively' to detect already formatted
+   objects.")
 
 (defun format-recursively (stream value
                            &key
@@ -187,22 +187,22 @@ objects.")
 
 (defun stream-line-width (stream)
   "Return the line width of STREAM or nil, if it cannot be
-determined."
+   determined."
   (when-let* ((package (find-package :com.dvlsoft.clon))
               (symbol  (find-symbol "STREAM-LINE-WIDTH" package)))
     (ignore-errors (funcall symbol stream))))
 
 (defmacro with-print-limits ((stream) &body body)
   "Execute BODY with `*print-right-margin*' and `*print-miser-width*'
-bound to the line width of STREAM. Additionally, install a handler for
-SIGWINCH that updates these values, if possible."
+   bound to the line width of STREAM. Additionally, install a handler
+   for SIGWINCH that updates these values, if possible."
   `(call-with-print-limits ,stream (lambda () ,@body)))
 
 (defun call-with-print-limits (stream thunk)
   "Call THUNK with `*print-right-margin*' and ``*print-miser-width*'
-bound to the suitable values for the line width of
-STREAM. Additionally, install a handler for SIGWINCH that updates
-these values, if possible."
+   bound to the suitable values for the line width of
+   STREAM. Additionally, install a handler for SIGWINCH that updates
+   these values, if possible."
   (let* ((thread               (bt:current-thread))
          (*print-right-margin* (stream-line-width stream))
          (*print-miser-width*  nil)

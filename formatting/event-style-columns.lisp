@@ -1,6 +1,6 @@
 ;;;; event-style-columns.lisp --- Generic column-based formatting class.
 ;;;;
-;;;; Copyright (C) 2011, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -14,7 +14,7 @@
   ()
   (:documentation
    "This formatting style prints configurable properties of received
-events in a column-oriented fashion. Event properties and the
-associated columns in which the properties should be printed have to
-be specified using the :columns initarg. If no columns are specified,
-no output is produced."))
+    events in a column-oriented fashion. Event properties and the
+    associated columns in which the properties should be printed have
+    to be specified using the :columns initarg. If no columns are
+    specified, no output is produced."))

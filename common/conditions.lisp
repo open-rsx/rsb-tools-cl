@@ -1,6 +1,6 @@
 ;;;; conditions.lisp --- Conditions used in the cl-rsb-common system.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -20,7 +20,7 @@
              condition)))
   (:documentation
    "This error is signaled when an attempt to load a data definition
-from some source fails."))
+    from some source fails."))
 
 (defun failed-to-load-idl (source &optional cause)
   "Convenience function for signaling `failed-to-load-idl'."

@@ -1,6 +1,6 @@
 ;;;; types.lisp --- Types used in the formatting module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -22,7 +22,7 @@
 
 (deftype time-spec ()
   "Time specification expressions allowing constants, variables and
-operators."
+   operators."
   '(or time-spec/variable
        real
        (cons time-spec/operator
@@ -36,9 +36,9 @@ operators."
 (deftype bounds-spec ()
   "A list of the form
 
-  (LOWER-BOUND UPPER-BOUND)
+     (LOWER-BOUND UPPER-BOUND)
 
-where LOWER-BOUND and UPPER-BOUND are `time-spec's."
+   where LOWER-BOUND and UPPER-BOUND are `time-spec's."
   '(cons time-spec (cons time-spec null)))
 
 ;;;

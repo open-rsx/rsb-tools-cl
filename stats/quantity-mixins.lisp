@@ -17,7 +17,7 @@
          "Stores the name of the quantity."))
   (:documentation
    "This mixin class is intended to be mixed into quantity classes to
-take care of the quantity name."))
+    take care of the quantity name."))
 
 (defmethod print-object ((object named-mixin) stream)
   (print-unreadable-object (object stream :type t :identity t)
@@ -34,11 +34,11 @@ take care of the quantity name."))
                          'extract-function-mixin :extractor)
               :documentation
               "Stores a function that is called to extract a value
-from some object."))
+               from some object."))
   (:documentation
    "This mixin class is intended to be mixed into quantity classes
-that should provide flexible extraction of values from events or other
-sources."))
+    that should provide flexible extraction of values from events or
+    other sources."))
 
 (defmethod update! ((quantity extract-function-mixin)
                     (event    event))
@@ -51,20 +51,20 @@ sources."))
                  :type     meta-data-selector
                  :accessor quantity-key
                  :documentation
-                 "Stores the key for which meta-data items should be extracted
-from processed events.")
+                 "Stores the key for which meta-data items should be
+                  extracted from processed events.")
    (when-missing :initarg  :when-missing
                  :type     when-missing-policy
                  :accessor quantity-when-missing
                  :initform :skip
                  :documentation
                  "Stores a designator the policy that should be
-employed when a meta-data item is not available."))
+                  employed when a meta-data item is not available."))
   (:default-initargs
    :key (missing-required-initarg 'meta-data-mixin :key))
   (:documentation
    "This class is intended to be mixed into quantity classes that
-process meta-data items of events."))
+    process meta-data items of events."))
 
 (defmethod shared-initialize :around ((instance   meta-data-mixin)
                                       (slot-names t)
@@ -109,8 +109,8 @@ process meta-data items of events."))
            "Stores the values that have been collected from events."))
   (:documentation
    "This mixin is intended to be added to quantity classes the values
-of which are computed by accumulating auxiliary values across multiple
-events."))
+    of which are computed by accumulating auxiliary values across
+    multiple events."))
 
 (defmethod update! ((quantity collecting-mixin)
                     (value    (eql nil)))
@@ -176,19 +176,19 @@ events."))
                 :initform 0
                 :documentation
                 "This class allocated slot stores a value that should
-be produced when the quantity is queried when no values have been
-collected.")
+                 be produced when the quantity is queried when no
+                 values have been collected.")
    (reduce-by   :initarg  :reduce-by
                 :type     function
                 :accessor quantity-reduce-by
                 :initform #'+
                 :documentation
                 "Stores the reduce function that produces the value of
-the quantity by reducing a collection of values."))
+                 the quantity by reducing a collection of values."))
   (:documentation
    "This mixin class is intended to be mixed into quantity classes
-which compute the quantity value from a collection of values using a
-reduction function."))
+    which compute the quantity value from a collection of values using
+    a reduction function."))
 
 (defmethod quantity-value ((quantity reduction-mixin))
   (reduce (quantity-reduce-by quantity) (quantity-values quantity)
@@ -201,8 +201,9 @@ reduction function."))
   ()
   (:documentation
    "This class is intended to be mixed into quantity classes which
-continuously aggregate new values into the quantity value. Examples
-include size of all transferred data in a whole session."))
+    continuously aggregate new values into the quantity
+    value. Examples include size of all transferred data in a whole
+    session."))
 
 (defmethod reset! ((quantity all-time-mixin))
   (setf (quantity-empty-value quantity) (quantity-value quantity))
@@ -215,8 +216,8 @@ include size of all transferred data in a whole session."))
   ()
   (:documentation
    "This mixin class is intended to be mixed into quantity classes
-that provided mean and variance of a collection of accumulated
-values."))
+    that provided mean and variance of a collection of accumulated
+    values."))
 
 (defmethod quantity-value ((quantity moments-mixin))
   (let+ (((&accessors-r/o (values quantity-values)) quantity))
@@ -237,10 +238,10 @@ values."))
            :initform (make-hash-table :test #'equalp)
            :documentation
            "Stores a mapping from values in the quantity's domain to
-the respective frequencies of these values."))
+            the respective frequencies of these values."))
   (:documentation
    "This mixin class is intended to be mixed into quantity classes
-that accumulate values in form of a histogram."))
+    that accumulate values in form of a histogram."))
 
 (defmethod quantity-values ((quantity histogram-mixin))
   (hash-table-values (%quantity-values quantity)))
@@ -269,12 +270,13 @@ that accumulate values in form of a histogram."))
                :initform nil
                :documentation
                "Stores the start time of the current computation
-period."))
+                period."))
   (:documentation
    "This class is intended to be mixed into quantity classes that
-compute the rate of a quantity over a period of time. It takes care of
-tracking the start and end times of time periods and turns a computed
-absolute value into a rate value using this information."))
+    compute the rate of a quantity over a period of time. It takes
+    care of tracking the start and end times of time periods and turns
+    a computed absolute value into a rate value using this
+    information."))
 
 (defmethod quantity-value :around ((quantity rate-mixin))
   (let+ ((value (call-next-method))
@@ -307,12 +309,12 @@ absolute value into a rate value using this information."))
            :initform "~A"
            :documentation
            "Stores the format string that should be used to format the
-value of the quantity."))
+            value of the quantity."))
   (:documentation
    "This class is intended to be mixed into quantity classes which
-format their value by using `cl:format'. It stores a format string
-which it uses in a method on `format-value' to format the value of the
-quantity."))
+    format their value by using `cl:format'. It stores a format string
+    which it uses in a method on `format-value' to format the value of
+    the quantity."))
 
 (defmethod format-value ((quantity format-mixin) (stream t))
   (format stream (quantity-format quantity) (quantity-value quantity)))

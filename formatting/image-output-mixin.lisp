@@ -1,6 +1,6 @@
 ;;;; image-output-mixin.lisp --- Format event payloads as images.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,16 +12,16 @@
            :initform t
            :documentation
            "Stores the desired width of output images produced by the
-style instance.")
+            style instance.")
    (height :type     dimension-spec/full
            :accessor style-height
            :initform t
            :documentation
            "Stores the desired height of output images produced by the
-style instance."))
+            style instance."))
   (:documentation
    "This formatting style outputs image data in common image formats
-for event payloads consisting of image data."))
+    for event payloads consisting of image data."))
 
 (defmethod shared-initialize :after ((instance   image-output-mixin)
                                      (slot-names t)
@@ -50,7 +50,7 @@ for event payloads consisting of image data."))
 
 (defun normalize-dimension-spec (spec)
   "Expand the possibly abbreviated dimension specification SPEC into a
-full dimension specification."
+   full dimension specification."
   (etypecase spec
     (positive-integer
      (list :px spec))
@@ -79,8 +79,8 @@ full dimension specification."
 
 (defun apply-dimension-spec/integer-factor (input spec)
   "Compute output dimension by applying SPEC to INPUT and ensuring
-that the result is an integer fraction of INPUT. Return the output
-dimension and the integer scaling factor."
+   that the result is an integer fraction of INPUT. Return the output
+   dimension and the integer scaling factor."
   (let* ((requested (apply-dimension-spec input spec))
          (scale     (round (/ input requested))))
     (values (floor input scale) scale)))

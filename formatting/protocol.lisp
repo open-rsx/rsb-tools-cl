@@ -1,6 +1,6 @@
 ;;;; protocol.lisp --- Protocol for formatting of RSB events.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -14,10 +14,10 @@
                           max-columns)
   (:documentation
    "Format EVENT onto STREAM using a style designated by STYLE.
-MAX-LINES controls specifies the maximum number of lines the produced
-output is allowed to take up.
-MAX-COLUMNS limits the number of columns individual output lines are
-allowed to take up."))
+    MAX-LINES controls specifies the maximum number of lines the
+    produced output is allowed to take up.  MAX-COLUMNS limits the
+    number of columns individual output lines are allowed to take
+    up."))
 
 (defgeneric format-payload (data style stream
                             &key
@@ -25,18 +25,20 @@ allowed to take up."))
                             max-columns)
   (:documentation
    "Format the event payload DATA onto STREAM using a formatting style
-designated by STYLE.
-MAX-LINES controls specifies the maximum number of lines the produced
-output is allowed to take up.
-MAX-COLUMNS limits the number of columns individual output lines are
-allowed to take up."))
+    designated by STYLE.
+
+    MAX-LINES controls specifies the maximum number of lines the
+    produced output is allowed to take up.
+
+    MAX-COLUMNS limits the number of columns individual output lines
+    are allowed to take up."))
 
 ;;; Formatting style class family
 
 (dynamic-classes:define-findable-class-family style
-    "This class family consists of event formatting style
-classes. Each class implements a particular style of formatting
-received events onto a given stream by specializing `format-event'.")
+  "This class family consists of event formatting style classes. Each
+   class implements a particular style of formatting received events
+   onto a given stream by specializing `format-event'.")
 
 (defun make-style (spec)
   "Make and return a style instance according to SPEC. SPEC can either
@@ -61,7 +63,7 @@ received events onto a given stream by specializing `format-event'.")
 (defgeneric collects? (thing)
   (:documentation
    "Return non-nil if THING collects data from events and only
-produces output for explicit trigger events."))
+    produces output for explicit trigger events."))
 
 ;; Default behavior
 
@@ -73,8 +75,8 @@ produces output for explicit trigger events."))
 (defgeneric sub-style-for (style event)
   (:documentation
    "Return a sub-style object of STYLE or a sequence of such style
-objects for formatting EVENT. nil indicates that EVENT should not be
-processed in any sub-style."))
+    objects for formatting EVENT. nil indicates that EVENT should not
+    be processed in any sub-style."))
 
 (defgeneric delegate (event style stream)
   (:documentation
@@ -84,13 +86,14 @@ processed in any sub-style."))
   (:documentation
    "Create and return a list of the form
 
-  (PREDICATE SUB-STYLE)
+      (PREDICATE SUB-STYLE)
 
-where PREDICATE is a function of one parameter, a thing to be
-formatted, which decides whether the sub-style SUB-STYLE of STYLE is
-suitable for formatting the object. Return nil when no sub-style entry
-should be created for VALUE. VALUE depends on how STYLE organizes its
-sub-styles. See `sub-style-for' and `delegate'."))
+    where PREDICATE is a function of one parameter, a thing to be
+    formatted, which decides whether the sub-style SUB-STYLE of STYLE
+    is suitable for formatting the object. Return nil when no
+    sub-style entry should be created for VALUE. VALUE depends on how
+    STYLE organizes its sub-styles. See `sub-style-for' and
+    `delegate'."))
 
 ;;; Sub-style sorting protocol
 
@@ -100,7 +103,7 @@ sub-styles. See `sub-style-for' and `delegate'."))
                                      key)
   (:documentation
    "Return a list of style object which are sub-styles of STYLE,
-sorted according to PREDICATE and KEY."))
+    sorted according to PREDICATE and KEY."))
 
 ;;; Data consistency protocol
 
@@ -108,38 +111,39 @@ sorted according to PREDICATE and KEY."))
   (:documentation
    "Return a descriptor of acceptable output send to TARGET by STYLE.
 
-The returned descriptor can be any object returned by a method for
-STYLE on `make-descriptor' that works with specialized methods for
-STYLE on `compatible-descriptors?' and `incompatible-descriptors'."))
+    The returned descriptor can be any object returned by a method for
+    STYLE on `make-descriptor' that works with specialized methods for
+    STYLE on `compatible-descriptors?' and
+    `incompatible-descriptors'."))
 
 (defgeneric (setf descriptor-for-target) (new-value style target)
   (:documentation
    "Install NEW-VALUE as an descriptor of acceptable output send to
-TARGET by STYLE.
+    TARGET by STYLE.
 
-NEW-VALUE can be any object returned by a method for STYLE on
-`make-descriptor' that works with specialized methods for STYLE on
-`compatible-descriptors?' and `incompatible-descriptors'."))
+    NEW-VALUE can be any object returned by a method for STYLE on
+    `make-descriptor' that works with specialized methods for STYLE on
+    `compatible-descriptors?' and `incompatible-descriptors'."))
 
 (defgeneric make-descriptor (style data target)
   (:documentation
    "Return a descriptor of acceptable output send to TARGET by
-STYLE. The descriptor can be derived from DATA when future output has
-to be compatible to DATA in some sense.
+    STYLE. The descriptor can be derived from DATA when future output
+    has to be compatible to DATA in some sense.
 
-The returned descriptor has to work with methods on
-`compatible-descriptors?' and `incompatible-descriptors' specialized
-for STYLE."))
+    The returned descriptor has to work with methods on
+    `compatible-descriptors?' and `incompatible-descriptors'
+    specialized for STYLE."))
 
 (defgeneric compatible-descriptors? (style descriptor-1 descriptor-2)
   (:documentation
    "Return non-nil if DESCRIPTOR-1 and DESCRIPTOR-2 are compatible for
-the kind of output performed by STYLE. Return nil otherwise."))
+    the kind of output performed by STYLE. Return nil otherwise."))
 
 (defgeneric incompatible-descriptors (style descriptor-1 descriptor-2)
   (:documentation
    "Signal an error which indicates that DESCRIPTOR-1 and DESCRIPTOR-2
-are not compatible for the kind of output performed by STYLE."))
+    are not compatible for the kind of output performed by STYLE."))
 
 ;;; Temporal bounds protocol
 
@@ -150,7 +154,7 @@ are not compatible for the kind of output performed by STYLE."))
 (defgeneric (setf lower-bound) (new-value thing)
   (:documentation
    "Set the lower temporal bound of THING to NEW-VALUE. See type
-`time-spec'."))
+    `time-spec'."))
 
 (defgeneric upper-bound (thing)
   (:documentation
@@ -159,7 +163,7 @@ are not compatible for the kind of output performed by STYLE."))
 (defgeneric (setf upper-bound) (new-value thing)
   (:documentation
    "Set the upper temporal bound of THING to NEW-VALUE. See type
-`time-spec'."))
+    `time-spec'."))
 
 (defgeneric bounds (thing)
   (:documentation
@@ -168,20 +172,21 @@ are not compatible for the kind of output performed by STYLE."))
 (defgeneric (setf bounds) (new-value thing)
   (:documentation
    "Set the temporal bounds of THING to NEW-VALUE. See type
-`bounds-spec'."))
+    `bounds-spec'."))
 
 (defgeneric bounds/expanded (thing)
   (:documentation
    "Return a list of the form
 
-  (LOWER UPPER)
+      (LOWER UPPER)
 
-containing the temporal bounds of THING as `timestamp/unix/nsec'."))
+    containing the temporal bounds of THING as
+    `timestamp/unix/nsec'."))
 
 (defgeneric range/expanded (thing)
   (:documentation
    "Return the difference between the upper and lower temporal bound
-of THING in nanoseconds."))
+    of THING in nanoseconds."))
 
 ;;; Header printing protocol
 
@@ -202,15 +207,15 @@ of THING in nanoseconds."))
 (defgeneric column-produces-output? (column)
   (:documentation
    "Return non-nil if COLUMN produces output when asked to format
-something. This can be nil for example the width of COLUMN has been
-set to zero or if COLUMN is actually a pseudo-column producing things
-like linebreaks."))
+    something. This can be nil for example the width of COLUMN has
+    been set to zero or if COLUMN is actually a pseudo-column
+    producing things like linebreaks."))
 
 ;;; Default behavior
 
 (defmethod column-produces-output? ((column t))
   "Default implementation assumes that COLUMN produces output if its
-width is positive."
+   width is positive."
   (plusp (column-width column)))
 
 ;;; Column class family

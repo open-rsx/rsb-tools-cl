@@ -1,6 +1,6 @@
 ;;;; header-printing-mixin.lisp --- Mixin for formatting styles which print headers.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,11 +13,12 @@
                      :initform 22
                      :documentation
                      "Stores the number of output cycles after which a
-header should be printed or nil in case a header is never printed."))
+                      header should be printed or nil in case a header
+                      is never printed."))
   (:documentation
    "This class is intended to be mixed into formatting style classes
-that periodically print a header of some kind into their regular
-stream of output."))
+    that periodically print a header of some kind into their regular
+    stream of output."))
 
 (defmethod format-event :before ((event  t)
                                  (style  header-printing-mixin)

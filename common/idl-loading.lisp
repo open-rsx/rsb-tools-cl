@@ -1,6 +1,6 @@
 ;;;; idl-loading.lisp --- Loading IDL files at runtime.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -15,15 +15,15 @@
                       &allow-other-keys)
   (:documentation
    "Try to load an IDL definition from SOURCE assuming source is of
-the kind designated by KIND.
+    the kind designated by KIND.
 
-PATHNAME should be supplied, if SOURCE does not have an associated
-pathname (e.g. not-file-based-stream) to allow but filename-based
-heuristic should still be applied.
+    PATHNAME should be supplied, if SOURCE does not have an associated
+    pathname (e.g. not-file-based-stream) to allow but filename-based
+    heuristic should still be applied.
 
-If supplied, DEPENDENCY-HANDLER has to be a function that resolves
-dependencies. It is called when SOURCE contains references to entities
-not specified within SOURCE."))
+    If supplied, DEPENDENCY-HANDLER has to be a function that resolves
+    dependencies. It is called when SOURCE contains references to
+    entities not specified within SOURCE."))
 
 (defmethod load-idl :around  ((source t)
                               (kind   t)
@@ -39,7 +39,7 @@ not specified within SOURCE."))
 (defmethod load-idl ((source t) (kind t)
                      &key &allow-other-keys)
   "Signal an error if we no not know how load an IDL for the
-combination SOURCE and KIND."
+   combination SOURCE and KIND."
   (error "~@<~A is an unknown data definition type.~@:>"
          kind))
 
@@ -47,7 +47,7 @@ combination SOURCE and KIND."
                      &rest args
                      &key &allow-other-keys)
   "Load an IDL definition from the file SOURCE. The IDL kind is
-inferred form the file type of SOURCE."
+   inferred form the file type of SOURCE."
   (log:info "~@<Processing IDL file ~S~@:>" source)
   (apply #'load-idl
          source (make-keyword (string-upcase
@@ -58,7 +58,7 @@ inferred form the file type of SOURCE."
                      &rest args
                      &key &allow-other-keys)
   "Load IDL definitions from all files matching the wildcard pathname
-SOURCE."
+   SOURCE."
   (log:info "~@<Processing IDL files matching ~S~@:>" source)
   (map 'list (lambda (file) (apply #'load-idl file :file args))
        (directory source)))
@@ -67,7 +67,7 @@ SOURCE."
                      &rest args
                      &key &allow-other-keys)
   "Load IDL definitions from the pathname SOURCE treating it as a wild
-pathname, as directory or as a file depending on its properties."
+   pathname, as directory or as a file depending on its properties."
   (cond
     ((and (pathname-name source) (wild-pathname-p source))
      (apply #'load-idl source :wild args))
@@ -82,7 +82,7 @@ pathname, as directory or as a file depending on its properties."
                      &rest args
                      &key &allow-other-keys)
   "Treat SOURCE as an URI if it contains a ':', treat it as a pathname
-otherwise."
+   otherwise."
   (if (find #\: source)
       (apply #'load-idl (puri:parse-uri source) kind args)
       (apply #'load-idl (parse-namestring source) kind args)))

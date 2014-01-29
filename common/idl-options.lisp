@@ -1,6 +1,6 @@
 ;;;; idl-options.lisp --- IDL-related commandline options.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -16,7 +16,7 @@
 
 (defun process-idl-options ()
   "Process the options --idl-path and --load-idl by loading the
-specified IDL files."
+   specified IDL files."
   ;; Extend data definition source path.
   (iter (for paths next (getopt :long-name "idl-path"))
         (while paths)

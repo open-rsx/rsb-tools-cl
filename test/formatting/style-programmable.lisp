@@ -1,6 +1,6 @@
 ;;;; style-programmable.lisp --- Unit tests for the programmable formatting style.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -48,7 +48,7 @@
 (addtest (style-programmable-root
           :documentation
           "Test some simple cases of formatting events using methods
-on `format-event' for `style-programmable'.")
+           on `format-event' for `style-programmable'.")
   smoke
 
   (ensure-style-cases (style-programmable)
@@ -77,7 +77,7 @@ on `format-event' for `style-programmable'.")
   ()
   (:documentation
    "Unit tests for the `style-programmable/script' formatting style
-class."))
+    class."))
 
 (addtest (style-programmable/script-root
           :documentation
@@ -128,7 +128,7 @@ class."))
 (addtest (style-programmable/script-root
           :documentation
           "Test some simple cases of formatting events using methods
-on `format-event' for `style-programmable/script'.")
+           on `format-event' for `style-programmable/script'.")
   smoke
 
   (ensure-style-cases (style-programmable/script)
@@ -154,12 +154,12 @@ on `format-event' for `style-programmable/script'.")
   ()
   (:documentation
    "Unit tests for the `style-programmable/template' formatting style
-class."))
+   class."))
 
 (addtest (style-programmable/template-root
           :documentation
           "Test constructing `style-programmable/template'
-instances.")
+           instances.")
   construct
 
   (ensure-cases (args expected)
@@ -208,7 +208,7 @@ instances.")
 (addtest (style-programmable/template-root
           :documentation
           "Test some simple cases of formatting events using methods
-on `format-event' for `style-programmable/template'.")
+           on `format-event' for `style-programmable/template'.")
   smoke
 
   (ensure-style-cases (style-programmable/template)

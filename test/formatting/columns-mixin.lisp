@@ -1,6 +1,6 @@
 ;;;; columns-mixin.lisp --- Unit tests for the columns-mixin class.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -40,8 +40,8 @@
 (addtest (columns-mixin-root
           :documentation
           "Test the method on `format-event' for `columns-mixin' which
-should format events according to the column specification of the
-style.")
+           should format events according to the column specification
+           of the style.")
   format-event
 
   (ensure-style-cases (columns-mixin)
@@ -70,8 +70,8 @@ style.")
 (addtest (columns-mixin-root
           :documentation
           "Test the method on `format-header' for `columns-mixin'
-which should format headers according to the column specification of
-the style.")
+           which should format headers according to the column
+           specification of the style.")
   format-header
 
   (ensure-style-cases (columns-mixin :formatter :format-header)

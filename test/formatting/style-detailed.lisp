@@ -1,6 +1,6 @@
 ;;;; style-detailed.lisp --- Unit tests for the detailed formatting style.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -14,7 +14,7 @@
 (addtest (style-detailed-root
           :documentation
           "Test some simple cases of formatting events using methods
-on `format-event' for `style-detailed'.")
+           on `format-event' for `style-detailed'.")
   smoke
 
   (ensure-style-cases (style-detailed)

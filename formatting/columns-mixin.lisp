@@ -1,6 +1,6 @@
 ;;;; columns-mixin.lisp --- Mixin class for column-based formatting styles.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,8 +12,8 @@
                                produced-output? printed-ellipsis?-var)
                               &body body)
     "Execute BODY if the state captured by POSITION, PRODUCED-OUTPUT?
-and PRINTED-ELLIPSIS?-VAR permits printing COLUMN and optionally
-SEPARATOR."
+     and PRINTED-ELLIPSIS?-VAR permits printing COLUMN and optionally
+     SEPARATOR."
     (once-only (position column produced-output? separator)
       `(if (columns-exhausted? (+ ,position
                                   (if ,produced-output? (length ,separator) 0)
@@ -30,30 +30,30 @@ SEPARATOR."
               :initform nil
               :documentation
               "Stores the list of columns of which the formatting
-style is composed.")
+               style is composed.")
    (separator :initarg  :separator
               :type     string
               :accessor style-separator
               :initform (if *textual-output-can-use-utf-8?* "│" "|")
               :documentation
               "Stores a separator string that is printed between the
-output produced by adjacent columns."))
+               output produced by adjacent columns."))
   (:documentation
    "This mixin class is intended to be mixed into formatting styles
-that produce column-based output. When combined with
-`header-printing-mixin', column names are used to produce header
-lines.
+    that produce column-based output. When combined with
+    `header-printing-mixin', column names are used to produce header
+    lines.
 
-When setting columns via the :columns initarg or \(setf
-style-columns\), a list of either column instances or column
-specifications can be used. A column specification is either a keyword
-designating a class in the column class family or a list of the
-form
+    When setting columns via the :columns initarg or \(setf
+    style-columns\), a list of either column instances or column
+    specifications can be used. A column specification is either a
+    keyword designating a class in the column class family or a list
+    of the form
 
-  (CLASS KEY1 VALUE1 KEY2 VALUE2 ...)
+      (CLASS KEY1 VALUE1 KEY2 VALUE2 ...)
 
-consisting of the keyword CLASS and initargs for the column class
-designated by CLASS."))
+    consisting of the keyword CLASS and initargs for the column class
+    designated by CLASS."))
 
 (defmethod shared-initialize :after ((instance   columns-mixin)
                                      (slot-names t)

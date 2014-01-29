@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for unit tests of the stats module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -29,15 +29,15 @@
 
 (defmacro ensure-quantity-cases ((class) &body cases)
   "Generate tests cases for methods on `update!' and `format-value'
-for quantity CLASS according to CASES. Each element of cases has to be
-of the form
+   for quantity CLASS according to CASES. Each element of cases has to
+   be of the form
 
-  (INITARGS DATA EXPECTED-OUTPUT)
+     (INITARGS DATA EXPECTED-OUTPUT)
 
-For each case, an instance of CLASS is constructed with INITARGS, DATA
-is processed via calls to `update!' and output is produced by finally
-calling `format-value'. The resulting output is compared to
-EXPECTED-OUTPUT."
+   For each case, an instance of CLASS is constructed with INITARGS,
+   DATA is processed via calls to `update!' and output is produced by
+   finally calling `format-value'. The resulting output is compared to
+   EXPECTED-OUTPUT."
   `(ensure-cases (args events expected)
        (progn ,@cases)
 

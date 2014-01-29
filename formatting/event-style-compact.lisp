@@ -1,6 +1,6 @@
 ;;;; event-style-compact.lisp --- Compact event formatting style class.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,12 +13,12 @@
   ()
   (:documentation
    "This class is intended to be used as a superclass for compact
-style classes."))
+    style classes."))
 
 (defmethod sub-style-for ((style basic-compact-style)
                           (event t))
   "Return a singleton list containing the sub-style of STYLE whose
-predicate succeeds on EVENT."
+   predicate succeeds on EVENT."
   (ensure-list
    (cdr (find-if (rcurry #'funcall event) (style-sub-styles style)
                  :key #'car))))

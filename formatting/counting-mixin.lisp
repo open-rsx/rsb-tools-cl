@@ -1,6 +1,6 @@
 ;;;; counting-mixin.lisp --- Output counting style mixin class.
 ;;;;
-;;;; Copyright (C) 2011, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,10 +13,10 @@
           :initform 0
           :documentation
           "Stores the number of output cycles already performed by the
-formatter."))
+           formatter."))
   (:documentation
    "This class is intended to be mixed into formatter classes that
-need keep track of the number of performed output cycles."))
+    need keep track of the number of performed output cycles."))
 
 (defmethod format-event :after ((event  t)
                                 (style  counting-mixin)

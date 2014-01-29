@@ -1,6 +1,6 @@
 ;;;; options.lisp --- Common functions related to commandline options.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -70,7 +70,7 @@
 
 (defun make-idl-options ()
   "Return a `clon:group' instance containing IDL-related option
-definitions."
+   definitions."
   (defgroup (:header "IDL Options")
     (path   :long-name       "idl-path"
             :short-name      "I"
@@ -91,7 +91,7 @@ can be used to search directories recursively. If the file designated by FILE-OR
 (defun make-error-handling-options (&key
                                      (show :default))
   "Return a `clon:group' instance program options related to error
-handling."
+   handling."
   (declare (ignore show))
   (defgroup (:header "Options related to Handling of Errors")
       (enum    :long-name     "on-error"
@@ -119,9 +119,9 @@ handling."
                                              (read-from-string string))))
                               &allow-other-keys)
   "Return a list of all values that have been supplied for the option
-specified by SPEC.
+   specified by SPEC.
 
-TRANSFORM is applied to all option values."
+   TRANSFORM is applied to all option values."
   (let ((spec (remove-from-plist spec :transform)))
     (iter (for value/string next (apply #'getopt spec))
           (while value/string)
@@ -134,20 +134,20 @@ TRANSFORM is applied to all option values."
                                     return)
   "Perform the following commandline option processing:
 
-+ if --version has been supplied, print version information and call
-  RETURN or exit.
+   + if --version has been supplied, print version information and call
+     RETURN or exit.
 
-+ if --help has been supplied, print a help text and call RETURN or
-  exit.
+   + if --help has been supplied, print a help text and call RETURN or
+     exit.
 
-+ if --trace has been supplied (at least once), trace the packages or
-  functions specified in the arguments to --trace.
+   + if --trace has been supplied (at least once), trace the packages
+     or functions specified in the arguments to --trace.
 
-+ if --debug has been supplied, keep debugger enabled and adjust
-  log-level, otherwise disable debugger
+   + if --debug has been supplied, keep debugger enabled and adjust
+     log-level, otherwise disable debugger
 
-+ if --swank is supplied, start a swank server and write its port to
-  ./swank-port.txt"
+   + if --swank is supplied, start a swank server and write its port
+     to ./swank-port.txt"
   ;; Create a new global context.
   (make-context)
 
@@ -224,8 +224,8 @@ TRANSFORM is applied to all option values."
 
 (defun process-error-handling-options ()
   "Process the \"on-error\" commandline option mapping abort to
-`abort/verbose' and continue to `continue/verbose' and returning the
-respective function."
+   `abort/verbose' and continue to `continue/verbose' and returning
+   the respective function."
   (ecase (getopt :long-name "on-error")
     (:abort    #'abort/signal)
     (:continue #'continue/verbose)))
@@ -235,13 +235,13 @@ respective function."
 (defun parse-instantiation-spec (string)
   "Parse STRING as an instantiation specification of one of the forms
 
-  KIND KEY1 VALUE1 KEY2 VALUE2 ...
+     KIND KEY1 VALUE1 KEY2 VALUE2 ...
 
-and
+   and
 
-  KIND VALUE1
+     KIND VALUE1
 
-and return the result as a list."
+   and return the result as a list."
   (maybe-expand-instantiation-spec
    (with-input-from-string (stream string)
      (iter (for token in-stream stream)
@@ -253,12 +253,12 @@ and return the result as a list."
 
 (defun simple-instantiation-spec? (spec)
   "Return non-nil if SPEC is a \"simple\" instantiation specification
-of the form (KIND SOLE-ARGUMENT)."
+   of the form (KIND SOLE-ARGUMENT)."
   (and (length= 2 spec) (keywordp (first spec))))
 
 (defun maybe-expand-instantiation-spec (spec)
   "Expand SPEC into a full instantiation specification if it is a
-simple specification. Otherwise, just return SPEC."
+   simple specification. Otherwise, just return SPEC."
   (if (simple-instantiation-spec? spec)
       (cons (first spec) spec)
       spec))

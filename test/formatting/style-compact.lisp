@@ -1,6 +1,6 @@
 ;;;; style-compact.lisp --- Unit tests for the compact family of styles.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -14,7 +14,7 @@
 (addtest (style-compact/80-root
           :documentation
           "Test some simple cases of formatting events using methods
-on `format-event' for `style-compact/80'.")
+           on `format-event' for `style-compact/80'.")
   smoke
 
   (ensure-style-cases (style-compact/80)
@@ -41,7 +41,7 @@ on `format-event' for `style-compact/80'.")
 (addtest (style-compact/128-root
           :documentation
           "Test some simple cases of formatting events using methods
-on `format-event' for `style-compact/128'.")
+           on `format-event' for `style-compact/128'.")
   smoke
 
   (ensure-style-cases (style-compact/128)

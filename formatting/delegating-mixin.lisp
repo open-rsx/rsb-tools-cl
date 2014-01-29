@@ -1,6 +1,6 @@
 ;;;; delegating-mixin.lisp --- Predicate-based delegation to sub-styles.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,17 +13,17 @@
                :initform '()
                :documentation
                "Stores predicates and corresponding sub-styles as an
-alist of items of the form
+                alist of items of the form
 
-  (PREDICATE . SUB-STYLE)."))
+                  (PREDICATE . SUB-STYLE)."))
   (:documentation
    "This class is intended to be used in formatting classes that
-delegate to sub-styles based on dispatch predicates."))
+    delegate to sub-styles based on dispatch predicates."))
 
 (defmethod sub-style-for ((style delegating-mixin)
                           (event t))
   "Return a list of sub-styles of STYLE whose predicates succeed on
-EVENT."
+   EVENT."
   (map 'list #'cdr
        (remove-if (complement (rcurry #'funcall event))
                   (style-sub-styles style)
@@ -46,7 +46,7 @@ EVENT."
                          (stream t)
                          &key &allow-other-keys)
   "Delegate formatting of EVENT on STREAM to appropriate sub-styles of
-STYLE."
+   STYLE."
   (delegate event style stream))
 
 (defmethod print-object ((object delegating-mixin) stream)

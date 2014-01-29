@@ -1,6 +1,6 @@
 ;;;; style-image-png.lisp --- Format event payloads as PNG images.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,7 +13,7 @@
   ()
   (:documentation
    "This formatting style output image data in PNG format for event
-payloads consisting of image data."))
+    payloads consisting of image data."))
 
 (deftype %image-index () '(unsigned-byte 24))
 

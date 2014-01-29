@@ -1,6 +1,6 @@
 ;;;; event-style-timeline.lisp --- Event indicators on a simple timeline.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -21,7 +21,7 @@
                             #'style-columns))
   (:documentation
    "This class is intended to be used as a superclass for timeline
-formatting style classes."))
+    formatting style classes."))
 
 (defmethod make-sub-style-entry :around ((style basic-timeline-style)
                                          (value t))
@@ -84,9 +84,9 @@ formatting style classes."))
                                             (rcurry #'elt 0)
                                             #'style-columns))
       "This formatting style indicates the points in time at which
-events occur as dots on a timeline. Separate \"lanes\" which share a
-common timeline are dynamically allocated as events occur. Events are
-grouped by scope."
+       events occur as dots on a timeline. Separate \"lanes\" which
+       share a common timeline are dynamically allocated as events
+       occur. Events are grouped by scope."
     (list :constant
           :name      "Scope"
           :value     value
@@ -101,9 +101,9 @@ grouped by scope."
                          :key  #'event-origin
                          :test #'uuid:uuid=)
       "This formatting style indicates the points in time at which
-events occur as dots on a timeline. Separate \"lanes\" which share a
-common timeline are dynamically allocated as events occur. Events are
-grouped by origin."
+       events occur as dots on a timeline. Separate \"lanes\" which
+       share a common timeline are dynamically allocated as events
+       occur. Events are grouped by origin."
     (list :constant
           :name      "Origin"
           :value     value

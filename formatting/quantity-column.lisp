@@ -1,6 +1,6 @@
 ;;;; quantity-column.lisp ---
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,12 +13,12 @@
   ((quantity :accessor column-quantity
              :documentation
              "Stores the underlying quantity instances printed by this
-column."))
+              column."))
   (:default-initargs
    :quantity (missing-required-initarg 'quantity-column :quantity))
   (:documentation
    "Instances of this class use an associated quantity instance to
-provide a name and the printed value."))
+    provide a name and the printed value."))
 
 (defmethod shared-initialize :after ((instance   quantity-column)
                                      (slot-names t)

@@ -1,6 +1,6 @@
 ;;;; event-style-progammable.lisp --- A programmable formatting style.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -11,7 +11,7 @@
 (defgeneric compile-code (style code bindings)
   (:documentation
    "Compile CODE using BINDINGS for use with STYLE and return the
-resulting compiled function."))
+    resulting compiled function."))
 
 ;;; Utility functions
 
@@ -41,12 +41,12 @@ resulting compiled function."))
     (causes/uuid     (map 'list #'event-id->uuid (event-causes event)))
     (skip-event      (throw 'skip-event nil)))
   "A list of default bindings available in instances of
-`style-programmable' and subclasses. Entries are like `cl:let'
-bindings, that is
+   `style-programmable' and subclasses. Entries are like `cl:let'
+   bindings, that is
 
-  (VARIABLE FORM)
+     (VARIABLE FORM)
 
-where FORM is evaluated to produce the value of VARIABLE.")
+   where FORM is evaluated to produce the value of VARIABLE.")
 
 (defclass style-programmable ()
   ((bindings :initarg  :bindings
@@ -56,26 +56,27 @@ where FORM is evaluated to produce the value of VARIABLE.")
              :initform *style-programmable-default-bindings*
              :documentation
              "Stores the bindings available in the output format
-specification.")
+              specification.")
    (lambda   :type     function
              :accessor %style-lambda
              :documentation
              "Stores the compiled output formatting function for the
-style instance.")
+              style instance.")
    (code     :type     list
              :accessor style-code
              :accessor %style-code
              :documentation
              "Stores the code producing the output of the style
-instance."))
+              instance."))
   (:default-initargs
    :code (missing-required-initarg 'style-programmable :code))
   (:documentation
    "This formatting style produces its output by executing a supplied
-code. The supplied code can rely on `stream' to be bound to a
-character output stream which it should use for producing the output.
+    code. The supplied code can rely on `stream' to be bound to a
+    character output stream which it should use for producing the
+    output.
 
-By default, the following bindings are available:
+    By default, the following bindings are available:
 "))
 
 (defmethod shared-initialize :after ((instance   style-programmable)
@@ -184,12 +185,12 @@ By default, the following bindings are available:
             'style-programmable/script :script))
   (:documentation
    "This formatting style produces its output by executing a supplied
-script which can take the forms of a pathname, designating a file, a
-stream, a string or any other Lisp object. The code can rely on
-`stream' to be bound to a character output stream which it should use
-for producing the output.
+    script which can take the forms of a pathname, designating a file,
+    a stream, a string or any other Lisp object. The code can rely on
+    `stream' to be bound to a character output stream which it should
+    use for producing the output.
 
-By default, the following bindings are available:
+    By default, the following bindings are available:
 "))
 
 (defmethod shared-initialize :after ((instance   style-programmable/script)
@@ -246,21 +247,21 @@ By default, the following bindings are available:
              :writer   (setf %style-template)
              :documentation
              "Stores the template which is used for producing the
-output of the style."))
+              output of the style."))
   (:default-initargs
    :code     nil
    :template (missing-required-initarg
               'style-programmable/template :template))
   (:documentation
    "This formatting style produces its output by applying a template
-specification to individual events. In the template specification,
-event properties can be accessed using a syntax of the form
-${PROPERTY} or @{PROPERTY} for \"direct\" expansion and \"spliced\"
-expansion respectively. In addition, interpolations like named unicode
-characters etc. as described in http://weitz.de/cl-interpol/ are
-supported.
+    specification to individual events. In the template specification,
+    event properties can be accessed using a syntax of the form
+    ${PROPERTY} or @{PROPERTY} for \"direct\" expansion and
+    \"spliced\" expansion respectively. In addition, interpolations
+    like named unicode characters etc. as described in
+    http://weitz.de/cl-interpol/ are supported.
 
-By default, the following PROPERTY names are available:
+    By default, the following PROPERTY names are available:
 "))
 
 (defmethod shared-initialize :after ((instance   style-programmable/template)

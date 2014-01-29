@@ -1,6 +1,6 @@
 ;;;; style-meta-data.lisp --- Unit tests for the meta-data formatting style.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -14,7 +14,7 @@
 (addtest (style-meta-data-root
           :documentation
           "Test some simple cases of formatting events using methods
-on `format-event' for `style-meta-data'.")
+           on `format-event' for `style-meta-data'.")
   smoke
 
   (ensure-style-cases (style-meta-data)

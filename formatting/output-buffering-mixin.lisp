@@ -1,6 +1,6 @@
 ;;;; output-buffering-mixin.lisp --- Mixin for buffering of formatter output.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -10,8 +10,8 @@
   ()
   (:documentation
    "This mixin class provides buffering of output. This can be useful
-when lots of output has to be produced and written. This can, for
-example, reduce flickering."))
+    when lots of output has to be produced and written. This can, for
+    example, reduce flickering."))
 
 (defmethod format-event :around ((event  (eql :trigger))
                                  (style  output-buffering-mixin)

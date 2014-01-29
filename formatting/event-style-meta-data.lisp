@@ -1,6 +1,6 @@
 ;;;; event-style-meta-data.lisp --- Meta-data-only formatting style class.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -16,7 +16,7 @@
                   :initform t
                   :documentation
                   "Should routing information like destination scope,
-origin id and method be printed?")
+                   origin id and method be printed?")
    (timestamps?   :initarg  :timestamps?
                   :type     boolean
                   :accessor style-timestamps?
@@ -29,7 +29,7 @@ origin id and method be printed?")
                   :initform t
                   :documentation
                   "Should the dictionary of client-supplied key-value
-pairs be printed?")
+                   pairs be printed?")
    (causes?       :initarg  :causes?
                   :type     boolean
                   :accessor style-causes?
@@ -41,7 +41,7 @@ pairs be printed?")
                 #\Newline))
   (:documentation
    "Format the meta-data of each event on multiple lines, but do not
-format event payloads."))
+    format event payloads."))
 
 (defmethod format-event ((event  event)
                          (style  style-meta-data)

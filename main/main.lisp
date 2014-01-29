@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Dispatch function of the main tools program.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -106,8 +106,8 @@
 
 (defun %maybe-create-link (target name &optional prefix suffix)
   "If NAME does not designate a filesystem object, create a symbolic
-link to TARGET named NAME. Note that existing filesystem objects named
-NAME can prevent the creation of the symbolic link."
+   link to TARGET named NAME. Note that existing filesystem objects
+   named NAME can prevent the creation of the symbolic link."
   (let ((name (format nil "~@[~A~]~A~@[~A~]" prefix name suffix)))
     (unless (probe-file name)
       #-(and sbcl (not win32)) (error "~@<Don't know how to create ~
@@ -120,7 +120,7 @@ NAME can prevent the creation of the symbolic link."
 
 (defun %maybe-create-links (target &optional prefix suffix)
   "Create symbolic links to TARGET for each entry in
-`*filename->entry-point*', if necessary."
+   `*filename->entry-point*', if necessary."
   (let ((names (mapcar #'car *filename->entry-point*)))
     (mapc (rcurry #'%maybe-create-link prefix suffix)
           (circular-list target) names)))

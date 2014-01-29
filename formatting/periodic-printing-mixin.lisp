@@ -1,6 +1,6 @@
 ;;;; periodic-printing-mixin.lisp --- Mixin for timer-driven formatting.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,38 +13,38 @@
                    :initform 1
                    :documentation
                    "Stores the amount of time in seconds between
-successive print operations.")
+                    successive print operations.")
    (stream         :type     (or null stream)
                    :accessor %style-stream
                    :initform nil
                    :documentation
                    "Stores the stream that should be used for periodic
-printing.")
+                    printing.")
    (pretty-state   :initarg  :pretty-state
                    :type     list
                    :accessor %style-pretty-state
                    :documentation
                    "Stores the pretty-printer state that should be
-used for periodic printing.")
+                    used for periodic printing.")
    (timer          :accessor %style-timer
                    :documentation
                    "Stores the timer used to trigger periodic
-printing.")
+                    printing.")
    (lock           :reader   %style-lock
                    :initform (bt:make-recursive-lock
                               "Periodic printing lock")
                    :documentation
                    "Stores a lock that protects timer-triggered
-accesses to the style object against `format-event'-triggered
-accesses."))
+                    accesses to the style object against
+                    `format-event'-triggered accesses."))
   (:documentation
    "This mixin class is intended to be mixed into formatting classes
-that produce output periodically instead of being triggered by the
-arrival of events.
+    that produce output periodically instead of being triggered by the
+    arrival of events.
 
-When `format-event' is called, an :around method prevents
-output-producing methods from running. Instead, these method are run a
-timer-driven way."))
+    When `format-event' is called, an :around method prevents
+    output-producing methods from running. Instead, these method are
+    run a timer-driven way."))
 
 (defmethod initialize-instance :after ((instance periodic-printing-mixin)
                                        &key)
@@ -85,7 +85,7 @@ timer-driven way."))
                                  (stream t)
                                  &key &allow-other-keys)
   "Protect against concurrent access to STYLE and store STREAM for use
-in timer-driven output."
+   in timer-driven output."
   (bt:with-recursive-lock-held ((%style-lock style))
     (unless (eq event :trigger)
       (setf (%style-stream style)       stream
@@ -98,7 +98,7 @@ in timer-driven output."
 
 (defun %make-timer-function (style)
   "Return a function that is weakly-closed over STYLE and tries to run
-STYLE's `format-event' function when called."
+   STYLE's `format-event' function when called."
   (let ((weak-style (tg:make-weak-pointer style)))
     (lambda ()
       (when-let ((style  (tg:weak-pointer-value weak-style))

@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for stats module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -97,13 +97,13 @@
 
   (:documentation
    "This package contains functions and classes for computing basic
-statistical quantities over properties of RSB events. Most quantities
-collect some event property over a period of time and produce some
-aggregated value from the collection.
+    statistical quantities over properties of RSB events. Most
+    quantities collect some event property over a period of time and
+    produce some aggregated value from the collection.
 
-Examples include
-+ Event frequency
-+ Histogram of event origins
-+ Histogram of event wire-schema
-+ Mean and variance of event payload size
-+ Mean and variance event latency"))
+    Examples include
+    + Event frequency
+    + Histogram of event origins
+    + Histogram of event wire-schema
+    + Mean and variance of event payload size
+    + Mean and variance event latency"))

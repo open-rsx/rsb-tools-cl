@@ -13,7 +13,7 @@
   ()
   (:documentation
    "This style produces an audio stream in WAV format from event
-payloads containing audio data."))
+    payloads containing audio data."))
 
 (defmethod write-header ((descriptor list)
                          (style      style-audio-stream/wav)

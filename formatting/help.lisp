@@ -1,6 +1,6 @@
 ;;;; help.lisp --- Help text generation for formatting options.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -9,7 +9,7 @@
 (defun make-style-help-string (&key
                                (show :default))
   "Return a help string that explains how to specify a formatting
-style and its parameters."
+   style and its parameters."
   (with-output-to-string (stream)
     (format stream "Specify a formatting style that should be used to ~
                     print events. SPEC has to be of the form~@

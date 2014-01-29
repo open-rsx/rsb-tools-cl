@@ -1,6 +1,6 @@
 ;;;; quantities.lisp --- Unit tests for quantity classes.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -8,8 +8,8 @@
 
 (defmacro define-simple-quantity-suite ((name) &body cases)
   "Define a test suite for the quantity class designated by NAME. Use
-CASES as body of `ensure-quantity-cases' in a test case for the
-`update!' and `format-value' methods."
+   CASES as body of `ensure-quantity-cases' in a test case for the
+   `update!' and `format-value' methods."
   (let ((class-name (class-name (find-quantity-class name)))
         (suite-name (symbolicate name "-ROOT")))
     `(progn

@@ -1,6 +1,6 @@
 ;;;; event-style-statistics.lisp --- Column-oriented formatting of statistics.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,8 +12,8 @@
   ()
   (:documentation
    "This class is intended to be mixed into formatting classes that
-present the values of statistical quantities in a column-based
-manner."))
+    present the values of statistical quantities in a column-based
+    manner."))
 
 (defmethod collects? ((style statistics-columns-mixin))
   t)
@@ -29,7 +29,6 @@ manner."))
                  (when (collects? column)
                    (format-event event column stream)))
            (style-columns style))))
-
 
 ;;; Classes `style-statistics/*'
 ;;;

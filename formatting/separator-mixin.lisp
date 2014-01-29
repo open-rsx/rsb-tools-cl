@@ -1,6 +1,6 @@
 ;;;; separator-mixin.lisp --- Mixin for printing separators.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,10 +12,10 @@
               :initform #\Newline
               :documentation
               "The character or pattern by means of which items should
-be separated in the output."))
+               be separated in the output."))
   (:documentation
    "This class is intended to be mixed into style classes that should
-print separators between output items."))
+    print separators between output items."))
 
 (defmethod shared-initialize :after ((instance   separator-mixin)
                                      (slot-names t)

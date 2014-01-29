@@ -1,6 +1,6 @@
 ;;;; timeline.lisp --- Render a timeline view of received events.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -11,12 +11,12 @@
 (deftype %timeline-cache-cell ()
   "Cache cell of the form
 
-  ((LOWER . UPPER) . NULL-OR-CHARACTER)
+     ((LOWER . UPPER) . NULL-OR-CHARACTER)
 
-where LOWER and UPPER are `timestamp/unix/nsec' which indicate the
-temporal range of the cell and NULL-OR-CHARACTER is either nil of the
-cell has not been rendered yet or the rendered character for the
-cell."
+   where LOWER and UPPER are `timestamp/unix/nsec' which indicate the
+   temporal range of the cell and NULL-OR-CHARACTER is either nil of
+   the cell has not been rendered yet or the rendered character for
+   the cell."
   '(cons (cons timestamp/unix/nsec timestamp/unix/nsec)
          (or null character)))
 
@@ -52,24 +52,24 @@ cell."
                  :initform 12
                  :documentation
                  "The distance in characters between tics in the
-header line.")
+                  header line.")
    (events       :initarg  :events
                  :type     list
                  :accessor style-events
                  :initform nil
                  :documentation
                  "Stores a list of events which have not been rendered
-yet.")
+                  yet.")
    (cache        :type     (or null (cons %timeline-cache-cell t))
                  :accessor %style-cache
                  :initform nil
                  :documentation
                  "Stores information regarding previously rendered
-cells. See `%timeline-cache-cell'."))
+                  cells. See `%timeline-cache-cell'."))
   (:documentation
    "Instances of this column class render a timeline view in which
-received events appear as dots. A corresponding header with time tics
-can also be produced."))
+    received events appear as dots. A corresponding header with time
+    tics can also be produced."))
 
 (defmethod collects? ((style timeline))
   t)

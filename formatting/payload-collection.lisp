@@ -1,6 +1,6 @@
 ;;;; payload-collections.lisp --- Format event collections.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,13 +13,13 @@
   (append (ensure-list (rsb:default-converter 'octet-vector))
           '(:fundamental-null))
   "The converter that should be applied to inner payloads in event
-collection payloads.")
+   collection payloads.")
 
 (defvar *by-scope-formatting-event-style*
   (make-instance (find-style-class :detailed)
                  :separator nil)
   "The formatting style used for sub-events contained in collections
-of events.")
+   of events.")
 
 (defmethod format-payload ((data   rsb.protocol:notification)
                            (style  t)

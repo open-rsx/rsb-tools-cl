@@ -1,6 +1,6 @@
 ;;;; data-consistency-mixin.lisp --- Ensure consistency of sequential outputs.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,13 +12,14 @@
                        :initform (make-hash-table :test #'eq)
                        :documentation
                        "Stores a mapping of output target to format
-descriptors. All events which are emitted to one target have to
-produce matching descriptor."))
+                        descriptors. All events which are emitted to
+                        one target have to produce matching
+                        descriptor."))
   (:documentation
    "This mixin class provides a mechanism for ensuring consistency
-between all events which are emitted to a particular target object
-like a stream. To achieve this, descriptors are extracted from events
-and compared to detect incompatible events."))
+    between all events which are emitted to a particular target object
+    like a stream. To achieve this, descriptors are extracted from
+    events and compared to detect incompatible events."))
 
 (defmethod descriptor-for-target ((style  data-consistency-mixin)
                                   (target t))

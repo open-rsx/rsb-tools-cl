@@ -1,6 +1,6 @@
 ;;;; payload-audio.lisp --- Format event payloads as audio streams.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -10,7 +10,7 @@
   ()
   (:documentation
    "This class is intended to be used as a superclass for style
-classes that produce streams of audio data from event payloads."))
+    classes that produce streams of audio data from event payloads."))
 
 (defmethod format-event ((event  event)
                          (style  style-audio-stream)
@@ -40,8 +40,8 @@ classes that produce streams of audio data from event payloads."))
   ()
   (:documentation
    "This style produces a stream of raw audio samples (i.e. without a
-header or other format information) from event payloads containing
-audio data."))
+    header or other format information) from event payloads containing
+    audio data."))
 
 (defmethod format-payload ((data   rst.audition:sound-chunk)
                            (style  style-audio-stream/raw)

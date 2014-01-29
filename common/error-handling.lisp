@@ -1,6 +1,6 @@
 ;;;; error-handling.lisp --- Toplevel error handling functions.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;;;
 ;;;; This file may be licensed under the terms of the
 
@@ -10,18 +10,18 @@
 
 (defun abort/signal (condition)
   "Like `cl:abort' but signal CONDITION using the `abort/signal'
-RESTART.
+   RESTART.
 
-This function is intended to be used as toplevel error policy."
+   This function is intended to be used as toplevel error policy."
   (if-let ((abort/signal (find-restart 'abort/signal condition)))
     (invoke-restart abort/signal condition)
     (abort condition)))
 
 (defun continue/verbose (&optional condition)
   "Like `cl:continue' but log a warning if `cl:continue' restart is
-established and a different warning if it is not.
+   established and a different warning if it is not.
 
-This function is intended to be used as toplevel error policy."
+   This function is intended to be used as toplevel error policy."
   (if-let ((restart (find-restart 'continue condition)))
     (progn
       (log:warn "Error encountered; Recovering via restart ~
@@ -44,15 +44,15 @@ This function is intended to be used as toplevel error policy."
                               &key
                               (target-thread (bt:current-thread)))
   "Return a function of one argument which executes POLICY but
-establishes a TRANSFER-ERROR restart unless executing in
-TARGET-THREAD. Invoking the TRANSFER-ERROR restart does not perform a
-non-local control transfer. That is, POLICY still has to handle the
-condition after invoking the restart.
+   establishes a TRANSFER-ERROR restart unless executing in
+   TARGET-THREAD. Invoking the TRANSFER-ERROR restart does not perform
+   a non-local control transfer. That is, POLICY still has to handle
+   the condition after invoking the restart.
 
-POLICY has to accept a condition as its sole argument.
+   POLICY has to accept a condition as its sole argument.
 
-TARGET-THREAD has to be a `bt:thread' object and defaults to the value
-of (bt:current-thread) in the thread calling this function."
+   TARGET-THREAD has to be a `bt:thread' object and defaults to the
+   value of (bt:current-thread) in the thread calling this function."
   (lambda (condition)
     (let ((thread (bt:current-thread)))
       (cond
@@ -105,8 +105,8 @@ of (bt:current-thread) in the thread calling this function."
 
 (defun call-with-error-policy (policy thunk)
   "Call THUNK with `cl:abort' and `abort/signal' restarts
-established. When an error is signaled, call POLICY to (potentially)
-handle it."
+   established. When an error is signaled, call POLICY
+   to (potentially) handle it."
   (restart-case
       (handler-bind ((error policy)) (funcall thunk))
     (abort (&optional condition)
@@ -117,7 +117,7 @@ handle it."
 
 (defmacro with-error-policy ((policy) &body body)
   "Execute BODY with `cl:abort' and `abort/signal' restarts
-established. When an error is signaled, call POLICY to (potentially)
-handle it."
+   established. When an error is signaled, call POLICY
+   to (potentially) handle it."
   `(call-with-error-policy
     (coerce ,policy 'function) (lambda () ,@body)))

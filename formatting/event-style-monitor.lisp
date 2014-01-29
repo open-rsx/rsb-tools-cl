@@ -19,7 +19,7 @@
             :reader     style-columns
             :documentation
             "Stores a specification for creating columns used by
-sub-styles of the style."))
+             sub-styles of the style."))
   (:default-initargs
    :sub-styles       nil
 
@@ -34,8 +34,8 @@ sub-styles of the style."))
                       'basic-monitor-style :columns))
   (:documentation
    "This class serves as a superclass for formatting style classes
-which group events according to some criterion and periodically
-display information for events within each group."))
+    which group events according to some criterion and periodically
+    display information for events within each group."))
 
 (defmethod make-sub-style-entry ((style basic-monitor-style)
                                  (value t))
@@ -124,7 +124,7 @@ display information for events within each group."))
                                        :key   #'event-scope
                                        :test  #'sub-scope?)
       "This style groups events by scope and periodically displays
-various statistics for events in each scope-group."
+       various statistics for events in each scope-group."
     ;; Specification for group column.
     (list :constant
           :name      "Scope"
@@ -146,7 +146,7 @@ various statistics for events in each scope-group."
                                        :key  #'event-origin
                                        :test #'uuid:uuid=)
       "This style groups events by origin and periodically displays
-various statistics for events in each origin-group."
+       various statistics for events in each origin-group."
     ;; Specification for group column.
     (list :constant
           :name      "Origin"
@@ -164,7 +164,7 @@ various statistics for events in each origin-group."
        :key  #'rsb.stats:event-type/simple
        :test #'equal)
       "This style groups events by type and periodically displays
-various statistics for events in each type-group."
+       various statistics for events in each type-group."
     ;; Specification for group column.
     (list :constant
           :name      "Type"
@@ -182,8 +182,8 @@ various statistics for events in each type-group."
        :key  #'rsb.stats:event-size/power-of-2
        :test #'equal)
       "This style groups events by size (each corresponding to a power
-of 2) and periodically displays various statistics for events in each
-size-group."
+       of 2) and periodically displays various statistics for events
+       in each size-group."
     ;; Specification for group column.
     (list :constant
           :name      "Size"
@@ -203,10 +203,10 @@ size-group."
                              (predicate #'>)
                              (fallback  t))
   "Return a function of two arguments which applies PREDICATE for
-comparison of both arguments are of type TYPE. If only the first or
-second argument is of type TYPE, FALLBACK and (not FALLBACK) are
-returned respectively. If neither argument is of type TYPE, `nil' is
-returned."
+   comparison of both arguments are of type TYPE. If only the first or
+   second argument is of type TYPE, FALLBACK and (not FALLBACK) are
+   returned respectively. If neither argument is of type TYPE, `nil'
+   is returned."
   (declare (type (function (t t) t) predicate))
 
   (lambda (a b)
@@ -220,8 +220,8 @@ returned."
 
 (defun %make-column-key-function (column)
   "Return a function of one argument, a style object, that extracts
-and returns the value of the COLUMN-th column. The column specified by
-COLUMN has to be associated with a statistical quantity."
+   and returns the value of the COLUMN-th column. The column specified
+   by COLUMN has to be associated with a statistical quantity."
   (compose #'rsb.stats:quantity-value
            #'column-quantity
            (rcurry #'elt column)

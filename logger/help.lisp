@@ -1,6 +1,6 @@
 ;;;; help.lisp --- Help text generation for the logger program.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -29,7 +29,7 @@
 (defun make-filter-help-string (&key
                                 (show :default))
   "Return a help string that explains how to specify filters and lists
-the available filters."
+   the available filters."
   (with-output-to-string (stream)
     (format stream "Specify a filter that received events have to ~
                     match in order to be processed rather than ~

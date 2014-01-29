@@ -1,6 +1,6 @@
 ;;;; interactive.lisp --- Functions for interactive stuff.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,7 +12,7 @@
                                             (target-thread '(bt:current-thread)))
                                            &body body)
   "Run BODY with an interruption handler that exits non-locally and
-returns nil instead of entering the debugger."
+   returns nil instead of entering the debugger."
   ;; This whole macro is mainly needed for two reasons:
   ;; 1. Protect against multiple signals
   ;; 2. Perform proper shutdown for signals other than SIGINT,

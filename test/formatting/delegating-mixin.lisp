@@ -1,6 +1,6 @@
 ;;;; delegating-mixin.lisp --- Tests for the delegating-mixin mixin class.
 ;;;;
-;;;; Copyright (C) 2011, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -14,7 +14,7 @@
 (addtest (delegating-mixin-root
           :documentation
           "Test method on `format-event' for `delegating-mixin' mixin
-class.")
+           class.")
   format-event
 
   (ensure-style-cases (delegating-mixin)

@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for common module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -83,6 +83,6 @@
 
   (:documentation
    "This package contains some common utility functions for RSB:
-+ Commandline option definition and processing
-+ Help text generation
-+ Debugger control"))
+    + Commandline option definition and processing
+    + Help text generation
+    + Debugger control"))

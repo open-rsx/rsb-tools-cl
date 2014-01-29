@@ -1,6 +1,6 @@
 ;;;; name-mixin.lisp --- Mixin class for named column classes.
 ;;;;
-;;;; Copyright (C) 2011, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -14,4 +14,4 @@
          "Stores the name of the column."))
   (:documentation
    "This class is intended to be mixed into column classes in order to
-handle the column name."))
+    handle the column name."))

@@ -1,6 +1,6 @@
 ;;;; error-handling.lisp --- Unit tests for error handling functions.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -18,8 +18,8 @@
 (addtest (error-handling-root
           :documentation
           "Smoke test for `abort', `abort/signal', `continue/verbose'
-and `continue' error policies in combination with
-`maybe-relay-to-thread' and `with-error-policy'.")
+           and `continue' error policies in combination with
+           `maybe-relay-to-thread' and `with-error-policy'.")
   policies/smoke
 
   (ensure-cases (error/signal policy abort?/expected error?/expected result/expected)

@@ -1,6 +1,6 @@
 ;;;; width-mixin.lisp --- Mixin for width limited and aligned formatting.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,17 +13,17 @@
               :initform 16
               :documentation
               "Stores the maximum acceptable output width for the
-formatter instance.")
+               formatter instance.")
    (alignment :initarg  :alignment
               :type     (member :left :right)
               :accessor column-alignment
               :initform :right
               :documentation
               "Stores the alignment that should be employed by the
-formatter instance."))
+               formatter instance."))
   (:documentation
    "This class is intended to be mixed into formatting classes that
-should produce output of a fixed width."))
+    should produce output of a fixed width."))
 
 (defmethod format-header :around ((column width-mixin)
                                   (stream t))
@@ -48,8 +48,9 @@ should produce output of a fixed width."))
 
 (defun call-with-width-limit (stream limit align thunk)
   "Call THUNK with a single argument that is a stream. Format things
-printed to the stream by THUNK on STREAM ensuring a width limit LIMIT
-and alignment according to ALIGN. ALIGN can be :left or :right."
+   printed to the stream by THUNK on STREAM ensuring a width limit
+   LIMIT and alignment according to ALIGN. ALIGN can be :left
+   or :right."
   (let* ((value  (with-output-to-string (stream)
                    (funcall thunk stream)))
          (length (length value)))
@@ -80,9 +81,9 @@ and alignment according to ALIGN. ALIGN can be :left or :right."
 
 (defmacro with-width-limit ((stream-var limit align) &body body)
   "Execute BODY with a STREAM-VAR bound to a stream. Format things
-printed to the value of STREAM-VAR in BODY on the previous value of
-STREAM-VAR ensuring a width limit LIMIT and alignment according to
-ALIGN. ALIGN can be :left or :right."
+   sprinted to the value of STREAM-VAR in BODY on the previous value of
+   STREAM-VAR ensuring a width limit LIMIT and alignment according to
+   ALIGN. ALIGN can be :left or :right."
   `(call-with-width-limit ,stream-var ,limit ,align
                           (lambda (,stream-var) ,@body)))
 

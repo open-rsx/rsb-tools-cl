@@ -1,6 +1,6 @@
 ;;;; columns.lisp --- Some column classes.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -58,7 +58,7 @@
   (define-simple-column (:same-line nil
                          :event-class t)
       "Put carriage at beginning of the current line, causing the
-current content to be overridden by subsequent output."
+       current content to be overridden by subsequent output."
     (format stream "~C" #\Return))
   (define-simple-column (:newline nil
                          :event-class t)
@@ -84,13 +84,13 @@ current content to be overridden by subsequent output."
   (define-simple-column (:text 32
                          :event-class t)
       "Emit a given text. The name of the column is also the emitted
-text."
+       text."
     (format stream "~A" (column-name column)))
 
   ;; Event properties
   (define-simple-column (:origin (8 :left))
       "Emit an abbreviated representation of the id of the participant
-at which the event originated."
+       at which the event originated."
     (format stream "~:[ORIGIN? ~;~:*~/rsb::print-id/~]"
             (event-origin event)))
 
@@ -106,7 +106,7 @@ at which the event originated."
 
   (define-simple-column (:method (10 :left))
       "Emit the method of the event. If the event does not have an id,
-the string \"<nomethod>\" is emitted instead."
+       the string \"<nomethod>\" is emitted instead."
     (format stream "~:[<nomethod>~;~:*~:@(~10A~)~]"
             (event-method event)))
 
@@ -137,7 +137,7 @@ the string \"<nomethod>\" is emitted instead."
   (define-simple-column (:data-size 9
                          :print-name "Data Size")
       "Emit an indication of the size of the data contained in the
-event, if the size can be determined."
+       event, if the size can be determined."
     (let* ((data (event-data event))
            (size (typecase data
                    (sequence (length data)))))
@@ -146,28 +146,28 @@ event, if the size can be determined."
   (define-simple-column (:notification-size 9
                          :print-name "Notification Size")
       "Emit an indication of the size of the notification in which the
-event has been transmitted, if the size can be determined."
+       event has been transmitted, if the size can be determined."
     (format stream "~:[N/A~;~:*~,,,3:D~]"
             (meta-data event :rsb.transport.notification-size)))
 
   ;; Request/Reply stuff
   (define-simple-column (:call (57 :left))
       "Emit a method call description. Should only be applied to
-events that actually are method calls."
+       events that actually are method calls."
     (let ((*print-length* most-positive-fixnum))
       (format stream "~/rsb.formatting::format-method/(~/rsb::print-event-data/)"
               event (event-data event))))
 
   (define-simple-column (:call-id (8 :left))
       "Emit the request id of a reply event. Should only be applied to
-events that actually are replies to method calls."
+       events that actually are replies to method calls."
       (format stream "~:[CALLID? ~;~:*~/rsb::print-id/~]"
               (when-let ((cause (first (event-causes event))))
                 (event-id->uuid cause))))
 
   (define-simple-column (:result (57 :left))
       "Emit a method reply description. Should only be applied to
-events that actually are replies to method calls."
+       events that actually are replies to method calls."
     (let ((*print-length* most-positive-fixnum))
       (format stream "> ~/rsb.formatting::format-method/ ~
                       ~:[=>~;ERROR:~] ~/rsb::print-event-data/"
@@ -190,12 +190,12 @@ events that actually are replies to method calls."
               :initform #'princ
               :documentation
               "Stores a function that is called to print the value of
-the column onto a destination stream."))
+               the column onto a destination stream."))
   (:default-initargs
    :value (missing-required-initarg 'column-constant :value))
   (:documentation
    "Instances of this column class emit a print a specified constant
-value."))
+    value."))
 
 (defmethod format-event ((event  t)
                          (column column-constant)
@@ -221,7 +221,7 @@ value."))
                     :reader   column-key
                     :documentation
                     "Stores the key of the meta-data item that should
-be extracted from events."))
+                     be extracted from events."))
               (:default-initargs
                :key       (missing-required-initarg ',class-name :key)
                :width     32
@@ -291,7 +291,7 @@ be extracted from events."))
     (:size/20       . '(:quantity :quantity :size       :width 20)))
   "Contains an alist of column specification entries of the form
 
-  (NAME . SPEC)
+     (NAME . SPEC)
 
-where NAME names the column specification SPEC. See `columns-mixin'
-for information regarding the processing of SPEC.")
+   where NAME names the column specification SPEC. See `columns-mixin'
+   for information regarding the processing of SPEC.")

@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for unit tests of the formatting module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -36,13 +36,13 @@
 (defmacro ensure-style-cases ((class &key (formatter ''format-event))
                               &body cases)
   "Generate tests cases for methods on `format-event' for CLASS
-according to CASES. Each element of cases has to be of the form
+   according to CASES. Each element of cases has to be of the form
 
-  (INITARGS DATA EXPECTED-OUTPUT)
+     (INITARGS DATA EXPECTED-OUTPUT)
 
-For each case, an instance of CLASS is constructed with INITARGS,
-`format-event' is applied to each element of DATA and the resulting
-output is compared to EXPECTED-OUTPUT."
+   For each case, an instance of CLASS is constructed with INITARGS,
+   `format-event' is applied to each element of DATA and the resulting
+   output is compared to EXPECTED-OUTPUT."
   (let ((formatter (case formatter
                      (:format-header '(lambda (event style stream)
                                        (declare (ignore event))

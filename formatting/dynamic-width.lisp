@@ -1,6 +1,6 @@
 ;;;; dynamic-width.lisp --- Tools for dynamic-width meta-styles.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -8,7 +8,7 @@
 
 (defun number-of-columns (min &optional max)
   "Return a predicate that matches if the current stream line width is
-between MIN and MAX columns."
+   between MIN and MAX columns."
   (lambda (event)
     (declare (ignore event))
 
@@ -23,7 +23,7 @@ between MIN and MAX columns."
       superclasses)
      &body specs-and-doc)
   "Define an event formatting style named NAME that dispatches event
-formatting to sub-styles based on the available horizontal room."
+   formatting to sub-styles based on the available horizontal room."
   (let+ (((&values specs nil documentation)
           (parse-body specs-and-doc :documentation t))
          ((&flet+ make-sub-style (((min &optional max) style))

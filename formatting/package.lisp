@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for the formatting module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -299,4 +299,4 @@
 
   (:documentation
    "This package contains formatting functions for RSB events and
-event payloads."))
+    event payloads."))

@@ -1,6 +1,6 @@
 ;;;; temporal-bounds-mixin.lisp --- Lower and upper temporal bound.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,18 +13,21 @@
                 :initform '(- :now 20)
                 :documentation
                 "Stores a specification of the lower bound of the
-temporal interval of interest. See type `time-spec'.")
+                 temporal interval of interest. See type
+                 `time-spec'.")
    (upper-bound :initarg  :upper-bound
                 :type     time-spec
                 :accessor upper-bound
                 :initform :now
                 :documentation
                 "Stores a specification of the upper bound of the
-temporal interval of interest. See type `time-spec'."))
+                 temporal interval of interest. See type
+                 `time-spec'."))
   (:documentation
    "This mixin adds lower and upper temporal bounds which can be
-provided in the form of abstract specifications. Realizations of these
-specifications can be retrieved for concrete points in time."))
+    provided in the form of abstract specifications. Realizations of
+    these specifications can be retrieved for concrete points in
+    time."))
 
 (defmethod bounds ((thing temporal-bounds-mixin))
   (list (lower-bound thing) (upper-bound thing)))
@@ -53,10 +56,10 @@ specifications can be retrieved for concrete points in time."))
 
 (defun %expand-time-spec (spec now)
   "Translate SPEC into an absolute timestamp of type
-`timestamp/unix/nsec' and return the timestamp.
+   `timestamp/unix/nsec' and return the timestamp.
 
-If the translation requires the current time, NOW is called without
-arguments to retrieve it."
+   If the translation requires the current time, NOW is called without
+   arguments to retrieve it."
   (etypecase spec
     ((eql :now)
      (funcall now))
