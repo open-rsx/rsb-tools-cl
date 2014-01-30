@@ -6,38 +6,15 @@
 
 (cl:in-package #:rsb.formatting)
 
-;;; Cache type and functions
+;;; Cache cell
 
-(deftype %timeline-cache-cell ()
-  "Cache cell of the form
-
-     ((LOWER . UPPER) . NULL-OR-CHARACTER)
-
-   where LOWER and UPPER are `timestamp/unix/nsec' which indicate the
-   temporal range of the cell and NULL-OR-CHARACTER is either nil of
-   the cell has not been rendered yet or the rendered character for
-   the cell."
-  '(cons (cons timestamp/unix/nsec timestamp/unix/nsec)
-         (or null character)))
-
-(declaim (ftype (function (%timeline-cache-cell) t)
-                %cell-lower %cell-upper %cell-value)
-         (inline %make-cell %cell-lower %cell-upper %cell-value (setf %cell-value)))
-
-(defun %make-cell (lower upper &optional value)
-  (cons (cons lower upper) value))
-
-(defun %cell-lower (cell)
-  (car (car cell)))
-
-(defun %cell-upper (cell)
-  (cdr (car cell)))
-
-(defun %cell-value (cell)
-  (cdr cell))
-
-(defun (setf %cell-value) (new-value cell)
-  (setf (cdr cell) new-value))
+(defstruct (%cell (:constructor %make-cell (lower upper &optional value)))
+  "The lower and upper slots indicate the temporal range of the cell
+   and the value slot is either nil if the cell has not been rendered
+   yet or the rendered character for the cell."
+  (lower 0   :type timestamp/unix/nsec :read-only t)
+  (upper 0   :type timestamp/unix/nsec :read-only t)
+  (value nil :type (or null character)))
 
 ;;; `timeline' class
 
@@ -60,7 +37,7 @@
                  :documentation
                  "Stores a list of events which have not been rendered
                   yet.")
-   (cache        :type     (or null (cons %timeline-cache-cell t))
+   (cache        :type     (or null (cons %cell t))
                  :accessor style-%cache
                  :initform nil
                  :documentation
@@ -126,13 +103,12 @@
       (push event (style-events style))))
 
 (defmethod adjust-cache! ((style timeline))
-  (let+ (((&accessors-r/o
-           ((lower-bound upper-bound) bounds/expanded)
-           (width                     column-width)) style)
-         (delta       (floor (- upper-bound lower-bound) width))
+  (let+ (((&accessors-r/o ((lower-bound upper-bound) bounds/expanded)
+                          (width                     column-width)) style)
          ((&accessors (cache style-%cache)) style)
-         (cache-upper (or (when (first cache)
-                            (%cell-upper (first cache)))
+         (delta       (floor (- upper-bound lower-bound) width))
+         (cache-upper (or (when-let ((first (first cache)))
+                            (%cell-upper first))
                           lower-bound)))
     ;; Create new cells at the head of the cache.
     (iter (for upper :from    (+ cache-upper delta) :to upper-bound :by delta)
@@ -140,7 +116,7 @@
           (push (%make-cell lower upper) cache))
 
     ;; Drop old cells at the tail of the cache.
-    ;;; TODO(jmoringe, 2012-03-21): slow
+    ;; TODO(jmoringe, 2012-03-21): slow
     (when-let ((tail (nthcdr width cache)))
       (setf (cdr tail) nil))))
 
@@ -154,29 +130,28 @@
     ;; Iterate over bins of the form [LOWER, UPPER] for all
     ;; not-yet-populated cache cells.
     (iter outer
-          (generate events/rest                 on events)
-          (generate event                       next (car (next events/rest)))
-          (for      cells                       on   cache)
-          (for      cell                        next (first cells))
-          (for      ((lower . upper) . content) next cell)
-          (declare (type (or null %timeline-cache-cell) cell))
-          (until content) ;; Stop at non-empty cache cell.
+          (generate events/rest on   events)
+          (generate event       next (first (next events/rest)))
+          (for      cells       on   cache)
+          (for      cell        next (first cells))
+          (until (%cell-value cell)) ; Stop at non-empty cache cell.
 
           ;; Advance to first event that is in the first bin.
           (when (first-iteration-p)
             (next event)
-            (iter (until (<= (key event) upper))
+            (iter (until (<= (key event) (%cell-upper cell)))
                   (in outer (next event))))
 
           ;; Collect all events for the bin [LOWER, UPPER].
-          (iter (with events/bin                      = events/rest)
-                (with (the non-negative-fixnum count) = 0)
-                (while (<= lower (key event) upper))
-                (incf count)
-                (in outer (next event))
-                (finally-protected
-                 (setf (%cell-value cell)
-                       (glyph-for-events style events/bin :end count))))
+          (let+ (((&structure-r/o %cell- lower upper) cell))
+            (iter (with events/bin                      = events/rest)
+                  (with (the non-negative-fixnum count) = 0)
+                  (while (<= lower (key event) upper))
+                  (incf count)
+                  (in outer (next event))
+                  (finally-protected
+                   (setf (%cell-value cell)
+                         (glyph-for-events style events/bin :end count)))))
 
           (setf events/cutoff events/rest)
           (finally-protected
