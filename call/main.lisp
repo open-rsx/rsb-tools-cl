@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the call tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -210,8 +210,6 @@
       (log:info "~@<Using URI ~S method ~S arg ~A~@:>" server-uri method arg)
       (with-interactive-interrupt-exit ()
         (with-error-policy (error-policy)
-          (with-remote-server (server server-uri)
-            (hooks:add-to-hook (participant-error-hook server)
-                               error-policy) ; TODO(jmoringe, 2012-08-09): support in with-remote-server
+          (with-remote-server (server server-uri :error-policy error-policy)
             (when-let ((reply (multiple-value-list (call/translate server))))
               (format-event (first reply) style *standard-output*))))))))

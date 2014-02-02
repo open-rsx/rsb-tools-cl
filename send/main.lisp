@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the send tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -118,8 +118,7 @@
      (read-file-into-string (parse-namestring (subseq spec 2))))
 
     (t
-     (let+ (((&values value consumed)
-             (read-from-string spec)))
+     (let+ (((&values value consumed) (read-from-string spec)))
        (unless (= consumed (length spec))
          (error "~@<Junk at end of argument string: ~S.~@:>"
                 (subseq spec consumed)))
@@ -165,26 +164,24 @@
   (with-logged-warnings
     (let+ ((error-policy (maybe-relay-to-thread
                           (process-error-handling-options)))
-           (method     (when-let ((value (getopt :long-name "method")))
-                         (make-keyword value)))
-           (meta-data  (iter (for value next (getopt :long-name "meta-data"))
-                             (while value)
-                             (appending (parse-meta-data value))))
-           (timestamps (iter (for value next (getopt :long-name "timestamp"))
-                             (while value)
-                             (appending (parse-timestamp value))))
-           (causes     (iter (for value next (getopt :long-name "cause"))
-                             (while value)
-                             (collect (parse-cause value))))
+           (method       (when-let ((value (getopt :long-name "method")))
+                           (make-keyword value)))
+           (meta-data    (iter (for value next (getopt :long-name "meta-data"))
+                               (while value)
+                               (appending (parse-meta-data value))))
+           (timestamps   (iter (for value next (getopt :long-name "timestamp"))
+                               (while value)
+                               (appending (parse-timestamp value))))
+           (causes       (iter (for value next (getopt :long-name "cause"))
+                               (while value)
+                               (collect (parse-cause value))))
            ((event-spec &optional (destination "/")) (remainder))
            (payload (parse-event-spec event-spec)))
 
       (log:info "~@<Using URI ~S payload ~A~@:>" destination payload)
       (with-interactive-interrupt-exit ()
         (with-error-policy (error-policy)
-          (with-informer (informer destination t)
-            (hooks:add-to-hook (participant-error-hook informer)
-                               error-policy) ; TODO(jmoringe, 2012-08-09): support in with-informer
+          (with-informer (informer destination t :error-policy error-policy)
             (apply #'send informer payload
                    (nconc (when method     (list :method     method))
                           (when timestamps (list :timestamps timestamps))
