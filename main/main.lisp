@@ -7,10 +7,11 @@
 (cl:in-package #:rsb.tools.main)
 
 (defvar *filename->entry-point*
-  '(("info"   . rsb.tools.info:main)
-    ("logger" . rsb.tools.logger:main)
-    ("call"   . rsb.tools.call:main)
-    ("send"   . rsb.tools.send:main))
+  '(("info"       . rsb.tools.info:main)
+    ("logger"     . rsb.tools.logger:main)
+    ("call"       . rsb.tools.call:main)
+    ("send"       . rsb.tools.send:main)
+    ("introspect" . rsb.tools.introspect:main))
   "Stores a mapping from program names to entry point functions.")
 
 (defun main ()

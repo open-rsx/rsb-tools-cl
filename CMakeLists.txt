@@ -174,7 +174,7 @@ message(STATUS "Project is ${CMAKE_PROJECT_NAME} (${VERSION_FROM_LISP})")
 # Create binary.
 set(MAIN_NAME       "tools")
 set(MAIN_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}${CMAKE_EXECUTABLE_SUFFIX}")
-set(TOOLS           info logger call send)
+set(TOOLS           info logger call send introspect)
 configure_lisp_redirect("${MAIN_NAME}"
                         "--load \"${CMAKE_CURRENT_SOURCE_DIR}/main/dump.lisp\"")
 add_custom_command(OUTPUT  "${MAIN_EXECUTABLE}"
@@ -340,6 +340,25 @@ foreach(STYLE discard meta-data payload detailed
                     --debug --style "${STYLE}"
                     --eval "(progn (bt:make-thread (lambda () (rsb.patterns.request-reply:with-local-server (s \"inprocess:/foo\") (rsb.patterns.request-reply:with-methods (s) ((\"bar\" (x integer) x)) (sleep 2))))) (sleep 1))"
                     "inprocess:/foo/bar(1)")
+endforeach()
+
+foreach(URLS "" "inprocess:" "inprocess:;inprocess:/")
+  foreach(STYLE "" "--style;object-tree" "--style;monitor/object-tree" "--style;monitor/events")
+    string(REGEX REPLACE "[;:]" "_" CLEAN_URLS "${URLS}")
+    string(REGEX REPLACE "[;-]" "_" CLEAN_STYLE "${STYLE}")
+
+    set(EXIT)
+    if (STYLE MATCHES "monitor/object-tree|monitor/events")
+      set(EXIT "--eval;(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))")
+    endif()
+
+    add_test(NAME    "introspect/${CLEAN_URLS}/${CLEAN_STYLE}"
+             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/introspect"
+                     --debug
+                     ${EXIT}
+                     ${STYLE}
+                     ${URLS})
+  endforeach()
 endforeach()
 
 # Install binary
