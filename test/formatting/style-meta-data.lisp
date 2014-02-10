@@ -1,6 +1,6 @@
 ;;;; style-meta-data.lisp --- Unit tests for the meta-data formatting style.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -26,16 +26,16 @@
       (,(make-event "/foo" "bar"))
       ,(format nil "~80,,,VA
 Event
-  Scope          : /foo/
-  Id             : N/A
-  Sequence-Number: N/A
-  Origin         : N/A
-  Method         : N/A
+  Scope           /foo/
+  Id              <none>
+  Sequence number <none>
+  Origin          <none>
+  Method          <none>
 Timestamps
-  Create : .*
-  Send   : N/A
-  Receive: N/A
-  Deliver: N/A
+  CREATE  .*
+  SEND    <none>
+  RECEIVE <none>
+  DELIVER <none>
 "
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
 
@@ -43,18 +43,18 @@ Timestamps
       (,(make-event "/foo/bar/baz" 1 :fez "whoop"))
       ,(format nil "~80,,,VA
 Event
-  Scope          : /foo/bar/baz/
-  Id             : N/A
-  Sequence-Number: N/A
-  Origin         : N/A
-  Method         : N/A
+  Scope           /foo/bar/baz/
+  Id              <none>
+  Sequence number <none>
+  Origin          <none>
+  Method          <none>
 Timestamps
-  Create : .*
-  Send   : N/A
-  Receive: N/A
-  Deliver: N/A
+  CREATE  .*
+  SEND    <none>
+  RECEIVE <none>
+  DELIVER <none>
 Meta-Data
-  Fez: whoop
+  FEZ \"whoop\"
 "
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
 
@@ -64,16 +64,16 @@ Meta-Data
           event))
       ,(format nil "~80,,,VA
 Event
-  Scope          : /foo/bar/baz/
-  Id             : N/A
-  Sequence-Number: N/A
-  Origin         : N/A
-  Method         : N/A
+  Scope           /foo/bar/baz/
+  Id              <none>
+  Sequence number <none>
+  Origin          <none>
+  Method          <none>
 Timestamps
-  Create : .*
-  Send   : N/A
-  Receive: N/A
-  Deliver: N/A
-  \\*Foo   : .*
+  CREATE  .*
+  SEND    <none>
+  RECEIVE <none>
+  DELIVER <none>
+  \\*FOO    .*
 "
                                  (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))

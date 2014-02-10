@@ -45,7 +45,7 @@
 (defun timestamp-name (name)
   "For non-framework timestamps return \"*NAME\"."
   (if (framework-timestamp? name)
-      name
+      (string name)
       (concatenate 'string "*" (string name))))
 
 ;;; Predicates

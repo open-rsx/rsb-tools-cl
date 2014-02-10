@@ -1,6 +1,6 @@
 ;;;; event-style-meta-data.lisp --- Meta-data-only formatting style class.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -47,44 +47,71 @@
                          (style  style-meta-data)
                          (stream t)
                          &key
-                         (max-lines 12)
+                         (max-lines 20)
                          &allow-other-keys)
-  (let+ (((&accessors-r/o (routing-info? style-routing-info?)
-                          (timestamps?   style-timestamps?)
-                          (user-items?   style-user-items?)
-                          (causes?       style-causes?)) style)
-         ((&accessors-r/o (meta-data meta-data-alist)
-                          (causes    event-causes)) event)
-         (*print-lines* max-lines))
-    ;; Envelope information.
-    (when routing-info?
-      (with-indented-section (stream "Event")
-        (format-pairs/plist
-         stream
-         :scope           (scope-string (event-scope event))
-         :id              (event-id              event)
-         :sequence-number (event-sequence-number event)
-         :origin          (event-origin          event)
-         :method          (event-method          event))))
+  (let+ (((&structure-r/o style- routing-info? timestamps? user-items? causes?)
+          style)
+         (*print-lines* max-lines) ; TODO avoid?
+         (produced-output? nil))
+    (when (not (or routing-info? timestamps? user-items? causes?))
+      (return-from format-event))
 
-    ;; Framework and user timestamps.
-    (when (and timestamps? (> max-lines 5))
-      (with-indented-section (stream "Timestamps")
-        (let ((keys (append *framework-timestamps*
-                            (set-difference (timestamp-keys event)
-                                            *framework-timestamps*))))
-          (format-aligned-items
-           stream
-           (mapcar #'timestamp-name keys)
-           (mapcar (curry #'timestamp event) keys)))))
+    (pprint-logical-block (stream (list event))
 
-    ;; Meta-data.
-    (when (and user-items? meta-data (> max-lines 10))
-      (with-indented-section (stream "Meta-Data")
-        (format-aligned-items/alist stream meta-data)))
+      ;; Envelope information.
+      (when routing-info?
+        (let+ (((&structure-r/o event- scope id sequence-number origin method)
+                event))
+          (format stream "Event~
+                          ~@:_~2@T~@<~
+                            Scope           ~A~@:_~
+                            Id              ~:[<none>~;~:*~A~]~@:_~
+                            Sequence number ~:[<none>~;~:*~:D~]~@:_~
+                            Origin          ~:[<none>~;~:*~A~]~@:_~
+                            Method          ~:[<none>~;~:*~A~]~
+                          ~:>"
+                  (scope-string scope) id sequence-number origin method))
+        (setf produced-output? t))
 
-    ;; Causes
-    (when (and causes? causes)
-      (with-indented-section (stream "Causes")
-        (format stream "~{~A~^~&~}"
-                (map 'list #'event-id->uuid causes))))))
+      ;; Framework and user timestamps.
+      (when timestamps?
+        (let* ((keys   (append *framework-timestamps*
+                               (set-difference (timestamp-keys event)
+                                               *framework-timestamps*)))
+               (values (mapcar (curry #'timestamp event) keys))
+               (names  (mapcar #'timestamp-name keys))
+               (width  (length (extremum names #'> :key #'length))))
+          (format stream "~:[~;~@:_~]Timestamps~
+                          ~@:_~2@T~@<~
+                            ~{~{~
+                            ~VA ~:[<none>~;~:*~A~]~
+                            ~}~^~@:_~}~
+                          ~:>"
+                  produced-output?
+                  (mapcar #'list (circular-list width) names values)))
+        (setf produced-output? t))
+
+      ;; Meta-data.
+      (when user-items?
+        (when-let ((meta-data (remove-from-plist
+                               (meta-data-plist event)
+                               :rsb.transport.payload-size
+                               :rsb.transport.wire-schema)))
+          (format stream "~:[~;~@:_~]Meta-Data~
+                          ~@:_~2@T~@<~
+                            ~{~A ~S~^~@:_~}~
+                          ~:>"
+                  produced-output? meta-data)
+          (setf produced-output? t)))
+
+      ;; Causes
+      (when causes?
+        (when-let ((causes (event-causes event)))
+          (format stream "~:[~;~@:_~]Causes~
+                        ~@:_~2@T~@<~
+                          ~{~A~^~@:_~}~
+                        ~:>"
+                  produced-output?
+                  (map 'list #'event-id->uuid (event-causes event))))))
+
+    (terpri stream)))
