@@ -6,6 +6,29 @@
 
 (cl:in-package #:rsb.formatting)
 
+;;; Conditions related to style creation
+
+(define-condition style-creation-error (error
+                                        chainable-condition)
+  ((specification :initarg  :specification
+                  :reader   style-creation-error-specification
+                  :documentation
+                  "Stores the specification according to which the
+                   style instance should have been constructed."))
+  (:report
+   (lambda (condition stream)
+     (format stream "~@<Failed to create style according to specification~
+                     ~@:_~@:_~
+                     ~2@T~<~{~S~^ ~}~:>~
+                     ~@:_~@:_~
+                     .~/more-conditions:maybe-print-cause/~@:>"
+             (list (style-creation-error-specification condition))
+             condition)))
+  (:documentation
+   "This error is signaled when attempt to construct a style fails."))
+
+;;; Conditions related to programmable styles
+
 (define-condition format-code-error (error)
   ((code :initarg  :code
          :reader   format-code-error-code

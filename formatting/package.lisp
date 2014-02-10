@@ -39,6 +39,9 @@
 
   ;; Conditions
   (:export
+   #:style-creation-error
+   #:style-creation-error-specification
+
    #:format-code-error ; condition class and function
    #:format-code-error-code
 

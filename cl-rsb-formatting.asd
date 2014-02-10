@@ -156,6 +156,8 @@ system."
                  :components ((:file       "package")
                               (:file       "mock-column")
 
+                              (:file       "protocol")
+
                               (:file       "dynamic-width")))
 
                 (:module     "formatting"
