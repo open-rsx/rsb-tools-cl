@@ -1,6 +1,6 @@
 # CMakeLists.txt --- CMake build description file.
 #
-# Copyright (C) 2011, 2012, 2013 Jan Moringen
+# Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 #
 # Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -265,7 +265,7 @@ foreach(STYLE discard meta-data payload detailed
     add_test(NAME   "call/style=${STYLE}/wait"
             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
                     --debug --style "${STYLE}"
-                    --eval "(progn (bt:make-thread (lambda () (rsb.patterns:with-local-server (s \"inprocess:/foo\") (rsb.patterns:with-methods (s) ((\"bar\" (x integer) x)) (sleep 2))))) (sleep 1))"
+                    --eval "(progn (bt:make-thread (lambda () (rsb.patterns.request-reply:with-local-server (s \"inprocess:/foo\") (rsb.patterns.request-reply:with-methods (s) ((\"bar\" (x integer) x)) (sleep 2))))) (sleep 1))"
                     "inprocess:/foo/bar(1)")
 endforeach()
 
