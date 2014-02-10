@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-main.asd --- System definition for main binary of cl-rsb-tools.
+;;;; cl-rsb-tools-introspect.asd --- Introspection utility based on rsb-introspection.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-main-system
+(cl:defpackage #:cl-rsb-tools-introspect-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-main-system)
+(cl:in-package #:cl-rsb-tools-introspect-system)
 
 ;;; Version stuff
 
@@ -40,13 +40,13 @@
                      (revision? t)
                      commit?)
   "Return a version of the form (MAJOR MINOR [REVISION [COMMIT]])
-where REVISION and COMMIT are optional.
+   where REVISION and COMMIT are optional.
 
-REVISION? controls whether REVISION should be included. Default
-behavior is to include REVISION.
+   REVISION? controls whether REVISION should be included. Default
+   behavior is to include REVISION.
 
-COMMIT? controls whether COMMIT should be included. Default behavior
-is to not include COMMIT."
+   COMMIT? controls whether COMMIT should be included. Default
+   behavior is to not include COMMIT."
   (append (list +version-major+ +version-minor+)
           (when revision? (list +version-revision+))
           (when (and commit? +version-commit+)
@@ -57,31 +57,42 @@ is to not include COMMIT."
                        revision?
                        commit?)
   "Return a version string of the form
-\"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
-optional.
+   \"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
+   optional.
 
-See `version/list' for details on keyword parameters."
+   See `version/list' for details on keyword parameters."
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-main
+(defsystem :cl-rsb-tools-introspect
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "Main program and dispatch function for all cl-rsb
-tools."
-  :depends-on  ((:version :rsb-introspection       #.(version/string :revision? nil))
+  :description "A tool for introspecting hosts, processes and participants in RSB systems."
+  :depends-on  (:alexandria
+                :let-plus
+                :iterate
+                (:version :log4cl                      "1.1.1")
 
-                (:version :cl-rsb-tools-info       #.(version/string))
-                (:version :cl-rsb-tools-logger     #.(version/string))
-                (:version :cl-rsb-tools-call       #.(version/string))
-                (:version :cl-rsb-tools-send       #.(version/string))
-                (:version :cl-rsb-tools-introspect #.(version/string)))
+                (:version :utilities.print-tree        "0.1")
+
+                :com.dvlsoft.clon
+
+                (:version :cl-rsb                      #.(version/string :revision? nil))
+                (:version :cl-rsb-and-com.dvlsoft.clon #.(version/string :revision? nil))
+                (:version :rsb-introspection           #.(version/string :revision? nil))
+
+                (:version :cl-rsb-common               #.(version/string))
+                (:version :cl-rsb-formatting           #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "main"
+  :components  ((:module     "introspect"
+                 :serial     t
                  :components ((:file       "package")
-                              (:file       "main"
-                               :depends-on ("package"))))))
+
+                              (:file       "print")
+                              (:file       "styles")
+
+                              (:file       "main")))))
