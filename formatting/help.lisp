@@ -21,7 +21,7 @@
                     to be included only when used within a shell):~@
                     ~@
                     ~2@T--style detailed~@
-                    ~2@T-s compact~@
+                    ~2@T--style compact~@
                     ~2@T--style 'compact :separator \"|\"'~@
                     ~2@T--style 'columns :columns (:now (:scope :width 12) :id :newline)'~@
                     ~2@T\(see extended help, enable with ~
