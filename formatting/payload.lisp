@@ -8,7 +8,7 @@
 
 (defmethod format-payload :around ((payload t) (style t) (stream t)
                                    &key
-                                   (max-lines   4)
+                                   (max-lines   50)
                                    (max-columns 80)) ; TODO(jmoringe): default from clon?
   "Supply payload-independent defaults for MAX-LINES and MAX-COLUMNS."
   (let ((*print-lines*        max-lines)
