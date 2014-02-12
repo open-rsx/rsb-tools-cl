@@ -50,9 +50,8 @@
   "Format called method of EVENT onto STREAM."
   (declare (ignore colon? at?))
   (let ((components (scope-components (event-scope event))))
-    (format stream "~{/~A~}::~A"
-            (subseq components 0 (- (length components) 2))
-            (lastcar components))))
+    (format stream "~{/~A~}::~A" ; TODO format-scope-components
+            (butlast components) (lastcar components))))
 
 ;;;
 
