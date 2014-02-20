@@ -8,13 +8,66 @@
 
 ;;; Cache cell
 
-(defstruct (%cell (:constructor %make-cell (lower upper &optional value)))
-  "The lower and upper slots indicate the temporal range of the cell
-   and the value slot is either nil if the cell has not been rendered
-   yet or the rendered character for the cell."
-  (lower 0   :type timestamp/unix/nsec :read-only t)
-  (upper 0   :type timestamp/unix/nsec :read-only t)
-  (value nil :type (or null character)))
+(defstruct (%cell (:constructor %make-cell (lower upper)))
+  "The lower and upper slots indicate the temporal range of the cell.
+
+   The count and max-size slots accumulate the respective quantity for
+   events associated to the cell.
+
+   The glyph slot is either nil if the cell has not been rendered yet
+   or the rendered character for the cell."
+  (lower    0   :type timestamp/unix/nsec :read-only t)
+  (upper    0   :type timestamp/unix/nsec :read-only t)
+  (count    0   :type non-negative-integer)
+  (max-size 0   :type non-negative-integer)
+  (glyph    nil :type (or null character)))
+
+(defun cell-glyph (cell)
+  (declare (type %cell cell))
+  (or (%cell-glyph cell)
+      (setf (%cell-glyph cell)
+            (let+ (((&structure-r/o %cell- count max-size) cell))
+              (glyph-for-data count max-size)))))
+
+(defun %cell-update (cell events
+                     &key
+                     (start 0)
+                     (end   (length events)))
+  (declare (type %cell cell)
+           (type sequence events))
+  (let+ (((&structure %cell- count max-size glyph) cell)
+         (new-count (- end start))
+         (new-size  (reduce #'max events
+                            :key           #'rsb.stats:event-size/power-of-2
+                            :initial-value 0
+                            :start         start
+                            :end           end)))
+    (declare (type non-negative-integer new-count new-size))
+    (incf count new-count)
+    (maxf max-size new-size)
+    (setf glyph nil)))
+
+(defun glyph-for-data (count size)
+  (declare (type non-negative-integer count size))
+
+  (macrolet ((size-glyphs (small medium large)
+               `(cond
+                  ((<=     0 size  1024) ,small)
+                  ((<   1024 size 65536) ,medium)
+                  (t                     ,large))))
+    (if *textual-output-can-use-utf-8?*
+        (cond
+          ((zerop count) #\Space)
+          ((= count 1)   (size-glyphs #\· #\▪ #\◾))
+          ((= count 2)   (size-glyphs #\╌ #\╍ #\╍))
+          ((= count 3)   (size-glyphs #\┄ #\⋯ #\┅))
+          (t             (size-glyphs #\─ #\━ #\▬)))
+        (cond
+          ((zerop count) #\Space)
+          ((= count 1)   (size-glyphs #\. #\o #\O))
+          ((= count 2)   (size-glyphs #\. #\o #\O))
+          ((= count 3)   (size-glyphs #\- #\- #\=))
+          (t             (size-glyphs #\- #\- #\=))))))
 
 ;;; `timeline' class
 
@@ -30,13 +83,15 @@
                  :documentation
                  "The distance in characters between tics in the
                   header line.")
-   (events       :initarg  :events
-                 :type     list
-                 :accessor style-events
+   (events       :type     list
+                 :accessor style-%events
                  :initform '()
                  :documentation
                  "Stores a list of events which have not been rendered
-                  yet.")
+                  yet.
+
+                  The list has to be sorted according to decreasing
+                  timestamps.")
    (cache        :type     (or null (cons %cell t))
                  :accessor style-%cache
                  :initform nil
@@ -73,17 +128,14 @@
   ;; Add new cells to the cache as necessary and fill them.
   (adjust-cache! style)
   (fill-cache! style)
+
   ;; Copy cached characters into the output vector and write it out in
   ;; a single batch operation.
-  ;; After copying, drop the newest cache cell to force recomputation
-  ;; since its content is preliminary: more events for the cell may
-  ;; arrive.
   (let+ (((&accessors-r/o (width column-width)
                           (cache style-%cache)) style)
          (output (make-string width)))
     (declare (type list cache))
-    (map-into output #'%cell-value cache)
-    (pop (style-%cache style))
+    (map-into output #'cell-glyph cache)
     (write-string output target)))
 
 (defmethod format-event ((event  t)
@@ -100,7 +152,10 @@
   ;; trigger events.
   (if (eq event :trigger)
       (call-next-method)
-      (push event (style-events style))))
+      (let+ (((&structure style- (events %events)) style))
+        (setf events (merge 'list (list event) events #'>
+                            :key (lambda (event)
+                                   (timestamp->unix/nsecs (timestamp event :send)))))))) ; TODO handle key properly; store key with events?
 
 (defmethod adjust-cache! ((style timeline))
   (let+ (((&accessors-r/o ((lower-bound upper-bound) bounds/expanded)
@@ -121,12 +176,9 @@
       (setf (cdr tail) nil))))
 
 (defmethod fill-cache! ((style timeline))
-  (let+ (((&accessors-r/o (events style-events)
-                          (cache  style-%cache)) style)
+  (let+ (((&structure-r/o style- (events %events) (cache %cache)) style)
          ((&flet key (event)
-            (timestamp->unix/nsecs (timestamp event :send)))) ; TODO(jmoringe, 2012-04-10): make configurable
-         (events/cutoff)
-         (cache/rest))
+            (timestamp->unix/nsecs (timestamp event :send))))) ; TODO(jmoringe, 2012-04-10): make configurable
     ;; Iterate over bins of the form [LOWER, UPPER] for all
     ;; not-yet-populated cache cells.
     (iter outer
@@ -134,13 +186,14 @@
           (generate event       next (first (next events/rest)))
           (for      cells       on   cache)
           (for      cell        next (first cells))
-          (until (%cell-value cell)) ; Stop at non-empty cache cell.
+          (while cell)
 
           ;; Advance to first event that is in the first bin.
           (when (first-iteration-p)
             (next event)
-            (iter (until (<= (key event) (%cell-upper cell)))
-                  (in outer (next event))))
+            (let ((key (key event)))
+              (iter (until (<= key (%cell-upper cell)))
+                    (in outer (next event)))))
 
           ;; Collect all events for the bin [LOWER, UPPER].
           (let+ (((&structure-r/o %cell- lower upper) cell))
@@ -150,58 +203,10 @@
                   (incf count)
                   (in outer (next event))
                   (finally-protected
-                   (setf (%cell-value cell)
-                         (glyph-for-events style events/bin :end count)))))
+                   (%cell-update cell events/bin :end count)))))
 
-          (setf events/cutoff events/rest)
-          (finally-protected
-           (unless (%cell-value cell)
-             (setf (%cell-value cell) #\Space))
-           (unless (%cell-value (second cells))
-             (setf cache/rest (rest cells)))))
-
-    ;; If there is some tail of the cache which we did not visit,
-    ;; there will be no events for that part.
-    (iter (for cell in cache/rest)
-          (setf (%cell-value cell) #\Space))
-
-    ;; If we did not visit all events, the remaining events can be
-    ;; dropped, since they have already been processed or are outside
-    ;; current and future bounds.
-    (when events/cutoff
-      (setf (rest events/cutoff) nil))))
-
-(defmethod glyph-for-events ((style  timeline)
-                             (events sequence)
-                             &key
-                             (start 0)
-                             (end   (length events)))
-  (let ((count (- end start))
-        (size  (reduce #'max events
-                       :key           #'rsb.stats:event-size/power-of-2
-                       :initial-value 0
-                       :start         start
-                       :end           end)))
-    (declare (type non-negative-integer start end size))
-
-    (macrolet ((size-glyphs (small medium large)
-                 `(cond
-                    ((<=     0 size  1024) ,small)
-                    ((<   1024 size 65536) ,medium)
-                    (t                     ,large))))
-      (if *textual-output-can-use-utf-8?*
-          (cond
-            ((zerop count) #\Space)
-            ((= count 1)   (size-glyphs #\· #\▪ #\◾))
-            ((= count 2)   (size-glyphs #\╌ #\╍ #\╍))
-            ((= count 3)   (size-glyphs #\┄ #\⋯ #\┅))
-            (t             (size-glyphs #\─ #\━ #\▬)))
-          (cond
-            ((zerop count) #\Space)
-            ((= count 1)   (size-glyphs #\. #\o #\O))
-            ((= count 2)   (size-glyphs #\. #\o #\O))
-            ((= count 3)   (size-glyphs #\- #\- #\=))
-            (t             (size-glyphs #\- #\- #\=)))))))
+    ;; Drop events.
+    (setf (style-%events style) '())))
 
 ;; Local Variables:
 ;; coding: utf-8
