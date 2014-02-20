@@ -174,14 +174,16 @@
    "Set the temporal bounds of THING to NEW-VALUE. See type
     `bounds-spec'."))
 
-(defgeneric bounds/expanded (thing)
+(defgeneric bounds/expanded (thing &optional now)
   (:documentation
    "Return a list of the form
 
       (LOWER UPPER)
 
-    containing the temporal bounds of THING as
-    `timestamp/unix/nsec'."))
+    containing the temporal bounds of THING as `timestamp/unix/nsec'
+    relative to NOW. NOW can be a `local-time:timestamp', a
+    `timestamp/unix/nsec' or nil, in which case the current time is
+    used."))
 
 (defgeneric range/expanded (thing)
   (:documentation

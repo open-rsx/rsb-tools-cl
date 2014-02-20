@@ -21,6 +21,7 @@
    #:timestamp/unix/nsec
    #:time-spec
    #:bounds-spec
+   #:bounds
 
    #:rule-spec
    #:separator-spec

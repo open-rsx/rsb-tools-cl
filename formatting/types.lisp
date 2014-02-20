@@ -12,6 +12,8 @@
   "Time in nanoseconds since UNIX epoch."
   'non-negative-integer)
 
+;; Time specs
+
 (deftype time-spec/variable ()
   "Time specifications which refer to variables."
   '(member :now :newest))
@@ -33,6 +35,8 @@
   "Return non-nil, if THING is of type `time-spec'."
   (typep thing 'time-spec))
 
+;; Bounds and bound specs
+
 (deftype bounds-spec ()
   "A list of the form
 
@@ -40,6 +44,22 @@
 
    where LOWER-BOUND and UPPER-BOUND are `time-spec's."
   '(cons time-spec (cons time-spec null)))
+
+(defun boundsp (thing)
+  "Return non-nil if THING is of type `bounds'."
+  (and (typep thing '(cons timestamp/unix/nsec
+                           (cons timestamp/unix/nsec
+                                 null)))
+       (< (first thing) (second thing))))
+
+(deftype bounds ()
+  "A list of the form
+
+     (LOWER-BOUND UPPER-BOUND)
+
+   where LOWER-BOUND and UPPER-BOUND are of type `timestamp/unix/nsec'
+   and LOWER-BOUND represents and earlier time than UPPER-BOUND."
+  '(satisfies boundsp))
 
 ;;;
 

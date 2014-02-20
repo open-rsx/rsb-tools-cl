@@ -42,3 +42,37 @@
                                                 :width 8 :alignment :right))))
       (1 2 3 4)
       "1              23              4")))
+
+;;; `temporal-bounds-mixin'
+
+(deftestsuite temporal-bounds-mixin-root (formatting-root)
+  ()
+  (:documentation
+   "Unit tests for the `temporal-bounds-mixin' class."))
+
+(addtest (temporal-bounds-mixin-root
+          :documentation
+          "Test constructing `temporal-bounds-mixin' instances.")
+  construct
+
+  (ensure-cases (initargs expected-bounds
+                 &optional now expected-bounds/expanded)
+      '(;; Some invalid cases.
+        ((:lower-bound "now")                        type-error)
+        ((:lower-bound :now :upper-bound :now)       type-error)
+        ((:lower-bound (+ :now 2) :upper-bound :now) type-error)
+
+        ;; These should be ok
+        (()                                          ((- :now 20) :now) 0 (-20000000000 0)))
+
+    (let+ (((&flet do-it ()
+              (apply #'make-instance 'temporal-bounds-mixin initargs))))
+      (case expected-bounds
+        (type-error
+         (ensure-condition 'type-error (do-it)))
+        (t
+         (let ((thing (do-it)))
+           (ensure-same expected-bounds          (bounds thing)
+                        :test #'equal)
+           (ensure-same expected-bounds/expanded (bounds/expanded thing now)
+                        :test #'equal)))))))

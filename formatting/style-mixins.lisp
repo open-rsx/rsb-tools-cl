@@ -209,30 +209,73 @@
     these specifications can be retrieved for concrete points in
     time."))
 
+(defmethod shared-initialize :after ((instance   temporal-bounds-mixin)
+                                     (slot-names t)
+                                     &key)
+  (check-bounds-spec (bounds instance)))
+
 (defmethod bounds ((thing temporal-bounds-mixin))
   (list (lower-bound thing) (upper-bound thing)))
 
+(defmethod (setf bounds) :before ((new-value list)
+                                  (thing     temporal-bounds-mixin))
+  (check-bounds-spec new-value))
+
 (defmethod (setf bounds) ((new-value list)
                           (thing     temporal-bounds-mixin))
-  (check-type new-value bounds-spec)
-
   (setf (lower-bound thing) (first  new-value)
         (upper-bound thing) (second new-value)))
 
-(defmethod bounds/expanded ((thing temporal-bounds-mixin))
-  (let+ ((now)
-         ((&flet now ()
-            (or now
-                (setf now (timestamp->unix/nsecs (local-time:now)))))))
-    (values (list (%expand-time-spec (lower-bound thing) #'now)
-                  (%expand-time-spec (upper-bound thing) #'now))
-            (now))))
+(defmethod bounds/expanded ((thing temporal-bounds-mixin)
+                            &optional now)
+  (%expand-bounds-spec (bounds thing) now))
 
 (defmethod range/expanded ((thing temporal-bounds-mixin))
-  (let+ (((lower upper) (bounds/expanded thing)))
+  (let+ (((lower upper) (bounds/expanded thing 0)))
     (- upper lower)))
 
 ;; Utility functions
+
+(defun check-bounds (thing)
+  (unless (typep thing 'bounds)
+    (error 'type-error
+           :datum         thing
+           :expected-type 'bounds)))
+
+(defun check-bounds-spec (thing)
+  (unless (and (typep thing 'bounds-spec)
+               (let+ (((lower upper) (%expand-bounds-spec thing 0))
+                      (min           (min lower upper))
+                      (lower         (- lower min))
+                      (upper         (- upper min)))
+                 (typep (list lower upper) 'bounds)))
+    (error 'type-error
+           :datum         thing
+           :expected-type 'bounds-spec)))
+
+(defun %expand-now (now)
+  (let ((raw (etypecase now
+               (null                 (local-time:now))
+               (function             (funcall now))
+               (local-time:timestamp now)
+               (integer              now))))
+    (etypecase raw
+      (local-time:timestamp (timestamp->unix/nsecs raw))
+      (integer              raw))))
+
+(defun %expand-bounds-spec (spec &optional now)
+  "Translate SPEC into two absolute timestamps of type
+   `timestamp/unix/nsec' and return a list of the two.
+
+   If the translation requires the current time, NOW is called without
+   arguments to retrieve it."
+  (let+ (((lower upper) spec)
+         now*
+         ((&flet now ()
+            (or now* (setf now* (%expand-now now))))))
+    (values (list (%expand-time-spec lower #'now)
+                  (%expand-time-spec upper #'now))
+            now*)))
 
 (defun %expand-time-spec (spec now)
   "Translate SPEC into an absolute timestamp of type
@@ -242,7 +285,7 @@
    arguments to retrieve it."
   (etypecase spec
     ((eql :now)
-     (funcall now))
+     (%expand-now now))
 
     ((cons (member + - * /))
      (apply (first spec)
