@@ -1,6 +1,6 @@
 ;;;; cl-rsb-formatting.asd --- Formatting functions for cl-rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -98,25 +98,9 @@ RSB-related systems."
                 (:module     "formatting-mixins"
                  :pathname   "formatting"
                  :depends-on ("formatting-early")
-                 :components ((:file       "width-mixin")
-                              (:file       "name-mixin")
-                              (:file       "counting-mixin")
-                              (:file       "header-printing-mixin"
-                               :depends-on ("counting-mixin"))
-                              (:file       "columns-mixin"
-                               :depends-on ("header-printing-mixin"
-                                            "width-mixin"))
-                              (:file       "periodic-printing-mixin")
-                              (:file       "delegating-mixin")
-                              (:file       "sub-style-grouping-mixin"
-                               :depends-on ("delegating-mixin"))
-                              (:file       "sub-style-sorting-mixin"
-                               :depends-on ("delegating-mixin"))
-                              (:file       "separator-mixin")
-                              (:file       "image-output-mixin")
-                              (:file       "data-consistency-mixin")
-                              (:file       "temporal-bounds-mixin")
-                              (:file       "output-buffering-mixin")))
+                 :components ((:file       "style-mixins")
+                              (:file       "text-style-mixins")
+                              (:file       "binary-style-mixins")))
 
                 (:module     "formatting"
                  :depends-on ("formatting-early"
@@ -175,10 +159,8 @@ system."
                 (:module     "formatting"
                  :pathname   "test/formatting"
                  :depends-on ("formatting-early")
-                 :components ((:file       "width-mixin")
-                              (:file       "delegating-mixin")
-                              (:file       "columns-mixin")
-                              (:file       "separator-mixin")
+                 :components ((:file       "style-mixins")
+                              (:file       "text-style-mixins")
 
                               (:file       "style-meta-data")
                               (:file       "style-detailed")

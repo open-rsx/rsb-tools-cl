@@ -119,10 +119,6 @@
    #:call-width-width-limit
    #:with-width-limit)
 
-  ;; `name-mixin' mixin class
-  (:export
-   #:name-mixin)
-
   ;; `counting-mixin' mixin class
   (:export
    #:couting-mixin

@@ -8,8 +8,14 @@
 
 ;;; `basic-column'
 
-(defclass basic-column (name-mixin)
-  ()
+(defclass basic-column ()
+  ((name :initarg  :name
+         :type     string
+         :accessor column-name
+         :documentation
+         "Stores the name of the column."))
+  (:default-initargs
+   :name (missing-required-initarg 'basic-column :name))
   (:documentation
    "Superclass for column classes."))
 

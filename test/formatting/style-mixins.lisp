@@ -6,6 +6,8 @@
 
 (cl:in-package #:rsb.formatting.test)
 
+;;; `delegating-mixin'
+
 (deftestsuite delegating-mixin-root (formatting-root)
   ()
   (:documentation
