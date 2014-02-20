@@ -154,6 +154,36 @@
   (sort (map 'list #'cdr (style-sub-styles style)) predicate
         :key key))
 
+;;; `timestamp-mixin'
+
+(defclass timestamp-mixin ()
+  ((timestamp :type     function
+              :accessor style-timestamp
+              :writer   (setf style-%timestamp)
+              :documentation
+              "Stores a function which extracts and returns a specific
+               timestamp from a given event."))
+  (:default-initargs
+   :timestamp :send)
+  (:documentation
+   "This mixins stores a function which extracts a given timestamp
+    from events. It is intended to be mixed into style classes which
+    extract a configurable timestamp from processed events."))
+
+(defmethod shared-initialize :after ((instance   timestamp-mixin)
+                                     (slot-names t)
+                                     &key
+                                     (timestamp nil timestamp-supplied?))
+  (when timestamp-supplied?
+    (setf (style-timestamp instance) timestamp)))
+
+(defmethod (setf style-timestamp) ((new-value symbol)
+                                   (style     timestamp-mixin))
+  (setf (style-%timestamp style)
+        (lambda (event)
+          (timestamp->unix/nsecs (timestamp event new-value))))
+  new-value)
+
 ;;; `temporal-bounds-mixin'
 
 (defclass temporal-bounds-mixin ()

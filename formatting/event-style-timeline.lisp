@@ -9,7 +9,8 @@
 ;;; Class `basic-timeline-style'
 
 (defclass basic-timeline-style (basic-monitor-style
-                                temporal-bounds-mixin)
+                                temporal-bounds-mixin
+                                timestamp-mixin)
   ()
   (:default-initargs
    :print-interval .5
@@ -25,16 +26,17 @@
 
 (defmethod make-sub-style-entry :around ((style basic-timeline-style)
                                          (value t))
-  ;; Propagate to sub-style.
-  (let ((entry (call-next-method)))
-    (setf (bounds (cdr entry)) (bounds style))
+  ;; Propagate temporal bounds and timestamp to sub-style.
+  (let+ (((&whole entry &ign . sub-style) (call-next-method)))
+    (setf (bounds sub-style)          (bounds style)
+          (style-timestamp sub-style) (style-timestamp style))
     entry))
 
 (macrolet
     ((define-delegating-method (name)
        `(progn
           (defmethod (setf ,name) ((new-value t)
-                                   (style     columns-mixin) )
+                                   (style     columns-mixin))
             (iter (for column in-sequence (style-columns style))
                   (when (compute-applicable-methods
                          (fdefinition '(setf ,name))
@@ -43,11 +45,16 @@
 
           (defmethod (setf ,name) :after ((new-value t)
                                           (style     basic-timeline-style))
-                     (iter (for (_ . sub-style) in-sequence (style-sub-styles style))
-                           (setf (bounds sub-style) new-value))))))
+            (iter (for (_ . sub-style) in-sequence (style-sub-styles style))
+                  (when (compute-applicable-methods
+                         (fdefinition '(setf ,name))
+                         (list new-value sub-style))
+                    (setf (,name sub-style) new-value)))))))
+
   (define-delegating-method lower-bound)
   (define-delegating-method upper-bound)
-  (define-delegating-method bounds))
+  (define-delegating-method bounds)
+  (define-delegating-method style-timestamp))
 
 ;;; Some concrete timeline styles
 

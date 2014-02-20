@@ -193,6 +193,12 @@
   (:export
    #:data-consistency-mixin)
 
+  ;; `timestamp-mixin' mixin class
+  (:export
+   #:timestamp-mixin
+
+   #:style-timestamp)
+
   ;; `temporal-bounds-mixin' mixin class
   (:export
    #:temporal-bounds-mixin)

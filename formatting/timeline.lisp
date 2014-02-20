@@ -75,6 +75,7 @@
   (find-class 'timeline))
 
 (defclass timeline (temporal-bounds-mixin
+                    timestamp-mixin
                     width-mixin)
   ((tic-distance :initarg  :tic-distance
                  :type     positive-integer
@@ -152,10 +153,9 @@
   ;; trigger events.
   (if (eq event :trigger)
       (call-next-method)
-      (let+ (((&structure style- (events %events)) style))
+      (let+ (((&structure style- timestamp (events %events)) style))
         (setf events (merge 'list (list event) events #'>
-                            :key (lambda (event)
-                                   (timestamp->unix/nsecs (timestamp event :send)))))))) ; TODO handle key properly; store key with events?
+                            :key timestamp)))))
 
 (defmethod adjust-cache! ((style timeline))
   (let+ (((&accessors-r/o ((lower-bound upper-bound) bounds/expanded)
@@ -176,9 +176,8 @@
       (setf (cdr tail) nil))))
 
 (defmethod fill-cache! ((style timeline))
-  (let+ (((&structure-r/o style- (events %events) (cache %cache)) style)
-         ((&flet key (event)
-            (timestamp->unix/nsecs (timestamp event :send))))) ; TODO(jmoringe, 2012-04-10): make configurable
+  (let+ (((&structure-r/o
+           style- timestamp (events %events) (cache %cache)) style))
     ;; Iterate over bins of the form [LOWER, UPPER] for all
     ;; not-yet-populated cache cells.
     (iter outer
@@ -191,7 +190,7 @@
           ;; Advance to first event that is in the first bin.
           (when (first-iteration-p)
             (next event)
-            (let ((key (key event)))
+            (let ((key (funcall timestamp event)))
               (iter (until (<= key (%cell-upper cell)))
                     (in outer (next event)))))
 
@@ -199,7 +198,7 @@
           (let+ (((&structure-r/o %cell- lower upper) cell))
             (iter (with events/bin                      = events/rest)
                   (with (the non-negative-fixnum count) = 0)
-                  (while (<= lower (key event) upper))
+                  (while (<= lower (funcall timestamp event) upper))
                   (incf count)
                   (in outer (next event))
                   (finally-protected
