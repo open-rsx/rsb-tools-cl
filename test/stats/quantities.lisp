@@ -6,7 +6,7 @@
 
 (cl:in-package #:rsb.stats.test)
 
-(defmacro define-simple-quantity-suite ((name) &body cases)
+(defmacro define-simple-quantity-suite ((name &key (reset? t)) &body cases)
   "Define a test suite for the quantity class designated by NAME. Use
    CASES as body of `ensure-quantity-cases' in a test case for the
    `update!' and `format-value' methods."
@@ -27,64 +27,59 @@
                           class-name))
          update!-and-format-value
 
-         (ensure-quantity-cases (,class-name)
-           (progn ,@cases))))))
+         (let+ (((&flet event (&optional (scope "/foo") (data "bar"))
+                   (make-event scope data))))
+           (ensure-quantity-cases (,class-name :reset? ,reset?)
+             (progn ,@cases)))))))
 
 (define-simple-quantity-suite (:count)
-  `((() ()                           "^0$")
-    (() (,(make-event "/foo" "bar")) "^1$")
-    (() (,(make-event "/foo" "bar")) "^1$")))
+  `((() ()         "^0$")
+    (() (,(event)) "^1$")
+    (() (,(event)) "^1$")))
 
-(define-simple-quantity-suite (:count/all-time)
-  `((() ()                           "^0$")
-    (() (,(make-event "/foo" "bar")) "^1$")
-    (() (,(make-event "/foo" "bar")) "^1$")))
+(define-simple-quantity-suite (:count/all-time :reset? nil)
+  `((() ()         "^0$")
+    (() (,(event)) "^1$")
+    (() (,(event)) "^1$")))
 
 (define-simple-quantity-suite (:rate)
-  `((() ()                           "^0\\.000$")
-    (() (,(make-event "/foo" "bar")) "^[0-9]+\\.[0-9]+$")))
+  `((() ()         "^0\\.000$")
+    (() (,(event)) "^[0-9]+\\.[0-9]+$")))
 
 (define-simple-quantity-suite (:period-time)
-  `((() ()                              "^N/A ± N/A$")
-    (() (,(make-event "/foo" "bar"))    "^N/A ± N/A$")
-    (() (,(make-event "/foo" "bar")
-         ,(progn
-            (sleep .001)
-            (make-event "/foo" "bar"))) "^0\\.[0-9][0-9][0-9] ± [0-9]\\.[0-9][0-9][0-9]$")))
+  `((() ()                        "^N/A ± N/A$")
+    (() (,(event))                "^N/A ± N/A$")
+    (() (,(event) ,(progn
+                     (sleep .001)
+                     (event)))    "^0\\.[0-9][0-9][0-9] ± [0-9]\\.[0-9][0-9][0-9]$")))
 
 (define-simple-quantity-suite (:throughput)
-  `((() ()                           "^0\\.000$")
-    (() (,(make-event "/foo" "bar")) "^[0-9]+\\.[0-9]+$")))
+  `((() ()         "^0\\.000$")
+    (() (,(event)) "^[0-9]+\\.[0-9]+$")))
 
 (define-simple-quantity-suite (:size)
-    `((() ()                           "^N/A ± N/A")
-      (() (,(make-event "/foo" "bar")) "^[0-9]+\\.[0-9]+ ± [0-9]+\\.[0-9]+$")))
+    `((() ()                      "^N/A ± N/A")
+      (() (,(event "/foo" "bar")) "^3\\.000 ± 0\\.000$")))
 
 (define-simple-quantity-suite (:size/log)
-    `((() ()                           "^N/A$")
-      (() (,(make-event "/foo" "bar")) "^4: 1$")))
+    `((() ()                      "^N/A$")
+      (() (,(event "/foo" "bar")) "^4: 1$")))
 
-(define-simple-quantity-suite (:size/all-time)
-    `((() ()                           "^0$")
-      (() (,(make-event "/foo" "bar")) "^3$")))
+(define-simple-quantity-suite (:size/all-time :reset? nil)
+    `((() ()                      "^0$")
+      (() (,(event "/foo" "bar")) "^3$")))
 
 (define-simple-quantity-suite (:scope)
-  `((() ()                           "^N/A$")
-    (() (,(make-event "/foo" "baz")) "^/foo/: 1$")
-    (() (,(make-event "/foo" "baz")
-         ,(make-event "/bar" "baz")
-         ,(make-event "/bar" "baz")) "^/bar/: 2, /foo/: 1$")))
+  `((() ()                                                "^N/A$")
+    (() (,(event "/foo"))                                 "^/foo/: 1$")
+    (() (,(event "/foo") ,(event "/bar") ,(event "/bar")) "^/bar/: 2, /foo/: 1$")))
 
 (define-simple-quantity-suite (:method)
-  `((() ()                         "^N/A$")
-    (() (,(make-event "/foo" "baz"
-                      :method :a)) "^A: 1$")
-    (() (,(make-event "/foo" "baz"
-                      :method :a)
-         ,(make-event "/bar" "baz"
-                      :method :b)
-         ,(make-event "/bar" "baz"
-                      :method :b)) "^B: 2, A: 1$")))
+  (let+ (((&flet event (method)
+            (make-event "/foo" "baz" :method method))))
+    `((() ()                                    "^N/A$")
+      (() (,(event :a))                         "^A: 1$")
+      (() (,(event :a) ,(event :b) ,(event :b)) "^B: 2, A: 1$"))))
 
 (define-simple-quantity-suite (:origin)
   (let+ ((id1 (uuid:make-v4-uuid))
@@ -99,17 +94,11 @@
                                                          id2 id1)))))
 
 (define-simple-quantity-suite (:wire-schema)
-  `((() ()                                   "^N/A$")
-    (() (,(make-event "/foo" "baz"
-                      :rsb.transport.wire-schema "a")) "^a: 1$")
-    (()
-     (,(make-event "/foo" "baz"
-                   :rsb.transport.wire-schema "a")
-       ,(make-event "/bar" "baz"
-                    :rsb.transport.wire-schema "b")
-       ,(make-event "/bar" "baz"
-                    :rsb.transport.wire-schema "b"))
-     "^b: 2, a: 1$")))
+  (let+ (((&flet event (wire-schema)
+            (make-event "/foo" "baz" :rsb.transport.wire-schema wire-schema))))
+    `((() ()                                        "^N/A$")
+      (() (,(event "a"))                            "^a: 1$")
+      (() (,(event "a") ,(event "b") ,(event  "b")) "^b: 2, a: 1$"))))
 
 (define-simple-quantity-suite (:type)
     `((() ()                       "^N/A$")
@@ -136,9 +125,9 @@
 (define-simple-quantity-suite (:latency)
   (let+ (((&flet args (&rest keys)
             `(,@(when-let ((value (first keys)))
-                          `(:from ,value))
-                ,@(when-let ((value (second keys)))
-                            `(:to ,value))))))
+                  `(:from ,value))
+              ,@(when-let ((value (second keys)))
+                  `(:to ,value))))))
     `(;; missing :from and :to initargs
       (()                      ()                           error)
       (,(args :create)         ()                           error)

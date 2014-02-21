@@ -27,7 +27,7 @@
   (:documentation
    "Root unit test suite for the stats module."))
 
-(defmacro ensure-quantity-cases ((class) &body cases)
+(defmacro ensure-quantity-cases ((class &key (reset? t)) &body cases)
   "Generate tests cases for methods on `update!' and `format-value'
    for quantity CLASS according to CASES. Each element of cases has to
    be of the form
@@ -41,22 +41,29 @@
   `(ensure-cases (args events expected)
        (progn ,@cases)
 
-     (if (eq expected 'error)
-         (ensure-condition 'error
-           (apply #'make-instance ',class args))
-         (let* ((instance (apply #'make-instance ',class args))
-                (output   (progn
-                            (reset! instance)
-                            ;; Wait 1 ms for the sake of time-based
-                            ;; quantities.
-                            (sleep .001)
-                            (mapc (curry #'update! instance) events)
-                            (with-output-to-string (stream)
-                              (format-value instance stream)))))
-           (ensure-same expected output
-                        :test      #'ppcre:scan
-                        :report    "~@<The quantity ~A, when ~:[not ~
-                                    updated with any data~;~:*updated ~
-                                    with data ~{~S~^, ~}~], produced the ~
-                                    output ~S, not ~S.~@:>"
-                        :arguments (instance events output expected))))))
+     (case expected
+       (error
+        (ensure-condition 'error
+          (apply #'make-instance ',class args)))
+       (t
+        (let+ ((instance (apply #'make-instance ',class args))
+               ((&flet do-it (&optional reset?)
+                  (reset! instance)
+                  (let ((output (progn
+                                  ;; Wait 1 ms for the sake of
+                                  ;; time-based quantities.
+                                  (sleep .001)
+                                  (mapc (curry #'update! instance) events)
+                                  (with-output-to-string (stream)
+                                    (format-value instance stream)))))
+                    (ensure-same
+                     expected output
+                     :test      #'ppcre:scan
+                     :report    "~@<The quantity ~A~:[~:;, after being ~
+                                 reset~], when ~:[not updated with ~
+                                 any data~;~:*updated with data ~
+                                 ~{~S~^, ~}~], produced the output ~S, ~
+                                 not ~S.~@:>"
+                     :arguments (instance reset? events output expected))))))
+          (do-it)
+          ,@(when reset? `((do-it t))))))))
