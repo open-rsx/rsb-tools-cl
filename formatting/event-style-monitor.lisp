@@ -120,6 +120,31 @@
                                          :superclasses (periodic-printing-mixin))
               ,@dispatch-specs)))))
 
+  (define-dynamic-width-monitor-style (timeline
+                                       :key            #'event-scope
+                                       :test           #'scope=
+
+                                       :sort-predicate #'string<
+                                       :sort-key       (compose #'scope-string
+                                                                #'column-value
+                                                                (rcurry #'elt 0)
+                                                                #'style-columns))
+    "This style groups events by scope and periodically displays
+       various statistics for events in each scope-group."
+    ;; Specification for group column.
+    (list :constant
+          :name      "Scope"
+          :value     value
+          :formatter (lambda (value stream)
+                       (write-string (scope-string value) stream))
+          :width     32
+          :alignment :left)
+    ;; Width-dependent specifications for remaining columns.
+    ((  0  81) :rate/12 :throughput/13 '(:timeline :width 19))
+    (( 81 129) :rate/12 :throughput/13 :latency '(:timeline :width 50))
+    ((129 181) :rate/12 :throughput/13 :latency :type/40 '(:timeline :width 61))
+    ((181    ) :rate/12 :throughput/13 :latency :type/40 '(:timeline :width 120)))
+
   (define-dynamic-width-monitor-style (scope
                                        :key  #'event-scope
                                        :test #'scope=)
