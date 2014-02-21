@@ -89,47 +89,6 @@
 
 ;;;
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-
-  (defmacro with-indent ((stream-var
-                          &key
-                          (amount              2)
-                          (initial-fresh-line? t)
-                          (final-fresh-line?   t))
-                         &body body)
-    "Execute BODY with the stream of the current emit target bound to
-     a pretty-printing stream that indents all output produced within
-     BODY to a certain depth. In addition, a scope of kind KIND and
-     name NAME is printed around the output."
-    `(let ((previous *print-right-margin*))
-       (unwind-protect
-            (progn
-              (when *print-right-margin*
-                (decf *print-right-margin* ,amount))
-              ,@(when initial-fresh-line?
-                  `((format ,stream-var "~&")))
-              (pprint-logical-block (,stream-var nil
-                                                 :per-line-prefix ,(make-string amount :initial-element #\Space))
-                ,@body)
-              ,@(when final-fresh-line?
-                  `((format ,stream-var "~&"))))
-         (setf *print-right-margin* previous))))
-
-  (defmacro with-indented-section ((stream-var title
-                                    &key
-                                    (amount            2)
-                                    (final-fresh-line? t))
-                                   &body body)
-    "Execute BODY with STREAM-VAR bound to a stream that indents all
-     content by AMOUNT."
-    `(progn
-       ,@(when title
-               `((format ,stream-var (format nil "~A~~&" ,title))))
-       (with-indent (,stream-var :amount              ,amount
-                                 :initial-fresh-line? nil
-                                 :final-fresh-line?   ,final-fresh-line?)
-         ,@body))))
-
 (defun format-maybe (stream value)
   "Print VALUE onto STREAM unless it is nil."
   (format stream "~:[N/A~;~:*~A~]" value))
@@ -148,24 +107,6 @@
             (format stream "~&"))
           (format stream "~:(~VA~): " width key)
           (funcall value-formatter stream value))))
-
-(defun format-aligned-items/alist (stream items
-                                   &key
-                                   value-formatter)
-  "Format ITEMS in which each item is of the form (KEY . VALUE) onto
-   STREAM such that keys and values align vertically across output
-   lines."
-  (format-aligned-items
-   stream (map 'list #'car items) (map 'list #'cdr items))
-  :value-formatter value-formatter)
-
-(defun format-pairs/plist (stream &rest items)
-  "Format keys and values of the plist ITEMS onto STREAM such that
-   keys and values align vertically across output lines."
-  (format-aligned-items
-   stream
-   (iter (for item in items        :by #'cddr) (collect item))
-   (iter (for item in (rest items) :by #'cddr) (collect item))))
 
 (declaim (special *tracker*))
 
@@ -188,15 +129,19 @@
              (format stream "~S" value))
             ((and (array (unsigned-byte 8) (*))
                   (not (array (unsigned-byte 8) (0))))
-             (format-payload value :any stream))
+             (pprint-logical-block (stream (list value))
+               (format-payload value :any stream)))
             (sequence
              (if (emptyp value)
                  (format stream "<empty sequence>")
-                 (with-indent (stream :final-fresh-line? nil)
-                   (iter (for item in-sequence value)
-                         (unless (first-iteration-p)
-                           (format stream "~&"))
-                         (format-recursively stream item)))))
+                 (progn
+                   (pprint-newline :mandatory stream)
+                   (pprint-logical-block (stream (list value)
+                                                 :per-line-prefix "  ")
+                     (iter (for item in-sequence value)
+                           (unless (first-iteration-p)
+                             (format stream "~@:_"))
+                           (format-recursively stream item))))))
             (standard-object
              (format-instance stream value))
             (t
@@ -211,8 +156,9 @@
          (keys   (map 'list #'closer-mop:slot-definition-name
                       (closer-mop:class-slots (class-of instance))))
          (values (map 'list #'slot-value* keys)))
-    (format stream "~A" instance)
-    (with-indent (stream :final-fresh-line? nil)
+    (format stream "~A~@:_" (class-name (class-of instance)))
+    (pprint-logical-block (stream (list instance)
+                                  :per-line-prefix "  ")
       (format-aligned-items stream keys values
                             :value-formatter #'format-recursively))))
 

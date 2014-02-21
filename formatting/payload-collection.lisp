@@ -26,7 +26,8 @@
       (let ((event (rsb.transport.socket::notification->event*
                     *by-scope-formatting-converter* data
                     :expose-wire-schema? t)))
-        (format-event event *by-scope-formatting-event-style* stream))
+        (pprint-logical-block (stream (list event))
+          (format-event event *by-scope-formatting-event-style* stream)))
     (error (condition)
       (format stream "~@<| ~@;~
                         Failed to decode notification~
@@ -47,12 +48,12 @@
            (scope         rsb.protocol.collections:events-by-scope-map/scope-set-scope)
            (notifications rsb.protocol.collections:events-by-scope-map/scope-set-notifications))
           data))
-    (with-indented-section (stream (format nil "Scope ~S"
-                                           (sb-ext:octets-to-string scope))
-                                   :final-fresh-line? nil)
+    (format stream "Scope ~S~@:_~2@T"
+            (sb-ext:octets-to-string scope))
+    (pprint-logical-block (stream (coerce notifications 'list))
       (iter (for notification in-sequence notifications)
             (unless (first-iteration-p)
-              (fresh-line stream))
+              (pprint-newline :mandatory stream))
             (format-payload notification style stream)))))
 
 (defmethod format-payload ((data   rsb.protocol.collections:events-by-scope-map)
@@ -60,10 +61,10 @@
                            (stream stream)
                            &key &allow-other-keys)
   (let ((sets (rsb.protocol.collections:events-by-scope-map-sets data)))
-    (with-indented-section (stream (format nil "Events by Scope (~D Scope~:P)"
-                                           (length sets))
-                                   :final-fresh-line? nil)
+    (format stream "Events by Scope (~D Scope~:P)~&~2@T"
+            (length sets))
+    (pprint-logical-block (stream (coerce sets 'list))
       (iter (for set in-sequence sets)
             (unless (first-iteration-p)
-              (fresh-line stream))
+              (pprint-newline :mandatory stream))
             (format-payload set style stream)))))

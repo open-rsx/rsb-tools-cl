@@ -56,7 +56,7 @@
           ;; Print byte.
           (format stream "~2,'0X " byte)
           (when (columns-exhausted? (incf column 3))
-            (fresh-line stream)
+            (pprint-newline :mandatory stream)
             (incf line)
             (setf column 1))
           ;; Print as string, if possible.
@@ -66,7 +66,7 @@
              (let ((as-string (sb-ext:octets-to-string value)))
                (when (or (> line 1)
                          (columns-exhausted? (+ column (length as-string) 4)))
-                 (fresh-line stream)
+                 (pprint-newline :mandatory stream)
                  (incf line)
                  (setf column 1))
                (format stream "(~/rsb.formatting::format-string/)"
