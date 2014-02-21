@@ -15,6 +15,8 @@
   (:default-initargs
    :print-interval .5
 
+   :upper-bound    '(+ :now 1)
+
    :sort-predicate #'string<
    :sort-key       (compose #'princ-to-string
                             #'column-value

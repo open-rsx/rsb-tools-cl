@@ -99,6 +99,8 @@
                  :documentation
                  "Stores information regarding previously rendered
                   cells. See `%timeline-cache-cell'."))
+  (:default-initargs
+   :upper-bound '(+ :now 1))
   (:documentation
    "Instances of this column class render a timeline view in which
     received events appear as dots. A corresponding header with time
