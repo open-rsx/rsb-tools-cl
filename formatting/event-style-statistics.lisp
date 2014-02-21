@@ -51,15 +51,18 @@
                                    header-printing-mixin)
               ()
               (:default-initargs
-               :columns (list ,@(sublis *basic-columns* column-specs)))
+               :columns (list ,@(sublis (mapcar (lambda+ ((key . value))
+                                                  `(,key . (quote ,value)))
+                                                *basic-columns*)
+                                        column-specs)))
               (:documentation
-               ,(apply #'concatenate 'string
-                      "This formatting style computes a number of
-configurable statistical quantities from received events collected
-over a configurable period of time and prints the computed values in a
-tabular manner."
-                      (when documentation
-                        (list " " documentation)))))))))
+               ,(format nil "This formatting style computes a number ~
+                             of configurable statistical quantities ~
+                             from received events collected over a ~
+                             configurable period of time and prints ~
+                             the computed values in a tabular manner.~
+                             ~@[ ~A~]"
+                        documentation)))))))
 
   (define-statistics-style (statistics/80)
       "The output of this style is designed to fit into 80 columns."

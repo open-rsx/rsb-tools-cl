@@ -75,7 +75,10 @@
                                          :style-monitor kind))
               ((&values column-specs nil documentation)
                (parse-body doc-and-column-specs :documentation t))
-              (columns (sublis *basic-columns* column-specs)))
+              (columns (sublis (mapcar (lambda+ ((key . value))
+                                         `(,key . (quote ,value)))
+                                       *basic-columns*)
+                               column-specs)))
          `(progn
             (defmethod find-style-class ((spec (eql ,spec)))
               (find-class ',class-name))

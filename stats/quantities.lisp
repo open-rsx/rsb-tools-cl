@@ -27,7 +27,7 @@
               ()
               (:default-initargs
                :name ,pretty-name
-               ,@(remove-from-plist initargs :designator :pretty-name :slots))
+               ,@(remove-from-plist initargs :designator :pretty-name))
               ,@(when doc
                   `((:documentation ,doc))))))))
 

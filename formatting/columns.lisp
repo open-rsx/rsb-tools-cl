@@ -214,7 +214,7 @@
 (macrolet
     ((define-meta-data-column ((name
                                 &key
-                                (accessor (intern (string name) :rsb))))
+                                (accessor (find-symbol (string name) :rsb))))
        (let ((class-name (intern (string name))))
          `(progn
             (defmethod find-column-class ((spec (eql ,name)))
@@ -240,8 +240,8 @@
             (defmethod shared-initialize :after ((instance   ,class-name)
                                                  (slot-names t)
                                                  &key)
-                       (setf (column-name instance)
-                             (format nil "~@(~A~)" (column-key instance))))
+              (setf (column-name instance)
+                    (format nil "~@(~A~)" (column-key instance))))
 
             (defmethod format-event ((event  event)
                                      (column ,class-name)
@@ -285,16 +285,16 @@
 
 (defvar *basic-columns*
   '(;; Quantities
-    (:rate/12       . '(:quantity :quantity :rate       :width 12))
-    (:throughput/13 . '(:quantity :quantity :throughput :width 13))
-    (:latency       . '(:quantity :quantity (:latency
+    (:rate/12       . (:quantity :quantity :rate       :width 12))
+    (:throughput/13 . (:quantity :quantity :throughput :width 13))
+    (:latency       . (:quantity :quantity  (:latency
                                              :from :create
                                              :to   :deliver
                                              :name "Latency")))
-    (:origin/40     . '(:quantity :quantity :origin     :width 40 :alignment :left))
-    (:scope/40      . '(:quantity :quantity :scope      :width 40 :alignment :left))
-    (:type/40       . '(:quantity :quantity :type       :width 40 :alignment :left))
-    (:size/20       . '(:quantity :quantity :size       :width 20)))
+    (:origin/40     . (:quantity :quantity :origin     :width 40 :alignment :left))
+    (:scope/40      . (:quantity :quantity :scope      :width 40 :alignment :left))
+    (:type/40       . (:quantity :quantity :type       :width 40 :alignment :left))
+    (:size/20       . (:quantity :quantity :size       :width 20)))
   "Contains an alist of column specification entries of the form
 
      (NAME . SPEC)
