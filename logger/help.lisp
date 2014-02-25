@@ -11,17 +11,19 @@
   "Return a help that explains the commandline option interface."
   (with-output-to-string (stream)
     (format stream "Show events exchanged on the RSB channel ~
-                    designated by URI. Events can be filtered and ~
+                    designated by URIs. Events can be filtered and ~
                     displayed in several ways which can be controlled ~
                     using the --filter and --style options.~@
                     ~@
-                    URI designates the channel for which events should ~
-                    be received and logged and the transport that ~
-                    should be used to attach to channel.~@
+                    URIs designate the channel or channels for which ~
+                    events should be received and logged and the ~
+                    transport that should be used to attach to ~
+                    channel(s). If no URIs are specified the root ~
+                    scope / and default transports are assumed.~@
                     ~@
                     ")
     (with-abbreviation (stream :uri show)
-      (format stream "A URI of the form~@
+      (format stream "Zero or more URIs of the form~@
                       ~@
                       ~2@T")
       (print-uri-help stream))))
@@ -72,7 +74,6 @@
                ~@
                ~2@T~:*~A spread://localhost:4811~@
                ~@
-
                Use the Spread daemon listening on port 4811 on ~
                localhost to connect to the bus. Since no scope is ~
                specified, receive and print all events exchanged on ~
@@ -88,5 +89,11 @@
                payloads of which match the regular expression ~
                \"^mypattern\". Display matching events using the ~
                \"detailed\" display style.~@
-               "
+               ~@
+               ~2@T~:*~A socket:/foo spread:/bar~@
+               ~@
+               Display events from two channels: the channel ~
+               designated by \"/foo\", accessed via Spread transport, ~
+               and the channel designated by \"/bar\", accessed via ~
+               socket transport."
           program-name))

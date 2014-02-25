@@ -244,6 +244,19 @@ foreach(POLICY continue abort)
                     "inprocess:/foo/bar(1)")
 endforeach()
 
+# Multiple URIs and queue capacity for logger
+add_test(NAME    "logger/multiple-uris"
+         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+                 --debug
+                 --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                 inprocess:/foo inprocess:/bar)
+add_test(NAME    "logger/queue-capacity"
+         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+                 --debug
+                 --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                 --max-queued-events 1
+                 inprocess:/foo)
+
 # All styles for logger and call binaries.
 # TODO: add these:
 # programmable/template :template #p"${CMAKE_CURRENT_SOURCE_DIR}/test/data/empty.template"
