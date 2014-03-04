@@ -163,7 +163,7 @@
            (spec (first (remainder)))
            ((&values server-uri method arg)
             (ppcre:register-groups-bind (server-uri method arg)
-                ("^([a-zA-Z0-9/:&?#=+;]*)/([a-zA-Z0-9]+)\\((.*)\\)$" spec)
+                ("^([-_a-zA-Z0-9/:&?#=+;]*)/([-_a-zA-Z0-9]+)\\((.*)\\)$" spec)
               (values server-uri method (parse-argument arg))))
            (timeout (getopt :long-name "timeout"))
            (wait?   (not (getopt :long-name "no-wait")))
