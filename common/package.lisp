@@ -27,7 +27,9 @@
 
   ;; Variables
   (:export
-   #:*info-output*)
+   #:*info-output*
+
+   #:*only-user-events-filter*)
 
   ;; Error handling
   (:export

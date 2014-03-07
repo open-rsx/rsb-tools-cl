@@ -145,10 +145,11 @@
           ;; Create listeners and start the receiving and printing
           ;; loop.
           (let+ ((uris              (or (remainder) '("/")))
-                 (filters           (iter (for spec next (getopt :long-name "filter"))
-                                          (while spec)
-                                          (collect (apply #'rsb.filter:filter
-                                                          (parse-instantiation-spec spec)))))
+                 (filters           (or (iter (for spec next (getopt :long-name "filter"))
+                                              (while spec)
+                                              (collect (apply #'rsb.filter:filter
+                                                              (parse-instantiation-spec spec))))
+                                        (list *only-user-events-filter*)))
                  (converters        (iter (for (wire-type . converter) in (default-converters))
                                           (collect
                                               (cons wire-type
