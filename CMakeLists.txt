@@ -139,7 +139,7 @@ endfunction()
 # Project definition (version is grovelled from asd system definition,
 # possibly in combination with version.sexp file written below).
 set(SYSTEM_NAME "cl-rsb-tools-logger")
-project(rsb-tools)
+project(rsb-tools "NONE")
 
 # Determine at least major and minor version components.
 set(REDIRECTIONS "ERROR_FILE \"${CMAKE_CURRENT_BINARY_DIR}/version.1.err\"")
