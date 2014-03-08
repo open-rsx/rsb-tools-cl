@@ -51,11 +51,13 @@ if(NOT SBCL_HOME)
     message(STATUS "SBCL_HOME is not set. Trying to find SBCL on default path.")
     find_program(SBCL_EXECUTABLE sbcl)
 else()
+    file(TO_CMAKE_PATH "${SBCL_HOME}" SBCL_HOME)
     message(STATUS "SBCL_HOME is set to ${SBCL_HOME}. Trying to find SBCL there.")
     find_program(SBCL_EXECUTABLE sbcl
                  PATHS "${SBCL_HOME}/../../bin" ${SBCL_HOME}
                  NO_DEFAULT_PATH)
 endif()
+file(TO_CMAKE_PATH "${SBCL_EXECUTABLE}" SBCL_EXECUTABLE)
 message(STATUS "SBCL executable: ${SBCL_EXECUTABLE}")
 set(FASL_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/fasl-cache"
     CACHE FILEPATH
@@ -106,6 +108,7 @@ set(CL_SOURCE_REGISTRY       "(:source-registry
                                 (:tree \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\")
                                 ${LISP_SOURCE_REGISTRY_ENTRIES}
                                 :inherit-configuration)")
+file(TO_CMAKE_PATH "${LISP_FASL_CACHE_DIR}" LISP_FASL_CACHE_DIR)
 set(ASDF_OUTPUT_TRANSLATIONS "(:output-translations
                                 (t (\\\"${LISP_FASL_CACHE_DIR}\\\" :implementation))
                                 :ignore-inherited-configuration)")
