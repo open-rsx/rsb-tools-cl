@@ -25,6 +25,7 @@
 ;; necessary, users can change this by "redumping".
 (rsb.tools.main:make-dynamic)
 
-(com.dvlsoft.clon:dump "tools" rsb.tools.main:main
-                       #+sb-core-compression :compression
-                       #+sb-core-compression 9)
+(com.dvlsoft.clon:dump
+ #-win32 "tools" #+win32 "tools.exe"
+ rsb.tools.main:main
+ #+sb-core-compression :compression #+sb-core-compression 9)
