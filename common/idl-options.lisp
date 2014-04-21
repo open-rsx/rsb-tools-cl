@@ -14,7 +14,8 @@
       (error "~@<Not a directory: ~A.~@:>" truename))
     (error "~@<Directory does not exist: ~A.~@:>" pathname)))
 
-(defun process-idl-options ()
+(defun process-idl-options (&key
+                            (purpose nil purpose-supplied?))
   "Process the options --idl-path and --load-idl by loading the
    specified IDL files."
   ;; Extend data definition source path.
@@ -25,6 +26,8 @@
               (pushnew path pbf:*proto-load-path*)))
 
   ;; Load specified data definitions.
-  (map 'list (rcurry #'load-idl :auto)
-       (collect-option-values :long-name "load-idl"
-                              :transform #'identity)))
+  (mapcar (apply #'rcurry #'load-idl :auto
+                 (when purpose-supplied?
+                   (list :purpose purpose)))
+          (collect-option-values :long-name "load-idl"
+                                 :transform #'identity)))
