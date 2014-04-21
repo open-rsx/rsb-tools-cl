@@ -50,12 +50,13 @@
              :type     non-negative-integer
              :reader   queue-overflow-error-capacity
              :documentation
-             "")
+             "Stores the capacity of the queue in question.")
    (count    :initarg  :count
              :type     non-negative-integer
              :reader   queue-overflow-error-count
              :documentation
-             ""))
+             "Stores the number of queued items when the queue
+              overflowed."))
   (:default-initargs
    :capacity (missing-required-initarg 'queue-overflow-error :capacity)
    :count    (missing-required-initarg 'queue-overflow-error :count))
