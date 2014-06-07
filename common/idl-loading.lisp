@@ -40,8 +40,7 @@
                      &key &allow-other-keys)
   "Signal an error if we no not know how load an IDL for the
    combination SOURCE and KIND."
-  (error "~@<~A is an unknown data definition type.~@:>"
-         kind))
+  (error "~@<~A is an unknown data definition type.~@:>" kind))
 
 (defmethod load-idl ((source pathname) (kind (eql :file))
                      &rest args
@@ -49,10 +48,8 @@
   "Load an IDL definition from the file SOURCE. The IDL kind is
    inferred form the file type of SOURCE."
   (log:info "~@<Processing IDL file ~S~@:>" source)
-  (apply #'load-idl
-         source (make-keyword (string-upcase
-                               (pathname-type source)))
-         args))
+  (let ((kind (make-keyword (string-upcase (pathname-type source)))))
+    (apply #'load-idl source kind args)))
 
 (defmethod load-idl ((source pathname) (kind (eql :wild))
                      &rest args
@@ -60,8 +57,7 @@
   "Load IDL definitions from all files matching the wildcard pathname
    SOURCE."
   (log:info "~@<Processing IDL files matching ~S~@:>" source)
-  (map 'list (lambda (file) (apply #'load-idl file :file args))
-       (directory source)))
+  (apply #'load-idl (directory source) :file args))
 
 (defmethod load-idl ((source pathname) (kind (eql :auto))
                      &rest args
@@ -94,7 +90,8 @@
   (with-sequence-progress (:load-idl source)
     (map 'list (progressing
                 (lambda (source)
-                  (apply #'load-idl source kind args))
+                  (with-simple-restart (continue "~@<Skip ~S~@:>" source)
+                    (apply #'load-idl source kind args)))
                 :load-idl "Loading ~A")
          source)))
 
