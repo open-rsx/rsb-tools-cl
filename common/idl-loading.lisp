@@ -91,8 +91,12 @@
                      &rest args
                      &key &allow-other-keys)
   "Process all elements of SOURCE sequentially."
-  (map 'list (lambda (source) (apply #'load-idl source kind args))
-       source))
+  (with-sequence-progress (:load-idl source)
+    (map 'list (progressing
+                (lambda (source)
+                  (apply #'load-idl source kind args))
+                :load-idl "Loading ~A")
+         source)))
 
 ;;; Protocol buffer specific stuff
 
