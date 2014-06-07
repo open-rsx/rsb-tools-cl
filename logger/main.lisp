@@ -133,45 +133,46 @@
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
 
-  (with-logged-warnings
-    ;; Load IDLs as specified on the commandline.
-    (process-idl-options)
-
-    ;; Create a reader and start the receiving and printing loop.
-    (let+ ((error-policy (maybe-relay-to-thread
-                          (process-error-handling-options)))
-           (uris         (or (remainder) (list "/")))
-           (filters      (iter (for spec next (getopt :long-name "filter"))
-                               (while spec)
-                               (collect (apply #'rsb.filter:filter
-                                               (parse-instantiation-spec spec)))))
-           (converters   (iter (for (wire-type . converter) in (default-converters))
-                               (collect
-                                   (cons wire-type
-                                         (if (and (listp converter)
-                                                  (not (member :fundamental-null converter)))
-                                             (append converter '(:fundamental-null))
-                                             converter)))))
-           (event-style  (make-style (parse-instantiation-spec
-                                      (getopt :long-name "style"))))
-           (max-queued-events (getopt :long-name "max-queued-events"))
-           (queue             (apply #'lparallel.queue:make-queue
-                                     (when max-queued-events
-                                       (list :fixed-capacity max-queued-events))))
-           (handler           (make-queue-push-handler queue)))
-
-      (with-print-limits (*standard-output*)
-        (log:info "~@<Using URI~P ~:*~{~S~^, ~}~@:>" uris)
-
+  (let ((error-policy (maybe-relay-to-thread
+                       (process-error-handling-options))))
+    (with-print-limits (*standard-output*)
+      (with-logged-warnings
         (with-error-policy (error-policy)
-          (with-interactive-interrupt-exit ()
-            (let ((listeners '()))
-              (unwind-protect
-                   (progn
-                     (mapc (lambda (uri)
-                             (push (make-queue-pushing-listener
-                                    handler uri error-policy filters converters)
-                                   listeners))
-                           uris)
-                     (process-events queue event-style))
-                (mapc #'detach/ignore-errors listeners)))))))))
+
+          ;; Load IDLs as specified on the commandline.
+          (process-idl-options)
+
+          ;; Create listeners and start the receiving and printing
+          ;; loop.
+          (let+ ((uris              (or (remainder) '("/")))
+                 (filters           (iter (for spec next (getopt :long-name "filter"))
+                                          (while spec)
+                                          (collect (apply #'rsb.filter:filter
+                                                          (parse-instantiation-spec spec)))))
+                 (converters        (iter (for (wire-type . converter) in (default-converters))
+                                          (collect
+                                              (cons wire-type
+                                                    (if (and (listp converter)
+                                                             (not (member :fundamental-null converter)))
+                                                        (append converter '(:fundamental-null))
+                                                        converter)))))
+                 (event-style       (make-style (parse-instantiation-spec
+                                                 (getopt :long-name "style"))))
+                 (max-queued-events (getopt :long-name "max-queued-events"))
+                 (queue             (apply #'lparallel.queue:make-queue
+                                           (when max-queued-events
+                                             (list :fixed-capacity max-queued-events))))
+                 (handler           (make-queue-push-handler queue)))
+
+            (log:info "~@<Using URI~P ~:*~{~S~^, ~}~@:>" uris)
+            (with-interactive-interrupt-exit ()
+              (let ((listeners '()))
+                (unwind-protect
+                     (progn
+                       (mapc (lambda (uri)
+                               (push (make-queue-pushing-listener
+                                      handler uri error-policy filters converters)
+                                     listeners))
+                             uris)
+                       (process-events queue event-style))
+                  (mapc #'detach/ignore-errors listeners))))))))))
