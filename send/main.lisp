@@ -159,29 +159,32 @@
   (unless (length= 2 (remainder))
     (error "~@<Supply event specification and destination URI.~@:>"))
 
-  (with-logged-warnings
-    (let+ ((error-policy (maybe-relay-to-thread
-                          (process-error-handling-options)))
-           (method       (when-let ((value (getopt :long-name "method")))
-                           (make-keyword value)))
-           (meta-data    (iter (for value next (getopt :long-name "meta-data"))
-                               (while value)
-                               (appending (parse-meta-data value))))
-           (timestamps   (iter (for value next (getopt :long-name "timestamp"))
-                               (while value)
-                               (appending (parse-timestamp value))))
-           (causes       (iter (for value next (getopt :long-name "cause"))
-                               (while value)
-                               (collect (parse-cause value))))
-           ((event-spec &optional (destination "/")) (remainder))
-           (payload (parse-payload-spec event-spec)))
+  (let ((error-policy (maybe-relay-to-thread
+                       (process-error-handling-options))))
+    (with-logged-warnings
+      (with-error-policy (error-policy)
+        ;; Load IDLs as specified on the commandline.
+        (process-idl-options :purpose '(:packed-size :serializer :deserializer))
 
-      (log:info "~@<Using URI ~S payload ~A~@:>" destination payload)
-      (with-interactive-interrupt-exit ()
-        (with-error-policy (error-policy)
-          (with-informer (informer destination t :error-policy error-policy)
-            (apply #'send informer payload
-                   (nconc (when method     (list :method     method))
-                          (when timestamps (list :timestamps timestamps))
-                          (when causes     (list :causes     causes))
-                          meta-data))))))))
+        (let+ ((method     (when-let ((value (getopt :long-name "method")))
+                             (make-keyword value)))
+               (meta-data  (iter (for value next (getopt :long-name "meta-data"))
+                                 (while value)
+                                 (appending (parse-meta-data value))))
+               (timestamps (iter (for value next (getopt :long-name "timestamp"))
+                                 (while value)
+                                 (appending (parse-timestamp value))))
+               (causes     (iter (for value next (getopt :long-name "cause"))
+                                 (while value)
+                                 (collect (parse-cause value))))
+               ((event-spec &optional (destination "/")) (remainder))
+               (payload (parse-payload-spec event-spec)))
+
+          (log:info "~@<Using URI ~S payload ~A~@:>" destination payload)
+          (with-interactive-interrupt-exit ()
+            (with-informer (informer destination t :error-policy error-policy)
+              (apply #'send informer payload
+                     (nconc (when method     (list :method     method))
+                            (when timestamps (list :timestamps timestamps))
+                            (when causes     (list :causes     causes))
+                            meta-data)))))))))
