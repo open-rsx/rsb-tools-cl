@@ -43,6 +43,39 @@
       (1 2 3 4)
       "1              23              4")))
 
+;;; `activity-based-sub-style-pruning-mixin'
+
+(deftestsuite activity-based-sub-style-pruning-mixin-root (formatting-root)
+  ()
+  (:documentation
+   "Unit tests for the `activity-based-sub-style-pruning-mixin'
+    class."))
+
+(addtest (activity-based-sub-style-pruning-mixin-root
+          :documentation
+          "Test constructing `activity-based-sub-style-pruning-mixin'
+           instances")
+  construct
+
+  (ensure-cases (initargs expected)
+      `(;; Some invalid cases
+        ((:prune-after 5 :prune-predicate ,#'identity) incompatible-initargs)
+
+        ;; These should be ok
+        (()                                            t)
+        ((:prune-after 5)                              t)
+        ((:prune-predicate ,#'identity)                t)
+        ((:prune-predicate nil)                        t))
+
+    (let+ (((&flet do-it ()
+              (apply #'make-instance 'activity-based-sub-style-pruning-mixin
+                     initargs))))
+      (case expected
+        (incompatible-initargs
+         (ensure-condition 'incompatible-initargs (do-it)))
+        (t
+         (do-it))))))
+
 ;;; `temporal-bounds-mixin'
 
 (deftestsuite temporal-bounds-mixin-root (formatting-root)

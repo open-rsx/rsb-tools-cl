@@ -78,6 +78,11 @@
   (:export
    #:style-sub-styles/sorted)
 
+  ;; Sub-style pruning protocol
+  (:export
+   #:style-prune-predicate ; also setf
+   #:prune-sub-styles)
+
   ;; Data consistency protocol
   (:export
    #:descriptor-for-target
@@ -126,6 +131,12 @@
 
    #:style-count)
 
+  ;; `activity-tacking-mixin' mixin class
+  (:export
+   #:activity-tracking-mixin
+
+   #:style-last-activity)
+
   ;; `header-printing-mixin' mixin class
   (:export
    #:header-printing-mixin
@@ -173,6 +184,12 @@
 
    #:style-sort-predicate
    #:style-sort-key)
+
+  ;; `sub-style-pruning-mixin' and
+  ;; `activity-based-sub-style-pruning-mixin'
+  (:export
+   #:sub-style-pruning-mixin
+   #:activity-based-sub-style-pruning-mixin)
 
   ;; `separator-mixin' mixin class
   (:export

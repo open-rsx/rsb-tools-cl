@@ -105,6 +105,27 @@
    "Return a list of style object which are sub-styles of STYLE,
     sorted according to PREDICATE and KEY."))
 
+;;; Sub-style pruning protocol
+
+(defgeneric style-prune-predicate (style)
+  (:documentation
+   "Return the prune predicate of STYLE.
+
+    Either nil or a function accepting a sub-style object and
+    returning true if the sub-style should be pruned."))
+
+(defgeneric (setf style-prune-predicate) (new-value style)
+  (:documentation
+   "Set prune predicate of STYLE to NEW-VALUE.
+
+    NEW-VALUE is either nil or a function accepting a sub-style object
+    and returning true if the sub-style should be pruned."))
+
+(defgeneric prune-sub-styles (style)
+  (:documentation
+   "Remove sub-styles satisfying the prune predicate of STYLE (if any)
+    from STYLE."))
+
 ;;; Data consistency protocol
 
 (defgeneric descriptor-for-target (style target)

@@ -26,6 +26,28 @@
                                 &key &allow-other-keys)
   (incf (style-count style)))
 
+;;; `activity-tracking-mixin'
+
+(defclass activity-tracking-mixin ()
+  ((last-activity :initarg  :last-activity
+                  :type     (or null local-time:timestamp)
+                  :accessor style-last-activity
+                  :initform nil
+                  :documentation
+                  "Unless nil, time of most recent activity on the
+                   style object."))
+  (:documentation
+   "Allows storing the time of the most recent activity on the style
+    object."))
+
+(defmethod format-event :around ((event  t)
+                                 (style  activity-tracking-mixin)
+                                 (stream t)
+                                 &key &allow-other-keys)
+  (unless (eq event :trigger)
+    (setf (style-last-activity style) (local-time:now)))
+  (call-next-method))
+
 ;;; `delegating-mixin'
 
 (defclass delegating-mixin ()
@@ -153,6 +175,68 @@
                                     (key       (style-sort-key style)))
   (sort (map 'list #'cdr (style-sub-styles style)) predicate
         :key key))
+
+;;; `sub-style-pruning-mixin'
+
+(defclass sub-style-pruning-mixin ()
+  ((prune-predicate :initarg  :prune-predicate
+                    :type     (or null function)
+                    :accessor style-prune-predicate
+                    :initform nil
+                    :documentation
+                    "Stores a function that is called with a sub-style
+                     as its sole argument to determine whether the
+                     sub-style should be removed from the list of
+                     sub-styles."))
+  (:documentation
+   "This mixin class adds pruning of dynamically created sub-styles
+    based on a prune predicate."))
+
+(defmethod prune-sub-styles ((style sub-style-pruning-mixin))
+  (let+ (((&structure style- sub-styles prune-predicate) style))
+    (when prune-predicate
+      (setf sub-styles (remove-if prune-predicate sub-styles
+                                  :key #'cdr)))))
+
+(defmethod format-event :before ((event  (eql :trigger))
+                                 (style  sub-style-pruning-mixin)
+                                 (stream t)
+                                 &key &allow-other-keys)
+  (prune-sub-styles style))
+
+;;; `activity-based-sub-style-pruning-mixin'
+
+(defclass activity-based-sub-style-pruning-mixin (sub-style-pruning-mixin)
+  ()
+  (:documentation
+   "Specialization of `sub-style-pruning-mixin' which constructs a
+    prune predicate that compares activity times queried via
+    `style-last-activity' against a given threshold."))
+
+(defmethod shared-initialize :after
+    ((instance   activity-based-sub-style-pruning-mixin)
+     (slot-names t)
+     &key
+     (prune-after     240                          prune-after-supplied?)
+     (prune-predicate (when prune-after
+                        (prune-after prune-after)) prune-predicate-supplied?))
+  (when (and prune-after-supplied? prune-predicate-supplied?)
+    (incompatible-initargs 'activity-based-sub-style-pruning-mixin
+                           :prune-after     prune-after
+                           :prune-predicate prune-predicate))
+
+  (setf (style-prune-predicate instance) prune-predicate))
+
+;; Utility functions
+
+(defun prune-after (inactive-time)
+  "Return a pruning predicate which marks sub-styles for pruning when
+   the have been inactive for INACTIVE-TIME seconds."
+  (lambda (sub-style)
+    (if-let ((activity (style-last-activity sub-style)))
+      (> (local-time:timestamp-difference (local-time:now) activity)
+         inactive-time)
+      t)))
 
 ;;; `timestamp-mixin'
 

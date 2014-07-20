@@ -6,12 +6,19 @@
 
 (cl:in-package #:rsb.formatting)
 
+;;; Class `basic-monitor-line-style'
+
+(defclass basic-monitor-line-style (activity-tracking-mixin
+                                    statistics-columns-mixin)
+  ())
+
 ;;; Class `basic-monitor-style'
 
 (defclass basic-monitor-style (output-buffering-mixin
                                periodic-printing-mixin
                                sub-style-grouping-mixin
                                sub-style-sorting-mixin
+                               activity-based-sub-style-pruning-mixin
                                separator-mixin
                                header-printing-mixin)
   ((columns :initarg    :columns
@@ -46,7 +53,7 @@
     (when-let ((columns (funcall columns value)))
       (cons
        (lambda (event) (funcall test (funcall key event) value))
-       (make-instance 'statistics-columns-mixin
+       (make-instance 'basic-monitor-line-style
                       :columns columns)))))
 
 (defmethod format-header ((style  basic-monitor-style)
