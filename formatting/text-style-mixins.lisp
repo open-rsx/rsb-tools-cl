@@ -124,7 +124,8 @@
   (write-string
    (with-output-to-string (stream)
      (apply #'call-next-method event style stream args))
-   stream))
+   stream)
+  (force-output stream))
 
 ;;; `header-printing-mixin'
 
