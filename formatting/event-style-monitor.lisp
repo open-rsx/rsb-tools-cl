@@ -106,9 +106,11 @@
                                      *package* "~A/~A"
                                      :style-monitor name)))
                    (appendf dispatch-specs
-                            `(((,min ,@(when max `(,max)))
-                               (make-instance ',class-name
-                                              :print-interval nil))))
+                            `((list (list ,min ,@(when max `(,max)))
+                                    (lambda (&rest initargs)
+                                      (apply #'make-instance ',class-name
+                                             :print-interval nil
+                                             initargs)))))
                    `(define-monitor-style (,name ,@args)
                         ,(format nil "~A The output of this style is ~
                                       designed to fit into ~:[~D or ~

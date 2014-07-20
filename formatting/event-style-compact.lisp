@@ -52,8 +52,7 @@
            (defclass ,class-name (basic-compact-style)
              ()
              (:default-initargs
-              :sub-styles (list ,@(map 'list #'make-sub-style
-                                       sub-styles)))
+              :sub-styles (list ,@(mapcar #'make-sub-style sub-styles)))
              (:documentation
               ,(apply #'concatenate 'string
                       "This formatting style prints several properties
@@ -114,6 +113,12 @@ specially according to their role in a communication pattern."
 ;;; based on available horizontal room.
 
 (define-dynamic-width-style (compact)
-  ((  0   81) (make-instance 'style-compact/80))
-  (( 81  129) (make-instance 'style-compact/128))
-  ((129     ) (make-instance 'style-compact/180)))
+  (list (list 0 81)
+        (lambda (&rest initargs)
+          (apply #'make-instance 'style-compact/80 initargs)))
+  (list (list 81 129)
+        (lambda (&rest initargs)
+          (apply #'make-instance 'style-compact/128 initargs)))
+  (list (list 129)
+        (lambda (&rest initargs)
+          (apply #'make-instance 'style-compact/180 initargs))))

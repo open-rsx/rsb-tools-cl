@@ -91,7 +91,23 @@
 
 (define-dynamic-width-style (statistics
                              :superclasses (periodic-printing-mixin))
-  ((  0   81) (make-instance 'style-statistics/80 :print-interval nil))
-  (( 81  129) (make-instance 'style-statistics/128 :print-interval nil))
-  ((129  181) (make-instance 'style-statistics/180 :print-interval nil))
-  ((181     ) (make-instance 'style-statistics/220 :print-interval nil)))
+  (list (list 0 81)
+        (lambda (&rest initargs)
+          (apply #'make-instance 'style-statistics/80
+                 :print-interval nil
+                 initargs)))
+  (list (list 81 129)
+        (lambda (&rest initargs)
+          (apply #'make-instance 'style-statistics/128
+                 :print-interval nil
+                 initargs)))
+  (list (list 129 181)
+        (lambda (&rest initargs)
+          (apply #'make-instance 'style-statistics/180
+                 :print-interval nil
+                 initargs)))
+  (list (list 181)
+        (lambda (&rest initargs)
+          (apply #'make-instance 'style-statistics/220
+                 :print-interval nil
+                 initargs))))

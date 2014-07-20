@@ -25,10 +25,7 @@
   "Define an event formatting style named NAME that dispatches event
    formatting to sub-styles based on the available horizontal room."
   (let+ (((&values specs nil documentation)
-          (parse-body specs-and-doc :documentation t))
-         ((&flet+ make-sub-style (((min &optional max) style))
-            `(cons (number-of-columns ,min ,@(when max `(,max)))
-                   ,style))))
+          (parse-body specs-and-doc :documentation t)))
     `(progn
        (defmethod find-style-class ((spec (eql ,spec)))
          (find-class ',class-name))
@@ -36,11 +33,19 @@
        (defclass ,class-name (delegating-mixin
                               ,@superclasses)
          ()
-         (:default-initargs
-          :sub-styles (list ,@(map 'list #'make-sub-style specs)))
          (:documentation
           ,(or documentation
                (format nil "~@(~A~) meta-style that dispatches to one ~
                             of the ~:*~(~A~) styles based on available ~
                             horizontal room."
-                       name)))))))
+                       name))))
+
+       (defmethod shared-initialize :after ((instance   ,class-name)
+                                            (slot-names t)
+                                            &rest initargs
+                                            &key &allow-other-keys)
+         (let+ (((&flet+ make-sub-style (((min &optional max) style))
+                   (cons (apply #'number-of-columns min (when max (list max)))
+                         (apply style initargs)))))
+           (setf (style-sub-styles instance)
+                 (mapcar #'make-sub-style (list ,@specs))))))))
