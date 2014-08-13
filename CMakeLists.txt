@@ -215,7 +215,8 @@ foreach(TOOL ${TOOLS})
 endforeach()
 
 # All categories for info binary.
-foreach(CATEGORY verbose configuration connectors converters filters event-processing)
+foreach(CATEGORY verbose configuration connectors converters filters
+                 event-processing participants)
     add_test(NAME    "info/category=${CATEGORY}"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/info" --debug --${CATEGORY})
 endforeach()

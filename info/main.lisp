@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the info tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -44,11 +44,21 @@
                       :short-name      "e"
                       :default-value   nil
                       :description
-                      "Display information regarding available event processing strategies?"))
+                      "Display information regarding available event processing strategies?")
+              (switch :long-name       "participants"
+                      :short-name      "p"
+                      :default-value   nil
+                      :description
+                      "Display information regarding available participant kinds?"))
    ;; Append RSB options.
    :item    (make-options
              :show? (or (eq show t)
                         (and (listp show) (member :rsb show))))))
+
+(defun first-line-or-less (string &key (max 65))
+  (let ((end (or (position #\Newline string)
+                 (length string))))
+    (subseq string 0 (min max end))))
 
 (defun main ()
   "Entry point function of the cl-rsb-tools-info system."
@@ -63,11 +73,11 @@
   (let+ ((stream   *standard-output*)
          (verbose? (getopt :long-name "verbose"))
          ((version? configuration? connectors? converters? filters?
-           event-processing?)
+           event-processing? participants?)
           (mapcar (lambda (name)
                     (or (getopt :long-name name) verbose?))
                   '("version" "configuration" "connectors" "converters"
-                    "filters" "event-processing"))))
+                    "filters" "event-processing" "participants"))))
     (with-print-limits (stream)
       (with-logged-warnings
         (when version?
@@ -97,4 +107,15 @@
         (when event-processing?
           (format stream
                   "~%Event Processors~%~{+ ~<~@;~@{~A~*~}~:>~^~&~}~%"
-                  (rsb.event-processing:processor-classes)))))))
+                  (rsb.event-processing:processor-classes)))
+
+        (when participants?
+          (format stream "~2&Participants~
+                          ~&~2@T~@<~
+                            ~:[<none>~;~:*~{+ ~<~@;~16A~@[ ~A~]~:>~^~@:_~}~]~
+                          ~:>"
+                  (mapcar (lambda (provider)
+                            (list (service-provider:provider-name provider)
+                                  (when-let ((documentation (documentation provider t)))
+                                    (first-line-or-less documentation))))
+                          (service-provider:service-providers 'participant))))))))
