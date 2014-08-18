@@ -138,8 +138,9 @@ endfunction()
 
 # Project definition (version is grovelled from asd system definition,
 # possibly in combination with version.sexp file written below).
+# C compiler is needed for CLON's stream-width determination feature
 set(SYSTEM_NAME "cl-rsb-tools-logger")
-project(rsb-tools "NONE")
+project(rsb-tools "C")
 
 # Determine at least major and minor version components.
 set(REDIRECTIONS "ERROR_FILE \"${CMAKE_CURRENT_BINARY_DIR}/version.1.err\"")
