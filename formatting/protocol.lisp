@@ -219,6 +219,15 @@
 
 ;;; Column protocol
 
+(defgeneric value< (left right)
+  (:documentation
+   "Return true if value LEFT should be sorted before value RIGHT."))
+
+(defgeneric column< (left right)
+  (:documentation
+   "Return true if column LEFT should be sorted before column
+    RIGHT."))
+
 (defgeneric column-name (column)
   (:documentation
    "Return the name of COLUMN."))
@@ -234,7 +243,27 @@
     been set to zero or if COLUMN is actually a pseudo-column
     producing things like linebreaks."))
 
-;;; Default behavior
+;; Default behavior
+
+(defmethod value< ((left real) (right real))
+  (< left right))
+
+(defmethod value< ((left string) (right string))
+  (string< left right))
+
+(defmethod value< ((left scope) (right scope))
+  (value< (scope-string left) (scope-string right)))
+
+(defmethod value< ((left uuid:uuid) (right uuid:uuid))
+  (value< (princ-to-string left) (princ-to-string right)))
+
+(defmethod value< ((left t) (right t))
+  (let+ (((&flet value? (thing)
+            (typep thing '(not (or null (eql :n/a)))))))
+    (cond
+      ((and (value? left) (not (value? right))))
+      ((and (not (value? left)) (value? right))
+       nil))))
 
 (defmethod column-produces-output? ((column t))
   "Default implementation assumes that COLUMN produces output if its

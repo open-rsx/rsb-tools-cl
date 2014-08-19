@@ -27,6 +27,10 @@
   (when quantity
     (setf (column-quantity instance) (rsb.stats:make-quantity quantity))))
 
+(defmethod column< ((left quantity-column) (right quantity-column))
+  (value< (rsb.stats:quantity-value (column-quantity left))
+          (rsb.stats:quantity-value (column-quantity right))))
+
 (defmethod column-name ((column quantity-column))
   (rsb.stats:quantity-name (column-quantity column)))
 

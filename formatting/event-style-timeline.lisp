@@ -15,13 +15,7 @@
   (:default-initargs
    :print-interval .5
 
-   :upper-bound    '(+ :now 1)
-
-   :sort-predicate #'string<
-   :sort-key       (compose #'princ-to-string
-                            #'column-value
-                            (rcurry #'elt 0)
-                            #'style-columns))
+   :upper-bound    '(+ :now 1))
   (:documentation
    "This class is intended to be used as a superclass for timeline
     formatting style classes."))
@@ -85,13 +79,8 @@
                  `((:documentation ,documentation))))))))
 
   (define-timeline-style (scope
-                         :key      #'event-scope
-                         :test     #'scope=
-
-                         :sort-key (compose #'scope-string
-                                            #'column-value
-                                            (rcurry #'elt 0)
-                                            #'style-columns))
+                         :key  #'event-scope
+                         :test #'scope=)
       "This formatting style indicates the points in time at which
        events occur as dots on a timeline. Separate \"lanes\" which
        share a common timeline are dynamically allocated as events

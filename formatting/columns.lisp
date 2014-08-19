@@ -203,6 +203,9 @@
    "Instances of this column class emit a print a specified constant
     value."))
 
+(defmethod column< ((left column-constant) (right column-constant))
+  (value< (column-value left) (column-value right)))
+
 (defmethod format-event ((event  t)
                          (column column-constant)
                          (stream t)

@@ -100,6 +100,9 @@
 
   ;; Column protocol
   (:export
+   #:value<
+   #:column<
+
    #:column-name
    #:column-width
    #:column-produces-output?)

@@ -106,6 +106,12 @@
     received events appear as dots. A corresponding header with time
     tics can also be produced."))
 
+(defmethod column< ((left timeline) (right timeline))
+  (let+ (((&flet earliest-event (timeline)
+            (position-if #'plusp (style-%cache timeline)
+                         :key #'%cell-count))))
+    (value< (earliest-event left) (earliest-event right))))
+
 (defmethod collects? ((style timeline))
   t)
 

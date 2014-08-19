@@ -30,8 +30,8 @@
   (:default-initargs
    :sub-styles       nil
 
-   :sort-predicate   (%make-safe-predicate)
-   :sort-key         (%make-column-key-function 2)
+   :sort-predicate   #'column<
+   :sort-key         (%make-column-key-function 0)
 
    :header-frequency 1
 
@@ -43,6 +43,19 @@
    "This class serves as a superclass for formatting style classes
     which group events according to some criterion and periodically
     display information for events within each group."))
+
+(defmethod shared-initialize :after ((instance   basic-monitor-style)
+                                     (slot-names t)
+                                     &key
+                                     (sort-column   nil sort-column-supplied?)
+                                     (sort-reverse? nil sort-reverse?-supplied?))
+  (when sort-column-supplied?
+    (setf (style-sort-key instance) (%make-column-key-function sort-column)))
+  (when sort-reverse?-supplied?
+    (setf (style-sort-predicate instance)
+          (if sort-reverse?
+              (complement #'column<)
+              #'column<))))
 
 (defmethod make-sub-style-entry ((style basic-monitor-style)
                                  (value t))
@@ -133,14 +146,8 @@
               ,@dispatch-specs)))))
 
   (define-dynamic-width-monitor-style (timeline
-                                       :key            #'event-scope
-                                       :test           #'scope=
-
-                                       :sort-predicate #'string<
-                                       :sort-key       (compose #'scope-string
-                                                                #'column-value
-                                                                (rcurry #'elt 0)
-                                                                #'style-columns))
+                                       :key  #'event-scope
+                                       :test #'scope=)
     "This style groups events by scope and periodically displays
        various statistics for events in each scope-group."
     ;; Specification for group column.
@@ -235,31 +242,10 @@
 
 ;;; Utility functions
 
-(defun %make-safe-predicate (&key
-                             (type      'real)
-                             (predicate #'>)
-                             (fallback  t))
-  "Return a function of two arguments which applies PREDICATE for
-   comparison of both arguments are of type TYPE. If only the first or
-   second argument is of type TYPE, FALLBACK and (not FALLBACK) are
-   returned respectively. If neither argument is of type TYPE, `nil'
-   is returned."
-  (declare (type (function (t t) t) predicate))
-
-  (lambda (a b)
-    (let ((a-ok? (typep a type))
-          (b-ok? (typep b type)))
-      (cond
-        ((and a-ok? b-ok?) (funcall predicate a b))
-        (a-ok?             fallback)
-        (b-ok?             (not fallback))
-        (t                 nil)))))
-
 (defun %make-column-key-function (column)
   "Return a function of one argument, a style object, that extracts
    and returns the value of the COLUMN-th column. The column specified
    by COLUMN has to be associated with a statistical quantity."
-  (compose #'rsb.stats:quantity-value
-           #'column-quantity
-           (rcurry #'elt column)
-           #'style-columns))
+  (lambda (style)
+    (let ((columns (style-columns style)))
+      (elt columns (min column (1- (length columns)))))))
