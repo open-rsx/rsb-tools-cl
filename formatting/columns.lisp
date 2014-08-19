@@ -285,6 +285,7 @@
 
 (defvar *basic-columns*
   '(;; Quantities
+    (:rate/9        . (:quantity :quantity :rate       :width 9))
     (:rate/12       . (:quantity :quantity :rate       :width 12))
     (:throughput/13 . (:quantity :quantity :throughput :width 13))
     (:latency       . (:quantity :quantity (:expected

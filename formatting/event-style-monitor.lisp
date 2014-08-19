@@ -149,13 +149,13 @@
           :value     value
           :formatter (lambda (value stream)
                        (write-string (scope-string value) stream))
-          :width     32
+          :width     39
           :alignment :left)
     ;; Width-dependent specifications for remaining columns.
-    ((  0  81) :rate/12 :throughput/13 '(:timeline :width 19))
-    (( 81 129) :rate/12 :throughput/13 :latency '(:timeline :width 50))
-    ((129 181) :rate/12 :throughput/13 :latency :type/40 '(:timeline :width 61))
-    ((181    ) :rate/12 :throughput/13 :latency :type/40 '(:timeline :width 120)))
+    ((  0  81) :rate/9 :throughput/13 '(:timeline :width 15))
+    (( 81 129) :rate/9 :throughput/13 :latency '(:timeline :width 46))
+    ((129 181) :rate/9 :throughput/13 :latency :type/40 '(:timeline :width 57))
+    ((181    ) :rate/9 :throughput/13 :latency :type/40 '(:timeline :width 120)))
 
   (define-dynamic-width-monitor-style (scope
                                        :key  #'event-scope
@@ -168,15 +168,15 @@
           :value     value
           :formatter (lambda (value stream)
                        (write-string (scope-string value) stream))
-          :width     32
+          :width     38
           :alignment :left)
     ;; Width-dependent specifications for remaining columns.
-    ((  0  81) :rate/12 :throughput/13 :latency)
-    (( 81 129) :rate/12 :throughput/13 :latency :size/20)
-    ((129 181) :rate/12 :throughput/13 :latency :type/40 :size/20)
-    ((181    ) :rate/12 :throughput/13 :latency :origin/40 :type/40 :size/20))
+    ((  0  81) :rate/9 :throughput/13 :latency)
+    (( 81 129) :rate/9 :throughput/13 :latency :size/20)
+    ((129 181) :rate/9 :throughput/13 :latency :type/40 :size/20)
+    ((181    ) :rate/9 :throughput/13 :latency :origin/40 :type/40 :size/20))
 
-  (defmethod find-style-class ((spec (eql :monitor)))
+  (defmethod find-style-class ((spec (eql :monitor))) ; alias
     (find-style-class :monitor/scope))
 
   (define-dynamic-width-monitor-style (origin
@@ -188,13 +188,13 @@
     (list :constant
           :name      "Origin"
           :value     value
-          :width     36
+          :width     38
           :alignment :left)
     ;; Width-dependent specifications for remaining columns.
-    ((  0  81) :rate/12 :throughput/13 :latency)
-    (( 81 129) :rate/12 :throughput/13 :latency :size/20)
-    ((129 181) :rate/12 :throughput/13 :latency :type/40 :size/20)
-    ((181    ) :rate/12 :throughput/13 :latency :scope/40 :type/40 :size/20))
+    ((  0  81) :rate/9 :throughput/13 :latency)
+    (( 81 129) :rate/9 :throughput/13 :latency :size/20)
+    ((129 181) :rate/9 :throughput/13 :latency :type/40 :size/20)
+    ((181    ) :rate/9 :throughput/13 :latency :scope/40 :type/40 :size/20))
 
   (define-dynamic-width-monitor-style
       (type
@@ -206,13 +206,13 @@
     (list :constant
           :name      "Type"
           :value     value
-          :width     32
+          :width     35
           :alignment :left)
     ;; Width-dependent specifications for remaining columns.
-    ((  0  81) :rate/12 :throughput/13 :latency)
-    (( 81 129) :rate/12 :throughput/13 :latency :size/20)
-    ((129 181) :rate/12 :throughput/13 :latency :scope/40 :size/20)
-    ((181    ) :rate/12 :throughput/13 :latency :scope/40 :origin/40 :size/20))
+    ((  0  81) :rate/9 :throughput/13 :latency)
+    (( 81 129) :rate/9 :throughput/13 :latency :size/20)
+    ((129 181) :rate/9 :throughput/13 :latency :scope/40 :size/20)
+    ((181    ) :rate/9 :throughput/13 :latency :scope/40 :origin/40 :size/20))
 
   (define-dynamic-width-monitor-style
       (size
@@ -225,13 +225,13 @@
     (list :constant
           :name      "Size"
           :value     value
-          :width     12
+          :width     15
           :alignment :left)
     ;; Width-dependent specifications for remaining columns.
-    ((  0  81) :rate/12 :throughput/13 :latency)
-    (( 81 129) :rate/12 :throughput/13 :latency :type/40)
-    ((129 181) :rate/12 :throughput/13 :latency :scope/40 :origin/40 :type/40)
-    ((181    ) :rate/12 :throughput/13 :latency :scope/40 :origin/40 :type/40 :size/20)))
+    ((  0  81) :rate/9 :throughput/13 :latency)
+    (( 81 129) :rate/9 :throughput/13 :latency :type/40)
+    ((129 181) :rate/9 :throughput/13 :latency :scope/40 :origin/40 :type/40)
+    ((181    ) :rate/9 :throughput/13 :latency :scope/40 :origin/40 :type/40 :size/20)))
 
 ;;; Utility functions
 
