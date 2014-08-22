@@ -97,57 +97,74 @@
            info- version? configuration? connectors? converters? filters?
            transforms? event-processing? participants?)
           command)
-         (stream (command-stream command)))
+         (stream (command-stream command))
+         (produced-output? nil)
+         ((&flet format-service-providers (service)
+            (format stream "~:[~;~2&~]~@(~A~)s~
+                      ~&~2@T~@<~
+                        ~:[<none>~;~:*~{+ ~<~@;~16A~@[ ~A~]~:>~^~@:_~}~]~
+                      ~:>"
+                    produced-output?
+                    service
+                    (mapcar (lambda (provider)
+                              (list (service-provider:provider-name provider)
+                                    (when-let ((documentation (documentation provider t)))
+                                      (first-line-or-less documentation))))
+                            (service-provider:service-providers service)))
+            (setf produced-output? t))))
 
     (when version?
-      (print-version nil stream))
+      (print-version nil stream)
+      (setf produced-output? t))
 
     (when configuration?
-      (rsb.formatting::with-indented-section (stream "Configuration")
-        (format stream "~{~48@<~(~{~A~^.~}~)~>: ~S~^~&~}"
-                (alist-plist *configuration*))))
+      (format stream "~:[~;~2&~]Configuration~
+                      ~&~2@T~@<~
+                        ~{~48@<~(~{~A~^.~}~)~>: ~S~^~@:_~}~
+                      ~:>"
+              produced-output?
+              (alist-plist *configuration*))
+      (setf produced-output? t))
 
     (when connectors?
-      (rsb.formatting::with-indented-section (stream "Connectors")
-        (format stream
-                "~{+ ~<~@;~@{~A~*~}~:>~^~&~}"
-                (rsb.transport:transport-classes))))
+      (format stream "~:[~;~2&~]Connectors~
+                      ~&~2@T~@<~
+                        ~{+ ~<~@;~@{~A~*~}~:>~^~@:_~}~
+                      ~:>"
+              produced-output?
+              (rsb.transport:transport-classes))
+      (setf produced-output? t))
 
     (when converters?
-      (rsb.formatting::with-indented-section (stream "Converters")
-        (format stream
-                "~{+ ~<~@;~@{~A~*~}~:>~^~&~}"
-                (rsb.converter:converter-classes))))
+      (format stream "~:[~;~2&~]Converters~
+                      ~&~2@T~@<~
+                        ~{+ ~<~@;~@{~A~*~}~:>~^~@:_~}~
+                      ~:>"
+              produced-output?
+              (rsb.converter:converter-classes))
+      (setf produced-output? t))
 
     (when filters?
-      (rsb.formatting::with-indented-section (stream "Filters")
-        (print-filter-help stream)))
+      (format stream "~:[~;~2&~]Filters~&~2@T"
+              produced-output?)
+      (pprint-logical-block (stream (list nil))
+        (print-filter-help stream))
+      (setf produced-output? t))
 
     (when transforms?
-      (format stream "~:[~;~2&~]Transforms~
-                      ~&~2@T~@<~
-                        ~:[<none>~;~:*~{+ ~<~@;~16A~@[ ~A~]~:>~^~@:_~}~]~
-                      ~:>"
-              nil
-              (mapcar (lambda (provider)
-                        (list (service-provider:provider-name provider)
-                              (when-let ((documentation (documentation provider t)))
-                                (first-line-or-less documentation))))
-                      (service-provider:service-providers 'rsb.transform::transform))))
+      (format-service-providers 'rsb.transform::transform))
 
     (when event-processing?
-      (format stream
-              "~%Event Processors~%~{+ ~<~@;~@{~A~*~}~:>~^~&~}~%"
-              (rsb.event-processing:processor-classes)))
+      (format stream "~:[~;~2&~]Event Processors~
+                      ~&~2@T~@<~
+                        ~:[<none>~;~{+ ~<~@;~@{~A~*~}~:>~^~@:_~}~]~
+                      ~:>"
+              produced-output?
+              (rsb.event-processing:processor-classes))
+      (setf produced-output? t))
 
     (when participants?
-      (format stream "~:[~;~2&~]Participants~
-                      ~&~2@T~@<~
-                        ~:[<none>~;~:*~{+ ~<~@;~16A~@[ ~A~]~:>~^~@:_~}~]~
-                      ~:>"
-              nil
-              (mapcar (lambda (provider)
-                        (list (service-provider:provider-name provider)
-                              (when-let ((documentation (documentation provider t)))
-                                (first-line-or-less documentation))))
-                      (service-provider:service-providers 'rsb:participant))))))
+      (format-service-providers 'rsb:participant))
+
+    (when produced-output?
+      (terpri stream))))
