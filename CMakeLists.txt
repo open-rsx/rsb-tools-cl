@@ -216,16 +216,6 @@ add_custom_command(OUTPUT  "${MAIN_EXECUTABLE}"
                    COMMENT "Creating Lisp image ${MAIN_NAME} (this can take a long time)")
 add_custom_target(binary ALL DEPENDS "${MAIN_EXECUTABLE}")
 
-# Create symlinks.
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    message(STATUS "Configuring tool ${TOOLS}")
-    add_custom_command(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/info"
-                       COMMAND "${MAIN_EXECUTABLE}" create-links
-                       DEPENDS "${MAIN_EXECUTABLE}"
-                       COMMENT "Creating symlinks")
-    add_custom_target(links ALL DEPENDS info)
-endif()
-
 # Tests
 enable_testing()
 

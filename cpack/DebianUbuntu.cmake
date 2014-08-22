@@ -34,16 +34,11 @@ set(PRERM_SCRIPT         "${CMAKE_CURRENT_BINARY_DIR}/prerm")
 file(WRITE "${POSTINST_SCRIPT}" "#!/bin/sh\n\nset -e\n")
 file(WRITE "${PRERM_SCRIPT}"    "#!/bin/sh\n\nset -e\n")
 
-# Uncompress binary. Create symbolic links.
+# Uncompress binary.
 file(APPEND "${POSTINST_SCRIPT}"
             "(                                                     \\
                cd /usr/bin                                         \\
                && ./${MAIN_BINARY_NAME} redump                     \\
-             )\n\n
-             (                                                     \\
-               cd /usr/bin                                         \\
-               && ./${MAIN_BINARY_NAME}                            \\
-                    create-links ${BINARY_PREFIX} ${BINARY_SUFFIX} \\
              )\n\n")
 
 foreach(ASD_FILE ${ASD_FILES})
@@ -56,18 +51,16 @@ foreach(ASD_FILE ${ASD_FILES})
 endforeach()
 
 # Update alternatives.
-foreach(TOOL tools ${TOOLS})
-    file(APPEND "${POSTINST_SCRIPT}"
-                "update-alternatives --install                      \\
-                   /usr/bin/${BINARY_PREFIX}${TOOL}                 \\
-                   ${BINARY_PREFIX}${TOOL}                          \\
-                   /usr/bin/${BINARY_PREFIX}${TOOL}${BINARY_SUFFIX} \\
-                   ${PACKAGE_ALT_PRIORITY}\n\n")
-    file(APPEND "${PRERM_SCRIPT}"
-                "update-alternatives --remove                           \\
-                   ${BINARY_PREFIX}${TOOL}                              \\
-                   /usr/bin/${BINARY_PREFIX}${TOOL}${BINARY_SUFFIX}\n\n")
-endforeach()
+file(APPEND "${POSTINST_SCRIPT}"
+            "update-alternatives --install                    \\
+               /usr/bin/${BINARY_PREFIX}tools                 \\
+               ${BINARY_PREFIX}tools                          \\
+               /usr/bin/${BINARY_PREFIX}tools${BINARY_SUFFIX} \\
+               ${PACKAGE_ALT_PRIORITY}\n\n")
+file(APPEND "${PRERM_SCRIPT}"
+            "update-alternatives --remove                           \\
+               ${BINARY_PREFIX}tools                                \\
+               /usr/bin/${BINARY_PREFIX}tools${BINARY_SUFFIX}\n\n")
 
 foreach(ASD_FILE ${ASD_FILES})
     string(REGEX REPLACE "\\.asd$" "" SYSTEM ${ASD_FILE})
