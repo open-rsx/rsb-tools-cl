@@ -22,12 +22,13 @@
   (iter (for paths next (getopt :long-name "idl-path"))
         (while paths)
         (iter (for path in paths)
-              (existing-directory-or-lose path)
-              (pushnew path pbf:*proto-load-path*)))
+              (with-simple-restart (continue "~@<Skip path ~S~@:>" path)
+                (existing-directory-or-lose path)
+                (pushnew path pbf:*proto-load-path*))))
 
   ;; Load specified data definitions.
-  (mapcar (apply #'rcurry #'load-idl :auto
-                 (when purpose-supplied?
-                   (list :purpose purpose)))
-          (collect-option-values :long-name "load-idl"
-                                 :transform #'identity)))
+  (let ((sources (collect-option-values :long-name "load-idl"
+                                        :transform #'identity)))
+    (apply #'load-idl sources :auto
+           (when purpose-supplied?
+             (list :purpose purpose)))))

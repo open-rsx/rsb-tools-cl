@@ -240,6 +240,25 @@ foreach(POLICY continue abort)
                     "inprocess:/foo/bar(1)")
 endforeach()
 
+# IDL loading and error policies for logger, send and call binaries.
+add_test(NAME   "logger/idl-path/on-error=continue"
+        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+                --debug --on-error continue
+                --idl-path "no-such-directory"
+                --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                 inprocess:)
+add_test(NAME   "send/idl-path/on-error=continue"
+         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+                 --debug --on-error continue
+                --idl-path "no-such-directory"
+                 1 inprocess:)
+add_test(NAME   "call/idl-path/on-error=continue"
+        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
+                --debug --on-error continue
+                --idl-path "no-such-directory"
+                --no-wait
+                "inprocess:/foo/bar(1)")
+
 # Event meta-data specifications for send binary.
 foreach(ARG "--method=foo"
             "--meta-data=foo=bar"
