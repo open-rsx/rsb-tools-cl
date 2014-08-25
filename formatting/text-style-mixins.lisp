@@ -205,13 +205,61 @@
     (list
      (map nil (rcurry #'print-separator stream max-columns) spec))))
 
+;;; `width-specification-mixin'
+
+(defclass width-specification-mixin ()
+  ((widths   :initarg  :widths
+             :type     width-specification
+             :accessor column-widths
+             :documentation
+             "Stores a `width-specification' for the column.")
+   (priority :initarg  :priority
+             :type     positive-real
+             :accessor column-priority
+             :documentation
+             "Stores a real specifying the importance of this column
+              in comparison to other columns. Larger priorities
+              indicate more important columns."))
+  (:default-initargs
+   :priority 3)
+  (:documentation
+   "This class is intended to be mixed into column classes for which a
+    width should be automatically computed based on a specification of
+    possible widths."))
+
+(defmethod (setf column-widths) :before ((new-value t)
+                                         (style     width-specification-mixin))
+  (check-type new-value width-specification))
+
+(defmethod shared-initialize :before ((instance   width-specification-mixin)
+                                      (slot-names t)
+                                      &key
+                                      (widths nil widths-supplied?)
+                                      (width  nil width-supplied?))
+  (unless (or widths-supplied? width-supplied?)
+    (missing-required-initarg 'width-specification-mixin
+                              :widths-xor-width))
+  (when (and widths-supplied? width-supplied?)
+    (incompatible-initargs 'width-specification-mixin
+                           :widths widths
+                           :width  width)))
+
+(defmethod shared-initialize :after ((instance   width-specification-mixin)
+                                     (slot-names t)
+                                     &key
+                                     (widths nil widths-supplied?)
+                                     (width  nil width-supplied?))
+  (when width-supplied?
+    (setf (column-widths instance) width))
+  (when widths-supplied?
+    (setf (column-widths instance) widths)))
+
 ;;; `width-mixin'
 
 (defclass width-mixin ()
   ((width     :initarg  :width
-              :type     positive-integer
+              :type     non-negative-integer
               :accessor column-width
-              :initform 16
               :documentation
               "Stores the maximum acceptable output width for the
                formatter instance.")
@@ -394,6 +442,37 @@
 (defmethod print-object ((object columns-mixin) stream)
   (print-unreadable-object (object stream :type t :identity t)
     (format stream "(~D)" (length (style-columns object)))))
+
+;;; `widths-caching-mixin'
+
+(defclass widths-caching-mixin ()
+  ((width-cache :type     vector
+                :accessor style-width-cache
+                :initform (make-array 1000
+                                      :initial-element nil
+                                      :adjustable      t)
+                :documentation
+                "Stores results of width computations indexed by
+                 target width."))
+  (:documentation
+   "This class is intended to be mixed into classes which perform
+    column width computations. It add caching of computation results
+    for repeated widths."))
+
+(defmethod style-compute-column-widths ((style   widths-caching-mixin)
+                                        (columns sequence)
+                                        (width   integer)
+                                        &key
+                                        separator-width)
+  (declare (ignore separator-width))
+  (let+ (((&structure-r/o style- width-cache) style)
+         ((&flet ensure-cached-widths (width)
+            (unless (< width (length width-cache))
+              (adjust-array width-cache (1+ width) :initial-element nil))
+            (if-let ((value (aref width-cache width)))
+              (values value t)
+              (setf (aref width-cache width) (call-next-method))))))
+    (ensure-cached-widths width)))
 
 ;; Local Variables:
 ;; coding: utf-8

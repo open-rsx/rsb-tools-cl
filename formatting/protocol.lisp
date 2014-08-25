@@ -298,3 +298,47 @@
        (apply #'make-instance (find-column-class class) args)))
     (standard-object
      spec)))
+
+;;; Dynamic column width protocol
+
+(defgeneric style-dynamic-width-columns (style)
+  (:documentation
+   "Return a list of the columns of STYLE the width of which should be
+    dynamically adjusted."))
+
+(defgeneric style-compute-column-widths (style columns width
+                                         &key separator-width)
+  (:documentation
+   "Compute and return a sequence of widths that distributes the
+    available WIDTH among the COLUMNS of STYLE.
+
+    If supplied, SEPARATOR-WIDTH is the width of a separator string
+    printed between columns."))
+
+(defgeneric style-assign-column-widths (style columns widths)
+  (:documentation
+   "Assign the sequence of widths WIDTHS to the COLUMNS of STYLE."))
+
+;; Default behavior
+
+(defmethod style-dynamic-width-columns ((style t))
+  (let+ (((&flet width-spec? (column)
+            (compute-applicable-methods #'column-widths (list column)))))
+    (remove-if-not #'width-spec? (style-columns style))))
+
+(defmethod style-compute-column-widths ((style   t)
+                                        (columns sequence)
+                                        (width   integer)
+                                        &key
+                                        (separator-width 0))
+  (let ((specs      (map 'list #'column-widths   columns))
+        (priorities (map 'list #'column-priority columns)))
+    (optimize-widths width specs priorities
+                     :separator-width separator-width)))
+
+(defmethod style-assign-column-widths ((style   t)
+                                       (columns sequence)
+                                       (widths  sequence))
+  (map nil (lambda (column width)
+             (setf (column-width column) width))
+       columns widths))

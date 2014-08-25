@@ -63,6 +63,50 @@ on `format-event' for `separator-mixin'.")
       (,(make-event "/a" "b") ,(make-event "/c" "d"))
       "&&&\\*&&&\\*")))
 
+;;; `width-specification-mixin'
+
+(deftestsuite width-specification-mixin-root (formatting-root)
+  ()
+  (:documentation
+   "Test suite for the `width-specification-mixin' mixin class."))
+
+(addtest (width-specification-mixin-root
+          :documentation
+          "Test constructing `width-specification-mixin' instances.")
+  construction
+
+  (ensure-cases (initargs expected)
+      '(;; Some invalid initarg combinations.
+        (()                       missing-required-initarg)
+        ((:priority 3)            missing-required-initarg)
+        ((:width 1 :widths 2)     incompatible-initargs)
+        ;; Invalid width specifications.
+        ((:widths :foo)           type-error)
+        ((:widths (1 :foo))       type-error)
+        ((:widths (:range 2 1))   type-error)
+        ;; These are valid.
+        ((:width 0)               t)
+        ((:width 1)               t)
+        ((:widths (1))            t)
+        ((:widths (1 2))          t)
+        ((:widths (:range 1))     t)
+        ((:widths (:range 1 2))   t)
+        ((:widths ((:range 1)))   t)
+        ((:widths ((:range 1 2))) t))
+
+    (flet ((do-it ()
+             (apply #'make-instance 'width-specification-mixin
+                    initargs)))
+      (case expected
+        (missing-required-initarg
+         (ensure-condition missing-required-initarg (do-it)))
+        (incompatible-initargs
+         (ensure-condition incompatible-initargs (do-it)))
+        (type-error
+         (ensure-condition type-error (do-it)))
+        (t
+         (do-it))))))
+
 ;;; `width-mixin'
 
 (deftestsuite width-mixin-root (formatting-root)

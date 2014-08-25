@@ -75,6 +75,32 @@
        (eql :clear)
        (cons (not keyword) list)))
 
+;;; Width specification
+
+(defun width-specification? (thing)
+  (labels ((rec (thing)
+             (typecase thing
+               (non-negative-integer
+                t)
+               ((cons (eql :range)
+                      (cons non-negative-integer
+                            (or null
+                                (cons positive-integer null))))
+                (let+ (((&ign lower &optional upper) thing))
+                  (or (not upper) (<= lower upper))))
+               (cons
+                (every #'rec thing)))))
+    (rec thing)))
+
+(deftype width-specification ()
+  "Specification or list of specifications of the form
+
+     POSITIVE-INTEGER | (:range MIN [MAX])
+
+   where MIN and MAX, if both supplied are positive integers such that
+   MIN <= MAX."
+  '(satisfies width-specification?))
+
 ;;; Periodic printing
 
 (deftype print-interval ()

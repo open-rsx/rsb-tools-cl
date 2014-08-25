@@ -26,6 +26,8 @@
    #:rule-spec
    #:separator-spec
 
+   #:width-specification
+
    #:print-interval
 
    #:dimension-spec/short
@@ -115,6 +117,12 @@
 
    #:make-column)
 
+  ;; Column widths protocol
+  (:export
+   #:style-dynamic-width-columns
+   #:style-compute-column-widths
+   #:style-assign-column-widths)
+
   ;; Header protocol
   (:export
    #:format-header)
@@ -122,6 +130,13 @@
   ;; Width computation
   (:export
    #:optimize-widths)
+
+  ;; `width-specification-mixin' mixin class
+  (:export
+   #:width-specification-mixin
+
+   #:column-widths
+   #:column-priority)
 
   ;; `width-mixin' mixin class
   (:export
