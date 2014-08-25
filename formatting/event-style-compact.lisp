@@ -22,15 +22,15 @@
     (mapcar #'make-sub-style
             `((,#'request-event? . (:now
                                     :id :call ,dummy ,dummy
-                                    :origin :sequence-number :wire-schema :data-size
+                                    :wire-schema :data-size :origin :sequence-number
                                     :newline))
               (,#'reply-event?   . (:now
                                     :call-id :result ,dummy ,dummy
-                                    :origin :sequence-number :wire-schema :data-size
+                                    :wire-schema :data-size :origin :sequence-number
                                     :newline))
               (,(constantly t)   . (:now
                                     :id :method :scope :data
-                                    :origin :sequence-number :wire-schema :data-size
+                                    :wire-schema :data-size :origin :sequence-number
                                     :newline))))))
 
 (defmethod find-style-class ((spec (eql :compact)))

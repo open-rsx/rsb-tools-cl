@@ -146,7 +146,7 @@
           :priority  3.2
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate/9 :throughput/13 :latency :type/40 :timeline)
+    :rate/9 :throughput/13 :latency :type/40 :timeline :origin/40)
 
   (define-monitor-style (scope :key #'event-scope :test #'scope=)
     "This style groups events by scope and periodically displays
@@ -161,7 +161,7 @@
           :priority  3.2
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate/9 :throughput/13 :latency :origin/40 :type/40 :size/20)
+    :rate/9 :throughput/13 :latency :type/40 :size/20 :origin/40)
 
   (defmethod find-style-class ((spec (eql :monitor))) ; alias
     (find-style-class :monitor/scope))
@@ -190,7 +190,7 @@
           :widths    '(:range 35)
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate/9 :throughput/13 :latency :scope/40 :origin/40 :size/20)
+    :rate/9 :throughput/13 :latency :scope/40 :size/20 :origin/40)
 
   (define-monitor-style (size
                          :key  #'rsb.stats:event-size/power-of-2
@@ -205,7 +205,7 @@
           :width     15
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate/9 :throughput/13 :latency :scope/40 :origin/40 :type/40 :size/20))
+    :rate/9 :throughput/13 :latency :scope/40 :type/40 :size/20 :origin/40))
 
 ;;; Utility functions
 

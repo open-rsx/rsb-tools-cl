@@ -42,8 +42,8 @@
   ()
   (:default-initargs
    :columns (sublis *basic-columns*
-                    '(:now :rate/12 :throughput/13 :latency :origin/40
-                      :scope/40 :type/40 :size/20 :newline)))
+                    '(:now :rate/12 :throughput/13 :latency :scope/40
+                      :type/40 :size/20 :origin/40 :newline)))
   (:documentation
    "This formatting style computes a number of configurable
     statistical quantities from received events collected over a
