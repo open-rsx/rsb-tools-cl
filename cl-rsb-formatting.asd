@@ -154,7 +154,9 @@ system."
                  :pathname   "test/formatting"
                  :serial     t
                  :components ((:file       "package")
-                              (:file       "mock-column")))
+                              (:file       "mock-column")
+
+                              (:file       "dynamic-width")))
 
                 (:module     "formatting"
                  :pathname   "test/formatting"

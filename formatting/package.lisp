@@ -119,6 +119,10 @@
   (:export
    #:format-header)
 
+  ;; Width computation
+  (:export
+   #:optimize-widths)
+
   ;; `width-mixin' mixin class
   (:export
    #:width-mixin
