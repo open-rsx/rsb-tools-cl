@@ -10,7 +10,14 @@
 
 (defclass basic-monitor-line-style (activity-tracking-mixin
                                     statistics-columns-mixin)
-  ())
+  ()
+  (:documentation
+   "Instances of this class are individual lines in the output of a
+    monitor style.
+
+    Lines consist of columns which are mostly statistical
+    quantities. Activity of lines is tracked, allowing the containing
+    style to drop lines after a period of inactivity."))
 
 ;;; Class `basic-monitor-style'
 
@@ -60,15 +67,11 @@
 
 (defmethod make-sub-style-entry ((style basic-monitor-style)
                                  (value t))
-  (let+ (((&accessors-r/o (key     style-key)
-                          (test    style-test)
-                          (columns style-columns)) style))
+  (let+ (((&structure-r/o style- key test columns) style))
     (declare (type function key test columns))
     (when-let ((columns (funcall columns value)))
-      (cons
-       (lambda (event) (funcall test (funcall key event) value))
-       (make-instance 'basic-monitor-line-style
-                      :columns columns)))))
+      (cons (lambda (event) (funcall test (funcall key event) value))
+            (make-instance 'basic-monitor-line-style :columns columns)))))
 
 (defmethod style-dynamic-width-columns ((style basic-monitor-style))
   (unless (emptyp (style-sub-styles style))
@@ -107,9 +110,7 @@
 ;;; Some concrete monitor styles
 
 (macrolet
-    ((define-monitor-style ((kind
-                             &rest initargs
-                             &key &allow-other-keys)
+    ((define-monitor-style ((kind &rest initargs &key &allow-other-keys)
                             &body doc-and-column-specs)
        (let+ ((spec       (format-symbol :keyword  "~A/~A"
                                          :monitor kind))

@@ -8,7 +8,7 @@
 
 ;;; Cache cell
 
-(defstruct (%cell (:constructor %make-cell (lower upper)))
+(defstruct (%cell (:constructor %make-cell (lower upper)) (:copier nil))
   "The lower and upper slots indicate the temporal range of the cell.
 
    The count and max-size slots accumulate the respective quantity for
@@ -136,6 +136,10 @@
                          (style  timeline)
                          (target t)
                          &key &allow-other-keys)
+  ;; Return early if the style is effectively disabled.
+  (when (zerop (column-width style))
+    (return-from format-event))
+
   ;; Add new cells to the cache as necessary and fill them.
   (adjust-cache! style)
   (fill-cache! style)
