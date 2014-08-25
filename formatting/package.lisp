@@ -100,6 +100,15 @@
    #:bounds/expanded
    #:range/expanded)
 
+  ;; Header protocol
+  (:export
+   #:format-header)
+
+  ;; Separator protocol
+  (:export
+   #:style-separator
+   #:style-separator-width)
+
   ;; Column protocol
   (:export
    #:value<
@@ -122,10 +131,6 @@
    #:style-dynamic-width-columns
    #:style-compute-column-widths
    #:style-assign-column-widths)
-
-  ;; Header protocol
-  (:export
-   #:format-header)
 
   ;; Width computation
   (:export
@@ -180,8 +185,7 @@
   (:export
    #:columns-mixin
 
-   #:style-columns
-   #:style-separator)
+   #:style-columns)
 
   ;; `periodic-printing-mixin' mixin class
   (:export
@@ -215,9 +219,7 @@
 
   ;; `separator-mixin' mixin class
   (:export
-   #:separator-mixin
-
-   #:style-separator)
+   #:separator-mixin)
 
   ;; `image-output-mixin' mixin class
   (:export
@@ -256,19 +258,12 @@
   (:export
    #:style-detailed)
 
-  ;; `style-compact' style classes
+  ;; `event-style-compact' style class
   (:export
-   #:style-compact/80
-   #:style-compact/128
-   #:style-compact/180
-   #:style-compact)
+   #:event-style-compact)
 
-  ;; `style-statistics' style classes
+  ;; `style-statistics' style class
   (:export
-   #:style-statistics/80
-   #:style-statistics/128
-   #:style-statistics/180
-   #:style-statistics/220
    #:style-statistics)
 
   ;; Default variable names provided by programmable styles

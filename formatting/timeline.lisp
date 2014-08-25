@@ -76,6 +76,7 @@
 
 (defclass timeline (temporal-bounds-mixin
                     timestamp-mixin
+                    width-specification-mixin
                     width-mixin)
   ((tic-distance :initarg  :tic-distance
                  :type     positive-integer
@@ -100,7 +101,8 @@
                  "Stores information regarding previously rendered
                   cells. See `%timeline-cache-cell'."))
   (:default-initargs
-   :upper-bound '(+ :now 1))
+   :upper-bound '(+ :now 1)
+   :widths      '(:range 16))
   (:documentation
    "Instances of this column class render a timeline view in which
     received events appear as dots. A corresponding header with time

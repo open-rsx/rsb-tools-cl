@@ -78,34 +78,30 @@
               ,@(when documentation
                  `((:documentation ,documentation))))))))
 
-  (define-timeline-style (scope
-                         :key  #'event-scope
-                         :test #'scope=)
-      "This formatting style indicates the points in time at which
-       events occur as dots on a timeline. Separate \"lanes\" which
-       share a common timeline are dynamically allocated as events
-       occur. Events are grouped by scope."
+  (define-timeline-style (scope :key #'event-scope :test #'scope=)
+    "This formatting style indicates the points in time at which
+     events occur as dots on a timeline. Separate \"lanes\" which
+     share a common timeline are dynamically allocated as events
+     occur. Events are grouped by scope."
     (list :constant
           :name      "Scope"
           :value     value
           :formatter (lambda (value stream)
                        (write-string (scope-string value) stream))
-          :width     33
+          :widths    '(:range 24)
+          :priority  2
           :alignment :left)
-    (list :timeline
-          :width     94))
+    (list :timeline))
 
-  (define-timeline-style (origin
-                         :key  #'event-origin
-                         :test #'uuid:uuid=)
-      "This formatting style indicates the points in time at which
-       events occur as dots on a timeline. Separate \"lanes\" which
-       share a common timeline are dynamically allocated as events
-       occur. Events are grouped by origin."
+  (define-timeline-style (origin :key #'event-origin :test #'uuid:uuid=)
+    "This formatting style indicates the points in time at which
+     events occur as dots on a timeline. Separate \"lanes\" which
+     share a common timeline are dynamically allocated as events
+     occur. Events are grouped by origin."
     (list :constant
           :name      "Origin"
           :value     value
-          :width     36
+          :widths    '(:range 8)
+          :priority  2
           :alignment :left)
-    (list :timeline
-          :width     91)))
+    (list :timeline)))

@@ -6,119 +6,87 @@
 
 (cl:in-package #:rsb.formatting)
 
-;;; Class `basic-compact' style
+;;; Class `event-style-compact-line'
 
-(defclass basic-compact-style (delegating-mixin
+(defclass event-style-compact-line (columns-mixin
+                                    widths-caching-mixin)
+  ())
+
+;;; Class `event-style-compact'
+
+(defun default-compact-sub-styles ()
+  (let+ (((&flet+ make-sub-style ((predicate . spec))
+            (cons predicate (make-instance 'event-style-compact-line
+                                           :columns spec))))
+         (dummy '(:constant :name "" :value "" :width 0)))
+    (mapcar #'make-sub-style
+            `((,#'request-event? . (:now
+                                    :id :call ,dummy ,dummy
+                                    :origin :sequence-number :wire-schema :data-size
+                                    :newline))
+              (,#'reply-event?   . (:now
+                                    :call-id :result ,dummy ,dummy
+                                    :origin :sequence-number :wire-schema :data-size
+                                    :newline))
+              (,(constantly t)   . (:now
+                                    :id :method :scope :data
+                                    :origin :sequence-number :wire-schema :data-size
+                                    :newline))))))
+
+(defmethod find-style-class ((spec (eql :compact)))
+  (find-class 'event-style-compact))
+
+(defclass event-style-compact (delegating-mixin
                                header-printing-mixin)
   ()
+  (:default-initargs
+   :sub-styles (default-compact-sub-styles))
   (:documentation
-   "This class is intended to be used as a superclass for compact
-    style classes."))
+   "This formatting style prints several properties of received events
+    on a single line. Some events are formatted specially according to
+    their role in a communication pattern."))
 
-(defmethod sub-style-for ((style basic-compact-style)
+(defmethod sub-style-for ((style event-style-compact)
                           (event t))
-  "Return a singleton list containing the sub-style of STYLE whose
-   predicate succeeds on EVENT."
+  ;; Return a singleton list containing the sub-style of STYLE whose
+  ;; predicate succeeds on EVENT.
   (ensure-list
    (cdr (find-if (rcurry #'funcall event) (style-sub-styles style)
                  :key #'car))))
 
-(defmethod format-header ((style  basic-compact-style)
+(defmethod format-header ((style  event-style-compact)
                           (stream t))
-  (format-header
-   (cdr (lastcar (style-sub-styles style))) stream))
+  ;; Use header of the last sub-style which is the most generic one.
+  (format-header (cdr (lastcar (style-sub-styles style))) stream))
 
-;;; Classes `style-compact/*'
-;;;
-;;; These provide increasingly detailed "compact" event formatting.
-
-(macrolet
-    ((define-compact-style ((name
-                             &key
-                             (spec       (make-keyword name))
-                             (class-name (symbolicate :style "-" name)))
-                            &body doc-and-sub-styles)
-       (let+ (((&values sub-styles nil documentation)
-               (parse-body doc-and-sub-styles :documentation t))
-              ((&flet+ make-sub-style ((predicate . spec))
-                 `(cons
-                   ,predicate
-                   (make-instance 'columns-mixin
-                                  :columns ',spec)))))
-        `(progn
-           (defmethod find-style-class ((spec (eql ,spec)))
-             (find-class ',class-name))
-
-           (defclass ,class-name (basic-compact-style)
-             ()
-             (:default-initargs
-              :sub-styles (list ,@(mapcar #'make-sub-style sub-styles)))
-             (:documentation
-              ,(apply #'concatenate 'string
-                      "This formatting style prints several properties
-of received events on a single line. Some events are formatted
-specially according to their role in a communication pattern."
-                      (when documentation
-                        (list " " documentation)))))))))
-
-  (define-compact-style (compact/80)
-      "The output of this style is designed to fit into 80 columns."
-    (#'request-event? . (:now/compact
-                         :origin
-                         (:call :width 52)
-                         :newline))
-    (#'reply-event?   . (:now/compact
-                         :origin
-                         (:result :width 52)
-                         :newline))
-    ((constantly t)   . (:now/compact
-                         :origin
-                         (:scope :width 22)
-                         (:data :width 22) :data-size
-                         :newline)))
-
-  (define-compact-style (compact/128)
-      "The output of this style is designed to fit into 128 columns."
-    (#'request-event? . (:now/compact
-                         :origin :sequence-number :id :call :data-size
-                         :newline))
-    (#'reply-event?   . (:now/compact
-                         :origin :sequence-number :call-id :result :data-size
-                         :newline))
-    ((constantly t)   . (:now/compact
-                         :origin :sequence-number :id :method
-                         (:scope :width 29)
-                         (:data  :width 34) :data-size
-                         :newline)))
-
-  (define-compact-style (compact/180)
-      "The output of this style is designed to fit into 180 columns."
-    (#'request-event? . (:now
-                         :origin :sequence-number :id
-                         (:call :width 85) :wire-schema :data-size
-                         :newline))
-    (#'reply-event?   . (:now
-                         :origin :sequence-number :call-id
-                         (:result :width 85) :wire-schema :data-size
-                         :newline))
-    ((constantly t)   . (:now
-                         :origin :sequence-number :id :method
-                         (:scope :width 32)
-                         (:data :width 41) :wire-schema :data-size
-                         :newline))))
-
-;;; Class `style-compact'
-;;;
-;;; Compact meta-style that dispatches to one of the compact styles
-;;; based on available horizontal room.
-
-(define-dynamic-width-style (compact)
-  (list (list 0 81)
-        (lambda (&rest initargs)
-          (apply #'make-instance 'style-compact/80 initargs)))
-  (list (list 81 129)
-        (lambda (&rest initargs)
-          (apply #'make-instance 'style-compact/128 initargs)))
-  (list (list 129)
-        (lambda (&rest initargs)
-          (apply #'make-instance 'style-compact/180 initargs))))
+(defmethod format-event :before ((event  t)
+                                 (style  event-style-compact)
+                                 (stream t)
+                                 &key
+                                 (width (or *print-right-margin* 80))
+                                 &allow-other-keys)
+  (let+ (((&structure-r/o style- sub-styles) style)
+         ((&flet do-sub-style (sub-style)
+            (let* ((columns   (style-dynamic-width-columns sub-style))
+                   (separator (style-separator-width       sub-style))
+                   (widths    (style-compute-column-widths
+                               sub-style columns width
+                               :separator-width separator)))
+              (style-assign-column-widths sub-style columns widths)
+              (values columns widths))))
+         ;; Compute widths for final sub-style which is the most
+         ;; generic one.
+         ((&values columns widths)
+          (do-sub-style (cdr (lastcar sub-styles))))
+         ((&flet do-subordinate-sub-style (sub-style)
+            (map nil (lambda (column1 column2 width)
+                       (when (type= (type-of column1) (type-of column2))
+                         (setf (column-widths column1) width)))
+                 (style-dynamic-width-columns sub-style)
+                 columns widths)
+            (do-sub-style sub-style))))
+    ;; Assign column widths computed for final sub-style to shared
+    ;; columns of other sub-styles. Then optimize remaining ("free")
+    ;; column widths in these sub-styles.
+    (mapc (compose #'do-subordinate-sub-style #'cdr)
+          (butlast sub-styles))))

@@ -9,7 +9,8 @@
 (defmethod find-column-class ((spec (eql :quantity)))
   (find-class 'quantity-column))
 
-(defclass quantity-column (width-mixin)
+(defclass quantity-column (width-specification-mixin
+                           width-mixin)
   ((quantity :accessor column-quantity
              :documentation
              "Stores the underlying quantity instances printed by this

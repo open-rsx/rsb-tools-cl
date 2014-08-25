@@ -217,6 +217,19 @@
   (:documentation
    "Format a header for THING into TARGET."))
 
+;;; Separator protocol
+
+(defgeneric style-separator-width (style)
+  (:documentation
+   "Return the width of the separator printed by STYLE in
+    characters."))
+
+;; Default behavior
+
+(declaim (ftype function %separator-width))
+(defmethod style-separator-width ((style t))
+  (%separator-width (style-separator style)))
+
 ;;; Column protocol
 
 (defgeneric value< (left right)

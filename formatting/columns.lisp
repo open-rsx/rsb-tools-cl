@@ -30,7 +30,8 @@
                                    (event-class 'event)
                                    (print-name  (string name)))
                                   &body doc-and-body)
-             (let+ (((&optional width (alignment :right)) (ensure-list width))
+             (let+ (((&optional width (alignment :right) priority)
+                     (ensure-list width))
                     (class-name  (symbolicate "COLUMN-" name))
                     ((&values body nil doc)
                      (parse-body doc-and-body :documentation t)))
@@ -39,14 +40,17 @@
                     (find-class ',class-name))
 
                   (defclass ,class-name (,@(when width
-                                           '(width-mixin))
+                                             '(width-specification-mixin
+                                               width-mixin))
                                          basic-column)
                     ()
                     (:default-initargs
                      :name ,print-name
                      ,@(when width
-                         `(:width     ,width
-                           :alignment ,alignment)))
+                         `(:widths    ',width
+                           :alignment ,alignment))
+                     ,@(when priority
+                         `(:priority ,priority)))
                     ,@(when doc
                         `((:documentation ,doc))))
 
@@ -76,17 +80,15 @@
     (force-output stream))
 
   ;; Event-independent
-  (define-simple-column (:now 32
+  (define-simple-column (:now ((15 32) :right 1.5)
                          :event-class t)
-      "Emit the current time."
-    (format stream "~A" (local-time:now)))
-  (define-simple-column (:now/compact 15
-                         :print-name  "now"
-                         :event-class t)
-      "Emit the current time in a compact format."
-    (local-time:format-timestring
-     stream (local-time:now)
-     :format '((:hour 2) #\: (:min 2) #\: (:sec 2) #\. (:usec 6))))
+      "Emit the current time in either full or compact format."
+    (if (>= (column-width column) 32)
+        (format stream "~A" (local-time:now))
+        (local-time:format-timestring
+         stream (local-time:now)
+         :format '((:hour 2) #\: (:min 2) #\: (:sec 2) #\. (:usec 6)))))
+
   (define-simple-column (:text 32
                          :event-class t)
       "Emit a given text. The name of the column is also the emitted
@@ -94,16 +96,14 @@
     (format stream "~A" (column-name column)))
 
   ;; Event properties
-  (define-simple-column (:origin (8 :left))
+  (define-simple-column (:origin ((8 36) :left 1.5))
       "Emit an abbreviated representation of the id of the participant
        at which the event originated."
-    (format stream "~:[ORIGIN? ~;~:*~/rsb::print-id/~]"
-            (event-origin event)))
-
-  (define-simple-column (:origin-full (36 :left))
-      "Emit the id of the participant at which the event originated."
-    (format stream "~:[ORIGIN? ~;~:*~:/rsb::print-id/~]"
-            (event-origin event)))
+    (if (>= (column-width column) 36)
+        (format stream "~:[ORIGIN? ~;~:*~:/rsb::print-id/~]"
+                (event-origin event))
+        (format stream "~:[ORIGIN? ~;~:*~/rsb::print-id/~]"
+                (event-origin event))))
 
   (define-simple-column (:sequence-number 8
                          :print-name "Sequence Number")
@@ -116,26 +116,24 @@
     (format stream "~:[<nomethod>~;~:*~:@(~10A~)~]"
             (event-method event)))
 
-  (define-simple-column (:id (8 :left))
+  (define-simple-column (:id ((8 36) :left 1.5))
       "Emit an abbreviated representation of the id of the event."
-    (format stream "~:[EVENTID? ~;~:*~/rsb::print-id/~]"
-            (event-id event)))
+    (if (>= (column-width column) 36)
+        (format stream "~:[EVENTID? ~;~:*~:/rsb::print-id/~]"
+                (event-id event))
+        (format stream "~:[EVENTID? ~;~:*~/rsb::print-id/~]"
+                (event-id event))))
 
-  (define-simple-column (:id-full (36 :left))
-      "Emit the id of the event."
-    (format stream "~:[EVENTID? ~;~:*~:/rsb::print-id/~]"
-            (event-id event)))
-
-  (define-simple-column (:scope (24 :left))
+  (define-simple-column (:scope ((:range 8) :left))
       "Emit the scope of the event."
     (format stream "~A" (scope-string (event-scope event))))
 
-  (define-simple-column (:wire-schema (24 :left))
+  (define-simple-column (:wire-schema ((:range 8) :left))
       "Emit wire-schema of the event, if possible."
     (format stream "~:[WIRE-SCHEMA?~;~:*~A~]"
             (meta-data event :rsb.transport.wire-schema)))
 
-  (define-simple-column (:data (21 :left))
+  (define-simple-column (:data ((:range 8) :left))
       "Emit a representation of the data contained in the event."
     (let ((*print-length* (column-width column)))
       (format stream "~/rsb::print-event-data/" (event-data event))))
@@ -157,7 +155,7 @@
             (meta-data event :rsb.transport.notification-size)))
 
   ;; Request/Reply stuff
-  (define-simple-column (:call (57 :left))
+  (define-simple-column (:call ((:range 57) :left))
       "Emit a method call description. Should only be applied to
        events that actually are method calls."
     (let ((*print-length* most-positive-fixnum))
@@ -171,7 +169,7 @@
               (when-let ((cause (first (event-causes event))))
                 (event-id->uuid cause))))
 
-  (define-simple-column (:result (57 :left))
+  (define-simple-column (:result ((:range 57) :left))
       "Emit a method reply description. Should only be applied to
        events that actually are replies to method calls."
     (let ((*print-length* most-positive-fixnum))
@@ -184,7 +182,8 @@
 (defmethod find-column-class ((spec (eql :constant)))
   (find-class 'column-constant))
 
-(defclass column-constant (width-mixin
+(defclass column-constant (width-specification-mixin
+                           width-mixin
                            basic-column)
   ((value     :initarg  :value
               :accessor column-value
@@ -223,7 +222,8 @@
             (defmethod find-column-class ((spec (eql ,name)))
               (find-class ',class-name))
 
-            (defclass ,class-name (width-mixin
+            (defclass ,class-name (width-specification-mixin
+                                   width-mixin
                                    basic-column)
               ((key :initarg  :key
                     :type     symbol
@@ -261,7 +261,8 @@
 (defmethod find-column-class ((spec (eql :count)))
   (find-class 'column-count))
 
-(defclass column-count (width-mixin
+(defclass column-count (width-specification-mixin
+                        width-mixin
                         basic-column)
   ((count :initarg  :count
           :type     non-negative-integer
@@ -288,20 +289,23 @@
 
 (defvar *basic-columns*
   '(;; Quantities
-    (:rate/9        . (:quantity :quantity :rate       :width 9))
-    (:rate/12       . (:quantity :quantity :rate       :width 12))
-    (:throughput/13 . (:quantity :quantity :throughput :width 13))
+    (:now           . (:now :priority 2.5))
+    (:rate/9        . (:quantity :quantity :rate       :widths 9))
+    (:rate/12       . (:quantity :quantity :rate       :widths 12))
+    (:throughput/13 . (:quantity :quantity :throughput :widths 13))
     (:latency       . (:quantity :quantity (:expected
                                             :name     "Latency"
                                             :target   (:latency
                                                        :from :send
                                                        :to   :receive)
                                             :expected (:type (or (eql :n/a)
-                                                                 (real (0) 0.010))))))
-    (:origin/40     . (:quantity :quantity :origin     :width 40 :alignment :left))
-    (:scope/40      . (:quantity :quantity :scope      :width 40 :alignment :left))
-    (:type/40       . (:quantity :quantity :type       :width 40 :alignment :left))
-    (:size/20       . (:quantity :quantity :size       :width 20)))
+                                                                 (real (0) 0.010))))
+                       :widths   (:range 16)
+                       :priority 2.2))
+    (:origin/40     . (:quantity :quantity :origin     :widths (:range 40) :alignment :left))
+    (:scope/40      . (:quantity :quantity :scope      :widths (:range 40) :alignment :left))
+    (:type/40       . (:quantity :quantity :type       :widths (:range 40) :alignment :left))
+    (:size/20       . (:quantity :quantity :size       :widths 20)))
   "Contains an alist of column specification entries of the form
 
      (NAME . SPEC)

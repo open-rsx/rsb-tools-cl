@@ -1,4 +1,4 @@
-;;;; style-compact.lisp --- Unit tests for the compact family of styles.
+;;;; style-compact.lisp --- Unit tests for the compact formatting style.
 ;;;;
 ;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
@@ -6,59 +6,49 @@
 
 (cl:in-package #:rsb.formatting.test)
 
-(deftestsuite style-compact/80-root (formatting-root)
+(deftestsuite style-compact-root (formatting-root)
   ()
   (:documentation
-   "Unit tests for the `style-compact/80' formatting style class."))
+   "Unit tests for the `style-compact' formatting style class."))
 
-(addtest (style-compact/80-root
+(addtest (style-compact-root
           :documentation
           "Test some simple cases of formatting events using methods
-           on `format-event' for `style-compact/80'.")
+           on `format-event' for `style-compact'.")
   smoke
 
-  (ensure-style-cases (style-compact/80)
-    '(()
-      ()
-      "")
+  (let ((*print-right-margin* 80))
+    (ensure-style-cases (event-style-compact)
+      '(()
+        ()
+        "")
 
-    `((:header-frequency nil)
-      (,(make-event "/foo" "bar"))
-      ".*│ORIGIN\\? │/foo/                 │\"bar\"                 │        3
+      `((:header-frequency nil)
+        (,(make-event "/foo" "bar"))
+        ".*│EVENTID…│<nomethod>│/foo/   │\"bar\"   │ORIGIN\\? │     NIL│WIRE-SC…
 ")
 
-    `((:header-frequency nil)
-      (,(make-event "/foo" "bar") ,(make-event "/fez" "whoop"))
-      ".*│ORIGIN\\? │/foo/                 │\"bar\"                 │        3
-.*│ORIGIN\\? │/fez/                 │\"whoop\"               │        5
+      `((:header-frequency nil)
+        (,(make-event "/foo" "bar") ,(make-event "/fez" "whoop"))
+        ".*│EVENTID…│<nomethod>│/foo/   │\"bar\"   │ORIGIN\\? │     NIL│WIRE-SC…
+.*│EVENTID…│<nomethod>│/fez/   │\"whoop\" │ORIGIN\\? │     NIL│WIRE-SC…
 ")))
 
-(deftestsuite style-compact/128-root (formatting-root)
-  ()
-  (:documentation
-   "Unit tests for the `style-compact/128' formatting style class."))
+  (let ((*print-right-margin* 128))
+    (ensure-style-cases (event-style-compact)
+      '(()
+        ()
+        "")
 
-(addtest (style-compact/128-root
-          :documentation
-          "Test some simple cases of formatting events using methods
-           on `format-event' for `style-compact/128'.")
-  smoke
-
-  (ensure-style-cases (style-compact/128)
-    '(()
-      ()
-      "")
-
-    `((:header-frequency nil)
-      (,(make-event "/foo" "bar"))
-      ".*│ORIGIN\\? │     NIL│EVENTID…│<nomethod>│/foo/                        │\"bar\"                             │        3
+      `((:header-frequency nil)
+        (,(make-event "/foo" "bar"))
+        ".*│EVENTID…│<nomethod>│/foo/               │\"bar\"                   │ORIGIN\\? │     NIL│WIRE-SCHEMA\\?      │        3
 ")
-
-    `((:header-frequency nil)
-      (,(make-event "/foo" "bar") ,(make-event "/fez" "whoop"))
-      ".*│ORIGIN\\? │     NIL│EVENTID…│<nomethod>│/foo/                        │\"bar\"                             │        3
-.*│ORIGIN\\? │     NIL│EVENTID…│<nomethod>│/fez/                        │\"whoop\"                           │        5
-")))
+      `((:header-frequency nil)
+        (,(make-event "/foo" "bar") ,(make-event "/fez" "whoop"))
+        ".*│EVENTID…│<nomethod>│/foo/               │\"bar\"                   │ORIGIN\\? │     NIL│WIRE-SCHEMA\\?      │        3
+.*│EVENTID…│<nomethod>│/fez/               │\"whoop\"                 │ORIGIN\\? │     NIL│WIRE-SCHEMA\\?      │        5
+"))))
 
 ;; Local Variables:
 ;; coding: utf-8
