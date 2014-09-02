@@ -16,8 +16,7 @@
    collection payloads.")
 
 (defvar *by-scope-formatting-event-style*
-  (make-instance (find-style-class :detailed)
-                 :separator nil)
+  (make-instance (find-style-class :detailed) :separator nil)
   "The formatting style used for sub-events contained in collections
    of events.")
 
@@ -25,19 +24,23 @@
                            (style  t)
                            (stream stream)
                            &key &allow-other-keys)
-  ;;; TODO(jmoringe, 2012-02-05): there should be a dedicated serialization
+  ;; TODO(jmoringe, 2012-02-05): there should be a dedicated serialization
   (handler-case
-      (let ((event (rsb.transport.socket::notification->event
+      (let ((event (rsb.transport.socket::notification->event*
                     *by-scope-formatting-converter* data
                     :expose-wire-schema? t)))
         (format-event event *by-scope-formatting-event-style* stream))
     (error (condition)
-      (pprint-logical-block (stream nil
-                                    :per-line-prefix "| ")
-        (format stream "Failed to decode notification~2&~@<  ~@;~A~:@>"
-                (with-output-to-string (stream)
-                  (describe data stream)))
-        (maybe-print-cause stream condition)))))
+      (format stream "~@<| ~@;~
+                        Failed to decode notification~
+                        ~@:_~@:_~
+                        ~2@T~<~A~:>~
+                        ~@:_~@:_~
+                        ~A~
+                      ~:>"
+              (list (with-output-to-string (stream)
+                      (describe data stream)))
+              condition))))
 
 (defmethod format-payload ((data   rsb.protocol.collections:events-by-scope-map/scope-set)
                            (style  t)
