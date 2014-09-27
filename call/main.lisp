@@ -138,7 +138,7 @@
 (defun main ()
   "Entry point function of the cl-rsb-tools-call system."
   (update-synopsis)
-  (setf *default-configuration* (options-from-default-sources))
+  (setf *configuration* (options-from-default-sources))
   (process-commandline-options
    :version         (cl-rsb-tools-call-system:version/list :commit? t)
    :update-synopsis #'update-synopsis

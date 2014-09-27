@@ -63,7 +63,7 @@
 (defun main ()
   "Entry point function of the cl-rsb-tools-info system."
   (update-synopsis)
-  (setf *default-configuration* (options-from-default-sources))
+  (setf *configuration* (options-from-default-sources))
   (process-commandline-options
    :version         (cl-rsb-tools-info-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
@@ -86,7 +86,7 @@
         (when configuration?
           (rsb.formatting::with-indented-section (stream "Configuration")
             (format stream "~{~48@<~(~{~A~^.~}~)~>: ~S~^~&~}"
-                    (alist-plist *default-configuration*))))
+                    (alist-plist *configuration*))))
 
         (when connectors?
           (rsb.formatting::with-indented-section (stream "Connectors")
