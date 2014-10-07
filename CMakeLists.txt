@@ -260,9 +260,9 @@ foreach(PAYLOAD ""
                 "\"string\""
                 "1"
                 "1.5"
-                "#P\"/etc/motd\""
-                "#P\"/etc/motd\":utf-8"
-                "#P\"/etc/motd\":binary")
+                "#P\"${CMAKE_CURRENT_LIST_FILE}\""
+                "#P\"${CMAKE_CURRENT_LIST_FILE}\":utf-8"
+                "#P\"${CMAKE_CURRENT_LIST_FILE}\":binary")
     string(REGEX REPLACE "[- #]" "" CLEAN_PAYLOAD "${PAYLOAD}")
     add_test(NAME   "send/payload/${CLEAN_PAYLOAD}"
              COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
