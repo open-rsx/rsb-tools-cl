@@ -14,6 +14,9 @@
                     to listeners on scopes specified by ~
                     DESTINATION-URI.~@
                     ~@
+                    If EVENT-SPEC is the empty string, an event ~
+                    without payload is sent.~@
+                    ~@
                     EVENT-SPEC is parsed as string when surrounded ~
                     with double-quotes and as integer or float number ~
                     when consisting of digits without and with decimal ~
@@ -21,8 +24,16 @@
                     ~@
                     If EVENT-SPEC is the single character \"-\", the ~
                     entire \"contents\" of standard input (until end ~
-                    of file) is read as a string and used as argument ~
-                    for the method send.~@
+                    of file) is read as a string and sent.~@
+                    ~@
+                    If EVENT-SPEC is of the form #PPATHNAME, the file ~
+                    designated by PATHNAME is read into a string and ~
+                    sent.~@
+                    ~@
+                    Note that, when written as part of a shell ~
+                    command, some of the above forms may require ~
+                    protection from processing by the shell, usually ~
+                    by surrounding the form in single quotes (').~@
                     ~@
                     DESTINATION-URI designates the destination scope ~
                     to which the event should be sent and the ~
@@ -41,23 +52,44 @@
                              (program-name #+does-not-work (progname) "send"))
   "Make and return a string containing usage examples of the program."
   (format nil
-          "~2@T~A 5 'spread://localhost:4811/whoever/listens/here'~@
+          "~2@T~A '' /mycomponent/trigger~@
            ~@
-           Use the spread transport to send an event containing the ~
-           integer \"5\".~@
+           Send an event without a payload to the channel designated ~
+           by the scope /mycomponent/trigger.~@
            ~@
-           ~2@T~:*~A 5 'spread:/same/as/before?name=4803'~@
+           Note the use of single quotes (') to allow specifying an ~
+           empty payload.~@
            ~@
-           Like the previous example, but use the \"daemon name\" ~
-           option of the Spread transport instead of specifying host ~
-           and port.~@
+           ~2@T~:*~A '\"running\"' 'spread:/mycomponent/state'~@
+           ~@
+           Send an event whose payload is the string \"running\" to ~
+           the channel designated by the scope /mycomponent/state.~@
+           ~@
+           Note the use of single quotes (') to prevent the shell from ~
+           processing the double quotes (\") that identify the payload ~
+           as a string.~@
+           ~@
+           ~2@T~:*~A 5 'spread:/somescope?name=4803'~@
+           ~@
+           Send an integer. Use spread transport, like in the previous ~
+           example, but use the \"daemon name\" option of the Spread ~
+           transport instead of specifying host and port.~@
+           ~@
+           Note the use of single quotes (') to prevent elements of ~
+           the destination URI from being processed by the shell (not ~
+           necessary for all shells).~@
            ~@
            ~2@Tcat my-data.txt | ~:*~A - 'socket:/printer'~@
+           ~2@T~:*~A '#Pmy-data.txt' 'socket:/printer'~@
            ~@
-           Send the content of the file \"my-data.txt\" to the ~
-           listener at scope \"/printer\" using the socket ~
-           transport (with its default configuration). This form can ~
-           only be used for sending string payloads.~@
+           Two ways of sending the content of the file \"my-data.txt\" ~
+           to the scope \"/printer\" using the socket transport (with ~
+           its default configuration). This form can only be used for ~
+           sending string payloads.~@
+           ~@
+           Note the use of single quotes (') to prevent elements of ~
+           the pathname #Pmy-data.txt from being processed by the ~
+           shell.~@
            "
           program-name))
 

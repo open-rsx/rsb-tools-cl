@@ -13,6 +13,11 @@
     (format stream "Call METHOD of the server at SERVER-URI with ~
                     argument ARG.~@
                     ~@
+                    If ARG is the empty string, i.e. the call ~
+                    specification is of the form ~
+                    SERVER-URI/METHOD(), METHOD is called without ~
+                    argument.~@
+                    ~@
                     ARG is parsed as string when surrounded with ~
                     double-quotes and as integer or float number when ~
                     consisting of digits without and with decimal ~
@@ -23,10 +28,14 @@
                     is read as a string and used as argument for the ~
                     method call.~@
                     ~@
-                    If ARG is the empty string, i.e. the call ~
-                    specification is of the form ~
-                    SERVER-URI/METHOD(), the method is called without ~
-                    argument.~@
+                    If ARG is of the form #PPATHNAME, the file ~
+                    designated by PATHNAME is read into a string and ~
+                    sent.~@
+                    ~@
+                    Note that, when written as part of a shell ~
+                    command, some of the above forms may require ~
+                    protection from processing by the shell, usually ~
+                    by surrounding the form in single quotes (').~@
                     ~@
                     SERVER-URI designates the root scope of the remote ~
                     server and the transport that should be used.~@
@@ -47,7 +56,9 @@
            ~@
            Use the spread transport to call the method \"method\" of ~
            the server at \"/my/inferface\" passing it the integer ~
-           argument \"5\". Note the quotes to prevent the shell from ~
+           argument \"5\".~@
+           ~@
+           Note the single quotes (') to prevent the shell from ~
            interpreting the \"(\" and \")\".~@
            ~@
            ~2@T~:*~A 'spread:/interface?name=4803/method(5)'~@
@@ -72,12 +83,17 @@
            result of the method call.~@
            ~@
            ~2@Tcat my-arg.txt | ~:*~A 'socket:/printer/print(-)'~@
+           ~2@T~:*~A 'socket:/printer/print(#Pmy-data.txt)'~@
            ~@
            Call the \"print\" method of the server at scope ~
            \"/printer\" using the socket transform (with its default ~
            configuration) using the content of the file \"my-arg.txt\" ~
            as argument of the call. This only works if the called ~
            method accepts an argument of type string.~@
+
+           Note the use of single quotes (') to prevent elements of ~
+           the pathname #Pmy-data.txt from being processed by the ~
+           shell.~@
            "
           program-name))
 
