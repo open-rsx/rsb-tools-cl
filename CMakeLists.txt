@@ -229,25 +229,50 @@ foreach(POLICY continue abort)
                     --debug --on-error "${POLICY}"
                     --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                      inprocess:)
-    foreach(ARG ""
-                "--method=foo"
-                "--meta-data=foo=bar"
-                "--timestamp=foo=2013-03-27T01:32:43.158404+01:00"
-                "--timestamp=foo=2013-03-27T01:32:43.158404"
-                "--timestamp=foo=2013-03-27T01:32:43"
-                "--timestamp=foo=2013-03-27"
-                "--cause=12345678-1234-1234-1234-567899999999:1")
-        string(REGEX REPLACE "[- ]" "" CLEAN_ARG "${ARG}")
-        add_test(NAME   "send/on-error=${POLICY}/${CLEAN_ARG}"
-                 COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
-                         --debug --on-error "${POLICY}"
-                         ${ARG} 1 inprocess:)
-    endforeach()
+    add_test(NAME   "send/on-error=${POLICY}"
+             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+                     --debug --on-error "${POLICY}"
+                     1 inprocess:)
     add_test(NAME   "call/on-error=${POLICY}"
             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
                     --debug --on-error "${POLICY}"
                     --no-wait
                     "inprocess:/foo/bar(1)")
+endforeach()
+
+# Event meta-data specifications for send binary.
+foreach(ARG "--method=foo"
+            "--meta-data=foo=bar"
+            "--timestamp=foo=2013-03-27T01:32:43.158404+01:00"
+            "--timestamp=foo=2013-03-27T01:32:43.158404"
+            "--timestamp=foo=2013-03-27T01:32:43"
+            "--timestamp=foo=2013-03-27"
+            "--cause=12345678-1234-1234-1234-567899999999:1")
+    string(REGEX REPLACE "[- ]" "" CLEAN_ARG "${ARG}")
+    add_test(NAME   "send/meta-data/${CLEAN_ARG}"
+             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+                     --debug
+                     ${ARG} 1 inprocess:)
+endforeach()
+
+# Payload specifications for call and send binaries.
+foreach(PAYLOAD ""
+                "\"string\""
+                "1"
+                "1.5"
+                "#P\"/etc/motd\""
+                "#P\"/etc/motd\":utf-8"
+                "#P\"/etc/motd\":binary")
+    string(REGEX REPLACE "[- #]" "" CLEAN_PAYLOAD "${PAYLOAD}")
+    add_test(NAME   "send/payload/${CLEAN_PAYLOAD}"
+             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+                     --debug
+                     "${PAYLOAD}" inprocess:)
+    add_test(NAME   "call/payload/${CLEAN_PAYLOAD}"
+             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
+                     --debug
+                     --no-wait
+                     "inprocess:/foo/bar(${PAYLOAD})")
 endforeach()
 
 # Multiple URIs and queue capacity for logger

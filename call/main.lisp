@@ -23,14 +23,18 @@
                     consisting of digits without and with decimal ~
                     point respectively.~@
                     ~@
-                    If ARG is the single character \"-\", the entire ~
-                    \"contents\" of standard input (until end of file) ~
-                    is read as a string and used as argument for the ~
-                    method call.~@
+                    If ARG is the single character \"-\" or the string ~
+                    \"-:binary\", the entire \"contents\" of standard ~
+                    input (until end of file) is read as a string or ~
+                    octet-vector respectively and used as argument for ~
+                    the method call.~@
                     ~@
-                    If ARG is of the form #PPATHNAME, the file ~
-                    designated by PATHNAME is read into a string and ~
-                    sent.~@
+                    If ARG is of one the forms #P\"PATHNAME\", ~
+                    #P\"PATHNAME\":ENCODING or #P\"PATHNAME\":binary, ~
+                    the file designated by PATHNAME is read into a ~
+                    string (optionally employing ENCODING) or ~
+                    octet-vector and used as argument for the method ~
+                    call.~@
                     ~@
                     Note that, when written as part of a shell ~
                     command, some of the above forms may require ~
@@ -83,16 +87,19 @@
            result of the method call.~@
            ~@
            ~2@Tcat my-arg.txt | ~:*~A 'socket:/printer/print(-)'~@
-           ~2@T~:*~A 'socket:/printer/print(#Pmy-data.txt)'~@
+           ~2@Tcat my-arg.txt | ~:*~A 'socket:/printer/print(-:binary)'~@
+           ~2@T~:*~A 'socket:/printer/print(#P\"my-data.txt\")'~@
+           ~2@T~:*~A 'socket:/printer/print(#P\"my-data.txt\":latin-1)'~@
+           ~2@T~:*~A 'socket:/printer/print(#P\"my-data.txt\":binary)'~@
            ~@
            Call the \"print\" method of the server at scope ~
            \"/printer\" using the socket transform (with its default ~
            configuration) using the content of the file \"my-arg.txt\" ~
            as argument of the call. This only works if the called ~
-           method accepts an argument of type string.~@
+           method accepts an argument of type string or octet-vector.~@
 
            Note the use of single quotes (') to prevent elements of ~
-           the pathname #Pmy-data.txt from being processed by the ~
+           the pathname #P\"my-data.txt\" from being processed by the ~
            shell.~@
            "
           program-name))
@@ -133,24 +140,6 @@
    :item    (defgroup (:header "Examples")
               (make-text :contents (make-examples-string)))))
 
-(defun parse-argument (string)
-  "Parse STRING as Lisp object treating the empty string specially."
-  (cond
-    ((emptyp string)
-     rsb.converter:+no-value+)
-
-    ((string= string "-")
-     (with-output-to-string (stream)
-       (copy-stream *standard-input* stream)))
-
-    (t
-     (let+ (((&values value consumed)
-             (read-from-string string)))
-       (unless (= consumed (length string))
-         (error "~@<Junk at end of argument string: ~S.~@:>"
-                (subseq string consumed)))
-       value))))
-
 (defun main ()
   "Entry point function of the cl-rsb-tools-call system."
   (update-synopsis)
@@ -180,7 +169,7 @@
            ((&values server-uri method arg)
             (ppcre:register-groups-bind (server-uri method arg)
                 ("^([-_a-zA-Z0-9/:&?#=+;]*)/([-_a-zA-Z0-9]+)\\((.*)\\)$" spec)
-              (values server-uri method (parse-argument arg))))
+              (values server-uri method (parse-payload-spec arg))))
            (timeout (getopt :long-name "timeout"))
            (wait?   (not (getopt :long-name "no-wait")))
            (style   (make-style (parse-instantiation-spec

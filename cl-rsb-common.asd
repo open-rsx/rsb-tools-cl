@@ -1,6 +1,6 @@
 ;;;; cl-rsb-common.asd --- Common functions for cl-rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -103,6 +103,8 @@ RSB-related systems."
                               (:file       "interactive"
                                :depends-on ("package"))
                               (:file       "help"
+                               :depends-on ("package"))
+                              (:file       "event"
                                :depends-on ("package"))
                               (:file       "options"
                                :depends-on ("package" "variables"

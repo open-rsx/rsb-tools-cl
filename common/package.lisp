@@ -44,6 +44,12 @@
   (:export
    #:with-logged-warnings)
 
+  (:export
+   #:parse-payload-spec
+   #:parse-meta-data
+   #:parse-timestamp
+   #:parse-cause)
+
   ;; Commandline options
   (:export
    #:make-common-options

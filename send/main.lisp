@@ -22,13 +22,19 @@
                     when consisting of digits without and with decimal ~
                     point respectively.~@
                     ~@
-                    If EVENT-SPEC is the single character \"-\", the ~
-                    entire \"contents\" of standard input (until end ~
-                    of file) is read as a string and sent.~@
+                    If EVENT-SPEC is the single character \"-\" or the ~
+                    string \"-:binary\", the entire \"contents\" of ~
+                    standard input (until end of file) is read as a ~
+                    string or octet-vector respectively and used as ~
+                    argument for the method send.~@
                     ~@
-                    If EVENT-SPEC is of the form #PPATHNAME, the file ~
-                    designated by PATHNAME is read into a string and ~
-                    sent.~@
+
+                    If EVENT-SPEC is of one the forms #P\"PATHNAME\", ~
+                    #P\"PATHNAME\":ENCODING or #P\"PATHNAME\":binary, ~
+                    the file designated by PATHNAME is read into a ~
+                    string (optionally employing ENCODING) or ~
+                    octet-vector and sent.~@
+
                     ~@
                     Note that, when written as part of a shell ~
                     command, some of the above forms may require ~
@@ -80,15 +86,19 @@
            necessary for all shells).~@
            ~@
            ~2@Tcat my-data.txt | ~:*~A - 'socket:/printer'~@
-           ~2@T~:*~A '#Pmy-data.txt' 'socket:/printer'~@
+           ~2@Tcat my-data.txt | ~:*~A -:binary 'socket:/printer'~@
+           ~2@T~:*~A '#P\"my-data.txt\"' 'socket:/printer'~@
+           ~2@T~:*~A '#P\"my-data.txt\":latin-1' 'socket:/printer'~@
+           ~2@T~:*~A '#P\"my-data.txt\":binary' 'socket:/printer'~@
            ~@
-           Two ways of sending the content of the file \"my-data.txt\" ~
-           to the scope \"/printer\" using the socket transport (with ~
-           its default configuration). This form can only be used for ~
-           sending string payloads.~@
+           Several ways of sending the content of the file ~
+           \"my-data.txt\" to the scope \"/printer\" using the socket ~
+           transport (with its default configuration). These forms can ~
+           only be used for sending string and octet-vector ~
+           payloads.~@
            ~@
            Note the use of single quotes (') to prevent elements of ~
-           the pathname #Pmy-data.txt from being processed by the ~
+           the pathname #P\"my-data.txt\" from being processed by the ~
            shell.~@
            "
           program-name))
@@ -136,50 +146,6 @@
    :item    (defgroup (:header "Examples")
               (make-text :contents (make-examples-string)))))
 
-(defun parse-event-spec (spec)
-  "Parse SPEC as Lisp object treating the empty string specially."
-  (cond
-    ((emptyp spec)
-     rsb.converter:+no-value+)
-
-    ((string= spec "-")
-     (with-output-to-string (stream)
-       (copy-stream *standard-input* stream)))
-
-    ((starts-with-subseq "#p" spec :test #'char-equal)
-     (read-file-into-string (parse-namestring (subseq spec 2))))
-
-    (t
-     (let+ (((&values value consumed) (read-from-string spec)))
-       (unless (= consumed (length spec))
-         (error "~@<Junk at end of argument string: ~S.~@:>"
-                (subseq spec consumed)))
-       value))))
-
-(defun parse-pair (pair
-                   &key
-                   (separator        #\=)
-                   (first-transform  #'identity)
-                   (second-transform #'identity))
-  (let ((index (or (position separator pair)
-                   (error "~@<~S is not of the form KEY~CVALUE.~@:>"
-                          pair separator))))
-    (list (funcall first-transform (subseq pair 0 index))
-          (funcall second-transform (subseq pair (1+ index))))))
-
-(defun parse-meta-data (value)
-  (parse-pair value :first-transform #'make-keyword))
-
-(defun parse-timestamp (value)
-  (parse-pair value :first-transform  #'make-keyword
-                    :second-transform #'local-time:parse-timestring))
-
-(defun parse-cause (value)
-  (apply #'cons
-         (parse-pair value :separator        #\:
-                           :first-transform  #'uuid:make-uuid-from-string
-                           :second-transform #'parse-integer)))
-
 (defun main ()
   "Entry point function of the cl-rsb-tools-send system."
   (update-synopsis)
@@ -208,7 +174,7 @@
                                (while value)
                                (collect (parse-cause value))))
            ((event-spec &optional (destination "/")) (remainder))
-           (payload (parse-event-spec event-spec)))
+           (payload (parse-payload-spec event-spec)))
 
       (log:info "~@<Using URI ~S payload ~A~@:>" destination payload)
       (with-interactive-interrupt-exit ()
