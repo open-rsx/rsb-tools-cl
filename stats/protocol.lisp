@@ -8,7 +8,7 @@
 
 ;;; Quantity protocol
 
-(defgeneric quantity-name (quantitiy)
+(defgeneric quantity-name (quantity)
   (:documentation
    "Return the name of QUANTITY."))
 
