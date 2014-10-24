@@ -46,11 +46,10 @@
                     ~@
                     ")
     (with-abbreviation (stream :uri show)
-      (progn
-        (format stream "A SERVER-URI of the form~@
-                        ~@
-                        ")
-        (print-uri-help stream :uri-var "SERVER-URI")))))
+      (format stream "A SERVER-URI of the form~@
+                      ~@
+                      ")
+      (print-uri-help stream :uri-var "SERVER-URI"))))
 
 (defun make-examples-string (&key
                              (program-name #+does-not-work (progname) "call"))
@@ -197,7 +196,7 @@
                                    second~:P.~@:>"
                                   timeout)))))))
                  ((&flet call/translate (server)
-                    (let+ (((&values event) (call/raw server)))
+                    (let ((event (call/raw server)))
                       (cond
                         ((not event)
                          (values))
