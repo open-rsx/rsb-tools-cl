@@ -76,6 +76,8 @@ RSB-related systems."
   :depends-on  (:let-plus
                 (:version :log4cl "1.1.1")
 
+                :cl-ppcre
+
                 :com.dvlsoft.clon
 
                 :cl-protobuf
