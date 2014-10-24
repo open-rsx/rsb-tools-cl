@@ -1,6 +1,6 @@
 ;;;; cl-rsb-formatting-png.asd --- Formatting support for PNG payloads.
 ;;;;
-;;;; Copyright (C) 2013 Jan Moringen
+;;;; Copyright (C) 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -16,7 +16,7 @@
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
-  :license     "GPL3; see COPYING file for details."
+  :license     "GPLv3" ; see COPYING file for details.
   :description "This system provides some formatting of PNG payloads."
   :depends-on  (:alexandria
                 :let-plus

@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-main.asd --- System definition for main binary of cl-rsb-tools.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -70,7 +70,7 @@ See `version/list' for details on keyword parameters."
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
-  :license     "GPL3; see COPYING file for details."
+  :license     "GPLv3" ; see COPYING file for details.
   :description "Main program and dispatch function for all cl-rsb
 tools."
   :depends-on  ((:version :cl-rsb-tools-info   #.(version/string))
