@@ -116,7 +116,7 @@
     (format stream "~:[<nomethod>~;~:*~:@(~10A~)~]"
             (event-method event)))
 
-  (define-simple-column (:id ((8 36) :left 1.5))
+  (define-simple-column (:id ((8 36) :left 1))
       "Emit an abbreviated representation of the id of the event."
     (if (>= (column-width column) 36)
         (format stream "~:[EVENTID? ~;~:*~:/rsb::print-id/~]"
@@ -155,21 +155,25 @@
             (meta-data event :rsb.transport.notification-size)))
 
   ;; Request/Reply stuff
-  (define-simple-column (:call ((:range 57) :left))
+  (define-simple-column (:call ((:range 26) :left))
       "Emit a method call description. Should only be applied to
        events that actually are method calls."
     (let ((*print-length* most-positive-fixnum))
       (format stream "~/rsb.formatting::format-method/(~/rsb::print-event-data/)"
               event (event-data event))))
 
-  (define-simple-column (:call-id (8 :left))
+  (define-simple-column (:call-id ((8 36) :left 1))
       "Emit the request id of a reply event. Should only be applied to
        events that actually are replies to method calls."
-      (format stream "~:[CALLID? ~;~:*~/rsb::print-id/~]"
-              (when-let ((cause (first (event-causes event))))
-                (event-id->uuid cause))))
+    (let ((call-id (when-let ((cause (first (event-causes event))))
+                     (event-id->uuid cause))))
+      (if (>= (column-width column) 36)
+          (format stream "~:[CALLID? ~;~:*~:/rsb::print-id/~]"
+                  call-id)
+          (format stream "~:[CALLID? ~;~:*~/rsb::print-id/~]"
+                  call-id))))
 
-  (define-simple-column (:result ((:range 57) :left))
+  (define-simple-column (:result ((:range 26) :left))
       "Emit a method reply description. Should only be applied to
        events that actually are replies to method calls."
     (let ((*print-length* most-positive-fixnum))
