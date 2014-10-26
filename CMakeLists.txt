@@ -309,6 +309,14 @@ add_test(NAME    "logger/queue-capacity"
                  --max-queued-events 1
                  inprocess:/foo)
 
+# Filters for logger
+add_test(NAME    "logger/filter"
+         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+                 --debug
+                 --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                 --filter "scope :scope \"/foo\""
+                 inprocess:/)
+
 # All styles for logger and call binaries.
 # TODO: add these:
 # programmable/template :template #p"${CMAKE_CURRENT_SOURCE_DIR}/test/data/empty.template"

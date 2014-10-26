@@ -98,7 +98,8 @@
                                     &inherit))
                    :converters   converters
                    :error-policy error-policy)))
-    (appendf (receiver-filters listener) filters)
+    (when filters
+      (appendf (receiver-filters listener) filters))
     (log:info "~@<Created listener ~A~@:>" listener)
     (push handler (rsb.ep:handlers listener))
     listener))
