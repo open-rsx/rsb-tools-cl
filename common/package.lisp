@@ -19,6 +19,9 @@
 
   ;; Conditions
   (:export
+   #:call-specification-error
+   #:call-specification-error-specification
+
    #:failed-to-load-idl
    #:failed-to-load-idl-source)
 
@@ -46,6 +49,9 @@
 
   (:export
    #:parse-payload-spec
+
+   #:parse-call-spec
+
    #:parse-meta-data
    #:parse-timestamp
    #:parse-cause)

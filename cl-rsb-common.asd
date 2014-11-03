@@ -138,6 +138,8 @@ system."
                  :pathname   "test/common"
                  :components ((:file       "package")
                               (:file       "error-handling"
+                               :depends-on ("package"))
+                              (:file       "event"
                                :depends-on ("package"))))))
 
 (defmethod perform ((operation test-op)

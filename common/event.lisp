@@ -13,6 +13,11 @@
     ((emptyp spec)
      rsb.converter:+no-value+)
 
+    ((string= spec "true")
+     t)
+    ((string= spec "false")
+     nil)
+
     ((string= spec "-")
      (read-stream-content-into-string *standard-input*))
 
@@ -38,6 +43,20 @@
          (error "~@<Junk at end of argument string: ~S.~@:>"
                 (subseq spec consumed)))
        value))))
+
+(defun parse-call-spec (spec)
+  (with-condition-translation (((error call-specification-error)
+                                :specification spec))
+    (ppcre:register-groups-bind
+        (server-uri method arg)
+        ("^(?:([-_a-zA-Z0-9/:&?#=+;]+))?/([-_a-zA-Z0-9]+)\\((.*)\\)$" spec)
+      (return-from parse-call-spec
+        (values (rsb::parse-scope-or-uri (or server-uri "/"))
+                method
+                (parse-payload-spec arg))))
+    (error "~@<The specification is not of the form ~
+            SERVER-URI/METHOD([ARGUMENT])~@:>"
+           spec)))
 
 (defun parse-pair (pair
                    &key

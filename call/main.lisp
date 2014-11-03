@@ -18,6 +18,10 @@
                     SERVER-URI/METHOD(), METHOD is called without ~
                     argument.~@
                     ~@
+                    If ARG is one of the strings \"true\" and ~
+                    \"false\", it is parsed as the corresponding ~
+                    Boolean value.~@
+                    ~@
                     ARG is parsed as string when surrounded with ~
                     double-quotes and as integer or float number when ~
                     consisting of digits without and with decimal ~
@@ -167,11 +171,7 @@
           ;; 3. Potentially wait for a reply
           ;;    Format it
           (let+ ((spec (first (remainder)))
-                 ((&values server-uri method arg)
-                  (ppcre:register-groups-bind
-                   (server-uri method arg)
-                   ("^([-_a-zA-Z0-9/:&?#=+;]*)/([-_a-zA-Z0-9]+)\\((.*)\\)$" spec)
-                   (values server-uri method (parse-payload-spec arg))))
+                 ((&values server-uri method arg) (parse-call-spec spec))
                  (timeout (getopt :long-name "timeout"))
                  (wait?   (not (getopt :long-name "no-wait")))
                  (style   (make-style (parse-instantiation-spec
@@ -204,10 +204,6 @@
                          (values))
                         (t
                          event))))))
-
-            (unless (and server-uri method arg)
-              (error "~@<Parse error in call specification ~S.~@:>"
-                     spec))
 
             (when (and timeout (not wait?))
               (error "~@<Cannot specify timeout ~S in conjunction with

@@ -17,6 +17,10 @@
                     If EVENT-SPEC is the empty string, an event ~
                     without payload is sent.~@
                     ~@
+                    If EVENT-SPEC is one of the strings \"true\" and ~
+                    \"false\", it is parsed as the corresponding ~
+                    Boolean value.~@
+                    ~@
                     EVENT-SPEC is parsed as string when surrounded ~
                     with double-quotes and as integer or float number ~
                     when consisting of digits without and with decimal ~

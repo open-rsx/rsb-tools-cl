@@ -276,6 +276,8 @@ endforeach()
 
 # Payload specifications for call and send binaries.
 foreach(PAYLOAD ""
+                "true"
+                "false"
                 "\"string\""
                 "1"
                 "1.5"

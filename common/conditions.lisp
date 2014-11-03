@@ -6,6 +6,31 @@
 
 (cl:in-package #:rsb.common)
 
+;;; Event and payload-related conditions
+
+(define-condition call-specification-error (rsb-error
+                                            simple-error
+                                            chainable-condition)
+  ((specification :initarg  :specification
+                  :type     string
+                  :reader   call-specification-error-specification
+                  :documentation
+                  "Stores the invalid specification."))
+  (:default-initargs
+   :specification (missing-required-initarg 'call-specification-error :specification))
+  (:report
+   (lambda (condition stream)
+     (format stream "~@<Error parsing call specification ~S~
+                     ~/more-conditions:maybe-print-explanation/~
+                     ~:*~/more-conditions:maybe-print-cause/~@:>"
+             (call-specification-error-specification condition)
+             condition)))
+  (:documentation
+   "This error is signaled when a call specification cannot be
+    parsed."))
+
+;;; IDL-related conditions
+
 (define-condition failed-to-load-idl (rsb-error
                                       chainable-condition)
   ((source :initarg  :source
