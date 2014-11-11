@@ -73,7 +73,9 @@ See `version/list' for details on keyword parameters."
   :license     "GPLv3" ; see COPYING file for details.
   :description "Main program and dispatch function for all cl-rsb
 tools."
-  :depends-on  ((:version :cl-rsb-tools-info   #.(version/string))
+  :depends-on  ((:version :rsb-introspection   #.(version/string :revision? nil))
+
+                (:version :cl-rsb-tools-info   #.(version/string))
                 (:version :cl-rsb-tools-logger #.(version/string))
                 (:version :cl-rsb-tools-call   #.(version/string))
                 (:version :cl-rsb-tools-send   #.(version/string)))
