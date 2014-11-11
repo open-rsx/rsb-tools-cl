@@ -1,6 +1,6 @@
 ;;;; event-style-compact.lisp --- Compact event formatting style class.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -19,16 +19,18 @@
             (cons predicate (make-instance 'event-style-compact-line
                                            :columns spec))))
          (dummy '(:constant :name "" :value "" :width 0)))
-    (mapcar #'make-sub-style
-            `((,#'request-event? . (:now
+    (mapcar (lambda+ ((predicate . column-specs))
+              (make-sub-style (cons predicate
+                                    (sublis *basic-columns* column-specs))))
+            `((,#'request-event? . (:receive
                                     :id :call ,dummy ,dummy
                                     :wire-schema :data-size :origin :sequence-number
                                     :newline))
-              (,#'reply-event?   . (:now
+              (,#'reply-event?   . (:receive
                                     :call-id :result ,dummy ,dummy
                                     :wire-schema :data-size :origin :sequence-number
                                     :newline))
-              (,(constantly t)   . (:now
+              (,(constantly t)   . (:receive
                                     :id :method :scope :data
                                     :wire-schema :data-size :origin :sequence-number
                                     :newline))))))

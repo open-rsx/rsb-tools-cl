@@ -70,6 +70,17 @@
     (format stream "~{/~A~}::~A" ; TODO format-scope-components
             (butlast components) (lastcar components))))
 
+(defun print-timestamp (stream timestamp &optional colon? at?)
+  (cond
+    ((not timestamp)
+     (format stream "N/A"))
+    ((not colon?)
+     (local-time:format-timestring stream timestamp))
+    (t
+     (local-time:format-timestring
+      stream timestamp
+      :format '((:hour 2) #\: (:min 2) #\: (:sec 2) #\. (:usec 6))))))
+
 ;;;
 
 (eval-when (:compile-toplevel :load-toplevel :execute)

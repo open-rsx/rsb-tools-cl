@@ -83,11 +83,7 @@
   (define-simple-column (:now ((15 32) :right 1.5)
                          :event-class t)
       "Emit the current time in either full or compact format."
-    (if (>= (column-width column) 32)
-        (format stream "~A" (local-time:now))
-        (local-time:format-timestring
-         stream (local-time:now)
-         :format '((:hour 2) #\: (:min 2) #\: (:sec 2) #\. (:usec 6)))))
+    (print-timestamp stream (local-time:now) (< (column-width column) 32)))
 
   (define-simple-column (:text 32
                          :event-class t)
@@ -217,6 +213,7 @@
 (macrolet
     ((define-meta-data-column ((name
                                 &key
+                                (width    32)
                                 (accessor (find-symbol (string name) :rsb))))
        (let ((class-name (intern (string name))))
          `(progn
@@ -233,8 +230,9 @@
                     "Stores the key of the meta-data item that should
                      be extracted from events."))
               (:default-initargs
+               :name      ""
                :key       (missing-required-initarg ',class-name :key)
-               :width     32
+               :widths    ,width
                :alignment :left)
               (:documentation
                ,(format nil "Emit the ~(~A~) of the event designated by ~
@@ -243,19 +241,23 @@
 
             (defmethod shared-initialize :after ((instance   ,class-name)
                                                  (slot-names t)
-                                                 &key)
+                                                 &key
+                                                 name)
               (setf (column-name instance)
-                    (format nil "~@(~A~)" (column-key instance))))
+                    (format nil "~@(~@[~A~]~A~)"
+                            name (column-key instance))))))))
 
-            (defmethod format-event ((event  event)
-                                     (column ,class-name)
-                                     (stream t)
-                                     &key &allow-other-keys)
-              (format stream "~:[N/A~;~:*~A~]"
-                      (,accessor event (column-key column))))))))
-
-  (define-meta-data-column (:timestamp))
+  (define-meta-data-column (:timestamp :width '(15 32)))
   (define-meta-data-column (:meta-data)))
+
+(defmethod format-event ((event event) (column timestamp) (stream t)
+                         &key &allow-other-keys)
+  (print-timestamp stream (timestamp event (column-key column))
+                   (< (column-width column) 32)))
+
+(defmethod format-event ((event event) (column meta-data) (stream t)
+                         &key &allow-other-keys)
+  (format stream "~:[N/A~;~:*~A~]" (meta-data event (column-key column))))
 
 ;;; Count column
 
@@ -289,8 +291,11 @@
 ;;; `style-compact/*' `style-statistics/*' and `style-monitor/*'.
 
 (defvar *basic-columns*
-  '(;; Quantities
-    (:now           . (:now :priority 2.5))
+  '(;; Event Properties
+    (:now           . (:now :priority 1.5))
+    (:receive       . (:timestamp :key :receive :priority 1.5))
+    (:wire-schema   . (:wire-schema :priority 2.4))
+    ;; Quantities
     (:rate/9        . (:quantity :quantity :rate       :widths 9))
     (:rate/12       . (:quantity :quantity :rate       :widths 12))
     (:throughput/13 . (:quantity :quantity :throughput :widths 13))
