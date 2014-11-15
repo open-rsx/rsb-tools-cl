@@ -53,10 +53,12 @@
 
 (define-condition-translating-method make-style (spec &rest args)
   ((error style-creation-error)
-   :specification (append (ensure-list spec) args)))
+   :specification (append (ensure-list spec)
+                          (remove-from-plist args :service))))
 
-(defmethod make-style ((spec symbol) &rest args)
-  (apply #'service-provider:make-provider 'style spec args))
+(defmethod make-style ((spec symbol) &rest args &key (service 'style))
+  (apply #'service-provider:make-provider service spec
+         (remove-from-plist args :service)))
 
 (defmethod make-style ((spec cons) &rest args)
   (check-type spec (cons keyword list) "a keyword followed by initargs")
