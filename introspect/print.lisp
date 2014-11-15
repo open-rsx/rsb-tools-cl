@@ -130,15 +130,21 @@
 
 (defun print-host-info-details-markup (stream host-info &optional colon? at?)
   (declare (ignore colon? at?))
-  (let* ((remote?      (typep host-info 'remote-host-info))
+  (let+ (((&structure-r/o
+           host-info-
+           machine-type machine-version software-type software-version)
+          host-info)
+         (remote?      (typep host-info 'remote-host-info))
          (clock-offset (when remote? (info-clock-offset host-info)))
          (latency      (when remote? (info-latency host-info))))
     (format stream "Clock offset ~/rsb.tools.introspect::print-time-offset-markup/~
-                    ~24,0T│ Machine type    ~A~60,0T│ Software type    ~A~
+                    ~24,0T│ Machine type    ~:[?~:;~:*~A~]~
+                    ~60,0T│ Software type    ~:[?~:;~:*~A~]~
                     ~@:_Latency      ~/rsb.tools.introspect::print-time-offset-markup/~
-                    ~24,0T│ Machine version ~A~60,0T│ Software version ~A"
-            clock-offset (machine-type)                         (software-type)
-            latency      (truncate-string (machine-version) 17) (software-version))))
+                    ~24,0T│ Machine version ~:[?~:;~:*~A~]~
+                    ~60,0T│ Software version ~:[?~:;~:*~A~]"
+     clock-offset machine-type                         software-type
+     latency      (truncate-string machine-version 17) software-version)))
 
 ;;; Tree printing
 
