@@ -61,7 +61,8 @@
                                   &optional colon? at?)
   (declare (ignore colon? at?))
   (let+ ((remote? (typep process-info 'remote-process-info))
-         ((&structure process-info- process-id program-name commandline-arguments state)
+         ((&structure
+           process-info- process-id program-name commandline-arguments state)
           process-info))
     (format stream "~6,,,'0@A~
                     ~17,0T~@[ ~/rsb.tools.introspect::print-process-state-markup/~]~
@@ -76,16 +77,17 @@
                                           &optional colon? at?)
   (declare (ignore colon? at?))
   (let+ ((remote? (typep process-info 'remote-process-info))
-         ((&accessors (transports process-info-transports)
-                      (start-time            process-info-start-time)
-                      (latency               info-latency)
-                      )
+         ((&accessors (start-time     process-info-start-time)
+                      (executing-user process-info-executing-user)
+                      (transports     process-info-transports)
+                      (latency        info-latency))
           process-info))
    (format stream "Uptime    ~@[ ~:/rsb.tools.introspect::print-elapsed-time/~]~
+                   ~24,0T│ User        ~:[?~:;~:*~A~]~
                    ~@:_Latency ~/rsb.tools.introspect::print-time-offset-markup/~
                    ~24,0T│ RSB Version~:[?~:; ~:*~A~]~
                    ~@:_Transports~@[ ~@<~{~A~^, ~_~}~:>~]"
-           start-time
+           start-time executing-user
            (when remote? latency) (cl-rsb-system:version/string :revision? t :commit? t)
            (when remote?
              (mapcar (lambda (uri) (puri:merge-uris (puri:uri "/") uri))
