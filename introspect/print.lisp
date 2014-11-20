@@ -79,16 +79,17 @@
   (let+ ((remote? (typep process-info 'remote-process-info))
          ((&accessors (start-time     process-info-start-time)
                       (executing-user process-info-executing-user)
+                      (rsb-version    process-info-rsb-version)
                       (transports     process-info-transports)
                       (latency        info-latency))
           process-info))
    (format stream "Uptime    ~@[ ~:/rsb.tools.introspect::print-elapsed-time/~]~
                    ~24,0T│ User        ~:[?~:;~:*~A~]~
                    ~@:_Latency ~/rsb.tools.introspect::print-time-offset-markup/~
-                   ~24,0T│ RSB Version~:[?~:; ~:*~A~]~
+                   ~24,0T│ RSB Version ~:[?~:;~:*~A~]~
                    ~@:_Transports~@[ ~@<~{~A~^, ~_~}~:>~]"
-           start-time executing-user
-           (when remote? latency) (cl-rsb-system:version/string :revision? t :commit? t)
+           start-time             executing-user
+           (when remote? latency) rsb-version
            (when remote?
              (mapcar (lambda (uri) (puri:merge-uris (puri:uri "/") uri))
                      transports)))))
