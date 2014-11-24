@@ -1,6 +1,6 @@
 ;;;; plot-statistics.lisp --- Plot timing-related statistics for multiple scopes.
 ;;;;
-;;;; Copyright (C) 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -33,7 +33,7 @@
                  (:latency :from :send :to :receive)
                  (:latency :from :receive :to :deliver)
                  :rate
-                 :period-time
+                 (:period-time :extractor ,(rcurry #'timestamp :create))
                  (:period-time :extractor ,(rcurry #'timestamp :send)))))
 
     (defun save-statistics (file timestamp scopes)
@@ -112,20 +112,19 @@
                         ~:[~:;set xdata time
                         set timefmt \"%Y-%m-%dT%H:%M:%S+01:00\"~]
 
-                        set xtics font \",2\"
+                        set xtics font \",6\"
                         set xtics rotate by -30
 
                         set offsets 0, 0, .001, .001
 
                         set key outside above
-                        set key font \",2\"
                         set key box
 
                         set grid
 
                         plot ~S"
                 type terminal-options output gnuplot-4.6? data-file)
-        (iter (for (scope . (id . _)) in     (sort scopes #'string<
+        (iter (for (scope . (id . _)) in    (sort scopes #'string<
                                                   :key (compose #'scope-string #'car)))
               (for first?            :first t :then nil)
               (write-plot-commands-for-scope
@@ -136,7 +135,8 @@
                       (write-plot-commands (hash-table-alist scopes) name plot-file
                                            :which which)
                       (sb-ext:run-program "gnuplot" (list plot-file)
-                                          :search t :error *error-output*)
+                                          :search t
+                                          :error  *error-output*)
                       (delete-file plot-file))))
 
               (mapc (lambda (which)

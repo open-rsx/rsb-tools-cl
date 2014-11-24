@@ -1,6 +1,6 @@
 ;;;; plot-timestamps.lisp --- Plot timestamps for multiple scopes.
 ;;;;
-;;;; Copyright (C) 2013 Jan Moringen
+;;;; Copyright (C) 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -10,8 +10,11 @@
 
   (let (;; Tunable parameters
         (timestamps       '(:create :send :receive :deliver))
-        (colors           (circular-list #xff0000 #x00ff00 #x0000ff #xffff00
-                                         #xff00ff #x00ffff #xff00ff))
+        (colors           (circular-list #xff0000 #x00ff00 #x0000ff
+                                         #xffff00 #xff00ff #x00ffff
+                                         #x80ff00 #xff8000
+                                         #x8000ff #xff0080
+                                         #x0080ff #x00ff80))
         (type             "png")
         (terminal-options "font \",8\" size 1400, 800")
         (gnuplot-4.6?     (ppcre:register-groups-bind (major minor)
@@ -73,14 +76,13 @@
                         ~:[~:;set xdata time
                         set timefmt \"%Y-%m-%dT%H:%M:%S+01:00\"~]
 
-                        set xtics font \",2\"
+                        set xtics font \",6\"
                         set xtics rotate by -30
                         unset ytics
 
                         set offsets 0, 0, .1, .1
 
                         set key outside above
-                        set key font \",2\"
                         set key invert
                         set key box
 
