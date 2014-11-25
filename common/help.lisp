@@ -100,12 +100,18 @@
 
 (defun print-filter-help (stream
                           &key
-                          (class-blacklist   '(:or :disjoin :and :conjoin :constant))
+                          (class-blacklist   '(:not :complement
+                                               :or :disjoin :and :conjoin
+                                               :constant ))
                           (initarg-blacklist '(:intern-scope?)))
   "Format a table of filter names and corresponding documentation
    strings onto STREAM."
   (print-classes-help-string
-   (rsb.filter:filter-classes) stream
+   (mapcar (lambda (provider)
+             (list (service-provider:provider-name provider)
+                   (service-provider:provider-class provider)))
+           (service-provider:service-providers 'rsb.filter::filter))
+   stream
    :class-blacklist   class-blacklist
    :initarg-blacklist initarg-blacklist))
 
