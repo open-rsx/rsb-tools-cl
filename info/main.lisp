@@ -40,6 +40,11 @@
                       :default-value   nil
                       :description
                       "Display information regarding available filters?")
+              (switch :long-name       "transforms"
+                      :short-name      "t"
+                      :default-value   nil
+                      :description
+                      "Display information regarding available event transformations?")
               (switch :long-name       "event-processing"
                       :short-name      "e"
                       :default-value   nil
@@ -81,7 +86,7 @@
                             '(:all? t))
                           (mapcan #'make-initarg
                                   '(:version? :configuration? :connectors?
-                                    :converters? :filters?
+                                    :converters? :filters? :transforms?
                                     :event-processing? :participants?))))))
     (with-print-limits (stream)
       (with-logged-warnings

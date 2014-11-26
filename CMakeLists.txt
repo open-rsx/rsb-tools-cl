@@ -247,7 +247,7 @@ endforeach()
 
 # All categories for info binary.
 foreach(CATEGORY verbose configuration connectors converters filters
-                 event-processing participants)
+                 transforms event-processing participants)
     add_test(NAME    "info/category=${CATEGORY}"
              COMMAND "${MAIN_EXECUTABLE}" info --debug --${CATEGORY})
 endforeach()

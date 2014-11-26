@@ -23,6 +23,7 @@
         ((:connectors?       t))
         ((:converters?       t))
         ((:filters?          t))
+        ((:transforms?       t))
         ((:event-processing? t))
         ((:participants?     t))
         ((:stream            ,*standard-output*))

@@ -37,6 +37,12 @@
                       :documentation
                       "Display information regarding available
                        filters?")
+   (transforms?       :initform nil
+                      :reader   info-transforms?
+                      :accessor info-%transforms?
+                      :documentation
+                      "Display information regarding available
+                       transforms?")
    (event-processing? :initform nil
                       :reader   info-event-processing?
                       :accessor info-%event-processing?
@@ -64,6 +70,7 @@
      (connectors?       nil connectors?-supplied?)
      (converters?       nil converters?-supplied?)
      (filters?          nil filters?-supplied?)
+     (transforms?       nil transforms?-supplied?)
      (event-processing? nil event-processing?-supplied?)
      (participants?     nil participants?-supplied?))
   (macrolet ((do-option (name)
@@ -79,6 +86,7 @@
     (do-option connectors?)
     (do-option converters?)
     (do-option filters?)
+    (do-option transforms?)
     (do-option event-processing?)
     (do-option participants?)))
 
@@ -87,7 +95,7 @@
 
   (let+ (((&structure-r/o
            info- version? configuration? connectors? converters? filters?
-           event-processing? participants?)
+           transforms? event-processing? participants?)
           command)
          (stream (command-stream command)))
 
@@ -114,6 +122,18 @@
     (when filters?
       (rsb.formatting::with-indented-section (stream "Filters")
         (print-filter-help stream)))
+
+    (when transforms?
+      (format stream "~:[~;~2&~]Transforms~
+                      ~&~2@T~@<~
+                        ~:[<none>~;~:*~{+ ~<~@;~16A~@[ ~A~]~:>~^~@:_~}~]~
+                      ~:>"
+              nil
+              (mapcar (lambda (provider)
+                        (list (service-provider:provider-name provider)
+                              (when-let ((documentation (documentation provider t)))
+                                (first-line-or-less documentation))))
+                      (service-provider:service-providers 'rsb.transform::transform))))
 
     (when event-processing?
       (format stream
