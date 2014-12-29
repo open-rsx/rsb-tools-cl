@@ -6,14 +6,14 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defmethod find-style-class ((spec (eql :image/png)))
-  (find-class 'style-image/png))
-
 (defclass style-image/png (image-output-mixin)
   ()
   (:documentation
    "This formatting style output image data in PNG format for event
     payloads consisting of image data."))
+
+(service-provider:register-provider/class
+ 'style :image/png :class 'style-image/png)
 
 (deftype %image-index () '(unsigned-byte 24))
 

@@ -33,15 +33,15 @@
           Hz, ~A~}).~@:>"
          descriptor-1 descriptor-2))
 
-(defmethod find-style-class ((spec (eql :audio-stream/raw)))
-  (find-class 'style-audio-stream/raw))
-
 (defclass style-audio-stream/raw (style-audio-stream)
   ()
   (:documentation
    "This style produces a stream of raw audio samples (i.e. without a
     header or other format information) from event payloads containing
     audio data."))
+
+(service-provider:register-provider/class
+ 'style :audio-stream/raw :class 'style-audio-stream/raw)
 
 (defmethod format-payload ((data   rst.audition:sound-chunk)
                            (style  style-audio-stream/raw)

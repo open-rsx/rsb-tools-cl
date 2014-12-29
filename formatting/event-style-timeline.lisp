@@ -67,16 +67,16 @@
                (parse-body doc-and-column-specs :documentation t))
               (columns column-specs))
          `(progn
-            (defmethod find-style-class ((spec (eql ,spec)))
-              (find-class ',class-name))
-
             (defclass ,class-name (basic-timeline-style)
               ()
               (:default-initargs
                :columns (lambda (value) (list ,@columns))
                ,@initargs)
               ,@(when documentation
-                 `((:documentation ,documentation))))))))
+                      `((:documentation ,documentation))))
+
+            (service-provider:register-provider/class
+             'style ,spec :class ',class-name)))))
 
   (define-timeline-style (scope :key #'event-scope :test #'scope=)
     "This formatting style indicates the points in time at which

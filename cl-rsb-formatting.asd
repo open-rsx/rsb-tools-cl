@@ -77,9 +77,10 @@ RSB-related systems."
                 :let-plus
                 :more-conditions
                 :cl-interpol
-                (:version :log4cl "1.1.1")
+                (:version :log4cl                        "1.1.1")
+                (:version :architecture.service-provider "0.1")
 
-                (:version :cl-rsb #.(version/string :revision? nil)))
+                (:version :cl-rsb                        #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
                  :pathname   "formatting"

@@ -6,9 +6,6 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defmethod find-style-class ((spec (eql :meta-data)))
-  (find-class 'style-meta-data))
-
 (defclass style-meta-data (separator-mixin)
   ((routing-info? :initarg  :routing-info?
                   :type     boolean
@@ -42,6 +39,9 @@
   (:documentation
    "Format the meta-data of each event on multiple lines, but do not
     format event payloads."))
+
+(service-provider:register-provider/class
+ 'style :meta-data :class 'style-meta-data)
 
 (defmethod format-event ((event  event)
                          (style  style-meta-data)

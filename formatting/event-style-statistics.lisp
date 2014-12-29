@@ -32,9 +32,6 @@
 
 ;;; Class `style-statistics'
 
-(defmethod find-style-class ((spec (eql :statistics)))
-  (find-class 'style-statistics))
-
 (defclass style-statistics (periodic-printing-mixin
                             statistics-columns-mixin
                             widths-caching-mixin
@@ -49,6 +46,9 @@
     statistical quantities from received events collected over a
     configurable period of time and prints the computed values in a
     tabular manner."))
+
+(service-provider:register-provider/class
+ 'style :statistics :class 'style-statistics)
 
 (defmethod format-event :before ((event  (eql :trigger))
                                  (style  style-statistics)

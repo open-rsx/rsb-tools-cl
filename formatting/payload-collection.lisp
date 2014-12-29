@@ -16,7 +16,7 @@
    collection payloads.")
 
 (defvar *by-scope-formatting-event-style*
-  (make-instance (find-style-class :detailed) :separator nil)
+  (make-style :detailed :separator nil)
   "The formatting style used for sub-events contained in collections
    of events.")
 
