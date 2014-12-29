@@ -35,13 +35,19 @@
                       currently available:~@
                       ~@
                       ")
-      (rsb.common:print-classes-help-string
-       (style-classes) stream
-       :initarg-blacklist '(:stream :pretty-state
-                            :quantities :count
-                            :sub-styles :test :key
-                            :sort-predicate :sort-key
-                            :code))
+      (let* ((providers (service-provider:service-providers 'style))
+             (classes   (mapcar (lambda (provider)
+                                  (list
+                                   (service-provider:provider-name provider)
+                                   (service-provider:provider-class provider)))
+                                providers)))
+        (rsb.common:print-classes-help-string
+         classes *standard-output*
+         :initarg-blacklist '(:stream :pretty-state
+                              :quantities :count
+                              :sub-styles :test :key
+                              :sort-predicate :sort-key
+                              :code)))
 
       (format stream "~%~%")
       (rsb.common:with-abbreviation (stream :columns show)

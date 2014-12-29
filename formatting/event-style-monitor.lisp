@@ -123,16 +123,16 @@
                                        *basic-columns*)
                                column-specs)))
          `(progn
-            (defmethod find-style-class ((spec (eql ,spec)))
-              (find-class ',class-name))
-
             (defclass ,class-name (basic-monitor-style)
               ()
               (:default-initargs
                :columns (lambda (value) (list ,@columns))
                ,@initargs)
               ,@(when documentation
-                  `((:documentation ,documentation))))))))
+                  `((:documentation ,documentation))))
+
+            (service-provider:register-provider/class
+             'style ,spec :class ',class-name)))))
 
   (define-monitor-style (timeline :key #'event-scope :test #'scope=)
     "This style groups events by scope and periodically displays
@@ -164,8 +164,8 @@
     ;; Specifications for remaining columns.
     :rate/9 :throughput/13 :latency :type/40 :size/20 :origin/40)
 
-  (defmethod find-style-class ((spec (eql :monitor))) ; alias
-    (find-style-class :monitor/scope))
+  (service-provider:register-provider/class ; alias
+   'style :monitor :class 'style-monitor/scope)
 
   (define-monitor-style (origin :key #'event-origin :test #'uuid:uuid=)
     "This style groups events by origin and periodically displays

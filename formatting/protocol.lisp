@@ -35,10 +35,11 @@
 
 ;;; Formatting style class family
 
-(dynamic-classes:define-findable-class-family style
-  "This class family consists of event formatting style classes. Each
-   class implements a particular style of formatting received events
-   onto a given stream by specializing `format-event'.")
+(service-provider:define-service style
+  (:documentation
+   "This class family consists of event formatting style classes. Each
+    class implements a particular style of formatting received events
+    onto a given stream by specializing `format-event'."))
 
 (defgeneric make-style (spec &rest args)
   (:documentation
@@ -55,7 +56,7 @@
    :specification (append (ensure-list spec) args)))
 
 (defmethod make-style ((spec symbol) &rest args)
-  (apply #'make-instance (find-style-class spec) args))
+  (apply #'service-provider:make-provider 'style spec args))
 
 (defmethod make-style ((spec cons) &rest args)
   (check-type spec (cons keyword list) "a keyword followed by initargs")

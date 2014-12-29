@@ -60,10 +60,6 @@
 
   ;; Formatting style class family
   (:export
-   #:no-such-style-class
-   #:find-style-class
-   #:style-classes
-
    #:make-style)
 
   ;; Collecting protocol

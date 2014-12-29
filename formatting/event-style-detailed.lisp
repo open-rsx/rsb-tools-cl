@@ -6,14 +6,14 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defmethod find-style-class ((spec (eql :detailed)))
-  (find-class 'style-detailed))
-
 (defclass style-detailed (style-meta-data)
   ()
   (:documentation
    "Format each event on multiple lines with as many details as
     possible."))
+
+(service-provider:register-provider/class
+ 'style :detailed :class 'style-detailed)
 
 (defmethod format-event ((event  event)
                          (style  style-detailed)

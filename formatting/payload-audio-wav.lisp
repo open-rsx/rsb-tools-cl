@@ -1,19 +1,19 @@
 ;;;; payload-wav.lisp --- Format event data as WAV files.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:rsb.formatting)
-
-(defmethod find-style-class ((spec (eql :audio-stream/wav)))
-  (find-class 'style-audio-stream/wav))
 
 (defclass style-audio-stream/wav (style-audio-stream/raw)
   ()
   (:documentation
    "This style produces an audio stream in WAV format from event
     payloads containing audio data."))
+
+(service-provider:register-provider/class
+ 'style :audio-stream/wav :class 'style-audio-stream/wav)
 
 (defmethod write-header ((descriptor list)
                          (style      style-audio-stream/wav)

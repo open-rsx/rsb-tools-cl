@@ -174,9 +174,6 @@
 
 ;;; Script-based style
 
-(defmethod find-style-class ((spec (eql :programmable/script)))
-  (find-class 'style-programmable/script))
-
 (defclass style-programmable/script (style-programmable)
   ((code :reader   style-script))
   (:default-initargs
@@ -192,6 +189,9 @@
 
     By default, the following bindings are available:
 "))
+
+(service-provider:register-provider/class
+ 'style :programmable/script :class 'style-programmable/script)
 
 (defmethod shared-initialize :after ((instance   style-programmable/script)
                                      (slot-names t)
@@ -238,9 +238,6 @@
 
 ;;; Template-based style
 
-(defmethod find-style-class ((spec (eql :programmable/template)))
-  (find-class 'style-programmable/template))
-
 (defclass style-programmable/template (style-programmable)
   ((template :type     string
              :accessor style-template
@@ -263,6 +260,9 @@
 
     By default, the following PROPERTY names are available:
 "))
+
+(service-provider:register-provider/class
+ 'style :programmable/template :class 'style-programmable/template)
 
 (defmethod shared-initialize :after ((instance   style-programmable/template)
                                      (slot-names t)

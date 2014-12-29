@@ -33,9 +33,6 @@
                                     :wire-schema :data-size :origin :sequence-number
                                     :newline))))))
 
-(defmethod find-style-class ((spec (eql :compact)))
-  (find-class 'event-style-compact))
-
 (defclass event-style-compact (delegating-mixin
                                header-printing-mixin)
   ()
@@ -45,6 +42,9 @@
    "This formatting style prints several properties of received events
     on a single line. Some events are formatted specially according to
     their role in a communication pattern."))
+
+(service-provider:register-provider/class
+ 'style :compact :class 'event-style-compact)
 
 (defmethod sub-style-for ((style event-style-compact)
                           (event t))
