@@ -342,7 +342,7 @@ foreach(STYLE discard meta-data payload detailed
                     "inprocess:/foo/bar(1)")
 endforeach()
 
-foreach(URLS "" "inprocess:" "inprocess:;inprocess:/")
+foreach(URLS "inprocess:" "inprocess:;inprocess:/")
   foreach(STYLE "" "--style;object-tree" "--style;monitor/object-tree" "--style;monitor/events")
     string(REGEX REPLACE "[;:]" "_" CLEAN_URLS "${URLS}")
     string(REGEX REPLACE "[;-]" "_" CLEAN_STYLE "${STYLE}")
