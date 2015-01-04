@@ -1,6 +1,6 @@
 ;;;; cl-rsb-common.asd --- Common functions for cl-rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -82,7 +82,8 @@ RSB-related systems."
 
                 :cl-protobuf
 
-                (:version :cl-rsb #.(version/string :revision? nil)))
+                (:version :cl-rsb   #.(version/string :revision? nil))
+                (:version :rsb-clon #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "common"
                  :components ((:file       "package")

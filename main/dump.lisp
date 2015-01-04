@@ -1,13 +1,6 @@
 (load-system :iterate)
 (setf iterate::*always-declare-variables* t)
 
-(load-system :cl-ppcre)               ; for regex filter
-
-(load-system :cl-protobuf)
-#-win32 (load-system :network.spread) ; for spread transport
-
-(load-system :usocket)                ; for socket transport
-
 (load-system :swank)                  ; for the lulz
 
 (load-system :cl-rsb-tools-main)

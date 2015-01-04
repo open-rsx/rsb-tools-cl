@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-introspect.asd --- Introspection utility based on rsb-introspection.
 ;;;;
-;;;; Copyright (C) 2014 Jan Moringen
+;;;; Copyright (C) 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -75,18 +75,17 @@
   :depends-on  (:alexandria
                 :let-plus
                 :iterate
-                (:version :log4cl                      "1.1.1")
+                (:version :log4cl               "1.1.1")
 
-                (:version :utilities.print-tree        "0.1")
+                (:version :utilities.print-tree "0.1")
 
                 :com.dvlsoft.clon
 
-                (:version :cl-rsb                      #.(version/string :revision? nil))
-                (:version :cl-rsb-and-com.dvlsoft.clon #.(version/string :revision? nil))
-                (:version :rsb-introspection           #.(version/string :revision? nil))
+                (:version :cl-rsb               #.(version/string :revision? nil))
+                (:version :rsb-introspection    #.(version/string :revision? nil))
 
-                (:version :cl-rsb-common               #.(version/string))
-                (:version :cl-rsb-formatting           #.(version/string)))
+                (:version :cl-rsb-common        #.(version/string))
+                (:version :cl-rsb-formatting    #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "introspect"
                  :serial     t

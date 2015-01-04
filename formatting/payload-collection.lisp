@@ -1,13 +1,10 @@
 ;;;; payload-collections.lisp --- Format event collections.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:rsb.formatting)
-
-;; TODO(jmoringe, 2012-02-06): hack
-#.(asdf:load-system :usocket)
 
 (defvar *by-scope-formatting-converter*
   (append (ensure-list (rsb:default-converter 'octet-vector))

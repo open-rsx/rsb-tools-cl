@@ -1,6 +1,6 @@
 ;;;; cl-rsb-formatting.asd --- Formatting functions for cl-rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -80,7 +80,9 @@ RSB-related systems."
                 (:version :log4cl                        "1.1.1")
                 (:version :architecture.service-provider "0.1")
 
-                (:version :cl-rsb                        #.(version/string :revision? nil)))
+                (:version :cl-rsb                        #.(version/string :revision? nil))
+                (:version :rsb-protocol                  #.(version/string :revision? nil))  ; for payload-collection
+                (:version :rsb-transport-socket          #.(version/string :revision? nil))) ; likewise
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
                  :pathname   "formatting"
