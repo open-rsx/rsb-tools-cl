@@ -1,10 +1,27 @@
 ;;;; util.lisp --- Utility functions for event formatting.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:rsb.formatting)
+
+;;; Extractor functions
+
+;; TODO duplicated in stats/util.lisp. Maybe we can fix that at some
+;; point.
+(defun event-size (event &optional (replacement-value :n/a))
+  "Try to determine and return the size of the payload of EVENT in
+   bytes. Return REPLACEMENT-VALUE, if the size cannot be determined."
+  (or (meta-data event :rsb.transport.payload-size)
+      (let ((data (event-data event)))
+        (typecase data
+          (integer
+           (ceiling (integer-length data) 8))
+          (sequence
+           (length data))
+          (t
+           replacement-value)))))
 
 ;;; Timestamp handling
 

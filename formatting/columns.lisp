@@ -1,6 +1,6 @@
 ;;;; columns.lisp --- Some column classes.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -142,10 +142,7 @@
                          :print-name "Data Size")
       "Emit an indication of the size of the data contained in the
        event, if the size can be determined."
-    (let* ((data (event-data event))
-           (size (typecase data
-                   (sequence (length data)))))
-      (format stream "~:[N/A~;~:*~,,,3:D~]" size)))
+    (format stream "~:[N/A~;~:*~,,,3:D~]" (event-size event nil)))
 
   (define-simple-column (:notification-size 9
                          :print-name "Notification Size")
