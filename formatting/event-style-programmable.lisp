@@ -1,6 +1,6 @@
 ;;;; event-style-progammable.lisp --- A programmable formatting style.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -92,14 +92,12 @@
 
 (defmethod (setf style-code) :before ((new-value t)
                                       (style     style-programmable))
-  (let+ (((&accessors (lambda   style-%lambda)
-                      (bindings style-%bindings)) style))
+  (let+ (((&structure style- (lambda %lambda) (bindings %bindings)) style))
     (setf lambda (compile-code style new-value bindings))))
 
 (defmethod (setf style-bindings) :before ((new-value list)
                                           (style     style-programmable))
-  (let+ (((&accessors (lambda style-%lambda)
-                      (code   style-%code)) style))
+  (let+ (((&structure style- (lambda %lambda) (code %code)) style))
     (setf lambda (compile-code style code new-value))))
 
 (defmethod compile-code ((style    style-programmable)
@@ -150,8 +148,7 @@
                          (style  style-programmable)
                          (stream stream)
                          &key &allow-other-keys)
-  (let+ (((&accessors-r/o (bindings style-bindings)
-                          (code     style-code)) style))
+  (let+ (((&structure-r/o style- bindings code) style))
    (handler-bind
        (((and error (not stream-error))
           (lambda (condition)
@@ -165,8 +162,7 @@
 (defmethod print-object ((object style-programmable) stream)
   (print-unreadable-object (object stream :type t :identity t)
     (if (slot-boundp object 'code)
-        (let+ (((&accessors-r/o (code     style-code)
-                                (bindings style-bindings)) object)
+        (let+ (((&structure-r/o style- code bindings) object)
                (*print-length* (or *print-length* 3)))
           (format stream "~:[<no code>~;~:*~A~] " code)
           (%print-bindings bindings stream))
@@ -240,7 +236,7 @@
 
 (defclass style-programmable/template (style-programmable)
   ((template :type     string
-             :accessor style-template
+             :reader   style-template
              :writer   (setf style-%template)
              :documentation
              "Stores the template which is used for producing the
@@ -287,9 +283,8 @@
                      (format nil "#?\"~A\"" new-value)))))))
     (setf (style-code style) `((princ ,form stream)))))
 
-(defmethod (setf style-template) ((new-value t)
+(defmethod (setf style-template) ((new-value string)
                                   (style     style-programmable/template))
-  (check-type new-value string)
   (setf (style-%template style) new-value))
 
 (defmethod (setf style-template) ((new-value stream)
@@ -324,8 +319,7 @@
 (defmethod print-object ((object style-programmable/template) stream)
   (if (slot-boundp object 'template)
       (print-unreadable-object (object stream :type t :identity t)
-        (let+ (((&accessors-r/o (template style-template)
-                                (bindings style-bindings)) object)
+        (let+ (((&structure-r/o style- template bindings) object)
                (length (length template)))
           (format stream "\"~A~:[~;…~]\" "
                   (subseq template 0 (min 8 length)) (> length 8))
