@@ -1,6 +1,6 @@
 ;;;; interactive.lisp --- Functions for interactive stuff.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -20,6 +20,8 @@
   (once-only (target-thread)
     `(restart-case
          (flet ((install-handler (signal)
+                  #+win32 (declare (ignore signal))
+                  #-win32
                   (sb-unix::enable-interrupt
                    signal
                    (lambda (signal info context)
