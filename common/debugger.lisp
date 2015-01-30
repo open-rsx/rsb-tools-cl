@@ -1,6 +1,6 @@
 ;;;; debugger.lisp --- Disabling the debugger.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -49,6 +49,6 @@
    signal (lambda (signal info context)
             (declare (ignore signal info context))
             (start-swank)))
-  #-(and sbcl (not win32))
+  #-sbcl
   (warn "~@<Cannot install signal handler to enable SWANK on this ~
          implementation-platfom combination.~@:>"))
