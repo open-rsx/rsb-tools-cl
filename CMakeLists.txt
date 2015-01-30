@@ -54,7 +54,7 @@ else()
     file(TO_CMAKE_PATH "${SBCL_HOME}" SBCL_HOME)
     message(STATUS "SBCL_HOME is set to ${SBCL_HOME}. Trying to find SBCL there.")
     find_program(SBCL_EXECUTABLE sbcl
-                 PATHS "${SBCL_HOME}/../../bin" ${SBCL_HOME}
+                 PATHS "${SBCL_HOME}/../../bin" "${SBCL_HOME}"
                  NO_DEFAULT_PATH)
 endif()
 file(TO_CMAKE_PATH "${SBCL_EXECUTABLE}" SBCL_EXECUTABLE)
