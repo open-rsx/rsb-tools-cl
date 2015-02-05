@@ -88,20 +88,26 @@
 (defun make-static ()
   "Hard-wire locations of foreign libraries."
   ;; Do not reload Spread library.
-  #-win32 (unless (network.spread-system:spread-library-pathname)
-    (error "~@<Spread library pathname not provided (use ~
-            SPREAD_LIBRARY environment variable).~@:>"))
-
-  #-win32 (network.spread:use-spread-library
-           :pathname (network.spread-system:spread-library-pathname))
-  #-win32 (network.spread:disable-reload-spread-library))
+  #-win32
+  (when (find-package '#:network.spread-system)
+    (unless (uiop:symbol-call '#:network.spread-system '#:spread-library-pathname)
+      (error "~@<Spread library pathname not provided (use ~
+              SPREAD_LIBRARY environment variable).~@:>"))
+    (uiop:symbol-call '#:network.spread '#:use-spread-library
+                      :pathname (uiop:symbol-call '#:network.spread-system
+                                                  '#:spread-library-pathname))
+    (uiop:symbol-call '#:network.spread '#:disable-reload-spread-library)))
 
 (defun make-dynamic ()
   "Enable dynamic search for and loading of foreign libraries."
   ;; Try to reload Spread library.
-  #-win32 (ignore-errors
-           (network.spread:use-spread-library :pathname nil))
-  #-win32 (network.spread:enable-reload-spread-library :if-fails #'warn))
+  #-win32
+  (when (find-package '#:network.spread)
+    (ignore-errors
+      (uiop:symbol-call '#:network.spread '#:use-spread-library
+                        :pathname nil))
+    (uiop:symbol-call '#:network.spread '#:enable-reload-spread-library
+                      :if-fails #'warn)))
 
 ;;; Utility functions
 
