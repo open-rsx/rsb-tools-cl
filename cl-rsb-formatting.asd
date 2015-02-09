@@ -80,9 +80,12 @@ RSB-related systems."
                 (:version :log4cl                        "1.1.1")
                 (:version :architecture.service-provider "0.1")
 
+                (:version :utilities.print-tree          "0.1")
+
                 (:version :cl-rsb                        #.(version/string :revision? nil))
                 (:version :rsb-protocol                  #.(version/string :revision? nil))  ; for payload-collection
-                (:version :rsb-transport-socket          #.(version/string :revision? nil))) ; likewise
+                (:version :rsb-transport-socket          #.(version/string :revision? nil))  ; likewise
+                (:version :rsb-introspection             #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
                  :pathname   "formatting"
@@ -133,7 +136,15 @@ RSB-related systems."
                                :depends-on ("columns"))
                               (:file       "event-style-columns"
                                :depends-on ("columns"))
-                              (:file       "event-style-programmable"))))
+                              (:file       "event-style-programmable")))
+
+                (:module     "formatting-introspection"
+                 :pathname   "formatting/introspection"
+                 :depends-on ("formatting-early")
+                 :serial     t
+                 :components ((:file       "package")
+                              (:file       "print")
+                              (:file       "styles"))))
 
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
 

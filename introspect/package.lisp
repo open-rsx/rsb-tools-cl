@@ -8,21 +8,12 @@
   (:use
    #:cl
    #:alexandria
-   #:iterate
    #:let-plus
-   #:more-conditions
 
    #:rsb
-   #:rsb.introspection
    #:rsb.common
 
    #:com.dvlsoft.clon)
-
-  (:import-from #:rsb.introspection ; for printing
-   #:remote-introspection-database
-
-   #:remote-introspection
-   #:introspection-database)
 
   (:export
    #:main)

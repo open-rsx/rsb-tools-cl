@@ -77,8 +77,6 @@
                 :iterate
                 (:version :log4cl               "1.1.1")
 
-                (:version :utilities.print-tree "0.1")
-
                 :com.dvlsoft.clon
 
                 (:version :cl-rsb               #.(version/string :revision? nil))
@@ -90,8 +88,4 @@
   :components  ((:module     "introspect"
                  :serial     t
                  :components ((:file       "package")
-
-                              (:file       "print")
-                              (:file       "styles")
-
                               (:file       "main")))))

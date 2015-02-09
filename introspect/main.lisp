@@ -29,7 +29,8 @@
                       available:~@
                       ~@
                       ")
-      (let* ((providers (service-provider:service-providers 'style))
+      (let* ((providers (service-provider:service-providers
+                         'rsb.formatting.introspection::style))
              (classes   (mapcar (lambda (provider)
                                   (list
                                    (service-provider:provider-name provider)
@@ -120,17 +121,18 @@ In most systems, all replies should arrive within a few milliseconds. However, c
                 (style            (rsb.formatting:make-style
                                    (parse-instantiation-spec
                                     (getopt :long-name "style"))
-                                   :service 'style)))
+                                   :service 'rsb.formatting.introspection::style)))
             (unwind-protect
                  (with-interactive-interrupt-exit ()
                    (with-participant
-                       (database :remote-introspection +introspection-scope+
+                       (database :remote-introspection rsb.introspection:+introspection-scope+
                                  :receiver-uris    uris
                                  :error-policy     error-policy
                                  :change-handler   (lambda (&rest event)
                                                      (rsb.ep:handle style event))
                                  :response-timeout response-timeout)
-                     (setf (style-database style) database)
+                     (setf (rsb.formatting.introspection::style-database style)
+                           database)
                      (when (rsb.formatting:format-event :dummy style stream)
                        (sleep most-positive-fixnum))))
               (detach/ignore-errors style))))))))

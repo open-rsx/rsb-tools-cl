@@ -1,10 +1,10 @@
 ;;;; styles.lisp --- Printing and other processing of introspection information.
 ;;;;
-;;;; Copyright (C) 2014 Jan Moringen
+;;;; Copyright (C) 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.tools.introspect)
+(cl:in-package #:rsb.formatting.introspection)
 
 ;;; Service
 

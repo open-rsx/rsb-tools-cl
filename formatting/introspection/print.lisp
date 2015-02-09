@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.tools.introspect)
+(cl:in-package #:rsb.formatting.introspection)
 
 ;;; Utilities
 
@@ -71,8 +71,8 @@
        (let ((*print-right-margin* (when-let ((right-margin *print-right-margin*))
                                      (- right-margin 3))))
          (format stream "~6,,,'0@A~
-                         ~17,0T~@[ ~/rsb.tools.introspect::print-process-state-markup/~]~
-                         ~25,0T~@[ (~:/rsb.tools.introspect::print-elapsed-time/)~]~
+                         ~17,0T~@[ ~/rsb.formatting.introspection::print-process-state-markup/~]~
+                         ~25,0T~@[ (~:/rsb.formatting.introspection::print-elapsed-time/)~]~
                          ~35,0T~@<~:[~A~:;~:*~A (~A)~]~@[ ~:_~{~A~^ ~:_~}~]~@:>"
                  process-id
                  (when remote? state)
@@ -90,9 +90,9 @@
                       (transports     process-info-transports)
                       (latency        info-latency))
           process-info))
-   (format stream "Uptime    ~@[ ~:/rsb.tools.introspect::print-elapsed-time/~]~
+   (format stream "Uptime    ~@[ ~:/rsb.formatting.introspection::print-elapsed-time/~]~
                    ~24,0T│ User        ~:[?~:;~:*~A~]~
-                   ~@:_Latency ~/rsb.tools.introspect::print-time-offset-markup/~
+                   ~@:_Latency ~/rsb.formatting.introspection::print-time-offset-markup/~
                    ~24,0T│ RSB Version ~:[?~:;~:*~A~]~
                    ~@:_Transports~@[ ~@<~{~A~^, ~_~}~:>~]"
            start-time             executing-user
@@ -128,8 +128,8 @@
          (state                (when remote? (host-info-state host-info)))
          (most-recent-activity (when remote? (info-most-recent-activity host-info))))
     (format stream "~A~
-                    ~17,0T~@[ ~/rsb.tools.introspect::print-host-state-markup/~]~
-                    ~25,0T~@[ (~:/rsb.tools.introspect::print-elapsed-time/)~]"
+                    ~17,0T~@[ ~/rsb.formatting.introspection::print-host-state-markup/~]~
+                    ~25,0T~@[ (~:/rsb.formatting.introspection::print-elapsed-time/)~]"
             (host-info-hostname host-info) state most-recent-activity)))
 
 (defun truncate-string (string max)
@@ -147,10 +147,10 @@
          (remote?      (typep host-info 'remote-host-info))
          (clock-offset (when remote? (info-clock-offset host-info)))
          (latency      (when remote? (info-latency host-info))))
-    (format stream "Clock offset ~/rsb.tools.introspect::print-time-offset-markup/~
+    (format stream "Clock offset ~/rsb.formatting.introspection::print-time-offset-markup/~
                     ~24,0T│ Machine type    ~:[?~:;~:*~A~]~
                     ~60,0T│ Software type    ~:[?~:;~:*~A~]~
-                    ~@:_Latency      ~/rsb.tools.introspect::print-time-offset-markup/~
+                    ~@:_Latency      ~/rsb.formatting.introspection::print-time-offset-markup/~
                     ~24,0T│ Machine version ~:[?~:;~:*~A~]~
                     ~60,0T│ Software version ~:[?~:;~:*~A~]"
      clock-offset machine-type                         software-type
