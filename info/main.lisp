@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the info tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -54,11 +54,6 @@
    :item    (make-options
              :show? (or (eq show t)
                         (and (listp show) (member :rsb show))))))
-
-(defun first-line-or-less (string &key (max 65))
-  (let ((end (or (position #\Newline string)
-                 (length string))))
-    (subseq string 0 (min max end))))
 
 (defun main ()
   "Entry point function of the cl-rsb-tools-info system."

@@ -1,6 +1,6 @@
 ;;;; help.lisp --- Automatic generation of help strings.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -157,6 +157,11 @@
 
 ;;; Utility functions
 
+(defun first-line-or-less (string &key (max 65)) ; TODO duplicated elsewhere
+  (let ((end (or (position #\Newline string)
+                 (length string))))
+    (subseq string 0 (min max end))))
+
 (defun print-classes-help-string (classes stream
                                   &key
                                   class-blacklist
@@ -203,8 +208,6 @@
               (map 'list (compose #'first
                                   #'closer-mop:slot-definition-initargs)
                    (closer-mop:class-slots class)))))))
-
-;;; Utility function
 
 (defun %format-documentation (string)
   "Format STRING as documentation by breaking it into paragraphs and
