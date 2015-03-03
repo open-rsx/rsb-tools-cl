@@ -140,6 +140,11 @@ if(WITH_WEB_SUPPORT)
     add_silent_load(rsb-tools-commands-web)
 endif()
 
+option(WITH_GRAPHITE_ADAPTER "Build with introspection graphite adapter." OFF)
+if(WITH_GRAPHITE_ADAPTER)
+    add_silent_load(cl-rsb-tools-introspect-graphite-adapter)
+endif()
+
 # Execute Lisp processes, potentially with output redirection.
 function(configure_lisp NAME CODE)
     set(NAME "${NAME}")
