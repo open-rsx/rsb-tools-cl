@@ -140,6 +140,11 @@ if(WITH_WEB_SUPPORT)
     add_silent_load(rsb-tools-commands-web)
 endif()
 
+option(WITH_INFLUXDB_ADAPTER "Build with introspection influxdb adapter." OFF)
+if(WITH_INFLUXDB_ADAPTER)
+    add_silent_load(cl-rsb-tools-introspect-influxdb-adapter)
+endif()
+
 # Execute Lisp processes, potentially with output redirection.
 function(configure_lisp NAME CODE)
     set(NAME "${NAME}")
