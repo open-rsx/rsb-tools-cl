@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the introspect tool.
 ;;;;
-;;;; Copyright (C) 2014 Jan Moringen
+;;;; Copyright (C) 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -102,7 +102,7 @@ In most systems, all replies should arrive within a few milliseconds. However, c
 (defun main ()
   "Entry point function of the cl-rsb-tools-introspect system."
   (update-synopsis)
-  (setf *default-configuration* (options-from-default-sources))
+  (setf *configuration* (options-from-default-sources))
   (process-commandline-options
    :version         (cl-rsb-tools-introspect-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
