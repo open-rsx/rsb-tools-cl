@@ -64,7 +64,7 @@
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
-;;; System definition
+;;; System definitions
 
 (defsystem :rsb-tools-commands
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
@@ -95,4 +95,37 @@
                               (:file       "logger")
                               (:file       "send")
                               (:file       "call")
+                              (:file       "introspect"))))
+  :in-order-to ((test-op (test-op :rsb-tools-commands-test))))
+
+(defsystem :rsb-tools-commands-test
+  :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
+  :version     #.(version/string)
+  :license     "GPLv3" ; see COPYING file for details.
+  :description "Unit tests for rsb-tools-commands system."
+  :depends-on  (:alexandria
+                :let-plus
+
+                (:version :lift               "1.7.1")
+
+                (:version :rsb-tools-commands #.(version/string)))
+  :encoding    :utf-8
+  :components  ((:module     "commands"
+                 :pathname   "test/commands"
+                 :serial     t
+                 :components ((:file       "package")
+
+                              (:file       "redump")
+
+                              (:file       "info")
+                              (:file       "logger")
+                              (:file       "send")
+                              (:file       "call")
                               (:file       "introspect")))))
+
+(defmethod perform ((operation test-op)
+                    (component (eql (find-system :rsb-tools-commands-test))))
+  (funcall (find-symbol "RUN-TESTS" :lift)
+           :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
+                            "lift-rsb-tools-commands.config")))
