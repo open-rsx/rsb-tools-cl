@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the send tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -186,7 +186,7 @@
 
           (log:info "~@<Using URI ~S payload ~A~@:>" destination payload)
           (with-interactive-interrupt-exit ()
-            (with-informer (informer destination t :error-policy error-policy)
+            (with-participant (informer :informer destination :error-policy error-policy)
               (apply #'send informer payload
                      (nconc (when method     (list :method     method))
                             (when timestamps (list :timestamps timestamps))

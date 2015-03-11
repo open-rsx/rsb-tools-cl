@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the logger tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -91,8 +91,7 @@
       (lparallel.queue:push-queue/no-lock event queue))))
 
 (defun make-queue-pushing-listener (handler uri error-policy filters converters)
-  (let ((listener (make-listener
-                   uri
+  (let ((listener (make-participant :listener uri
                    :transports   '((t :expose (:rsb.transport.wire-schema
                                                :rsb.transport.payload-size)
                                     &inherit))

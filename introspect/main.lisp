@@ -124,13 +124,12 @@ In most systems, all replies should arrive within a few milliseconds. However, c
             (unwind-protect
                  (with-interactive-interrupt-exit ()
                    (with-participant
-                       (database (make-participant
-                                  :remote-introspection +introspection-scope+
-                                  :receiver-uris    uris
-                                  :error-policy     error-policy
-                                  :change-handler   (lambda (&rest event)
-                                                      (rsb.ep:handle style event))
-                                  :response-timeout response-timeout))
+                       (database :remote-introspection +introspection-scope+
+                                 :receiver-uris    uris
+                                 :error-policy     error-policy
+                                 :change-handler   (lambda (&rest event)
+                                                     (rsb.ep:handle style event))
+                                 :response-timeout response-timeout)
                      (setf (style-database style) database)
                      (when (rsb.formatting:format-event :dummy style stream)
                        (sleep most-positive-fixnum))))
