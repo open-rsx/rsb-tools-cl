@@ -1,6 +1,6 @@
 ;;;; quantity-mixins.lisp --- Mixin classes for quantity classes.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -91,9 +91,6 @@
        (let ((value (or (meta-data event key) when-missing)))
          (unless (eq value :skip)
            (update! quantity value)))))))
-
-(defmethod find-quantity-class ((spec (eql :meta-data-moments)))
-  (find-class 'meta-data-moments))
 
 ;;; `collecting-mixin' mixin class
 
