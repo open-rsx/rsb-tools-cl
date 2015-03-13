@@ -63,7 +63,7 @@
   (let+ ((remote? (typep process-info 'remote-process-info))
          ((&structure
            process-info-
-           process-id program-name commandline-arguments state)
+           process-id program-name commandline-arguments display-name state)
           process-info)
          (*print-lines* 1))
     (write-string ; next four lines hack around limitations of nested pretty streams
@@ -73,11 +73,11 @@
          (format stream "~6,,,'0@A~
                          ~17,0T~@[ ~/rsb.tools.introspect::print-process-state-markup/~]~
                          ~25,0T~@[ (~:/rsb.tools.introspect::print-elapsed-time/)~]~
-                         ~35,0T~@<~A~@[ ~:_~{~A~^ ~:_~}~]~@:>"
+                         ~35,0T~@<~:[~A~:;~:*~A (~A)~]~@[ ~:_~{~A~^ ~:_~}~]~@:>"
                  process-id
                  (when remote? state)
                  (when remote? (info-most-recent-activity process-info))
-                 program-name commandline-arguments)))
+                 display-name program-name commandline-arguments)))
      stream)))
 
 (defun print-process-info-details-markup (stream process-info
