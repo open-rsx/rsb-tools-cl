@@ -1,6 +1,6 @@
 ;;;; print.lisp --- Printing of introspection information.
 ;;;;
-;;;; Copyright (C) 2014 Jan Moringen
+;;;; Copyright (C) 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -62,16 +62,23 @@
   (declare (ignore colon? at?))
   (let+ ((remote? (typep process-info 'remote-process-info))
          ((&structure
-           process-info- process-id program-name commandline-arguments state)
-          process-info))
-    (format stream "~6,,,'0@A~
-                    ~17,0T~@[ ~/rsb.tools.introspect::print-process-state-markup/~]~
-                    ~25,0T~@[ (~:/rsb.tools.introspect::print-elapsed-time/)~]~
-                    ~35,0T~A~@[ ~{~A~^ ~}~]"
-            process-id
-            (when remote? state)
-            (when remote? (info-most-recent-activity process-info))
-            program-name commandline-arguments)))
+           process-info-
+           process-id program-name commandline-arguments state)
+          process-info)
+         (*print-lines* 1))
+    (write-string ; next four lines hack around limitations of nested pretty streams
+     (with-output-to-string (stream)
+       (let ((*print-right-margin* (when-let ((right-margin *print-right-margin*))
+                                     (- right-margin 3))))
+         (format stream "~6,,,'0@A~
+                         ~17,0T~@[ ~/rsb.tools.introspect::print-process-state-markup/~]~
+                         ~25,0T~@[ (~:/rsb.tools.introspect::print-elapsed-time/)~]~
+                         ~35,0T~@<~A~@[ ~:_~{~A~^ ~:_~}~]~@:>"
+                 process-id
+                 (when remote? state)
+                 (when remote? (info-most-recent-activity process-info))
+                 program-name commandline-arguments)))
+     stream)))
 
 (defun print-process-info-details-markup (stream process-info
                                           &optional colon? at?)
