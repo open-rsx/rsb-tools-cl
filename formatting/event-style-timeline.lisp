@@ -1,6 +1,6 @@
 ;;;; event-style-timeline.lisp --- Event indicators on a simple timeline.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -44,7 +44,7 @@
           (defmethod (setf ,name) :after ((new-value t)
                                           (style     basic-timeline-style))
             (iter (for (_ . sub-style) in-sequence (style-sub-styles style))
-                  (when applicable? new-value sub-style
+                  (when (applicable? new-value sub-style)
                         (setf (,name sub-style) new-value)))))))
 
   (define-delegating-method lower-bound)
