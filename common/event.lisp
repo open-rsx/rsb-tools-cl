@@ -1,6 +1,6 @@
 ;;;; event.lisp --- Event construction utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -36,6 +36,10 @@
          (apply #'read-file-into-string pathname
                 (when external-format
                   (list :external-format external-format))))))
+
+    ((ppcre:register-groups-bind (descriptor body)
+         ("^pb:([^:]+):((?:.|\\n)*)$" spec)
+       (build-protocol-buffer-message descriptor body)))
 
     (t
      (let+ (((&values value consumed) (read-from-string spec)))

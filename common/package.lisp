@@ -17,6 +17,9 @@
 
    #:rsb)
 
+  (:local-nicknames
+   (#:bp #:architecture.builder-protocol))
+
   ;; Conditions
   (:export
    #:call-specification-error

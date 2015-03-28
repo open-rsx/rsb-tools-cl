@@ -76,11 +76,12 @@ RSB-related systems."
   :depends-on  (:let-plus
                 (:version :log4cl "1.1.1")
 
+                :esrap
                 :cl-ppcre
+                :architecture.builder-protocol
+                :cl-protobuf
 
                 :com.dvlsoft.clon
-
-                :cl-protobuf
 
                 (:version :cl-rsb   #.(version/string :revision? nil))
                 (:version :rsb-clon #.(version/string :revision? nil)))
@@ -107,8 +108,11 @@ RSB-related systems."
                                :depends-on ("package"))
                               (:file       "help"
                                :depends-on ("package"))
-                              (:file       "event"
+                              (:file       "protocol-buffer-payload"
                                :depends-on ("package"))
+                              (:file       "event"
+                               :depends-on ("package"
+                                            "protocol-buffer-payload"))
                               (:file       "options"
                                :depends-on ("package" "variables"
                                             "error-handling" "debugger"
@@ -137,11 +141,11 @@ system."
   :encoding    :utf-8
   :components  ((:module     "common"
                  :pathname   "test/common"
+                 :serial     t
                  :components ((:file       "package")
-                              (:file       "error-handling"
-                               :depends-on ("package"))
-                              (:file       "event"
-                               :depends-on ("package"))))))
+                              (:file       "error-handling")
+                              (:file       "event")
+                              (:file       "protocol-buffer-payload")))))
 
 (defmethod perform ((operation test-op)
                     (component (eql (find-system :cl-rsb-common-test))))
