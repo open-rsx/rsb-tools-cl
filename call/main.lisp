@@ -168,7 +168,7 @@
       (with-logged-warnings
         (with-error-policy (error-policy)
           ;; Load IDLs as specified on the commandline.
-          (process-idl-options)
+          (process-idl-options :purpose '(:packed-size :serializer :deserializer))
 
           ;; 1. Parse the method call specification
           ;; 2. Call the method and
