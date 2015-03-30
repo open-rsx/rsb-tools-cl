@@ -69,6 +69,16 @@
                                         &key &allow-other-keys)
   t)
 
+(define-constant +participant-kinds+
+    '(:listener :informer :reader
+      :local-server  :local-method
+      :remote-server :remote-method)
+  :test #'equal)
+
+(defun participant-kind-columns () ; TODO constant
+  (mapcar (curry #'format nil "~(~A~)_participants")
+                              +participant-kinds+))
+
 (defmethod rsb.formatting:format-event ((event  (eql :trigger))
                                         (style  style-influxdb-adapter)
                                         (target t)
@@ -81,18 +91,22 @@
                                   :path   (format nil "/db/~A/series" db)))
          (credentials (when (and username password)
                         (list username password)))
-         ((&flet post (series columns values)
+         ((&flet post (series columns &rest values)
             "Push a set the datapoints described by COLUMNS and VALUES
              into SERIES in the database."
-            (apply #'drakma:http-request
-             base-url
-             :method  :post
-             :content (json:encode-json-to-string
-                       `(((:name    . ,series)
-                          (:columns . ,columns)
-                          (:points  . ,values))))
-             (when credentials
-               (list :basic-authorization credentials)))))
+            (let+ (((&values reply code)
+                    (apply #'drakma:http-request
+                     base-url
+                     :method  :post
+                     :content (json:encode-json-to-string
+                               `(((:name    . ,series)
+                                  (:columns . ,columns)
+                                  (:points  . ,values))))
+                     (when credentials
+                       (list :basic-authorization credentials)))))
+              (unless (<= 200 code 299)
+                (warn "~@<HTTP POST request failed with code ~D~@[: ~A~]~@:>"
+                      code reply)))))
          ((&flet timing-information (info &optional clock-offset?)
             (values
              (if clock-offset? '(#1="latency" "clock_offset") '(#1#))
@@ -106,34 +120,49 @@
                        (lambda (entry)
                          (let ((info (rsb.introspection:entry-info entry)))
                            (eq (rsb.introspection:participant-info-kind info) kind)))
-                       participants)))
-                   (kinds '(:listener :informer :reader
-                            :local-server  :local-method
-                            :remote-server :remote-method)))
+                       participants))))
               (values
                (list* "participants"
-                      (mapcar (curry #'format-safe-name
-                                     nil "~(~A~)_participants")
-                              kinds))
+                      (participant-kind-columns))
                (list* (length participants)
-                      (mapcar #'count-of-kind kinds))))))
-         ((&flet one-process (host-entry process-entry)
+                      (mapcar #'count-of-kind +participant-kinds+))))))
+         ((&flet post-named-process (process-entry)
             "POST information for the process PROCESS-ENTRY and its
              participants."
-            (let+ ((hostname   (rsb.introspection:host-info-hostname
-                                (rsb.introspection:entry-info host-entry)))
-                   (info       (rsb.introspection:entry-info process-entry))
+            (let+ ((info         (rsb.introspection:entry-info process-entry))
+                   (process-id   (rsb.introspection:process-info-process-id info))
                    (program-name (simplify-program-name
                                   (rsb.introspection:process-info-program-name info)))
-                   (process-id (rsb.introspection:process-info-process-id info))
+                   (display-name (rsb.introspection:process-info-display-name info))
                    ((&values timing-columns timing-values)
                     (timing-information info))
                    ((&values participant-columns participant-values)
-                    (count-participants process-entry)))
-              (post (format-safe-name nil "introspection_process_~A_~A_~D"
-                                      hostname program-name process-id)
-                          (append '("pid")          participant-columns timing-columns)
-                    (list (append (list process-id) participant-values  timing-values))))))
+                    (count-participants process-entry))
+                   (series (format nil "introspection.process.~(~A~)" ; display-name is assumed to be unique
+                                   (make-safe-name display-name))))
+              (assert (not (emptyp display-name)))
+              (post series
+                    (append '(    "pid"      "program_name")
+                            participant-columns timing-columns)
+                    (append (list process-id program-name)
+                            participant-values  timing-values)))))
+         ((&flet post-unnamed-processes (hostname processes)
+            (let+ (((columns counts)
+                    (reduce (lambda+ ((&ign    result-counts)
+                                      (columns process-counts))
+                              (list columns (mapcar #'+ result-counts process-counts)))
+                            processes
+                            :key (lambda (process)
+                                   (multiple-value-list
+                                    (count-participants process)))
+                            :initial-value (list (list* "participants"
+                                                        (participant-kind-columns))
+                                                 (make-list (1+ (length +participant-kinds+))
+                                                            :initial-element 0)))))
+              (post (format nil "introspection.unnamed_processes.~(~A~)"
+                            (make-safe-name hostname))
+                    (list* "count"            columns)
+                    (list* (length processes) counts)))))
          ((&flet count-processes (entry)
             "Return values that reflect the number of processes in
              specific states."
@@ -146,9 +175,7 @@
                                state)))
                        processes)))
                   (states '(:crashed)))
-             (values (mapcar (curry #'format-safe-name
-                                    nil "~(~A~)_processes")
-                             states)
+             (values (mapcar (curry #'format nil "processes.~(~A~)") states)
                      (mapcar #'count-in-state states)))))
          ((&flet one-host (entry)
             "POST information for the host ENTRY and its processes."
@@ -157,12 +184,17 @@
                    ((&values timing-columns timing-values)
                     (timing-information info t))
                    ((&values process-columns process-values)
-                    (count-processes entry)))
-              (post (format-safe-name nil "introspection_host_~A" hostname)
-                          (append process-columns timing-columns)
-                    (list (append process-values  timing-values))))
-            (mapc (curry #'one-process entry)
-                  (rsb.introspection:entry-children entry)))))
+                    (count-processes entry))
+                   (processes (rsb.introspection:entry-children entry))
+                   (named-processes (remove-if-not (compose #'rsb.introspection:process-info-display-name
+                                                            #'rsb.introspection:entry-info)
+                                                   processes))
+                   (unnamed-processes (set-difference processes named-processes)))
+              (post (format nil "introspection.host.~A" (make-safe-name hostname))
+                    (append process-columns timing-columns)
+                    (append process-values  timing-values))
+              (mapc #'post-named-process named-processes)
+              (post-unnamed-processes hostname unnamed-processes)))))
     (rsb.introspection:with-database-lock (database)
       (mapc #'one-host (rsb.introspection:entry-children
                         (rsb.introspection::introspection-database database))))))
@@ -174,9 +206,6 @@
                            (or (char= character #\_)
                                (alphanumericp character)))
                      string))
-
-(defun format-safe-name (stream format-control &rest format-arguments)
-  (make-safe-name (apply #'format stream format-control format-arguments)))
 
 (defun simplify-program-name (name)
   (let+ (((name &optional rest)
