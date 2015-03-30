@@ -32,13 +32,20 @@
                     string or octet-vector respectively and used as ~
                     argument for the method send.~@
                     ~@
-
                     If EVENT-SPEC is of one the forms #P\"PATHNAME\", ~
                     #P\"PATHNAME\":ENCODING or #P\"PATHNAME\":binary, ~
                     the file designated by PATHNAME is read into a ~
                     string (optionally employing ENCODING) or ~
                     octet-vector and sent.~@
-
+                    ~@
+                    If EVENT-SPEC is of the form ~
+                    pb:.MESSAGE-TYPE-NAME:{FIELDS}, a protocol buffer ~
+                    message of type MESSAGE-TYPE-NAME is constructed ~
+                    and its fields are populated according to ~
+                    FIELDS. FIELDS uses the syntax produced/consumed ~
+                    by the various TextFormat classes of the protocol ~
+                    buffer API and the --decode/--encode options of ~
+                    the protoc binary.~@
                     ~@
                     Note that, when written as part of a shell ~
                     command, some of the above forms may require ~
@@ -103,6 +110,30 @@
            Note the use of single quotes (') to prevent elements of ~
            the pathname #P\"my-data.txt\" from being processed by the ~
            shell.~@
+           ~@
+           ~2@T~:*~A \\~@
+           ~4@T-IPATH-TO-RST/proto/stable/ \\~@
+           ~4@T-lPATH-TO-RST/proto/stable/rst/robot/RobotCollision.proto \\~@
+           ~4@T'pb:.rst.robot.RobotCollision:{kind: \"SELF\" ~
+           collision_detail: { geometry: { contact_points: [ { x: 0 y: ~
+           1 z: 2 frame_id: \"foo\" }, { x: 3 y: 4 z: 5 } ] } ~
+           object_1: \"o1\" } }'~@
+           ~4@T'socket:/collisions'~@
+           ~@
+           Send a protocol buffer message to scope /collisions. The ~
+           protocol buffer message is of type rst.robot.RobotCollision ~
+           with kind enum field set to SELF and an embedded ~
+           rst.kinematics.ObjectCollision message with two contact ~
+           points in the collision_detail field.~@
+           ~@
+           The specification of the message content uses the syntax ~
+           produced/consumed by the various TextFormat classes of the ~
+           protocol buffer API and the --decode/--encode options of ~
+           the protoc binary.~@
+           ~@
+           Note how the definition of the protocol buffer message type ~
+           is loaded using -I and -l commandline options.~@
+           ~@
            "
           program-name))
 
