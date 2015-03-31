@@ -128,6 +128,11 @@ if(WITH_PNG_SUPPORT)
     add_silent_load(cl-rsb-formatting-png)
 endif()
 
+option(WITH_INTROSPECTION_GRAPH_SUPPORT "Build with support for introspection graph plotting." OFF)
+if(WITH_INTROSPECTION_GRAPH_SUPPORT)
+    add_silent_load(cl-rsb-tools-introspect-graph)
+endif()
+
 set(CL_SOURCE_REGISTRY       "(:source-registry
                                 (:tree \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\")
                                 ${LISP_SOURCE_REGISTRY_ENTRIES}
