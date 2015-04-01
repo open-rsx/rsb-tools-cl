@@ -25,7 +25,7 @@
                      :initform (make-graph-parameters)))
   (:default-initargs
    :delay       1.0
-   :levels      '(1 2 3)
+   :levels      '(1 2) ; TODO (1 3) does not currently work
    :node-filter (constantly nil)
    :edge-filter (either-end #'listener-on-root-scope?))
   (:documentation
@@ -74,7 +74,7 @@
                    (generate-graph
                     (rsb.introspection::introspection-database database)
                     parameters))))
-      (cl-dot:print-graph graph)
+      #+no (cl-dot:print-graph graph)
       (let* ((process
               (uiop/run-program::%run-program
                (list "dot" "-Tsvg")
@@ -187,6 +187,7 @@
      (list database)
      '(:fontname "Arial"
        :fontsize 11
+       :rankdir "LR"
        ;; :stylesheet "../_static/corlab.css"
        :node (:fontsize 11)
        :node (:fontname "Arial")
@@ -212,6 +213,21 @@
   (remove-if (curry (graph-parameters-edge-filter (graph-parameters graph)) object)
              (call-next-method)))
 
+(macrolet ((define-level-restriction-methods (class level)
+             `(progn
+                (defmethod cl-dot:graph-object-node :around ((graph  introspection-graph)
+                                                             (object ,class))
+                  (when (member ,level (graph-parameters-levels (graph-parameters graph)))
+                    (call-next-method)))
+
+                (defmethod cl-dot::graph-object-cluster :around ((graph  introspection-graph)
+                                                                 (object ,class))
+                  (when (member ,level (graph-parameters-levels (graph-parameters graph)))
+                    (call-next-method))))))
+  (define-level-restriction-methods host-entry        1)
+  (define-level-restriction-methods process-entry     2)
+  (define-level-restriction-methods participant-entry 3))
+
 ;; `remote-introspection-database'
 
 (defmethod cl-dot:graph-object-knows-of
@@ -221,16 +237,33 @@
 
 ;; `host-entry'
 
-(defmethod cl-dot::graph-object-cluster ((graph  introspection-graph)
-                                         (object host-entry))
-  (let+ (((&structure-r/o rsb.introspection::host-info- id hostname state)
-          (entry-info object))
-         (label (make-label-table
-                 "/tmp/gnome-dev-computer.svg"
-                 hostname (string-downcase state))))
-    (make-instance 'cl-dot::cluster
-                   :id         id
-                   :attributes (list :label label))))
+;; TODO repeated for process below
+(flet ((cluster-or-node (object class
+                         &rest attributes &key &allow-other-keys)
+         (let+ (((&structure-r/o rsb.introspection::host-info- id hostname state)
+                 (entry-info object))
+                (label (make-label-table
+                        "/tmp/gnome-dev-computer.svg"
+                        hostname (string-downcase state))))
+           (make-instance class
+                          :id         id
+                          :attributes (list* :label label attributes)))))
+
+  (defmethod cl-dot::graph-object-node ((graph  introspection-graph)
+                                        (object host-entry))
+    (unless (some (lambda (p) ; TODO simplify
+                    (or (cl-dot:graph-object-node graph p)
+                        (cl-dot::graph-object-cluster graph p)))
+                  (cl-dot:graph-object-knows-of graph object))
+      (cluster-or-node object 'cl-dot:node :shape :box)))
+
+  (defmethod cl-dot::graph-object-cluster ((graph  introspection-graph)
+                                           (object host-entry))
+    (when (some (lambda (p)
+                  (or (cl-dot:graph-object-node graph p)
+                      (cl-dot::graph-object-cluster graph p)))
+                (cl-dot:graph-object-knows-of graph object))
+      (cluster-or-node object 'cl-dot::cluster))))
 
 (defmethod cl-dot:graph-object-knows-of ((graph  introspection-graph)
                                          (object host-entry))
@@ -240,7 +273,6 @@
 
 (flet ((cluster-or-node (object class
                          &rest attributes &key &allow-other-keys)
-
          (let+ (((&structure-r/o
                   rsb.introspection::process-info- state process-id program-name display-name executing-user start-time) ; TODO sort
                  (entry-info object))
@@ -252,29 +284,18 @@
                                 state start-time))))
            (make-instance class
                           :id         process-id ; TODO add host id
-                          :attributes (list* :label label
-                                             attributes)))))
-
-  (defmethod cl-dot:graph-object-node :around ((graph  introspection-graph)
-                                               (object process-entry))
-    (when (member 2 (graph-parameters-levels (graph-parameters graph)))
-      (call-next-method)))
+                          :attributes (list* :label label attributes)))))
 
   (defmethod cl-dot:graph-object-node ((graph  introspection-graph)
-                                        (object process-entry))
-    (unless (remove nil (mapcar (curry #'cl-dot:graph-object-node graph)
-                                (cl-dot:graph-object-knows-of graph object)))
+                                       (object process-entry))
+    (unless (some (curry #'cl-dot:graph-object-node graph)
+                  (cl-dot:graph-object-knows-of graph object))
       (cluster-or-node object 'cl-dot::node :shape :box)))
-
-  (defmethod cl-dot::graph-object-cluster :around ((graph  introspection-graph)
-                                                   (object process-entry))
-    (when (member 2 (graph-parameters-levels (graph-parameters graph)))
-      (call-next-method)))
 
   (defmethod cl-dot::graph-object-cluster ((graph  introspection-graph)
                                            (object process-entry))
-    (when (remove nil (mapcar (curry #'cl-dot:graph-object-node graph)
-                              (cl-dot:graph-object-knows-of graph object)))
+    (when (some (curry #'cl-dot:graph-object-node graph)
+                (cl-dot:graph-object-knows-of graph object))
       (cluster-or-node object 'cl-dot::cluster))))
 
 (defmethod cl-dot:graph-object-knows-of ((graph  introspection-graph)
@@ -283,7 +304,7 @@
 
 (defmethod cl-dot:graph-object-points-to ((graph  introspection-graph)
                                           (object process-entry))
-  (unless (member 3 (graph-parameters-levels (graph-parameters graph)))
+  (unless (member 3 (graph-parameters-levels (graph-parameters graph))) ; TODO generic filter?
     (remove-if (complement (curry #'entities-communicate? object))
                (remove object (graph-processes graph)))))
 
@@ -292,11 +313,6 @@
   (gethash object (graph-parents graph)))
 
 ;; `participant-entry'
-
-(defmethod cl-dot:graph-object-node :around ((graph  introspection-graph)
-                                             (object participant-entry))
-  (when (member 3 (graph-parameters-levels (graph-parameters graph)))
-    (call-next-method)))
 
 (defmethod cl-dot:graph-object-node ((graph  introspection-graph)
                                      (object participant-entry))
