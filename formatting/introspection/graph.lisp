@@ -4,8 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-;; TODO (cl:in-package #:rsb.formatting.introspection)
-(cl:in-package #:rsb.tools.introspect)
+(cl:in-package #:rsb.formatting.introspection)
 
 (defstruct (graph-parameters
              (:copier nil))
