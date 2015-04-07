@@ -55,11 +55,14 @@
              :show? (or (eq show t)
                         (and (listp show) (member :rsb show))))))
 
-(defun main ()
+(defun main (program-pathname args)
   "Entry point function of the cl-rsb-tools-info system."
   (update-synopsis)
   (setf *configuration* (options-from-default-sources))
   (process-commandline-options
+   :commandline     (list* (concatenate
+                            'string (namestring program-pathname) " info")
+                           args)
    :version         (cl-rsb-tools-info-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
@@ -67,50 +70,19 @@
 
   (let+ ((stream   *standard-output*)
          (verbose? (getopt :long-name "verbose"))
-         ((version? configuration? connectors? converters? filters?
-           event-processing? participants?)
-          (mapcar (lambda (name)
-                    (or (getopt :long-name name) verbose?))
-                  '("version" "configuration" "connectors" "converters"
-                    "filters" "event-processing" "participants"))))
+         ((&flet make-initarg (name)
+            (let* ((string    (string-downcase name))
+                   (long-name (subseq string 0 (1- (length string)))))
+              (when (getopt :long-name long-name)
+                (list name t)))))
+         (command (apply #'make-command :info
+                         (append
+                          (when verbose?
+                            '(:all? t))
+                          (mapcan #'make-initarg
+                                  '(:version? :configuration? :connectors?
+                                    :converters? :filters?
+                                    :event-processing? :participants?))))))
     (with-print-limits (stream)
       (with-logged-warnings
-        (when version?
-          (print-version nil stream))
-
-        (when configuration?
-          (rsb.formatting::with-indented-section (stream "Configuration")
-            (format stream "~{~48@<~(~{~A~^.~}~)~>: ~S~^~&~}"
-                    (alist-plist *configuration*))))
-
-        (when connectors?
-          (rsb.formatting::with-indented-section (stream "Connectors")
-            (format stream
-                    "~{+ ~<~@;~@{~A~*~}~:>~^~&~}"
-                    (rsb.transport:transport-classes))))
-
-        (when converters?
-          (rsb.formatting::with-indented-section (stream "Converters")
-           (format stream
-                   "~{+ ~<~@;~@{~A~*~}~:>~^~&~}"
-                   (rsb.converter:converter-classes))))
-
-        (when filters?
-          (rsb.formatting::with-indented-section (stream "Filters")
-            (print-filter-help stream)))
-
-        (when event-processing?
-          (format stream
-                  "~%Event Processors~%~{+ ~<~@;~@{~A~*~}~:>~^~&~}~%"
-                  (rsb.event-processing:processor-classes)))
-
-        (when participants?
-          (format stream "~2&Participants~
-                          ~&~2@T~@<~
-                            ~:[<none>~;~:*~{+ ~<~@;~16A~@[ ~A~]~:>~^~@:_~}~]~
-                          ~:>"
-                  (mapcar (lambda (provider)
-                            (list (service-provider:provider-name provider)
-                                  (when-let ((documentation (documentation provider t)))
-                                    (first-line-or-less documentation))))
-                          (service-provider:service-providers 'participant))))))))
+        (command-execute command)))))

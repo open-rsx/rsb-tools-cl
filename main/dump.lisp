@@ -16,7 +16,7 @@
 
 ;; As a default, try reloading foreign libraries on startup. If
 ;; necessary, users can change this by "redumping".
-(rsb.tools.main:make-dynamic)
+(rsb.tools.commands::make-dynamic)
 
 (com.dvlsoft.clon:dump
  #-win32 "tools" #+win32 "tools.exe"

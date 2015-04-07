@@ -40,7 +40,7 @@
          classes stream :initarg-blacklist '(:database))))))
 
 (defun make-examples-string (&key
-                             (program-name #+does-not-work (progname) "introspect"))
+                             (program-name "introspect"))
   (format nil
           "~2@T~A~@
            ~@
@@ -100,39 +100,30 @@ In most systems, all replies should arrive within a few milliseconds. However, c
    :item    (defgroup (:header "Examples")
               (make-text :contents (make-examples-string)))))
 
-(defun main ()
+(defun main (program-pathname args)
   "Entry point function of the cl-rsb-tools-introspect system."
   (update-synopsis)
   (setf *configuration* (options-from-default-sources))
   (process-commandline-options
+   :commandline     (list* (concatenate
+                            'string (namestring program-pathname) " introspect")
+                           args)
    :version         (cl-rsb-tools-introspect-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
   (enable-swank-on-signal)
 
-  (rsb.formatting:with-print-limits (*standard-output*)
-    (with-logged-warnings
-      (let ((error-policy (maybe-relay-to-thread
-                           (process-error-handling-options))))
+  (let* ((error-policy     (maybe-relay-to-thread
+                            (process-error-handling-options)))
+         (uris             (or (remainder) (list "/")))
+         (style            (getopt :long-name "style"))
+         (response-timeout (getopt :long-name "response-timeout"))
+         (command          (make-command :introspect
+                                         :uris             uris
+                                         :style-spec       style
+                                         :response-timeout response-timeout)))
+    (rsb.formatting:with-print-limits (*standard-output*)
+      (with-logged-warnings
         (with-error-policy (error-policy)
-          (let ((uris             (or (remainder) (list "/")))
-                (response-timeout (getopt :long-name "response-timeout"))
-                (stream           *standard-output*)
-                (style            (rsb.formatting:make-style
-                                   (parse-instantiation-spec
-                                    (getopt :long-name "style"))
-                                   :service 'rsb.formatting.introspection::style)))
-            (unwind-protect
-                 (with-interactive-interrupt-exit ()
-                   (with-participant
-                       (database :remote-introspection rsb.introspection:+introspection-scope+
-                                 :receiver-uris    uris
-                                 :error-policy     error-policy
-                                 :change-handler   (lambda (&rest event)
-                                                     (rsb.ep:handle style event))
-                                 :response-timeout response-timeout)
-                     (setf (rsb.formatting.introspection::style-database style)
-                           database)
-                     (when (rsb.formatting:format-event :dummy style stream)
-                       (sleep most-positive-fixnum))))
-              (detach/ignore-errors style))))))))
+          (with-interactive-interrupt-exit ()
+            (command-execute command :error-policy error-policy)))))))

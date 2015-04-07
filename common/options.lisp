@@ -128,7 +128,8 @@ can be used to search directories recursively. If the file designated by FILE-OR
           (collect (funcall transform value/string)))))
 
 (defun process-commandline-options (&key
-                                    (version '(0 1 0))
+                                    (commandline    (com.dvlsoft.clon::cmdline))
+                                    (version        '(0 1 0))
                                     more-versions
                                     update-synopsis
                                     return)
@@ -149,7 +150,7 @@ can be used to search directories recursively. If the file designated by FILE-OR
    + if --swank is supplied, start a swank server and write its port
      to ./swank-port.txt"
   ;; Create a new global context.
-  (make-context)
+  (make-context :cmdline commandline)
 
   ;; Process output-related options
   (setf *info-output*
@@ -215,7 +216,7 @@ can be used to search directories recursively. If the file designated by FILE-OR
           (push (make-keyword (string-upcase category)) show))
     (when show
       (funcall update-synopsis :show show)
-      (make-context))
+      (make-context :cmdline commandline))
     (when (or help show)
       (help)
       (if return

@@ -150,11 +150,14 @@
    :item    (defgroup (:header "Examples")
               (make-text :contents (make-examples-string)))))
 
-(defun main ()
+(defun main (program-pathname args)
   "Entry point function of the cl-rsb-tools-send system."
   (update-synopsis)
   (setf *configuration* (options-from-default-sources))
   (process-commandline-options
+   :commandline     (list* (concatenate
+                            'string (namestring program-pathname) " send")
+                           args)
    :version         (cl-rsb-tools-send-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
@@ -182,13 +185,13 @@
                                  (while value)
                                  (collect (parse-cause value))))
                ((event-spec &optional (destination "/")) (remainder))
-               (payload (parse-payload-spec event-spec)))
-
-          (log:info "~@<Using URI ~S payload ~A~@:>" destination payload)
+               (payload (parse-payload-spec event-spec))
+               (command (make-command :send
+                                      :destination destination
+                                      :method      method
+                                      :meta-data   meta-data  ; TODO summarize these as some event-spec or something?
+                                      :timestamps  timestamps
+                                      :causes      causes
+                                      :payload     payload)))
           (with-interactive-interrupt-exit ()
-            (with-participant (informer :informer destination :error-policy error-policy)
-              (apply #'send informer payload
-                     (nconc (when method     (list :method     method))
-                            (when timestamps (list :timestamps timestamps))
-                            (when causes     (list :causes     causes))
-                            meta-data)))))))))
+            (command-execute command :error-policy error-policy)))))))

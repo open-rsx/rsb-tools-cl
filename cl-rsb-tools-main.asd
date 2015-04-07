@@ -79,7 +79,9 @@ tools."
                 (:version :cl-rsb-tools-logger     #.(version/string))
                 (:version :cl-rsb-tools-call       #.(version/string))
                 (:version :cl-rsb-tools-send       #.(version/string))
-                (:version :cl-rsb-tools-introspect #.(version/string)))
+                (:version :cl-rsb-tools-introspect #.(version/string))
+
+                (:version :rsb-tools-commands      #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "main"
                  :components ((:file       "package")

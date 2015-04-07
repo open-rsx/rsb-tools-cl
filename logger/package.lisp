@@ -16,6 +16,8 @@
    #:rsb.common
    #:rsb.formatting
 
+   #:rsb.tools.commands
+
    #:com.dvlsoft.clon)
 
   (:export

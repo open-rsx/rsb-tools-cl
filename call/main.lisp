@@ -143,11 +143,14 @@
    :item    (defgroup (:header "Examples")
               (make-text :contents (make-examples-string)))))
 
-(defun main ()
+(defun main (program-pathname args)
   "Entry point function of the cl-rsb-tools-call system."
   (update-synopsis)
   (setf *configuration* (options-from-default-sources))
   (process-commandline-options
+   :commandline     (list* (concatenate
+                            'string (namestring program-pathname) " call")
+                           args)
    :version         (cl-rsb-tools-call-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
@@ -170,48 +173,14 @@
           ;; 2. Call the method and
           ;; 3. Potentially wait for a reply
           ;;    Format it
-          (let+ ((spec (first (remainder)))
-                 ((&values server-uri method arg) (parse-call-spec spec))
-                 (timeout (getopt :long-name "timeout"))
-                 (wait?   (not (getopt :long-name "no-wait")))
-                 (style   (make-style (parse-instantiation-spec
-                                       (getopt :long-name "style"))))
-                 ((&flet call/raw (server)
-                    (cond
-                      ((not wait?)
-                       (call server method arg :block? nil)
-                       (values))
-                      ((not timeout)
-                       (call server method arg
-                             :return :event))
-                      (t
-                       (handler-case
-                           (call server method arg
-                                 :return  :event
-                                 :timeout timeout)
-
-                         (bt:timeout (condition)
-                           (declare (ignore condition))
-                           (error "~@<Method call timed out after ~S ~
-                                   second~:P.~@:>"
-                                  timeout)))))))
-                 ((&flet call/translate (server)
-                    (let ((event (call/raw server)))
-                      (cond
-                        ((not event)
-                         (values))
-                        ((typep (event-data event) 'rsb.converter:no-value)
-                         (values))
-                        (t
-                         event))))))
-
-            (when (and timeout (not wait?))
-              (error "~@<Cannot specify timeout ~S in conjunction with
-                      no-wait.~@:>"
-                     timeout))
-
-            (log:info "~@<Using URI ~S method ~S arg ~A~@:>" server-uri method arg)
+          (let+ ((spec     (first (remainder)))
+                 (timeout  (getopt :long-name "timeout"))
+                 (no-wait? (getopt :long-name "no-wait"))
+                 (style    (getopt :long-name "style"))
+                 (command  (make-command :call
+                                         :call-spec   spec
+                                         :style-spec  style
+                                         :timeout     timeout
+                                         :no-wait?    no-wait?)))
             (with-interactive-interrupt-exit ()
-              (with-participant (server :remote-server server-uri :error-policy error-policy)
-                (when-let ((reply (multiple-value-list (call/translate server))))
-                  (format-event (first reply) style *standard-output*))))))))))
+              (command-execute command :error-policy error-policy))))))))

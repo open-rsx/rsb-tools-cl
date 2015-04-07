@@ -83,7 +83,9 @@
                 (:version :rsb-introspection    #.(version/string :revision? nil))
 
                 (:version :cl-rsb-common        #.(version/string))
-                (:version :cl-rsb-formatting    #.(version/string)))
+                (:version :cl-rsb-formatting    #.(version/string))
+
+                (:version :rsb-tools-commands   #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "introspect"
                  :serial     t

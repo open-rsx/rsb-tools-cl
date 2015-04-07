@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for rsb-introspect module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,6 +12,8 @@
 
    #:rsb
    #:rsb.common
+
+   #:rsb.tools.commands
 
    #:com.dvlsoft.clon)
 

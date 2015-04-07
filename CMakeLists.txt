@@ -232,52 +232,52 @@ endforeach()
 # --help, --help-all and --version for all binaries.
 foreach(TOOL ${TOOLS})
     add_test(NAME    "${TOOL}/help"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}" --help)
+             COMMAND "${MAIN_EXECUTABLE}" "${TOOL}" --help)
     add_test(NAME    "${TOOL}/help-all"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}" --help-for=all)
+             COMMAND "${MAIN_EXECUTABLE}" "${TOOL}" --help-for=all)
     add_test(NAME    "${TOOL}/version"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TOOL}" --version)
+             COMMAND "${MAIN_EXECUTABLE}" "${TOOL}" --version)
 endforeach()
 
 # All categories for info binary.
 foreach(CATEGORY verbose configuration connectors converters filters
                  event-processing participants)
     add_test(NAME    "info/category=${CATEGORY}"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/info" --debug --${CATEGORY})
+             COMMAND "${MAIN_EXECUTABLE}" info --debug --${CATEGORY})
 endforeach()
 
 # All error policies for logger, send and call binaries.
 foreach(POLICY continue abort)
-    add_test(NAME   "logger/on-error=${POLICY}"
-            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
-                    --debug --on-error "${POLICY}"
-                    --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+    add_test(NAME    "logger/on-error=${POLICY}"
+            COMMAND  "${MAIN_EXECUTABLE}" logger
+                     --debug --on-error "${POLICY}"
+                     --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                      inprocess:)
-    add_test(NAME   "send/on-error=${POLICY}"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+    add_test(NAME    "send/on-error=${POLICY}"
+             COMMAND "${MAIN_EXECUTABLE}" send
                      --debug --on-error "${POLICY}"
                      1 inprocess:)
-    add_test(NAME   "call/on-error=${POLICY}"
-            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
-                    --debug --on-error "${POLICY}"
-                    --no-wait
-                    "inprocess:/foo/bar(1)")
+    add_test(NAME    "call/on-error=${POLICY}"
+             COMMAND "${MAIN_EXECUTABLE}" call
+                     --debug --on-error "${POLICY}"
+                     --no-wait
+                     "inprocess:/foo/bar(1)")
 endforeach()
 
 # IDL loading and error policies for logger, send and call binaries.
 add_test(NAME   "logger/idl-path/on-error=continue"
-        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+        COMMAND "${MAIN_EXECUTABLE}" logger
                 --debug --on-error continue
                 --idl-path "no-such-directory"
                 --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                  inprocess:)
 add_test(NAME   "send/idl-path/on-error=continue"
-         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+         COMMAND "${MAIN_EXECUTABLE}" send
                  --debug --on-error continue
                 --idl-path "no-such-directory"
                  1 inprocess:)
 add_test(NAME   "call/idl-path/on-error=continue"
-        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
+        COMMAND "${MAIN_EXECUTABLE}" call
                 --debug --on-error continue
                 --idl-path "no-such-directory"
                 --no-wait
@@ -293,7 +293,7 @@ foreach(ARG "--method=foo"
             "--cause=12345678-1234-1234-1234-567899999999:1")
     string(REGEX REPLACE "[- ]" "" CLEAN_ARG "${ARG}")
     add_test(NAME   "send/meta-data/${CLEAN_ARG}"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+             COMMAND "${MAIN_EXECUTABLE}" send
                      --debug
                      ${ARG} 1 inprocess:)
 endforeach()
@@ -310,11 +310,11 @@ foreach(PAYLOAD ""
                 "#P\"${CMAKE_CURRENT_LIST_FILE}\":binary")
     string(REGEX REPLACE "[- #]" "" CLEAN_PAYLOAD "${PAYLOAD}")
     add_test(NAME   "send/payload/${CLEAN_PAYLOAD}"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/send"
+             COMMAND "${MAIN_EXECUTABLE}" send
                      --debug
                      "${PAYLOAD}" inprocess:)
     add_test(NAME   "call/payload/${CLEAN_PAYLOAD}"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
+             COMMAND "${MAIN_EXECUTABLE}" call
                      --debug
                      --no-wait
                      "inprocess:/foo/bar(${PAYLOAD})")
@@ -322,12 +322,12 @@ endforeach()
 
 # Multiple URIs and queue capacity for logger
 add_test(NAME    "logger/multiple-uris"
-         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+         COMMAND "${MAIN_EXECUTABLE}" logger
                  --debug
                  --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                  inprocess:/foo inprocess:/bar)
 add_test(NAME    "logger/queue-capacity"
-         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+         COMMAND "${MAIN_EXECUTABLE}" logger
                  --debug
                  --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                  --max-queued-events 1
@@ -335,7 +335,7 @@ add_test(NAME    "logger/queue-capacity"
 
 # Filters for logger
 add_test(NAME    "logger/filter"
-         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+         COMMAND "${MAIN_EXECUTABLE}" logger
                  --debug
                  --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                  --filter "scope :scope \"/foo\""
@@ -350,17 +350,17 @@ foreach(STYLE discard meta-data payload detailed
               monitor monitor/scope monitor/origin monitor/type monitor/size
               timeline/scope timeline/origin)
     add_test(NAME    "logger/style=${STYLE}"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/logger"
+             COMMAND "${MAIN_EXECUTABLE}" logger
                      --debug --style "${STYLE}"
                      --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
                      inprocess:)
     add_test(NAME   "call/style=${STYLE}/no-wait"
-            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
+            COMMAND "${MAIN_EXECUTABLE}" call
                     --debug --style "${STYLE}"
                     --no-wait
                     "inprocess:/foo/bar(1)")
     add_test(NAME   "call/style=${STYLE}/wait"
-            COMMAND "${CMAKE_CURRENT_BINARY_DIR}/call"
+            COMMAND "${MAIN_EXECUTABLE}" call
                     --debug --style "${STYLE}"
                     --eval "(progn (bt:make-thread (lambda () (rsb:with-participant (s :local-server \"inprocess:/foo\") (rsb.patterns.request-reply:with-methods (s) ((\"bar\" (x integer) x)) (sleep 2))))) (sleep 1))"
                     "inprocess:/foo/bar(1)")
@@ -377,7 +377,7 @@ foreach(URLS "inprocess:" "inprocess:;inprocess:/")
     endif()
 
     add_test(NAME    "introspect/${CLEAN_URLS}/${CLEAN_STYLE}"
-             COMMAND "${CMAKE_CURRENT_BINARY_DIR}/introspect"
+             COMMAND "${MAIN_EXECUTABLE}" introspect
                      --debug
                      ${EXIT}
                      ${STYLE}
