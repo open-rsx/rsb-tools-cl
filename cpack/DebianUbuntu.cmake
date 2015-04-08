@@ -59,7 +59,7 @@ foreach(ASD_FILE ${ASD_FILES})
 endforeach()
 
 # Update alternatives.
-foreach(TOOL ${TOOLS})
+foreach(TOOL tools ${TOOLS})
     file(APPEND "${POSTINST_SCRIPT}"
                 "update-alternatives --install                      \\
                    /usr/bin/${BINARY_PREFIX}${TOOL}                 \\
