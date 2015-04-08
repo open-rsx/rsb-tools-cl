@@ -20,19 +20,20 @@
            (list "." (pathname-type program-pathname)))))
 
 (defun main/program-name (program-pathname args)
-  (when-let* ((name  (program-pathname->name program-pathname))
+  (when-let* ((name  (pathname-name program-pathname))
               (entry (assoc name *name->entry-point*
                             :test (lambda (name entry)
                                     (search entry name)))))
-    (warn "~@<Selecting the command to execute via the program ~
-           name (i.e. running ~A~@[ ~{~A~^ ~}~]) is deprecated. Use~
-           ~@:_~@:_~
-           ~2@T~A ~A~@[ ~{~A ~^~}~]~
-           ~@:_~@:_~
-           instead.~@:>"
-          program-pathname args
-          (program-pathname->name (truename program-pathname)) (car entry) args)
-    (funcall (cdr entry) program-pathname args)
+    (let ((main-pathname #+unix (truename (format nil "/proc/~D/exe" (sb-posix:getpid)))
+                         #-unix "tools"))
+      (warn "~@<Selecting the command to execute via the program ~
+             name (i.e. running ~A~@[ ~{~A~^ ~}~]) is deprecated. Use~
+             ~@:_~@:_~
+             ~2@T~@<~A ~A~@[ ~{~A ~^~}~]~:>~
+             ~@:_~@:_~
+             instead.~@:>"
+            program-pathname args main-pathname (car entry) args)
+      (funcall (cdr entry) (program-pathname->name main-pathname) args))
     t))
 
 (defun main/command (program-pathname command args)
@@ -50,7 +51,8 @@
       ;; it.
       ((main/program-name program-pathname args))
 
-      ;; TODO
+      ;; If the program name does not correspond to an entry-point,
+      ;; try to use the first commandline option as a sub-command.
       ((when-let ((command (first args)))
          (main/command program-pathname command (rest args))))
 
