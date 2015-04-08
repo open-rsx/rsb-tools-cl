@@ -39,8 +39,7 @@
         (rsb.common:print-classes-help-string
          classes stream :initarg-blacklist '(:database))))))
 
-(defun make-examples-string (&key
-                             (program-name "introspect"))
+(defun make-examples-string (&key (program-name "rsb introspect"))
   (format nil
           "~2@T~A~@
            ~@
@@ -71,7 +70,9 @@
            "
           program-name))
 
-(defun update-synopsis (&key (show :default))
+(defun update-synopsis (&key
+                        (show         :default)
+                        (program-name "rsb introspect"))
   "Create and return a commandline option tree."
   (make-synopsis
    ;; Basic usage and specific options.
@@ -98,20 +99,21 @@ In most systems, all replies should arrive within a few milliseconds. However, c
    :item    (make-options :show? (show-help-for? :rsb :show show))
    ;; Append examples.
    :item    (defgroup (:header "Examples")
-              (make-text :contents (make-examples-string)))))
+              (make-text :contents (make-examples-string
+                                    :program-name program-name)))))
 
 (defun main (program-pathname args)
   "Entry point function of the cl-rsb-tools-introspect system."
-  (update-synopsis)
-  (setf *configuration* (options-from-default-sources))
-  (process-commandline-options
-   :commandline     (list* (concatenate
-                            'string (namestring program-pathname) " introspect")
-                           args)
-   :version         (cl-rsb-tools-introspect-system:version/list :commit? t)
-   :update-synopsis #'update-synopsis
-   :return          (lambda () (return-from main)))
-  (enable-swank-on-signal)
+  (let ((program-name (concatenate
+                       'string (namestring program-pathname) " introspect")))
+    (update-synopsis :program-name program-name)
+    (setf *configuration* (options-from-default-sources))
+    (process-commandline-options
+     :commandline     (list* program-name args)
+     :version         (cl-rsb-tools-introspect-system:version/list :commit? t)
+     :update-synopsis (curry #'update-synopsis :program-name program-name)
+     :return          (lambda () (return-from main)))
+    (enable-swank-on-signal))
 
   (let* ((error-policy     (maybe-relay-to-thread
                             (process-error-handling-options)))

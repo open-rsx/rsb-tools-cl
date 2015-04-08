@@ -1,6 +1,6 @@
 ;;;; help.lisp --- Help text generation for the logger program.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -61,8 +61,7 @@
                       ")
       (print-filter-help stream))))
 
-(defun make-examples-string (&key
-                             (program-name "logger"))
+(defun make-examples-string (&key (program-name "rsb logger"))
   "Make and return a string containing usage examples of the program."
   (format nil "~2@T~A~@
                ~@

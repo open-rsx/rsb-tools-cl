@@ -58,8 +58,7 @@
                         ~2@T")
         (print-uri-help stream :uri-var "DESTINATION-URI")))))
 
-(defun make-examples-string (&key
-                             (program-name #+does-not-work (progname) "send"))
+(defun make-examples-string (&key (program-name "rsb send"))
   "Make and return a string containing usage examples of the program."
   (format nil
           "~2@T~A '' /mycomponent/trigger~@
@@ -108,7 +107,8 @@
           program-name))
 
 (defun update-synopsis (&key
-                        (show :default))
+                        (show         :default)
+                        (program-name "rsb send"))
   "Create and return a commandline option tree."
   (make-synopsis
    ;; Basic usage and specific options.
@@ -148,20 +148,21 @@
                         (and (listp show) (member :rsb show))))
    ;; Append examples.
    :item    (defgroup (:header "Examples")
-              (make-text :contents (make-examples-string)))))
+              (make-text :contents (make-examples-string
+                                    :program-name program-name)))))
 
 (defun main (program-pathname args)
   "Entry point function of the cl-rsb-tools-send system."
-  (update-synopsis)
-  (setf *configuration* (options-from-default-sources))
-  (process-commandline-options
-   :commandline     (list* (concatenate
-                            'string (namestring program-pathname) " send")
-                           args)
-   :version         (cl-rsb-tools-send-system:version/list :commit? t)
-   :update-synopsis #'update-synopsis
-   :return          (lambda () (return-from main)))
-  (enable-swank-on-signal)
+  (let ((program-name (concatenate
+                       'string (namestring program-pathname) " send")))
+    (update-synopsis :program-name program-name)
+    (setf *configuration* (options-from-default-sources))
+    (process-commandline-options
+     :commandline     (list* program-name args)
+     :version         (cl-rsb-tools-send-system:version/list :commit? t)
+     :update-synopsis (curry #'update-synopsis :program-name program-name)
+     :return          (lambda () (return-from main)))
+    (enable-swank-on-signal))
 
   (unless (length= 2 (remainder))
     (error "~@<Supply event specification and destination URI.~@:>"))

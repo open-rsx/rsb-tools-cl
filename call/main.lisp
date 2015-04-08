@@ -55,8 +55,7 @@
                       ")
       (print-uri-help stream :uri-var "SERVER-URI"))))
 
-(defun make-examples-string (&key
-                             (program-name #+does-not-work (progname) "call"))
+(defun make-examples-string (&key (program-name "rsb call"))
   "Make and return a string containing usage examples of the program."
   (format nil
           "~2@T~A 'spread://localhost:4811/my/interface/method(5)'~@
@@ -108,7 +107,8 @@
           program-name))
 
 (defun update-synopsis (&key
-                        (show :default))
+                        (show         :default)
+                        (program-name "rsb call"))
   "Create and return a commandline option tree."
   (make-synopsis
    ;; Basic usage and specific options.
@@ -141,20 +141,21 @@
                         (and (listp show) (member :rsb show))))
    ;; Append examples.
    :item    (defgroup (:header "Examples")
-              (make-text :contents (make-examples-string)))))
+              (make-text :contents (make-examples-string
+                                    :program-name program-name)))))
 
 (defun main (program-pathname args)
   "Entry point function of the cl-rsb-tools-call system."
-  (update-synopsis)
-  (setf *configuration* (options-from-default-sources))
-  (process-commandline-options
-   :commandline     (list* (concatenate
-                            'string (namestring program-pathname) " call")
-                           args)
-   :version         (cl-rsb-tools-call-system:version/list :commit? t)
-   :update-synopsis #'update-synopsis
-   :return          (lambda () (return-from main)))
-  (enable-swank-on-signal)
+  (let ((program-name (concatenate
+                       'string (namestring program-pathname) " call")))
+    (update-synopsis :program-name program-name)
+    (setf *configuration* (options-from-default-sources))
+    (process-commandline-options
+     :commandline     (list* program-name args)
+     :version         (cl-rsb-tools-call-system:version/list :commit? t)
+     :update-synopsis (curry #'update-synopsis :program-name program-name)
+     :return          (lambda () (return-from main)))
+    (enable-swank-on-signal))
 
   ;; Validate commandline options.
   (unless (length= 1 (remainder))
