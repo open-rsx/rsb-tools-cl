@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-main.asd --- System definition for main binary of cl-rsb-tools.
+;;;; cl-rsb-tools-bridge.asd --- RSB Logging utility based cl-rsb.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-main-system
+(cl:defpackage #:cl-rsb-tools-bridge-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-main-system)
+(cl:in-package #:cl-rsb-tools-bridge-system)
 
 ;;; Version stuff
 
@@ -66,27 +66,28 @@ See `version/list' for details on keyword parameters."
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-main
+(defsystem :cl-rsb-tools-bridge
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "Main program and dispatch function for all cl-rsb
-tools."
-  :depends-on  ((:version :rsb-introspection       #.(version/string :revision? nil))
+  :description "A tool for forwarding events between RSB buses."
+  :depends-on  (:alexandria
+                :let-plus
+                :iterate
+                (:version :lparallel          "2.1.2")
+                (:version :log4cl             "1.1.1")
 
-                (:version :cl-rsb-tools-info       #.(version/string))
-                (:version :cl-rsb-tools-logger     #.(version/string))
-                (:version :cl-rsb-tools-call       #.(version/string))
-                (:version :cl-rsb-tools-send       #.(version/string))
-                (:version :cl-rsb-tools-introspect #.(version/string))
-                (:version :cl-rsb-tools-web        #.(version/string))
-                (:version :cl-rsb-tools-bridge     #.(version/string))
+                :com.dvlsoft.clon
 
-                (:version :rsb-tools-commands      #.(version/string)))
+                (:version :cl-rsb             #.(version/string :revision? nil))
+
+                (:version :cl-rsb-common      #.(version/string))
+
+                (:version :rsb-tools-commands #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "main"
+  :components  ((:module     "bridge"
+                 :serial     t
                  :components ((:file       "package")
-                              (:file       "main"
-                               :depends-on ("package")))))
-  :entry-point "rsb.tools.main:main")
+                              (:file       "help")
+                              (:file       "main")))))

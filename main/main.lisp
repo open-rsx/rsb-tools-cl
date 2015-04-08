@@ -12,7 +12,8 @@
     ("call"       . rsb.tools.call:main)
     ("send"       . rsb.tools.send:main)
     ("introspect" . rsb.tools.introspect:main)
-    ("web"        . rsb.tools.web:main))
+    ("web"        . rsb.tools.web:main)
+    ("bridge"     . rsb.tools.bridge:main))
   "Stores a mapping from program names to entry point functions.")
 
 (defun program-pathname->name (program-pathname)

@@ -207,7 +207,7 @@ message(STATUS "Project is ${CMAKE_PROJECT_NAME} (${VERSION_FROM_LISP})")
 set(MAIN_NAME        "tools")
 set(MAIN_SYSTEM_NAME "cl-rsb-tools-main")
 set(MAIN_EXECUTABLE  "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}${CMAKE_EXECUTABLE_SUFFIX}")
-set(TOOLS           info logger call send introspect web)
+set(TOOLS            info logger call send introspect web bridge)
 set(ASDF_EXTRA_OUTPUT_TRANSLATIONS "((\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" #P\\\"cl-rsb-tools-main\\\")
                                     #P\\\"${CMAKE_CURRENT_BINARY_DIR}/tools\\\")")
 configure_lisp_redirect("${MAIN_NAME}"
@@ -252,7 +252,7 @@ foreach(CATEGORY verbose configuration connectors converters filters
              COMMAND "${MAIN_EXECUTABLE}" info --debug --${CATEGORY})
 endforeach()
 
-# All error policies for logger, send and call binaries.
+# All error policies for logger, send, call and bridge binaries.
 foreach(POLICY continue abort)
     add_test(NAME    "logger/on-error=${POLICY}"
             COMMAND  "${MAIN_EXECUTABLE}" logger
@@ -268,6 +268,11 @@ foreach(POLICY continue abort)
                      --debug --on-error "${POLICY}"
                      --no-wait
                      "inprocess:/foo/bar(1)")
+    add_test(NAME    "bridge/on-error=${POLICY}"
+            COMMAND  "${MAIN_EXECUTABLE}" bridge
+                     --debug --on-error "${POLICY}"
+                     --eval "${EXIT_AFTER_THREE_SECONDS}"
+                     "inprocess:/foo -> inprocess:/bar")
 endforeach()
 
 # IDL loading and error policies for logger, send and call binaries.
@@ -288,6 +293,12 @@ add_test(NAME   "call/idl-path/on-error=continue"
                 --idl-path "no-such-directory"
                 --no-wait
                 "inprocess:/foo/bar(1)")
+add_test(NAME   "bridge/idl-path/on-error=continue"
+        COMMAND "${MAIN_EXECUTABLE}" bridge
+                --debug --on-error continue
+                --idl-path "no-such-directory"
+                --eval "${EXIT_AFTER_THREE_SECONDS}"
+                 "inprocess:/foo -> inprocess:/bar")
 
 # Event meta-data specifications for send binary.
 foreach(ARG "--method=foo"
@@ -377,6 +388,7 @@ foreach(STYLE discard meta-data payload detailed
                     "inprocess:/foo/bar(1)")
 endforeach()
 
+# Introspection tests
 foreach(URLS "inprocess:" "inprocess:;inprocess:/")
   foreach(STYLE "" "--style;object-tree" "--style;monitor/object-tree" "--style;monitor/events")
     string(REGEX REPLACE "[;:]" "_" CLEAN_URLS "${URLS}")
@@ -393,6 +405,18 @@ foreach(URLS "inprocess:" "inprocess:;inprocess:/")
                      ${EXIT} ${STYLE} ${URLS})
   endforeach()
 endforeach()
+
+# Bridge tests
+add_test(NAME    "bridge/smoke/unidirectional"
+         COMMAND "${MAIN_EXECUTABLE}" bridge
+                 --debug
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
+                 "inprocess:/foo -> inprocess:/bar")
+add_test(NAME    "bridge/smoke/bidirectional"
+         COMMAND "${MAIN_EXECUTABLE}" bridge
+                 --debug
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
+                 "inprocess:/foo <-> inprocess:/bar")
 
 # redump test
 add_test("redump/simple"
