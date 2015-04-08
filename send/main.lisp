@@ -184,14 +184,13 @@
                (causes     (iter (for value next (getopt :long-name "cause"))
                                  (while value)
                                  (collect (parse-cause value))))
-               ((event-spec &optional (destination "/")) (remainder))
-               (payload (parse-payload-spec event-spec))
+               ((payload-spec &optional (destination "/")) (remainder))
                (command (make-command :send
-                                      :destination destination
-                                      :method      method
-                                      :meta-data   meta-data  ; TODO summarize these as some event-spec or something?
-                                      :timestamps  timestamps
-                                      :causes      causes
-                                      :payload     payload)))
-          (with-interactive-interrupt-exit ()
-            (command-execute command :error-policy error-policy)))))))
+                                      :destination  destination
+                                      :method       method
+                                      :meta-data    meta-data  ; TODO summarize these as some event-spec or something?
+                                      :timestamps   timestamps
+                                      :causes       causes
+                                      :payload-spec payload-spec)))
+              (with-interactive-interrupt-exit ()
+                (command-execute command :error-policy error-policy)))))))
