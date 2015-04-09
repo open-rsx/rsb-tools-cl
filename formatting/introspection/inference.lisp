@@ -16,6 +16,7 @@
   (:documentation
    "TODO"))
 
+;; TODO check same bus (e.g. socket transport vs. Spread transport for participants)
 (macrolet ((define-entities-communicate?-methods (class accessor)
              `(progn
                 (defmethod entities-communicate? ((from ,class)
@@ -72,3 +73,16 @@
      (from-kind (eql :remote-method))
      (to-kind   (eql :local-method)))
   (scope= (participant-info-scope from) (participant-info-scope to)))
+
+;;;
+
+(defun listener-on-root-scope? (thing)
+  (typecase thing
+    (process-entry
+     (every #'listener-on-root-scope?
+            (introspection-participants/roots thing)))
+    (participant-entry
+     (listener-on-root-scope? (entry-info thing)))
+    (participant-info
+     (and (eq (participant-info-kind thing) :listener)
+          (scope= (participant-info-scope thing) "/")))))

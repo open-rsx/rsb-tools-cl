@@ -130,7 +130,7 @@ endif()
 
 option(WITH_INTROSPECTION_GRAPH_SUPPORT "Build with support for introspection graph plotting." OFF)
 if(WITH_INTROSPECTION_GRAPH_SUPPORT)
-    add_silent_load(cl-rsb-tools-introspect-graph)
+    add_silent_load(cl-rsb-formatting-graph)
 endif()
 
 set(CL_SOURCE_REGISTRY       "(:source-registry

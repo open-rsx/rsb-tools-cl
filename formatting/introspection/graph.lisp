@@ -6,11 +6,24 @@
 
 (cl:in-package #:rsb.formatting.introspection)
 
+(define-constant +default-graph-attributes+
+    '(:fontname   "Arial"
+      :fontsize   11
+      :rankdir    "LR"
+      :stylesheet "foo.css"
+      :node       (:fontsize  11
+                   :fontname  "Arial"
+                   :style     :filled)
+      :edge       (:fontsize  11
+                   :fontname  "Arial"))
+  :test #'equal)
+
 (defstruct (graph-parameters
              (:copier nil))
-  (levels      nil :type list)
-  (node-filter nil :type (or symbol function))
-  (edge-filter nil :type (or symbol function)))
+  (levels           nil                        :type list)
+  (node-filter      nil                        :type (or symbol function))
+  (edge-filter      nil                        :type (or symbol function))
+  (graph-attributes +default-graph-attributes+ :type list))
 
 (defclass style-graph (database-mixin)
   ((delay            :initarg  :delay
@@ -90,7 +103,7 @@
 ;;; Graph construction
 
 (defclass introspection-graph ()
-  ((parents     :initarg  :parents ; TODO hack?
+  ((parents     :initarg  :parents ; TODO hack
                 :reader   graph-parents)
    (processes   :initarg  :processes
                 :type     list
@@ -102,7 +115,7 @@
                 :reader   graph-parameters)))
 
 (defun generate-graph (database parameters)
-  (let+ ((parents (make-hash-table :test #'eq))
+  (let+ ((parents (make-hash-table :test #'eq)) ; TODO remove
          ((&labels do-entry (entry)
             (dolist (child (entry-children entry))
               (setf (gethash child parents) entry)
@@ -117,14 +130,9 @@
                     :participants (introspection-participants/roots database)
                     :parameters   parameters)
      (list database)
-     '(:fontname "Arial"
-       :fontsize 11
-       :rankdir "LR"
-       ;; :stylesheet "../_static/corlab.css"
-       :node (:fontsize 11)
-       :node (:fontname "Arial")
-       :edge (:fontsize 11)
-       :edge (:fontname "Arial")))))
+     (list*
+      #+no :label #+no "RSB Components TODO"
+      (graph-parameters-graph-attributes parameters)))))
 
 ;; generic filters
 
@@ -149,6 +157,11 @@
 
 ;; `remote-introspection-database'
 
+(defmethod cl-dot:graph-object-node
+    ((graph  introspection-graph)
+     (object rsb.introspection::remote-introspection-database))
+  nil)
+
 (defmethod cl-dot:graph-object-knows-of
     ((graph  introspection-graph)
      (object rsb.introspection::remote-introspection-database))
@@ -161,11 +174,11 @@
   (let+ (((&structure-r/o rsb.introspection::host-info- id hostname state)
           (entry-info object))
          (label (make-label-table
-                 "/tmp/gnome-dev-computer.svg"
+                 "gnome-dev-computer.svg"
                  hostname (string-downcase state))))
     (make-instance 'cl-dot:cluster
                    :id         id
-                   :attributes (list* :label label attributes))))
+                   :attributes (list :label label))))
 
 (defmethod cl-dot:graph-object-knows-of ((graph  introspection-graph)
                                          (object host-entry))
@@ -179,14 +192,14 @@
            rsb.introspection::process-info- state process-id program-name display-name executing-user start-time) ; TODO sort
           (entry-info object))
          (label (make-label-table
-                 "/tmp/applications-other.svg"
+                 "applications-other.svg"
                  (format nil "~A [~A] ~A"
                          (or display-name program-name) process-id executing-user)
-                 (format nil "~(~A~) (~:/rsb.tools.introspect::print-elapsed-time/)"
+                 (format nil "~(~A~) (~:/rsb.formatting.introspection::print-elapsed-time/)"
                          state start-time))))
     (make-instance 'cl-dot:cluster
-                   :id         process-id ; TODO add host id
-                   :attributes (list* :label label attributes))))
+                   :id         process-id ; TODO add host id; not unique otherwise
+                   :attributes (list :label label :tooltip program-name)))) ; TODO tooltips in general
 
 (defmethod cl-dot:graph-object-knows-of ((graph  introspection-graph)
                                          (object process-entry))
@@ -210,7 +223,7 @@
          ((&structure-r/o rsb.introspection::participant-info- id kind scope) ; TODO sort
           info)
          (label (make-label-table
-                 "/tmp/network-wireless.svg"
+                 "network-wireless.svg"
                  (format nil "~A [~/rsb::print-id/]"
                          (string-downcase kind) id)
                  (scope-string scope))))
@@ -218,7 +231,7 @@
                    :attributes (list* :label label
                                       :shape :box
                                       (when (listener-on-root-scope? info)
-                                        (list :style   :filled
+                                        (list :style     :filled
                                               :fillcolor "#ff9090"))))))
 
 (defmethod cl-dot:graph-object-points-to ((graph  introspection-graph)
@@ -238,17 +251,6 @@
      (:tr () (:td ((:rowspan "2"))    (:img ((:src ,icon))))
              (:td ((:align   "left")) ,first-line))
      (:tr () (:td ((:align   "left")) ,second-line)))))
-
-(defun listener-on-root-scope? (thing)
-  (typecase thing
-    (process-entry
-     (every #'listener-on-root-scope?
-            (introspection-participants/roots thing)))
-    (participant-entry
-     (listener-on-root-scope? (entry-info thing)))
-    (participant-info
-     (and (eq (participant-info-kind thing) :listener)
-          (scope= (participant-info-scope thing) "/")))))
 
 (defun either-end (predicate)
   (lambda (from to)
