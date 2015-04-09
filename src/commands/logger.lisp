@@ -148,15 +148,14 @@
                                          (append converter '(:fundamental-null))
                                          converter)))))
          ((&values queue handler)
-          (make-queue-and-handler :max-queued-events max-queued-events)))
-
-    (let ((listeners '()))
-      (unwind-protect
-           (progn
-             (mapc (lambda (uri)
-                     (push (make-queue-pushing-listener
-                            handler uri error-policy filters converters)
-                           listeners))
-                   uris)
-             (process-events queue stream style))
-        (mapc #'detach/ignore-errors listeners)))))
+          (make-queue-and-handler :max-queued-events max-queued-events))
+         (listeners '()))
+        (unwind-protect
+             (progn
+               (mapc (lambda (uri)
+                       (push (make-queue-pushing-listener
+                              handler uri error-policy filters converters)
+                             listeners))
+                     uris)
+               (process-events queue stream style))
+          (mapc #'detach/ignore-errors listeners))))
