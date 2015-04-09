@@ -211,10 +211,7 @@
 ;;; Timestamp and meta-data columns
 
 (macrolet
-    ((define-meta-data-column ((name
-                                &key
-                                (width    32)
-                                (accessor (find-symbol (string name) :rsb))))
+    ((define-meta-data-column ((name &key (width 32)))
        (let ((class-name (intern (string name))))
          `(progn
             (defmethod find-column-class ((spec (eql ,name)))
