@@ -8,7 +8,8 @@ set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Tools for the Robotics Service Bus (Common
   * info
   * logger
   * send
-  * call")
+  * call
+  * introspect")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY    "optional")
 set(CPACK_DEBIAN_PACKAGE_SECTION     "devel")
 #SET(CPACK_DEBIAN_ARCHITECTURE        "${CMAKE_SYSTEM_PROCESSOR}") # Debian uses different names here
