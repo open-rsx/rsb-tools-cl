@@ -17,11 +17,7 @@ set(CPACK_DEBIAN_PACKAGE_SUGGESTS    "libzmq1 (>= 2.1.9), spread (>= 4.0)")
 
 # Generate system links.
 set(COMMANDS "")
-if(CMAKE_VERSION VERSION_LESS "2.8.7")
-    set(PREFIX "\\\${CMAKE_INSTALL_PREFIX}")
-else()
-    set(PREFIX "\\\${CMAKE_INSTALL_PREFIX}/usr")
-endif()
+set(PREFIX "\\\${CMAKE_INSTALL_PREFIX}/usr")
 foreach(NAME ${ASD_FILES} )
     set(COMMANDS "${COMMANDS} && ln -fs \\\"../source/${CMAKE_PROJECT_NAME}/${NAME}\\\" \\\"${PREFIX}/share/common-lisp/systems/${NAME}\\\"")
 endforeach()

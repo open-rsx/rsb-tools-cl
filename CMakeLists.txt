@@ -4,7 +4,7 @@
 #
 # Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.7)
 
 # Extract version components from an approximately "git describe"-like
 # formatted version string.
