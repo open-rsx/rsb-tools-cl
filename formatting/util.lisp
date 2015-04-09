@@ -71,6 +71,7 @@
             (butlast components) (lastcar components))))
 
 (defun print-timestamp (stream timestamp &optional colon? at?)
+  (declare (ignore at?))
   (cond
     ((not timestamp)
      (format stream "N/A"))
