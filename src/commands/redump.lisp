@@ -79,10 +79,11 @@
     (if static? (make-static) (make-dynamic))
 
     ;; Create new binary.
-    (setf uiop:*image-entry-point* "rsb.tools.main:main")
-    #-sbcl (when compression
-             (warn "~@<Compression is not supported in this ~
-                    implementation~@:>"))
+    #-sb-core-compression
+    (when compression
+      (warn "~@<Compression is not supported in this ~
+             implementation~@:>"))
     (uiop:dump-image output-file
                      :executable t
-                     #+sbcl :compression #+sbcl compression)))
+                     #+sb-core-compression :compression
+                     #+sb-core-compression compression)))

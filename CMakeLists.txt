@@ -128,19 +128,19 @@ if(WITH_PNG_SUPPORT)
     add_silent_load(cl-rsb-formatting-png)
 endif()
 
-set(CL_SOURCE_REGISTRY       "(:source-registry
-                                (:tree \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\")
-                                ${LISP_SOURCE_REGISTRY_ENTRIES}
-                                :inherit-configuration)")
-file(TO_CMAKE_PATH "${LISP_FASL_CACHE_DIR}" LISP_FASL_CACHE_DIR)
-set(ASDF_OUTPUT_TRANSLATIONS "(:output-translations
-                                (t (\\\"${LISP_FASL_CACHE_DIR}\\\" :implementation))
-                                :ignore-inherited-configuration)")
-
 # Execute Lisp processes, potentially with output redirection.
 function(configure_lisp NAME CODE)
     set(NAME "${NAME}")
     set(DO   "${CODE} --quit")
+    set(CL_SOURCE_REGISTRY       "(:source-registry
+                                    (:tree \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\")
+                                    ${LISP_SOURCE_REGISTRY_ENTRIES}
+                                    :inherit-configuration)")
+    file(TO_CMAKE_PATH "${LISP_FASL_CACHE_DIR}" LISP_FASL_CACHE_DIR)
+    set(ASDF_OUTPUT_TRANSLATIONS "(:output-translations
+                                    ${ASDF_EXTRA_OUTPUT_TRANSLATIONS}
+                                    (t (\\\"${LISP_FASL_CACHE_DIR}\\\" :implementation))
+                                    :ignore-inherited-configuration)")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"
                    @ONLY)
@@ -196,11 +196,17 @@ set(VERSION_SUFFIX "${RSB_TOOLS_VERSION_MAJOR}.${RSB_TOOLS_VERSION_MINOR}")
 message(STATUS "Project is ${CMAKE_PROJECT_NAME} (${VERSION_FROM_LISP})")
 
 # Create binary.
-set(MAIN_NAME       "tools")
-set(MAIN_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}${CMAKE_EXECUTABLE_SUFFIX}")
+set(MAIN_NAME        "tools")
+set(MAIN_SYSTEM_NAME "cl-rsb-tools-main")
+set(MAIN_EXECUTABLE  "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}${CMAKE_EXECUTABLE_SUFFIX}")
 set(TOOLS           info logger call send introspect)
+set(ASDF_EXTRA_OUTPUT_TRANSLATIONS "((\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" #P\\\"cl-rsb-tools-main\\\")
+                                    #P\\\"${CMAKE_CURRENT_BINARY_DIR}/tools\\\")")
 configure_lisp_redirect("${MAIN_NAME}"
-                        "--load \"${CMAKE_CURRENT_SOURCE_DIR}/main/dump.lisp\"")
+                        "--eval \"(load-system :iterate)\"
+                         --eval \"(setf iterate::*always-declare-variables* t)\"
+                         --eval \"(asdf:oos (quote asdf:program-op) :${MAIN_SYSTEM_NAME})\"")
+set(ASDF_EXTRA_OUTPUT_TRANSLATIONS)
 add_custom_command(OUTPUT  "${MAIN_EXECUTABLE}"
                    COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${MAIN_NAME}.cmake"
                    COMMENT "Creating Lisp image ${MAIN_NAME} (this can take a long time)")

@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-main.asd --- System definition for main binary of cl-rsb-tools.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -86,4 +86,5 @@ tools."
   :components  ((:module     "main"
                  :components ((:file       "package")
                               (:file       "main"
-                               :depends-on ("package"))))))
+                               :depends-on ("package")))))
+  :entry-point "rsb.tools.main:main")
