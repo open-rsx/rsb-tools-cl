@@ -98,7 +98,7 @@
   ((max-depth :initarg  :max-depth
               :type     (or null positive-integer)
               :reader   style-max-depth
-              :initform nil
+              :initform 2
               :documentation
               "When not null, a positive integer indicating the
                maximum depth up to which the tree of introspection
