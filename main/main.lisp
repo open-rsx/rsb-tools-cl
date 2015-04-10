@@ -68,21 +68,23 @@
       ;; option, dump into a new binary with the specified library
       ;; loading behavior and the specified core compression.
       ((string= "redump" (first args))
-       (destructuring-bind (&optional (name (program-pathname->name
-                                             program-pathname))
-                            &rest local-args)
-           (rest args)
+       (let+ (((&optional (name (program-pathname->name
+                                                    program-pathname))
+                                             &rest local-args)
+               (rest args))
+              (static?   (member "static"   local-args :test #'string=))
+              (compress? (member "compress" local-args :test #'string=)))
          (command-execute
           (make-command
            :redump
            :output-file name
-           :static?     (member "static" local-args :test #'string=)
-           :compression (when (member "compress" local-args :test #'string=)
+           :static?     static?
+           :compression (when compress?
                           #+sb-core-compression 9
                           #-sb-core-compression
                           (progn
                             (warn "~@<Compression is not supported in ~
-                                  this implementation~@:>")
+                                   this implementation~@:>")
                             nil))))))
 
       ;; Otherwise display information regarding entry points and
