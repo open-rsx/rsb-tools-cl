@@ -1,6 +1,6 @@
 ;;;; options.lisp --- Common functions related to commandline options.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -164,11 +164,13 @@ can be used to search directories recursively. If the file designated by FILE-OR
     (setf (log-level) level))
 
   ;; Process --trace options.
-  (let ((trace-specs
-         (iter (for trace-spec next (getopt :long-name "trace"))
-               (while trace-spec)
-               (collect (read-from-string trace-spec)))))
-    (trace-things trace-specs))
+  (mapc #'trace-things
+        (collect-option-values
+         :long-name "trace"
+         :transform (lambda (trace-spec)
+                      (with-input-from-string (stream trace-spec)
+                        (iter (for fragment in-stream stream)
+                              (collect fragment))))))
 
   ;; Process --debug option.
   (unless (getopt :long-name "debug")
