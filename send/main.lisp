@@ -167,31 +167,31 @@
   (unless (length= 2 (remainder))
     (error "~@<Supply event specification and destination URI.~@:>"))
 
-  (let ((error-policy (maybe-relay-to-thread
-                       (process-error-handling-options))))
+  (let+ ((error-policy (maybe-relay-to-thread
+                        (process-error-handling-options)))
+         (method       (when-let ((value (getopt :long-name "method")))
+                         (make-keyword value)))
+         (meta-data    (iter (for value next (getopt :long-name "meta-data"))
+                             (while value)
+                             (appending (parse-meta-data value))))
+         (timestamps   (iter (for value next (getopt :long-name "timestamp"))
+                             (while value)
+                             (appending (parse-timestamp value))))
+         (causes       (iter (for value next (getopt :long-name "cause"))
+                             (while value)
+                             (collect (parse-cause value))))
+         ((payload-spec &optional (destination "/")) (remainder)))
     (with-logged-warnings
       (with-error-policy (error-policy)
         ;; Load IDLs as specified on the commandline.
         (process-idl-options :purpose '(:packed-size :serializer :deserializer))
 
-        (let+ ((method     (when-let ((value (getopt :long-name "method")))
-                             (make-keyword value)))
-               (meta-data  (iter (for value next (getopt :long-name "meta-data"))
-                                 (while value)
-                                 (appending (parse-meta-data value))))
-               (timestamps (iter (for value next (getopt :long-name "timestamp"))
-                                 (while value)
-                                 (appending (parse-timestamp value))))
-               (causes     (iter (for value next (getopt :long-name "cause"))
-                                 (while value)
-                                 (collect (parse-cause value))))
-               ((payload-spec &optional (destination "/")) (remainder))
-               (command (make-command :send
-                                      :destination  destination
-                                      :method       method
-                                      :meta-data    meta-data  ; TODO summarize these as some event-spec or something?
-                                      :timestamps   timestamps
-                                      :causes       causes
-                                      :payload-spec payload-spec)))
-              (with-interactive-interrupt-exit ()
-                (command-execute command :error-policy error-policy)))))))
+        (let ((command (make-command :send
+                                     :destination  destination
+                                     :method       method
+                                     :meta-data    meta-data  ; TODO summarize these as some event-spec or something?
+                                     :timestamps   timestamps
+                                     :causes       causes
+                                     :payload-spec payload-spec)))
+          (with-interactive-interrupt-exit ()
+            (command-execute command :error-policy error-policy)))))))

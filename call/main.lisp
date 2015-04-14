@@ -127,10 +127,10 @@
                        :short-name    "w"
                        :description
                        "Do not wait for the result of the method call. Immediately return with zero status without printing a result to standard output.")
-              (stropt  :long-name       "style"
-                       :short-name      "s"
-                       :default-value   "payload :separator nil"
-                       :argument-name   "SPEC"
+              (stropt  :long-name     "style"
+                       :short-name    "s"
+                       :default-value "payload :separator nil"
+                       :argument-name "SPEC"
                        :description
                        (make-style-help-string :show show)))
    ;; Append IDL options.
@@ -163,7 +163,11 @@
             SERVER-URI/METHOD(ARG).~@:>"))
 
   (let ((error-policy (maybe-relay-to-thread
-                       (process-error-handling-options))))
+                       (process-error-handling-options)))
+        (spec         (first (remainder)))
+        (timeout      (getopt :long-name "timeout"))
+        (no-wait?     (getopt :long-name "no-wait"))
+        (style        (getopt :long-name "style")))
     (with-print-limits (*standard-output*)
       (with-logged-warnings
         (with-error-policy (error-policy)
@@ -174,14 +178,10 @@
           ;; 2. Call the method and
           ;; 3. Potentially wait for a reply
           ;;    Format it
-          (let+ ((spec     (first (remainder)))
-                 (timeout  (getopt :long-name "timeout"))
-                 (no-wait? (getopt :long-name "no-wait"))
-                 (style    (getopt :long-name "style"))
-                 (command  (make-command :call
-                                         :call-spec   spec
-                                         :style-spec  style
-                                         :timeout     timeout
-                                         :no-wait?    no-wait?)))
+          (let ((command (make-command :call
+                                       :call-spec  spec
+                                       :style-spec style
+                                       :timeout    timeout
+                                       :no-wait?   no-wait?)))
             (with-interactive-interrupt-exit ()
               (command-execute command :error-policy error-policy))))))))

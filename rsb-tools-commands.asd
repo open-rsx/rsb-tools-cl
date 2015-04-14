@@ -74,8 +74,10 @@
   :description "Command protocol and basic commands provided by RSB tools."
   :depends-on  (:alexandria
                 :let-plus
+                (:version :more-conditions               "0.4")
                 (:version :log4cl                        "1.1.1")
                 (:version :architecture.service-provider "0.1")
+                (:version :utilities.print-items         "0.1")
 
                 (:version :cl-rsb                        #.(version/string :revision? nil))
                 (:version :cl-rsb-common                 #.(version/string :revision? nil))
