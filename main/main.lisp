@@ -74,18 +74,10 @@
                (rest args))
               (static?   (member "static"   local-args :test #'string=))
               (compress? (member "compress" local-args :test #'string=)))
-         (command-execute
-          (make-command
-           :redump
-           :output-file name
-           :static?     static?
-           :compression (when compress?
-                          #+sb-core-compression 9
-                          #-sb-core-compression
-                          (progn
-                            (warn "~@<Compression is not supported in ~
-                                   this implementation~@:>")
-                            nil))))))
+         (command-execute (make-command :redump
+                                        :output-file name
+                                        :static?     static?
+                                        :compression (when compress? 9)))))
 
       ;; Otherwise display information regarding entry points and
       ;; symbolic links and offer to create these automatically if
