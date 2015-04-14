@@ -38,7 +38,10 @@
           :filters           (,(rsb.filter:filter :scope :scope "/"))))
         ((:uris              (,(puri:uri "/"))
           :style-spec        "detailed"
-          :stream            ,*error-output*)))
+          :stream            ,*error-output*))
+        ((:uris              (,(puri:uri "/"))
+          :style-spec        "detailed"
+          :stream-spec       :error-output)))
 
     (let+ (((&flet do-it () (apply #'make-command :logger initargs))))
       (case expected

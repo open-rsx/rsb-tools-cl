@@ -118,6 +118,8 @@
                  :serial     t
                  :components ((:file       "package")
 
+                              (:file       "mixins")
+
                               (:file       "redump")
 
                               (:file       "info")

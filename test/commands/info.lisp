@@ -24,7 +24,9 @@
         ((:converters?       t))
         ((:filters?          t))
         ((:event-processing? t))
-        ((:participants?     t)))
+        ((:participants?     t))
+        ((:stream            ,*standard-output*))
+        ((:stream-spec       :error-output)))
 
     (let+ (((&flet do-it () (apply #'make-command :info initargs))))
       (ensure (typep (princ-to-string (do-it)) 'string)))))

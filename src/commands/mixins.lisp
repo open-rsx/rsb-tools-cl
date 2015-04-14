@@ -165,9 +165,30 @@
   ((stream :initarg  :stream
            :type     stream
            :reader   command-stream
+           :accessor command-%stream
            :initform *standard-output*
            :documentation
            "Stream to which the command should write its output."))
   (:documentation
    "This class is intended to be mixed into command classes that
     output information on a stream."))
+
+(defmethod shared-initialize :before ((instance   output-stream-mixin)
+                                      (slot-names t)
+                                      &key
+                                      (stream      nil stream-supplied?)
+                                      (stream-spec nil stream-spec-supplied?))
+  (when (and stream-supplied? stream-spec-supplied?)
+    (incompatible-initargs 'output-stream-mixin
+                           :stream      stream
+                           :stream-spec stream-spec)))
+
+(defmethod shared-initialize :after ((instance   output-stream-mixin)
+                                     (slot-names t)
+                                     &key
+                                     (stream-spec nil stream-spec-supplied?))
+  (when stream-spec-supplied?
+    (setf (command-%stream instance)
+          (ecase stream-spec
+            ((:stdout :standard-output) *standard-output*)
+            ((:stderr :error-output)    *error-output*)))))

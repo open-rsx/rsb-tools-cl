@@ -18,21 +18,22 @@
 
   (ensure-cases (initargs &optional expected)
       `(;; Some invalid cases.
-        (()                        missing-required-initarg) ; :style[-spec] is missing
-        ((:uris (,(puri:uri "/"))) missing-required-initarg) ; :style[-spec] is missing
+        (()                              missing-required-initarg) ; :uris,:style[-spec] are missing
+        ((:uris       (,(puri:uri "/"))) missing-required-initarg) ; :style[-spec] is missing
 
         ;; These are Ok.
-        ((:uris       (,(puri:uri "/"))
-          :style-spec "object-tree"))
-        ((:uris       (,(puri:uri "/"))
-          :style      ,(rsb.formatting:make-style
-                        :object-tree
-                        :service 'rsb.formatting.introspection::style)))
-        ((:uris       (,(puri:uri "/"))
-          :style-spec "object-tree"))
-        ((:uris       (,(puri:uri "/"))
-          :style-spec "object-tree"
-          :stream     ,*error-output*)))
+        ((:uris        (,(puri:uri "/"))
+          :style-spec  "object-tree"))
+        ((:uris        (,(puri:uri "/"))
+          :style       ,(rsb.formatting:make-style
+                         :object-tree
+                         :service 'rsb.formatting.introspection::style)))
+        ((:uris        (,(puri:uri "/"))
+          :style-spec  "object-tree"
+          :stream      ,*standard-output*))
+        ((:uris        (,(puri:uri "/"))
+          :style-spec  "object-tree"
+          :stream-spec :error-output)))
 
     (let+ (((&flet do-it () (apply #'make-command :introspect initargs))))
       (case expected
