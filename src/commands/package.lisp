@@ -27,5 +27,29 @@
   (:export
    #:make-command)
 
+  ;; Command mixin classes
+  (:export
+   #:output-stream-mixin
+   #:command-stream
+
+   #:source-mixin
+   #:command-uris
+
+   #:destination-mixin
+   #:command-destination
+
+   #:payload-literal-mixin
+   #:command-payload
+
+   #:style-mixin
+   #:command-style)
+
+  ;; General purpose command classes
+  (:export
+   #:redump
+   #:redump-output-file
+   #:redump-static?
+   #:redump-compression)
+
   (:documentation
    "Package definition for the commands module."))
