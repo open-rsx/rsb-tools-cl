@@ -141,11 +141,11 @@
                                       (style-spec nil style-spec-supplied?))
   (cond
     ((and style-supplied? style-spec-supplied?)
-     (incompatible-initargs 'style-literal-mixin
+     (incompatible-initargs 'style-mixin
                             :style      style
                             :style-spec style-spec))
     ((not (or style-supplied? style-spec-supplied?))
-     (missing-required-initarg 'style-literal-mixin
+     (missing-required-initarg 'style-mixin
                                :style-xor-style-spec))))
 
 (defmethod shared-initialize :after
