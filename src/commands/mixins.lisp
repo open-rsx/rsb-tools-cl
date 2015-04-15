@@ -10,7 +10,7 @@
 
 (defun coerce-to-scope-or-uri (thing)
   (etypecase thing
-    (string              (rsb::parse-scope-or-uri thing))
+    (string              (puri:parse-uri thing))
     ((or scope puri:uri) thing)))
 
 (defun scope-or-uri-string (thing)
