@@ -24,12 +24,13 @@
 ;; Default behavior
 
 (defmethod make-command ((spec cons) &rest args)
-  (let+ (((name &rest initargs) spec))
-    (apply #'service-provider:make-provider 'command name
-           (append initargs args))))
+  (check-type spec (cons keyword list) "a keyword followed by initargs")
+  (apply #'make-command (first spec) (append (rest spec) args)))
 
-(defmethod make-command ((spec t) &rest args)
-  (apply #'service-provider:make-provider 'command spec args))
+(defmethod make-command ((spec t)
+                         &rest args &key (service 'command) &allow-other-keys)
+  (apply #'service-provider:make-provider service spec
+         (remove-from-plist args :service)))
 
 ;;; Command service
 
