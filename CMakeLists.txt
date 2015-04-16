@@ -410,7 +410,7 @@ file(GLOB ASD_FILES
 file(GLOB SEXP_FILES
      RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
      "*.sexp")
-foreach(directory common formatting stats)
+foreach(directory src common formatting stats)
     install(DIRECTORY      "${CMAKE_CURRENT_SOURCE_DIR}/${directory}"
             DESTINATION    "share/common-lisp/source/${CMAKE_PROJECT_NAME}"
             FILES_MATCHING PATTERN "*.lisp")
