@@ -104,9 +104,9 @@
                   #'string< :key #'service-provider:provider-name)))
          ((&flet format-service-providers (service)
             (format stream "~:[~;~2&~]~@(~A~)s~
-                      ~&~2@T~@<~
-                        ~:[<none>~;~:*~{+ ~<~@;~16A~@[ ~A~]~:>~^~@:_~}~]~
-                      ~:>"
+                            ~&~2@T~@<~
+                              ~:[<none>~;~:*~{+ ~<~@;~16A~@[ ~A~]~:>~^~@:_~}~]~
+                            ~:>"
                     produced-output?
                     service
                     (mapcar (lambda (provider)
@@ -135,18 +135,26 @@
                         ~:[<none>~;~:*~{~
                            + ~<~@;~12A~@[ ~A~]~
                                ~@:_~12@T Schemas:    ~{~A~^, ~}~
+                               ~@:_~12@T Scope:      ~:[local~:;remote~]~
                                ~@:_~12@T Directions: ~{~A~^, ~}~
                              ~:>~^~@:_~
                         ~}~]~
                       ~:>"
               (setf produced-output? t)
               (mapcar (lambda (transport)
-                        (list (service-provider:provider-name transport)
-                              (when-let ((documentation (documentation transport t)))
-                                (first-line-or-less documentation))
-                              (rsb.transport:transport-schemas transport)
-                              (mapcar #'service-provider:provider-name
-                                      (service-provider:service-providers transport))))
+                        (let+ (((&accessors-r/o (name      service-provider:provider-name)
+                                                (schemas   rsb.transport:transport-schemas)
+                                                (remote?   rsb.transport:transport-remote?)
+                                                (providers service-provider:service-providers))
+                                transport))
+                          (list name
+                                (when-let ((documentation (documentation transport t)))
+                                  (first-line-or-less documentation))
+                                schemas
+                                remote?
+                                (sort (mapcar #'service-provider:provider-name
+                                              providers)
+                                      #'string<))))
                       (sorted-providers 'rsb.transport::transport)))
       (setf produced-output? t))
 
