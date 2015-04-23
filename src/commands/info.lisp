@@ -19,9 +19,9 @@
                       :documentation
                       "Display information regarding the default
                        configuration?")
-   (connectors?       :initform nil
-                      :reader   info-connectors?
-                      :accessor info-%connectors?
+   (transports?       :initform nil
+                      :reader   info-transports?
+                      :accessor info-%transports?
                       :documentation
                       "Display information regarding available
                        transport implementations?")
@@ -67,7 +67,7 @@
      (all?              nil all?-supplied?)
      (version?          nil version?-supplied?)
      (configuration?    nil configuration?-supplied?)
-     (connectors?       nil connectors?-supplied?)
+     (transports?       nil transports?-supplied?)
      (converters?       nil converters?-supplied?)
      (filters?          nil filters?-supplied?)
      (transforms?       nil transforms?-supplied?)
@@ -83,7 +83,7 @@
                      (setf (,accessor instance) ,name))))))
     (do-option version?)
     (do-option configuration?)
-    (do-option connectors?)
+    (do-option transports?)
     (do-option converters?)
     (do-option filters?)
     (do-option transforms?)
@@ -94,7 +94,7 @@
   (declare (ignore error-policy))
 
   (let+ (((&structure-r/o
-           info- version? configuration? connectors? converters? filters?
+           info- version? configuration? transports? converters? filters?
            transforms? event-processing? participants?)
           command)
          (stream (command-stream command))
@@ -129,13 +129,25 @@
               (alist-plist *configuration*))
       (setf produced-output? t))
 
-    (when connectors?
-      (format stream "~:[~;~2&~]Connectors~
+    (when transports?
+      (format stream "~:[~;~2&~]Transports~
                       ~&~2@T~@<~
-                        ~{+ ~<~@;~@{~A~*~}~:>~^~@:_~}~
+                        ~:[<none>~;~:*~{~
+                           + ~<~@;~12A~@[ ~A~]~
+                               ~@:_~12@T Schemas:    ~{~A~^, ~}~
+                               ~@:_~12@T Directions: ~{~A~^, ~}~
+                             ~:>~^~@:_~
+                        ~}~]~
                       ~:>"
-              produced-output?
-              (rsb.transport:transport-classes))
+              (setf produced-output? t)
+              (mapcar (lambda (transport)
+                        (list (service-provider:provider-name transport)
+                              (when-let ((documentation (documentation transport t)))
+                                (first-line-or-less documentation))
+                              (rsb.transport:transport-schemas transport)
+                              (mapcar #'service-provider:provider-name
+                                      (service-provider:service-providers transport))))
+                      (sorted-providers 'rsb.transport::transport)))
       (setf produced-output? t))
 
     (when converters?

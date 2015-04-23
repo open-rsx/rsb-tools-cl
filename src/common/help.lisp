@@ -45,9 +45,9 @@
 
 (defun print-uri-synopsis (connector-class stream)
   "Return a synopsis string for the URI syntax of CONNECTOR-CLASS."
-  (let+ (((&accessors-r/o
-           (schemas rsb.transport:connector-schemas)
-           (options rsb.transport:connector-options)) connector-class)
+  (let+ (((&accessors-r/o (schemas rsb.transport:transport-schemas)
+                          (options rsb.transport:connector-options))
+          connector-class)
          (host  (find :host options :key #'first))
          (port  (find :port options :key #'first))
          (other (remove-if (lambda (option)
@@ -61,12 +61,14 @@
   "Print synopsis strings for all known transport implementation on
    STREAM."
   (pprint-logical-block (stream nil)
-    (iter (for (name class) in (remove-duplicates
-                                (rsb.transport:transport-classes)
-                                :key  (compose #'rsb.transport:connector-schemas
-                                               #'second)
-                                :test #'equal))
-          (print-uri-synopsis class stream)
+    (iter (for provider in (remove-duplicates
+                            (mappend #'service-provider:service-providers
+                                     (service-provider:service-providers
+                                      'rsb.transport::transport))
+                            :key  (compose #'rsb.transport:transport-schemas
+                                           #'service-provider:provider-class)
+                            :test #'equal))
+          (print-uri-synopsis (service-provider:provider-class provider) stream)
           (pprint-newline :mandatory stream))))
 
 ;;; URI help

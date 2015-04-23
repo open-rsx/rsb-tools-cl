@@ -1,6 +1,6 @@
 ;;;; info.lisp --- Tests for the info command class.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -20,7 +20,7 @@
       `(;; These are Ok.
         ((:version?          t))
         ((:configuration?    t))
-        ((:connectors?       t))
+        ((:transports?       t))
         ((:converters?       t))
         ((:filters?          t))
         ((:transforms?       t))

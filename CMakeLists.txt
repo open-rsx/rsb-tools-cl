@@ -250,7 +250,7 @@ foreach(TOOL ${TOOLS})
 endforeach()
 
 # All categories for info binary.
-foreach(CATEGORY verbose configuration connectors converters filters
+foreach(CATEGORY verbose configuration transports converters filters
                  transforms event-processing participants)
     add_test(NAME    "info/category=${CATEGORY}"
              COMMAND "${MAIN_EXECUTABLE}" info --debug --${CATEGORY})

@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the info tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -23,7 +23,7 @@
                     :short-name "f"
                     :description
                     "Display information regarding the default configuration?")
-              (flag :long-name  "connectors"
+              (flag :long-name  "transports"
                     :short-name "c"
                     :description
                     "Display information regarding available transport implementations?")
@@ -77,7 +77,7 @@
                           (when verbose?
                             '(:all? t))
                           (mapcan #'make-initarg
-                                  '(:version? :configuration? :connectors?
+                                  '(:version? :configuration? :transports?
                                     :converters? :filters? :transforms?
                                     :event-processing? :participants?))))))
     (with-print-limits (stream)
