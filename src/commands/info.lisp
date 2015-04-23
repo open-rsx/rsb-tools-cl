@@ -97,7 +97,7 @@
     (when configuration?
       (rsb.formatting::with-indented-section (stream "Configuration")
         (format stream "~{~48@<~(~{~A~^.~}~)~>: ~S~^~&~}"
-                (alist-plist *default-configuration*))))
+                (alist-plist *configuration*))))
 
     (when connectors?
       (rsb.formatting::with-indented-section (stream "Connectors")
