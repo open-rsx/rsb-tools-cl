@@ -192,3 +192,24 @@
           (ecase stream-spec
             ((:stdout :standard-output) *standard-output*)
             ((:stderr :error-output)    *error-output*)))))
+
+;;; `response-timeout-mixin' mixin
+
+(defclass response-timeout-mixin ()
+  ((response-timeout :initarg  :response-timeout
+                     :type     positive-real
+                     :reader   command-response-timeout
+                     :initform .5
+                     :documentation
+                     "Time in seconds to wait for responses to
+                      introspection requests.
+
+                      In most systems, all replies should arrive
+                      within a few milliseconds. However,
+                      circumstances like heavily loaded system,
+                      degraded system performance or extreme
+                      communication latency may require larger
+                      values."))
+  (:documentation
+   "This class is intended to be mixed into command classes that store
+    a response timeout."))

@@ -109,9 +109,10 @@
   :depends-on  (:alexandria
                 :let-plus
 
-                (:version :lift               "1.7.1")
+                (:version :lift                   "1.7.1")
 
-                (:version :rsb-tools-commands #.(version/string)))
+                (:version :rsb-tools-commands     #.(version/string))
+                (:version :rsb-tools-commands-web #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "commands"
                  :pathname   "test/commands"
@@ -126,7 +127,9 @@
                               (:file       "logger")
                               (:file       "send")
                               (:file       "call")
-                              (:file       "introspect")))))
+                              (:file       "introspect")
+
+                              (:file       "web")))))
 
 (defmethod perform ((operation test-op)
                     (component (eql (find-system :rsb-tools-commands-test))))

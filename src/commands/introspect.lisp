@@ -7,25 +7,12 @@
 (cl:in-package #:rsb.tools.commands)
 
 (defclass introspect (source-mixin
+                      response-timeout-mixin
                       output-stream-mixin
                       style-mixin
                       print-items:print-items-mixin)
-  ((style-service    :allocation :class
-                     :initform 'rsb.formatting.introspection::style)
-   (response-timeout :initarg  :response-timeout
-                     :type     positive-real
-                     :reader   introspect-response-timeout
-                     :initform .5
-                     :documentation
-                     "Time in seconds to wait for responses to
-                      introspection requests.
-
-                      In most systems, all replies should arrive
-                      within a few milliseconds. However,
-                      circumstances like heavily loaded system,
-                      degraded system performance or extreme
-                      communication latency may require larger
-                      values."))
+  ((style-service :allocation :class
+                  :initform 'rsb.formatting.introspection::style))
   (:documentation
    "Display information about hosts, processes and participants in a system.
 
@@ -40,10 +27,7 @@
  'command :introspect :class 'introspect)
 
 (defmethod command-execute ((command introspect) &key error-policy)
-  (let+ (((&accessors-r/o (uris             command-uris)
-                          (stream           command-stream)
-                          (style            command-style)
-                          (response-timeout introspect-response-timeout))
+  (let+ (((&structure-r/o command- uris stream style response-timeout)
           command))
     (unwind-protect
          (with-participant
