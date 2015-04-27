@@ -183,7 +183,14 @@ system."
                               (:file       "style-meta-data")
                               (:file       "style-detailed")
                               (:file       "style-compact")
-                              (:file       "style-programmable")))))
+                              (:file       "style-programmable")))
+
+                (:module     "formatting-introspection"
+                 :pathname   "test/formatting/introspection"
+                 :depends-on ("formatting-early")
+                 :serial     t
+                 :components ((:file       "package")
+                              (:file       "json")))))
 
 (defmethod perform ((operation test-op)
                     (component (eql (find-system :cl-rsb-formatting-test))))
