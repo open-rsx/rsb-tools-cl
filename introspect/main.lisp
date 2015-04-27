@@ -52,7 +52,7 @@
            Gather introspection information via two transports: the ~
            socket transport and the Spread transport. The gathered ~
            information is merged as if all collected processes and ~
-           participants were participant in a single RSB bus.~@
+           participants were participating in a single RSB bus.~@
            ~@
            ~2@T~:*~A --style monitor/object-tree~@
            ~@
