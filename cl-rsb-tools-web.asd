@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-main.asd --- System definition for main binary of cl-rsb-tools.
+;;;; cl-rsb-tools-web.asd --- Webion utility based on rsb-webion.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-main-system
+(cl:defpackage #:cl-rsb-tools-web-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-main-system)
+(cl:in-package #:cl-rsb-tools-web-system)
 
 ;;; Version stuff
 
@@ -40,13 +40,13 @@
                      (revision? t)
                      commit?)
   "Return a version of the form (MAJOR MINOR [REVISION [COMMIT]])
-where REVISION and COMMIT are optional.
+   where REVISION and COMMIT are optional.
 
-REVISION? controls whether REVISION should be included. Default
-behavior is to include REVISION.
+   REVISION? controls whether REVISION should be included. Default
+   behavior is to include REVISION.
 
-COMMIT? controls whether COMMIT should be included. Default behavior
-is to not include COMMIT."
+   COMMIT? controls whether COMMIT should be included. Default
+   behavior is to not include COMMIT."
   (append (list +version-major+ +version-minor+)
           (when revision? (list +version-revision+))
           (when (and commit? +version-commit+)
@@ -57,35 +57,31 @@ is to not include COMMIT."
                        revision?
                        commit?)
   "Return a version string of the form
-\"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
-optional.
+   \"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
+   optional.
 
-See `version/list' for details on keyword parameters."
+   See `version/list' for details on keyword parameters."
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-main
+(defsystem :cl-rsb-tools-web
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "Main program and dispatch function for all cl-rsb
-tools."
-  :depends-on  ((:version :rsb-introspection       #.(version/string :revision? nil))
+  :description "A tool for serving system information (e.g. introspection) via HTTP."
+  :depends-on  (:alexandria
 
-                (:version :cl-rsb-tools-info       #.(version/string))
-                (:version :cl-rsb-tools-logger     #.(version/string))
-                (:version :cl-rsb-tools-call       #.(version/string))
-                (:version :cl-rsb-tools-send       #.(version/string))
-                (:version :cl-rsb-tools-introspect #.(version/string))
-                (:version :cl-rsb-tools-web        #.(version/string))
+                :com.dvlsoft.clon
 
-                (:version :rsb-tools-commands      #.(version/string)))
+                (:version :cl-rsb-common          #.(version/string))
+
+                (:version :rsb-tools-commands     #.(version/string))
+                (:version :rsb-tools-commands-web #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "main"
+  :components  ((:module     "web"
+                 :serial     t
                  :components ((:file       "package")
-                              (:file       "main"
-                               :depends-on ("package")))))
-  :entry-point "rsb.tools.main:main")
+                              (:file       "main")))))

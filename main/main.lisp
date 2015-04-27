@@ -11,7 +11,8 @@
     ("logger"     . rsb.tools.logger:main)
     ("call"       . rsb.tools.call:main)
     ("send"       . rsb.tools.send:main)
-    ("introspect" . rsb.tools.introspect:main))
+    ("introspect" . rsb.tools.introspect:main)
+    ("web"        . rsb.tools.web:main))
   "Stores a mapping from program names to entry point functions.")
 
 (defun program-pathname->name (program-pathname)
