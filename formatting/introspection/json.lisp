@@ -51,7 +51,7 @@
              state transports)
             entry-info)
            ((&structure-r/o timing-tracker- (latency %latency)) entry-%tracker)
-           (participants introspection-participants))
+           (participants introspection-participants/roots))
           object))
     (with-members (stream)
       (encode-member          "processId"            process-id)
