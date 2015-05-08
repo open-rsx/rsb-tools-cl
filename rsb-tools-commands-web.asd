@@ -36,5 +36,6 @@
                  :serial     t
                  :components ((:file       "package")
                               (:file       "protocol")
+                              (:file       "mixins")
                               (:file       "web")
                               (:file       "introspection")))))

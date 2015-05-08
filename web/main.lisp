@@ -70,12 +70,19 @@ In most systems, all replies should arrive within a few milliseconds. However, c
                        :argument-name   "PORT"
                        :description
                        "Port on which the HTTP server should listen.")
-              (path    :long-name       "static-directory"
+              (path    :long-name       "document-root"
                        :type            :directory
-                       :default-value   #P"static/"
                        :argument-name   "DIRECTORY"
                        :description
-                       "Directory from which static content such as HTML pages and CSS files should be read."))
+                       "Directory from which static content such as HTML pages and CSS files should be read.")
+              (path    :long-name       "message-log-file"
+                       :type            :file
+                       :description
+                       "Name of a file to which web server message should be logged.")
+              (path    :long-name       "access-log-file"
+                       :type            :file
+                       :description
+                       "Name of a file to which web server accesses should be logged."))
    ;; Append RSB options.
    :item    (make-options :show? (show-help-for? :rsb :show show))
    ;; HTTP endpoints.
@@ -111,7 +118,9 @@ http://ADDRESS:PORT/introspection/json
         (response-timeout (getopt :long-name "response-timeout"))
         (address          (getopt :long-name "address"))
         (port             (getopt :long-name "port"))
-        (static-directory (getopt :long-name "static-directory")))
+        (document-root    (getopt :long-name "document-root"))
+        (message-log-file (getopt :long-name "message-log-file"))
+        (access-log-file  (getopt :long-name "access-log-file")))
     (rsb.formatting:with-print-limits (*standard-output*)
       (with-logged-warnings
         (with-error-policy (error-policy)
@@ -120,6 +129,8 @@ http://ADDRESS:PORT/introspection/json
                                        :response-timeout response-timeout
                                        :address          address
                                        :port             port
-                                       :static-directory static-directory)))
+                                       :document-root    document-root
+                                       :message-log      message-log-file
+                                       :access-log       access-log-file)))
             (with-interactive-interrupt-exit ()
               (command-execute command :error-policy error-policy))))))))

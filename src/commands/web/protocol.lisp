@@ -15,3 +15,7 @@
 
     HANDLER is a function of one argument, a `hunchentoot:request',
     that should be called to handle requests arriving for PATH."))
+
+(defgeneric command-register-handlers (command)
+  (:documentation
+   "COMMAND registers its handlers."))

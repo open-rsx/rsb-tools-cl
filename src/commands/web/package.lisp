@@ -20,7 +20,8 @@
 
   ;; Web command protocol
   (:export
-   #:command-register-handler)
+   #:command-register-handler
+   #:command-register-handlers)
 
   (:documentation
    "Package definition for the commands.web module."))

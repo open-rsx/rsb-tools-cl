@@ -29,7 +29,9 @@
         ((:uris             (,(puri:uri "/"))
           :port             4567))
         ((:uris             (,(puri:uri "/"))
-          :static-directory #"static/"))
+          :document-root    #"static/"))
+        ((:uris             (,(puri:uri "/"))
+          :document-root    nil))
         ((:uris             (,(puri:uri "/"))
           :response-timeout 1.0)))
 
