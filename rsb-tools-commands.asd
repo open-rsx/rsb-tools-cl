@@ -90,6 +90,7 @@
                               (:file       "protocol")
 
                               (:file       "mixins")
+                              (:file       "util")
 
                               (:file       "redump")
 

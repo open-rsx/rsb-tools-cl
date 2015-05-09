@@ -140,13 +140,7 @@
                           (filters           logger-filters)
                           (max-queued-events logger-max-queued-events))
           command)
-         (converters (iter (for (wire-type . converter) in (default-converters))
-                           (collect
-                               (cons wire-type
-                                     (if (and (listp converter)
-                                              (not (member :fundamental-null converter)))
-                                         (append converter '(:fundamental-null))
-                                         converter)))))
+         (converters (ensure-fallback-converter))
          ((&values queue handler)
           (make-queue-and-handler :max-queued-events max-queued-events))
          (listeners '()))
