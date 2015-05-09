@@ -75,8 +75,8 @@
           ;; Load IDLs as specified on the commandline. TODO should the command do this?
           (process-idl-options)
 
-          ;; The commands creates the required participants and
-          ;; starts the receiving and printing loop.
+          ;; The command creates the required participants and starts
+          ;; the receiving and printing loop.
           (let ((command (apply #'make-command :logger
                                 :uris              uris
                                 :style-spec        event-style
