@@ -4,12 +4,11 @@ set(CPACK_DEBIAN_PACKAGE_NAME        "${PACKAGE_BASE_NAME}")
 set(CPACK_DEBIAN_PACKAGE_VERSION     "${CPACK_PACKAGE_VERSION}${CPACK_PACKAGE_REVISION}")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>")
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Tools for the Robotics Service Bus (Common Lisp implementation)
- Currently the set of tools includes
-  * info
-  * logger
-  * send
-  * call
-  * introspect")
+ Currently the set of tools includes")
+foreach(TOOL ${TOOLS})
+  set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "${CPACK_DEBIAN_PACKAGE_DESCRIPTION}
+  * rsb ${TOOL}")
+endforeach()
 set(CPACK_DEBIAN_PACKAGE_PRIORITY    "optional")
 set(CPACK_DEBIAN_PACKAGE_SECTION     "devel")
 #SET(CPACK_DEBIAN_ARCHITECTURE        "${CMAKE_SYSTEM_PROCESSOR}") # Debian uses different names here
