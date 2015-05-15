@@ -389,6 +389,8 @@ foreach(URLS "inprocess:" "inprocess:;inprocess:/")
 endforeach()
 
 # Install binary
+install(CODE "message(STATUS \"Configuring Lisp image ${MAIN_NAME} for installation\")
+              execute_process(COMMAND \"${MAIN_EXECUTABLE}\" redump)")
 set(BINARY_PREFIX    "rsb-")
 set(BINARY_SUFFIX    "cl${VERSION_SUFFIX}")
 set(MAIN_BINARY_NAME "${BINARY_PREFIX}${MAIN_NAME}${BINARY_SUFFIX}${CMAKE_EXECUTABLE_SUFFIX}")
