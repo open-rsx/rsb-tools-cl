@@ -49,7 +49,7 @@
    :item    (make-text :contents (make-help-string :show show))
    :item    (make-common-options :show show)
    :item    (make-error-handling-options :show show)
-   :item    (defgroup (:header "HTTP Server Options")
+   :item    (defgroup (:header "Introspection Options")
               (lispobj :long-name       "response-timeout"
                        :typespec        'positive-real
                        :default-value   .5
@@ -57,7 +57,8 @@
                        :description
                        "Time in seconds to wait for responses to introspection requests.
 
-In most systems, all replies should arrive within a few milliseconds. However, circumstances like heavily loaded system, degraded system performance or extreme communication latency may require larger values.")
+In most systems, all replies should arrive within a few milliseconds. However, circumstances like heavily loaded system, degraded system performance or extreme communication latency may require larger values."))
+   :item    (defgroup (:header "HTTP Server Options")
               (stropt  :long-name       "address"
                        :default-value   "localhost"
                        :argument-name   "ADDRESS"
@@ -79,7 +80,7 @@ In most systems, all replies should arrive within a few milliseconds. However, c
    :item    (make-options :show? (show-help-for? :rsb :show show))
    ;; HTTP endpoints.
    :item    (defgroup (:header "HTTP Endpoints")
-                (make-text :contents"http://ADDRESS:PORT/static
+              (make-text :contents"http://ADDRESS:PORT/static
 
   Contents of the directory specified via static-directory is made available here.
 
