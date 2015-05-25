@@ -1,6 +1,6 @@
 ;;;; payload.lisp --- Formatting methods for different kinds of event payloads.
 ;;;;
-;;;; Copyright (C) 2011, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -43,6 +43,13 @@
   "Format PAYLOAD as a multi-line string, trying to honor MAX-LINES
    and MAX-COLUMNS constraints."
   (format-string stream payload))
+
+(defmethod format-payload ((payload scope) (style t) (stream t)
+                           &key
+                           max-lines
+                           max-columns)
+  (declare (ignore max-lines max-columns))
+  (write-string (scope-string payload) stream))
 
 (defmethod format-payload ((payload standard-object) (style t) (stream t)
                            &key
