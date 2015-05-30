@@ -25,8 +25,8 @@
               (entry (assoc name *name->entry-point*
                             :test (lambda (name entry)
                                     (search entry name)))))
-    (let ((main-pathname #+unix (truename (format nil "/proc/~D/exe" (sb-posix:getpid)))
-                         #-unix "tools"))
+    (let ((main-pathname #+linux (truename (format nil "/proc/~D/exe" (sb-posix:getpid)))
+                         #-linux "tools"))
       (warn "~@<Selecting the command to execute via the program ~
              name (i.e. running ~A~@[ ~{~A~^ ~}~]) is deprecated. Use~
              ~@:_~@:_~
