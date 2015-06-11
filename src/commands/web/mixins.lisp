@@ -83,19 +83,15 @@
         (acceptor-dispatch-table (command-%acceptor command))))
 
 (defmethod command-execute ((command http-server-mixin) &key error-policy)
-  (declare (ignore error-policy))
   (let+ (((&structure command- address port document-root
                       message-log access-log (acceptor %acceptor) handlers)
           command))
     (unwind-protect
          (progn
            ;; Construct acceptor.
-           ;; TODO only for this acceptor, not globally, if possible
-           (setf hunchentoot:*catch-errors-p*         nil
-                 hunchentoot:*show-lisp-backtraces-p* t
-                 hunchentoot:*show-lisp-errors-p*     t)
            (setf acceptor
                  (apply #'make-instance 'acceptor
+                        :error-policy  error-policy
                         :address       address
                         :port          port
                         :document-root document-root
@@ -135,7 +131,8 @@
 
 ;;; `acceptor'
 
-(defclass acceptor (hunchentoot:acceptor)
+(defclass acceptor (hunchentoot:acceptor
+                    rsb.ep:error-policy-mixin)
   ((dispatch-table :initarg  :dispatch-table
                    :type     list
                    :accessor acceptor-dispatch-table
@@ -145,12 +142,31 @@
   (:documentation
    "Specialized acceptor class with slot-stored dispatch table."))
 
+(defmethod hunchentoot:process-connection :around ((acceptor acceptor)
+                                                   (socket   t))
+  ;; If `hunchentoot:*catch-errors-p*' is `nil', hunchentoot directly
+  ;; enters the debugger for all errors.
+  (let ((hunchentoot:*catch-errors-p*         t)
+        (hunchentoot:*show-lisp-backtraces-p* nil)
+        (hunchentoot:*show-lisp-errors-p*     nil))
+    (rsb.ep:with-error-policy (acceptor)
+      (with-simple-restart (continue "~@<Stop processing connection ~A.~@:>"
+                                     socket)
+        (call-next-method)))))
+
 (defmethod hunchentoot:handle-request ((acceptor acceptor)
                                        (request  t))
-  (if-let ((handler (some (rcurry #'funcall request)
-                          (acceptor-dispatch-table acceptor))))
-    (funcall handler request)
-    (call-next-method)))
+  (restart-case
+      (if-let ((handler (some (rcurry #'funcall request)
+                              (acceptor-dispatch-table acceptor))))
+        (funcall handler request)
+        (call-next-method))
+    (continue (&optional condition)
+      :report (lambda (stream)
+                (format stream "~@<Stop processing request ~A.~@:>" request))
+      (declare (ignore condition))
+      (hunchentoot:abort-request-handler
+       hunchentoot:+http-internal-server-error+))))
 
 (defmethod hunchentoot:acceptor-log-message
     ((acceptor acceptor) (log-level symbol) (format-string t)
