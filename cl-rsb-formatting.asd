@@ -186,7 +186,9 @@ system."
                               (:file       "style-meta-data")
                               (:file       "style-detailed")
                               (:file       "style-compact")
-                              (:file       "style-programmable")))
+                              (:file       "style-programmable")
+
+                              (:file       "style-json")))
 
                 (:module     "formatting-introspection"
                  :pathname   "test/formatting/introspection"

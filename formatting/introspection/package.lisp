@@ -15,6 +15,15 @@
    #:rsb.introspection)
 
   (:import-from #:rsb.introspection ; for printing
+   #:tracked-quantity
+   #:tracked-quantity-value
+   #:tracked-quantity-history
+
+   #:timing-tracker-%latency
+   #:timing-tracker-%clock-offset
+
+   #:entry-%tracker
+
    #:remote-introspection-database
 
    #:remote-introspection

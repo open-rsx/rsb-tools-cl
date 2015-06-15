@@ -25,8 +25,12 @@
 
                 (:version :cl-rsb-formatting #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "formatting-introspection"
+  :components  ((:module     "formatting"
+                 :components ((:file       "event-style-json")))
+
+                (:module     "formatting-introspection"
                  :pathname   "formatting/introspection"
+                 :depends-on ("formatting")
                  :components ((:file       "json"))))
 
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))

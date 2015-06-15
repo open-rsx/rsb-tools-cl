@@ -317,6 +317,10 @@
   (:export
    #:style-audio-stream/wav)
 
+  ;; `style-json' style class
+  (:export
+   #:style-json)
+
   ;; Order of magnitude functions
   (:export
    #:print-human-readable-value

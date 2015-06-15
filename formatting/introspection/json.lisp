@@ -4,26 +4,18 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.introspection)
-
-(defun encode-json-sequence (sequence &optional (stream json:*json-output*))
-  (json::with-array (stream)
-    (map nil (json::stream-array-member-encoder stream) sequence)))
+(cl:in-package #:rsb.formatting.introspection)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defmacro with-members ((stream) &body body)
-    (once-only (stream)
-      `(json:with-object (,stream)
-         (flet ((encode-member (name value)
-                  (json:encode-object-member name value ,stream))
-                (encode-member/sequence (name value)
-                  (json:as-object-member (name stream)
-                    (encode-json-sequence value stream))))
-           (declare (dynamic-extent #'encode-member #'encode-member/sequence)
-                    (ignorable #'encode-member #'encode-member/sequence))
-           ,@body)))))
+  (import (mapcar (lambda (name)
+                    (find-symbol (string name) '#:rsb.formatting))
+                  '(#:encode-json-sequence
 
-(defmethod json:encode-json ((object rsb.introspection::tracked-quantity)
+                    #:with-members
+                    #:encode-member
+                    #:encode-member/sequence))))
+
+(defmethod json:encode-json ((object tracked-quantity)
                              &optional (stream json:*json-output*))
   (let+ (((&structure-r/o tracked-quantity- value history) object))
     (with-members (stream)
@@ -95,9 +87,8 @@
 
 (defmethod json:encode-json ((object remote-introspection-database)
                              &optional (stream json:*json-output*))
-  (json:with-object (stream)
-    (json:as-object-member ("hosts" stream)
-      (encode-json-sequence (introspection-hosts object) stream))))
+  (with-members (stream)
+    (encode-member/sequence "hosts" (introspection-hosts object))))
 
 (defmethod json:encode-json ((object remote-introspection)
                              &optional (stream json:*json-output*))
