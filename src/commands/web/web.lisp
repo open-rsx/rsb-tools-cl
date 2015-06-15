@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.tools.commands)
+(cl:in-package #:rsb.tools.commands.web)
 
 (defclass web (source-mixin
                response-timeout-mixin
@@ -53,7 +53,7 @@
     used."))
 
 (service-provider:register-provider/class
- 'command :web :class 'web)
+ 'rsb.tools.commands::command :web :class 'web)
 
 (defmethod shared-initialize :after
     ((instance   web)
@@ -65,11 +65,11 @@
 
 (defmethod print-items:print-items append ((object web))
   (let ((endpoint (list (command-address object) (command-port object))))
-    `((:marker   nil       " => "                                    ((:after :source-uris)))
-      (:endpoint ,endpoint "~/rsb.tools.commands::print-server-url/" ((:after :marker))))))
+    `((:marker   nil       " => "                                        ((:after :source-uris)))
+      (:endpoint ,endpoint "~/rsb.tools.commands.web::print-server-url/" ((:after :marker))))))
 
-(defmethod command-register-handler ((command    web)
-                                     (path       string)
+(defmethod command-register-handler ((command web)
+                                     (path    string)
                                      (handler t))
   (push (hunchentoot:create-prefix-dispatcher
          (concatenate 'string "/" path) handler)
@@ -108,10 +108,10 @@
              ;; Start acceptor.
              (log:info "~@<~A is starting acceptor ~A~@:>" command acceptor)
              (hunchentoot:start acceptor)
-             (format t "Listening on ~/rsb.tools.commands::print-server-url/~%"
+             (format t "Listening on ~/rsb.tools.commands.web::print-server-url/~%"
                      acceptor)
              (log:info "~@<~A is serving ~S as ~
-                        ~/rsb.tools.commands::print-server-url//~A~@:>"
+                        ~/rsb.tools.commands.web::print-server-url//~A~@:>"
                        command static-directory acceptor "static")
 
              ;; Run

@@ -1,10 +1,10 @@
-;;;; web-introspection.lisp --- Serve introspection information over HTTP.
+;;;; introspection.lisp --- Serve introspection information over HTTP.
 ;;;;
 ;;;; Copyright (C) 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.tools.commands)
+(cl:in-package #:rsb.tools.commands.web)
 
 ;;; `introspection-json-handler'
 
@@ -39,4 +39,4 @@
   (setf (hunchentoot:header-out "Content-type") "application/json;charset=UTF-8")
   (let+ (((&structure-r/o handler- (style %style)) processor))
     (with-output-to-string (stream)
-      (format-event :dummy  style stream))))
+      (rsb.formatting:format-event :dummy style stream))))

@@ -31,8 +31,9 @@
 
                 (:version :rsb-formatting-json #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "commands"
-                 :pathname   "src/commands"
+  :components  ((:module     "web"
+                 :pathname   "src/commands/web"
                  :serial     t
-                 :components ((:file       "web")
-                              (:file       "web-introspection")))))
+                 :components ((:file       "package")
+                              (:file       "web")
+                              (:file       "introspection")))))
