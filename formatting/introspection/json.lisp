@@ -89,7 +89,7 @@
       (encode-member          "machineVersion"  machine-version)
       (encode-member          "softwareType"    software-type)
       (encode-member          "softwareVersion" software-version)
-      (encode-member          "clock-offset"    clock-offset)
+      (encode-member          "clockOffset"     clock-offset)
       (encode-member          "latency"         latency)
       (encode-member/sequence "processes"       processes))))
 
