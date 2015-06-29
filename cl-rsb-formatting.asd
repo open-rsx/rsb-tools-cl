@@ -80,6 +80,7 @@ RSB-related systems."
                 (:version :log4cl                        "1.1.1")
                 (:version :architecture.service-provider "0.1")
 
+                (:version :utilities.binary-dump         "0.1")
                 (:version :utilities.print-tree          "0.1")
 
                 (:version :cl-rsb                        #.(version/string :revision? nil))

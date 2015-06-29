@@ -31,9 +31,20 @@
                            &key
                            max-lines
                            max-columns)
-  "Format PAYLOAD in form of a hexdump if it is an octet-vector."
+  ;; Format PAYLOAD in form of a hexdump if it is an octet-vector.
   (if (typep payload 'octet-vector)
-      (format-octet-vector stream payload)
+      (let+ ((length (length payload))
+             ((&values &ign &ign end)
+              (utilities.binary-dump:binary-dump
+               payload
+               :end         nil         ; ignore *print-length*
+               :lines       (1- max-lines)
+               :stream      stream
+               :width       max-columns
+               :base        16
+               :offset-base 16)))
+        (unless (= end length)
+          (format stream "~@:_[~:D octet~:P omitted]" (- length end))))
       (call-next-method)))
 
 (defmethod format-payload ((payload string) (style t) (stream t)

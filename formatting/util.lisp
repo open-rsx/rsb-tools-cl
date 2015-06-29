@@ -160,8 +160,7 @@
           (etypecase value
             (string
              (format stream "~S" value))
-            ((and (array (unsigned-byte 8) (*))
-                  (not (array (unsigned-byte 8) (0))))
+            ((and nibbles:octet-vector (not (vector t 0)))
              (pprint-logical-block (stream (list value))
                (format-payload value :any stream)))
             (sequence

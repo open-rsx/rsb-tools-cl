@@ -331,7 +331,6 @@
 
   ;; Formatting functions
   (:export
-   #:format-octet-vector
    #:format-string)
 
   ;; Stream-related functions
