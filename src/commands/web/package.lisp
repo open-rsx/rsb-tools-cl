@@ -17,5 +17,10 @@
   (:import-from #:rsb.tools.commands
    #:response-timeout-mixin
    #:command-response-timeout)
+
+  ;; Web command protocol
+  (:export
+   #:command-register-handler)
+
   (:documentation
    "Package definition for the commands.web module."))

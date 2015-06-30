@@ -35,5 +35,6 @@
                  :pathname   "src/commands/web"
                  :serial     t
                  :components ((:file       "package")
+                              (:file       "protocol")
                               (:file       "web")
                               (:file       "introspection")))))
