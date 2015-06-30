@@ -31,12 +31,14 @@
   ;; the introspection database to it.
   (let+ (((&structure handler- (style %style)) instance))
     (setf style (rsb.formatting:make-style
-                 :json :service 'rsb.formatting.introspection::style))
-    (setf (rsb.formatting.introspection::style-database style) database)))
+                 :json
+                 :service  'rsb.formatting.introspection::style
+                 :database database))))
 
 (defmethod rsb.ep:handle ((processor introspection-json-handler)
                           (data      hunchentoot:request))
   (setf (hunchentoot:header-out "Content-type") "application/json;charset=UTF-8")
-  (let+ (((&structure-r/o handler- (style %style)) processor))
-    (with-output-to-string (stream)
-      (rsb.formatting:format-event :dummy style stream))))
+  (let+ (((&structure-r/o handler- (style %style)) processor)
+         (stream (flexi-streams:make-flexi-stream
+                  (hunchentoot:send-headers) :external-format :utf-8)))
+    (rsb.formatting:format-event :dummy style stream)))
