@@ -25,7 +25,7 @@
                                        &key
                                        database)
   (closer-mop:set-funcallable-instance-function
-   instance (lambda () (rsb.ep:handle instance hunchentoot:*request*)))
+   instance (lambda (request) (rsb.ep:handle instance request)))
 
   ;; Instantiate the JSON introspection formatting style and attach
   ;; the introspection database to it.

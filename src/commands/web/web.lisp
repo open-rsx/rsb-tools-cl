@@ -136,11 +136,10 @@
   (:documentation
    "Specialized acceptor class with slot-stored dispatch table."))
 
-(defmethod hunchentoot:handle-request ((acceptor acceptor)
-                                       (request  t))
+(defmethod hunchentoot:handle-request ((acceptor acceptor) (request t))
   (if-let ((handler (some (rcurry #'funcall request)
                           (acceptor-dispatch-table acceptor))))
-    (funcall handler)
+    (funcall handler request)
     (call-next-method)))
 
 ;;; Utilities

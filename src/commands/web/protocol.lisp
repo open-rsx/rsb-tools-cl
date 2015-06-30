@@ -13,5 +13,5 @@
     PATH is a string, corresponding to the prefix of URI paths that
     should be handled by HANDLER.
 
-    HANDLER is a function of no arguments that should be called to
-    handle requests arriving for PATH."))
+    HANDLER is a function of one argument, a `hunchentoot:request',
+    that should be called to handle requests arriving for PATH."))
