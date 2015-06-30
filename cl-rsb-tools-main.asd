@@ -90,3 +90,7 @@ tools."
                               (:file       "main"
                                :depends-on ("package")))))
   :entry-point "rsb.tools.main:main")
+
+(defmethod perform :before ((operation program-op)
+                            (component (eql (find-system :cl-rsb-tools-main))))
+  (mapc #'register-immutable-system (already-loaded-systems)))
