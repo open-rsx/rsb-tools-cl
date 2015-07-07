@@ -10,24 +10,30 @@
   "Parse SPEC as an empty payload, a reference to standard input, a
    pathname or a Lisp object."
   (cond
+    ;; Empty string => no value.
     ((emptyp spec)
      rsb.converter:+no-value+)
 
+    ;; "true", "false" => t, nil
     ((string= spec "true")
      t)
     ((string= spec "false")
      nil)
 
+    ;; "/SCOPE" => parse scope.
+    ((starts-with #\/ spec)
+     (make-scope spec))
+
+    ;; "-[:binary]" => read from standard input.
     ((string= spec "-")
      (read-stream-content-into-string *standard-input*))
-
     ((string= spec "-:binary")
      (read-stream-content-into-byte-vector *standard-input*))
 
+    ;; "#p"NAMESTRING"[:(binary|EXTERNAL-FORMAT)]" => read from file.
     ((ppcre:register-groups-bind (namestring)
          ("^#[pP]\"([^\"]+)\":binary$" spec)
        (read-file-into-byte-vector (parse-namestring namestring))))
-
     ((ppcre:register-groups-bind (namestring external-format)
          ("^#[pP]\"([^\"]+)\"(?::(.+))?$" spec)
        (let ((pathname        (parse-namestring namestring))
@@ -37,10 +43,14 @@
                 (when external-format
                   (list :external-format external-format))))))
 
+    ;; "pb:MESSAGE-NAME:PROTOBUF-DEBUG-FORMAT" => parse protocol
+    ;; buffer debug text format and construct message of type
+    ;; MESSAGE-NAME.
     ((ppcre:register-groups-bind (descriptor body)
          ("^pb:([^:]+):((?:.|\\n)*)$" spec)
        (build-protocol-buffer-message descriptor body)))
 
+    ;; Otherwise try to `cl:read', potentially signaling an error.
     (t
      (let+ (((&values value consumed) (read-from-string spec)))
        (unless (= consumed (length spec))

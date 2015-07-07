@@ -1,6 +1,6 @@
 ;;;; event.lisp --- Unit tests for parsing events and payloads.
 ;;;;
-;;;; Copyright (C) 2014 Jan Moringen
+;;;; Copyright (C) 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -40,21 +40,25 @@
         ("/foo()"                  ,(rsb:make-scope "/")           "foo" ,rsb.converter:+no-value+)
         ("/foo(false)"             ,(rsb:make-scope "/")           "foo" nil)
         ("/foo(true)"              ,(rsb:make-scope "/")           "foo" t)
+        ("/foo(/bar)"              ,(rsb:make-scope "/")           "foo" ,(rsb:make-scope "/bar"))
         ("/foo(1)"                 ,(rsb:make-scope "/")           "foo" 1)
         ("/foo(.1)"                ,(rsb:make-scope "/")           "foo" .1)
         ("/foo(\"bar\")"           ,(rsb:make-scope "/")           "foo" "bar"))
 
     (let+ (((&flet do-it () (parse-call-spec input)))
-           ((&flet scope-or-uri= (left right)
+           ((&flet scope=-or-uri=-or-equalp (left right)
               (or (and (typep left 'rsb:scope) (typep right 'rsb:scope)
                        (rsb:scope= left right))
                   (and (typep left 'puri:uri) (typep right 'puri:uri)
-                       (puri:uri= left right))))))
+                       (puri:uri= left right))
+                  (equalp left right)))))
      (case expected-uri
        (call-specificiation-error
         #+no (ensure-condition 'call-specificiation-error (do-it)))
        (t
         (let+ (((&values server-uri method arg) (do-it)))
-          (ensure-same server-uri expected-uri    :test #'scope-or-uri=)
+          (ensure-same server-uri expected-uri
+                       :test #'scope=-or-uri=-or-equalp)
           (ensure-same method     expected-method :test #'string=)
-          (ensure-same arg        expected-arg    :test #'equalp)))))))
+          (ensure-same arg        expected-arg
+                       :test #'scope=-or-uri=-or-equalp)))))))

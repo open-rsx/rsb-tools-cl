@@ -27,6 +27,9 @@
                     consisting of digits without and with decimal ~
                     point respectively.~@
                     ~@
+                    ARG is parsed as a scope when starting with the ~
+                    \"/\" character.~@
+                    ~@
                     If ARG is the single character \"-\" or the string ~
                     \"-:binary\", the entire \"contents\" of standard ~
                     input (until end of file) is read as a string or ~

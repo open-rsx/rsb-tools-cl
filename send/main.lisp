@@ -26,6 +26,9 @@
                     when consisting of digits without and with decimal ~
                     point respectively.~@
                     ~@
+                    EVENT-SPEC is parsed as a scope when starting with ~
+                    the \"/\" character.~@
+                    ~@
                     If EVENT-SPEC is the single character \"-\" or the ~
                     string \"-:binary\", the entire \"contents\" of ~
                     standard input (until end of file) is read as a ~
