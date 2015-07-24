@@ -327,10 +327,17 @@
         (error "~@<Value ~S is invalid for field ~A.~@:>"
                value field)))
     ;; Assign.
-    (if (pb:field-repeated? field)
-        (dolist (value values)
-          (vector-push-extend value (slot-value message slot-name)))
-        (setf (slot-value message slot-name) (first values)))
+    (symbol-macrolet ((slot-value (slot-value message slot-name)))
+      (cond
+        ((not (pb:field-repeated? field))
+         (setf slot-value (first values)))
+        ((typep slot-value 'simple-array)
+         (setf slot-value (concatenate
+                           `(simple-array ,(array-element-type slot-value) (*))
+                           slot-value values)))
+        (t
+         (dolist (value values)
+           (vector-push-extend value slot-value)))))
     message))
 
 
