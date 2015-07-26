@@ -8,30 +8,12 @@
 
 ;;; Utilities
 
-(define-constant +duration-unit-divisors+
-    '((#.(* 365 24 60 60) "year~:P"        "y ")
-      (#.(* 30 24 60 60)  "month~:P"       "M ")
-      (#.(* 24 60 60)     "day~:P"         "d ")
-      (#.(* 60 60)        "hour~:P"        "h ")
-      (60                 "minute~:P"      "m ")
-      (1                  "second~:P"      "s ")
-      (1/1000             "millisecond~:P" "ms"))
-  :test #'equal)
-
 (defun print-elapsed-time (stream start-time &optional colon? at?)
   (let* ((now-time   (local-time:now))
          (difference (local-time:timestamp-difference
                       now-time start-time)))
-    (iter (with first-difference? = t)
-          (for ((divisor long short) . rest) :on +duration-unit-divisors+)
-          (let ((difference1))
-            (setf (values difference1 difference) (floor difference divisor))
-            (when (and (or (not (zerop difference1))
-                           (and (not rest) first-difference?))
-                       (or (not colon?) first-difference?))
-              (format stream "~:[, ~:;~]~3D ~?"
-                      first-difference? difference1 (if at? long short) '())
-              (setf first-difference? nil))))))
+    (rsb.formatting:print-human-readable-duration
+     stream difference colon? at?)))
 
 ;;; Participant
 
@@ -72,7 +54,7 @@
                                      (- right-margin 3))))
          (format stream "~6,,,'0@A~
                          ~17,0T~@[ ~/rsb.formatting.introspection::print-process-state-markup/~]~
-                         ~25,0T~@[ (~:/rsb.formatting.introspection::print-elapsed-time/)~]~
+                         ~25,0T~@[ (~/rsb.formatting.introspection::print-elapsed-time/)~]~
                          ~35,0T~@<~:[~A~:;~:*~A (~A)~]~@[ ~:_~{~A~^ ~:_~}~]~@:>"
                  process-id
                  (when remote? state)
@@ -90,7 +72,7 @@
                       (transports     process-info-transports)
                       (latency        info-latency))
           process-info))
-   (format stream "Uptime    ~@[ ~:/rsb.formatting.introspection::print-elapsed-time/~]~
+   (format stream "Uptime    ~@[ ~/rsb.formatting.introspection::print-elapsed-time/~]~
                    ~24,0T│ User        ~:[?~:;~:*~A~]~
                    ~@:_Latency ~/rsb.formatting.introspection::print-time-offset-markup/~
                    ~24,0T│ RSB Version ~:[?~:;~:*~A~]~
@@ -129,7 +111,7 @@
          (most-recent-activity (when remote? (info-most-recent-activity host-info))))
     (format stream "~A~
                     ~17,0T~@[ ~/rsb.formatting.introspection::print-host-state-markup/~]~
-                    ~25,0T~@[ (~:/rsb.formatting.introspection::print-elapsed-time/)~]"
+                    ~25,0T~@[ (~/rsb.formatting.introspection::print-elapsed-time/)~]"
             (host-info-hostname host-info) state most-recent-activity)))
 
 (defun truncate-string (string max)
