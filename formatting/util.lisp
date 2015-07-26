@@ -18,6 +18,8 @@
         (typecase data
           (integer
            (ceiling (integer-length data) 8))
+          ((cons t (not list))
+           replacement-value)
           (sequence
            (length data))
           (t

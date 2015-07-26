@@ -1,6 +1,6 @@
 ;;;; util.lisp --- Utility functions used by the stats module.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -16,6 +16,8 @@
         (typecase data
           (integer
            (ceiling (integer-length data) 8))
+          ((cons t (not list))
+           replacement-value)
           (sequence
            (length data))
           (t
