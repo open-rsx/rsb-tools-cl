@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-bridge.asd --- RSB Logging utility based cl-rsb.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -89,5 +89,6 @@ See `version/list' for details on keyword parameters."
                  :serial     t
                  :components ((:file       "package")
                               (:file       "help")
+                              (:file       "event-style-bridge")
                               (:file       "main")
                               (:file       "service")))))

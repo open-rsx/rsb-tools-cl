@@ -25,7 +25,11 @@
                        :default-value  2000
                        :argument-name  "NUMBER-OF-EVENTS"
                        :description
-                       "The maximum number of events which may be queued for processing at any given time. Note that choosing a large value can require a large amount of memory."))
+                       "The maximum number of events which may be queued for processing at any given time. Note that choosing a large value can require a large amount of memory.")
+              (stropt  :long-name      "style"
+                       :short-name     "s"
+                       :default-value  "monitor"
+                       :argument-name  "SPEC"))
    :item    (make-idl-options)
    ;; Append RSB options.
    :item    (make-options
@@ -51,7 +55,8 @@
   (let* ((error-policy      (maybe-relay-to-thread
                              (process-error-handling-options)))
          (spec              (first (remainder)))
-         (max-queued-events (getopt :long-name "max-queued-events")))
+         (max-queued-events (getopt :long-name "max-queued-events"))
+         (event-style       (getopt :long-name "style")))
     (rsb.formatting:with-print-limits (*standard-output*)
       ;; Check bridge specification options.
       (unless spec
@@ -65,8 +70,12 @@
                                           :packed-size :serializer))
 
           (let* ((spec    (rsb.tools.commands.bridge:parse-spec spec))
+                 (hook    (make-hook
+                           (parse-instantiation-spec event-style)
+                           *standard-output*))
                  (command (make-command :bridge
                                         :spec              spec
-                                        :max-queued-events max-queued-events)))
+                                        :max-queued-events max-queued-events
+                                        :hook              hook)))
             (with-interactive-interrupt-exit ()
               (command-execute command :error-policy error-policy))))))))
