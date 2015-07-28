@@ -42,6 +42,28 @@
         ("<foo:[1,2]>"
          (:message (:field ((:field (:value ((:literal () :value 1)
                                              (:literal () :value 2)))
+                                    :name "foo")))))
+        ;; Negative float literals in ]-1,0[ were broken at one point.
+        ("{foo:-1}"
+         (:message (:field ((:field (:value ((:literal () :value -1)))
+                                    :name "foo")))))
+        ("{foo:+.5}"
+         (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
+                                    :name "foo")))))
+        ("{foo:-.5}"
+         (:message (:field ((:field (:value ((:literal () :value -0.5f0)))
+                                    :name "foo")))))
+        ("{foo:.5}"
+         (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
+                                    :name "foo")))))
+        ("{foo:+0.5}"
+         (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
+                                    :name "foo")))))
+        ("{foo:-0.5}"
+         (:message (:field ((:field (:value ((:literal () :value -0.5f0)))
+                                    :name "foo")))))
+        ("{foo:0.5}"
+         (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
                                     :name "foo"))))))
 
     (let+ (((&flet do-it ()

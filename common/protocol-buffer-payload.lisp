@@ -113,6 +113,13 @@
   (:lambda (value)
     (bp:node* (:literal :value value))))
 
+(esrap:defrule sign
+    (or #\- #\+)
+  (:lambda (sign)
+    (switch (sign :test #'string=)
+      (#\- -1)
+      (#\+  1))))
+
 (defun parse-number-literal (radix text position end)
   (let+ (((&values value new-position)
           (parse-integer text :radix radix
@@ -134,10 +141,10 @@
   #'parse-decimal-literal)
 
 (esrap:defrule float
-  (and integer #\. integer)
-  (:destructure (a dot b)
-    (declare (ignore dot))
-    (float (+ a (/ b (expt 10 1))) 1.0f0)))
+    (and (esrap:? sign) (esrap:! sign) (esrap:? integer) #\. (esrap:! sign) integer)
+  (:destructure (sign nosign1 a dot nosign2 b)
+    (declare (ignore nosign1 dot nosign2))
+    (float (* (or sign 1) (+ (or a 0) (/ b 10))) 1.0f0)))
 
 (esrap:defrule bool
   (or true false))
