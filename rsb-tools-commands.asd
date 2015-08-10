@@ -80,6 +80,7 @@
                 (:version :utilities.print-items         "0.1")
 
                 (:version :cl-rsb                        #.(version/string :revision? nil))
+                (:version :rsb-model                     #.(version/string :revision? nil)) ; for bridge
                 (:version :cl-rsb-common                 #.(version/string :revision? nil))
                 (:version :cl-rsb-formatting             #.(version/string)))
   :encoding    :utf-8
@@ -98,7 +99,17 @@
                               (:file       "logger")
                               (:file       "send")
                               (:file       "call")
-                              (:file       "introspect"))))
+                              (:file       "introspect")))
+
+                (:module     "commands-bridge"
+                 :pathname   "src/commands/bridge"
+                 :serial     t
+                 :components ((:file       "package")
+                              (:file       "conditions")
+                              (:file       "model")
+                              (:file       "grammar")
+                              (:file       "participant")
+                              (:file       "command"))))
   :in-order-to ((test-op (test-op :rsb-tools-commands-test))))
 
 (defsystem :rsb-tools-commands-test
@@ -130,7 +141,15 @@
                               (:file       "call")
                               (:file       "introspect")
 
-                              (:file       "web")))))
+                              (:file       "web")))
+
+                (:module     "bridge"
+                 :pathname   "test/commands/bridge"
+                 :depends-on ("commands")
+                 :serial     t
+                 :components ((:file       "package")
+
+                              (:file       "command")))))
 
 (defmethod perform ((operation test-op)
                     (component (eql (find-system :rsb-tools-commands-test))))
