@@ -43,7 +43,6 @@
          (:message (:field ((:field (:value ((:literal () :value 1)
                                              (:literal () :value 2)))
                                     :name "foo")))))
-        ;; Negative float literals in ]-1,0[ were broken at one point.
         ("{foo:-1}"
          (:message (:field ((:field (:value ((:literal () :value -1)))
                                     :name "foo")))))
@@ -52,50 +51,55 @@
                                     :name "foo")))))
         ("{foo:1}"
          (:message (:field ((:field (:value ((:literal () :value 1)))
-                                    :name "foo")))))
-        ("{foo:-1.}"
-         (:message (:field ((:field (:value ((:literal () :value -1.0f0)))
-                                    :name "foo")))))
-        ("{foo:+1.}"
-         (:message (:field ((:field (:value ((:literal () :value 1.0f0)))
-                                    :name "foo")))))
-        ("{foo:1.}"
-         (:message (:field ((:field (:value ((:literal () :value 1.0f0)))
-                                    :name "foo")))))
-        ("{foo:+.5}"
-         (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
-                                    :name "foo")))))
-        ("{foo:-.5}"
-         (:message (:field ((:field (:value ((:literal () :value -0.5f0)))
-                                    :name "foo")))))
-        ("{foo:.5}"
-         (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
-                                    :name "foo")))))
-        ("{foo:+0.5}"
-         (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
-                                    :name "foo")))))
-        ("{foo:-0.5}"
-         (:message (:field ((:field (:value ((:literal () :value -0.5f0)))
-                                    :name "foo")))))
-        ("{foo:0.5}"
-         (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
-                                    :name "foo")))))
-        ("{foo:+0.001}"
-         (:message (:field ((:field (:value ((:literal () :value 0.001f0)))
-                                    :name "foo")))))
-        ("{foo:-0.001}"
-         (:message (:field ((:field (:value ((:literal () :value -0.001f0)))
-                                    :name "foo")))))
-        ("{foo:0.001}"
-         (:message (:field ((:field (:value ((:literal () :value 0.001f0)))
                                     :name "foo"))))))
 
     (let+ (((&flet do-it ()
               (let ((architecture.builder-protocol:*builder* 'list))
                 (esrap:parse 'rsb.common::message input)))))
-      (case expected
+       (case expected
         (error (ensure-condition 'error (do-it)))
         (t     (ensure-same (do-it) expected :test #'equal))))))
+
+(defvar *scientific*
+  '((nil  .    1)
+    ("e0" .    1)  ("e+0" .    1) ("e-0" .  1)
+    ("e0" .    1)  ("e+0" .    1) ("e-0" .  1)
+    ("e1" .   10)  ("e+1" .   10) ("e-1" . 1/10)
+    ("e3" . 1000)  ("e+3" . 1000) ("e-3" . 1/1000)))
+
+(addtest (protocol-buffer-payload-root
+          :documentation
+          "Smoke test for parsing protocol buffer messages.")
+  grammar/float
+
+  (ensure-cases (input expected)
+      `(;; Negative float literals in ]-1,0[ were broken at one point.
+        ("-1."    -1)
+        ("+1."    1)
+        ("1."     1)
+        ("+.5"    1/2)
+        ("-.5"    -1/2)
+        (".5"     1/2)
+        ("+0.5"   1/2)
+        ("-0.5"   -1/2)
+        ("0.5"    1/2)
+        ("+0.001" 1/1000)
+        ("-0.001" -1/1000)
+        ("0.001"  1/1000))
+
+    (let+ (((&flet do-it (&optional (input input))
+              (let ((architecture.builder-protocol:*builder* 'list))
+                (esrap:parse 'rsb.common::float input)))))
+      (case expected
+        (error
+         (ensure-condition 'error (do-it)))
+        (t
+         (loop :for (scientific . factor) :in *scientific* :do
+            (let ((input    (if scientific
+                                (print (concatenate 'string input scientific))
+                                input))
+                  (expected (print (float (* factor expected) 1.0f0))))
+             (ensure-same (print (do-it input)) expected :test #'equal))))))))
 
 (addtest (protocol-buffer-payload-root
           :documentation

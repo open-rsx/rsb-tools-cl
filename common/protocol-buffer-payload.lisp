@@ -151,12 +151,22 @@
     (unless (emptyp digits)
       (/ (parse-integer digits) (expt 10 (length digits))))))
 
+(esrap:defrule float-scientific
+    (and (esrap:? #\.) (esrap:~ #\e) integer)
+  (:function third)
+  (:lambda (digits)
+    (expt 10 digits)))
+
 (esrap:defrule float
-    (and (esrap:? sign) (esrap:! sign) (esrap:? integer) float-decimals)
-  (:destructure (sign nosign1 digits decimals)
-  (declare (ignore nosign1))
-  (let ((number (* (or sign 1) (+ (or digits 0) (or decimals 0)))))
-    (float number 1.0f0))))
+    (and (esrap:? sign) (esrap:! sign)
+         (or (and (esrap:? integer) float-decimals           (esrap:? float-scientific))
+             (and integer           (esrap:? float-decimals) float-scientific)))
+  (:destructure (sign nosign1 (digits decimals scientific))
+    (declare (ignore nosign1))
+    (let ((number (* (or sign 1)
+                     (+ (or digits 0) (or decimals 0))
+                     (or scientific 1))))
+      (float number 1.0f0))))
 
 (esrap:defrule bool
   (or true false))
