@@ -47,6 +47,21 @@
         ("{foo:-1}"
          (:message (:field ((:field (:value ((:literal () :value -1)))
                                     :name "foo")))))
+        ("{foo:+1}"
+         (:message (:field ((:field (:value ((:literal () :value 1)))
+                                    :name "foo")))))
+        ("{foo:1}"
+         (:message (:field ((:field (:value ((:literal () :value 1)))
+                                    :name "foo")))))
+        ("{foo:-1.}"
+         (:message (:field ((:field (:value ((:literal () :value -1.0f0)))
+                                    :name "foo")))))
+        ("{foo:+1.}"
+         (:message (:field ((:field (:value ((:literal () :value 1.0f0)))
+                                    :name "foo")))))
+        ("{foo:1.}"
+         (:message (:field ((:field (:value ((:literal () :value 1.0f0)))
+                                    :name "foo")))))
         ("{foo:+.5}"
          (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
                                     :name "foo")))))
@@ -64,6 +79,15 @@
                                     :name "foo")))))
         ("{foo:0.5}"
          (:message (:field ((:field (:value ((:literal () :value 0.5f0)))
+                                    :name "foo")))))
+        ("{foo:+0.001}"
+         (:message (:field ((:field (:value ((:literal () :value 0.001f0)))
+                                    :name "foo")))))
+        ("{foo:-0.001}"
+         (:message (:field ((:field (:value ((:literal () :value -0.001f0)))
+                                    :name "foo")))))
+        ("{foo:0.001}"
+         (:message (:field ((:field (:value ((:literal () :value 0.001f0)))
                                     :name "foo"))))))
 
     (let+ (((&flet do-it ()

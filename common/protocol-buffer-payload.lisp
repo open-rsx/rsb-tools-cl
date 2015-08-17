@@ -120,7 +120,7 @@
       (#\- -1)
       (#\+  1))))
 
-(defun parse-number-literal (radix text position end)
+(defun parse-integer-literal (radix text position end)
   (let+ (((&values value new-position)
           (parse-integer text :radix radix
                          :start position :end end :junk-allowed t)))
@@ -129,22 +129,34 @@
         (values nil position))))
 
 (defun parse-hex-literal (text position end)
-  (parse-number-literal 16 text position end))
+  (parse-integer-literal 16 text position end))
 
 (defun parse-decimal-literal (text position end)
-  (parse-number-literal 10 text position end))
+  (parse-integer-literal 10 text position end))
 
 (defun parse-octal-literal (text position end)
-  (parse-number-literal 8 text position end))
+  (parse-integer-literal 8 text position end))
 
 (esrap:defrule integer
   #'parse-decimal-literal)
 
+(defun decimal-digit-char? (character)
+  (digit-char-p character 10))
+
+(esrap:defrule float-decimals
+    (and #\. (* (decimal-digit-char? character)))
+  (:function second)
+  (:text t)
+  (:lambda (digits)
+    (unless (emptyp digits)
+      (/ (parse-integer digits) (expt 10 (length digits))))))
+
 (esrap:defrule float
-    (and (esrap:? sign) (esrap:! sign) (esrap:? integer) #\. (esrap:! sign) integer)
-  (:destructure (sign nosign1 a dot nosign2 b)
-    (declare (ignore nosign1 dot nosign2))
-    (float (* (or sign 1) (+ (or a 0) (/ b 10))) 1.0f0)))
+    (and (esrap:? sign) (esrap:! sign) (esrap:? integer) float-decimals)
+  (:destructure (sign nosign1 digits decimals)
+  (declare (ignore nosign1))
+  (let ((number (* (or sign 1) (+ (or digits 0) (or decimals 0)))))
+    (float number 1.0f0))))
 
 (esrap:defrule bool
   (or true false))
