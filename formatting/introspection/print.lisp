@@ -142,19 +142,19 @@
 
 (defgeneric entry-children-for-printing (entry)
   (:method ((entry t))
-    (entry-children entry))
+    (node-children entry))
   (:method ((entry participant-entry))
-    (sort-participants (entry-children entry)))
+    (sort-participants (node-children entry)))
   (:method ((entry process-entry))
-    (sort-participants (entry-children entry))))
+    (sort-participants (node-children entry))))
 
 (defgeneric print-entry (target entry what &key filter))
 
 (defmethod print-entry ((target stream)
-                        (entry  rsb.introspection::info-mixin)
+                        (entry  rsb.model:info-mixin)
                         (what   t)
                         &key &allow-other-keys)
-  (print-entry target (entry-info entry) what))
+  (print-entry target (node-info entry) what))
 
 (defmethod print-entry ((target stream)
                         (entry  participant-info)
@@ -232,7 +232,7 @@
   (sort (copy-list participants) #'string<
         :key (compose #'scope-string
                       #'participant-info-scope
-                      #'entry-info)))
+                      #'node-info)))
 
 ;; Local Variables:
 ;; coding: utf-8

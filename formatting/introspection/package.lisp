@@ -12,6 +12,7 @@
    #:iterate
 
    #:rsb
+   #:rsb.model
    #:rsb.introspection)
 
   (:import-from #:rsb.introspection ; for printing

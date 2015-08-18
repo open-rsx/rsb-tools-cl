@@ -24,7 +24,7 @@
 
 (defmethod json:encode-json ((object participant-entry)
                              &optional (stream json:*json-output*))
-  (let+ (((&structure-r/o entry- info children) object)
+  (let+ (((&structure-r/o node- info children) object)
          ((&structure-r/o participant-info- kind id type scope) info))
     (with-members (stream)
       (encode-member          "kind"     (string-downcase kind))
@@ -41,9 +41,9 @@
              process-id program-name commandline-arguments start-time
              executing-user rsb-version display-name
              state transports)
-            entry-info)
+            node-info)
            ((&structure-r/o timing-tracker- (latency %latency)) entry-%tracker)
-           (participants introspection-participants/roots))
+           (participants node-children))
           object))
     (with-members (stream)
       (encode-member          "processId"            process-id)
@@ -67,12 +67,12 @@
                             id hostname
                             machine-type machine-version
                             software-type software-version)
-            entry-info)
+            node-info)
            ((&structure-r/o timing-tracker-
                             (clock-offset %clock-offset)
                             (latency      %latency))
             entry-%tracker)
-           (processes introspection-processes))
+           (processes node-children))
           object))
     (with-members (stream)
       (encode-member          "id"              id)
@@ -88,7 +88,7 @@
 (defmethod json:encode-json ((object remote-introspection-database)
                              &optional (stream json:*json-output*))
   (with-members (stream)
-    (encode-member/sequence "hosts" (introspection-hosts object))))
+    (encode-member/sequence "hosts" (node-children object))))
 
 (defmethod json:encode-json ((object remote-introspection)
                              &optional (stream json:*json-output*))
