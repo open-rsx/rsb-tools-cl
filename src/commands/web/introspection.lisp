@@ -33,7 +33,8 @@
     (setf style (rsb.formatting:make-style
                  :json
                  :service  'rsb.formatting.introspection::style
-                 :database database))))
+                 :database database
+                 :delay    nil))))
 
 (defmethod rsb.ep:handle ((processor introspection-json-handler)
                           (data      hunchentoot:request))

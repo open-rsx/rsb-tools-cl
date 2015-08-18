@@ -119,6 +119,31 @@
                '(:first :content))))))
     (print-entry stream database t :filter #'filter)))
 
+;;; `delay-mixin'
+
+(defclass delay-mixin ()
+  ((delay :initarg  :delay
+          :type     (or null positive-real)
+          :reader   style-delay
+          :documentation
+          "Amount of time in seconds to wait before printing a
+           snapshot of the introspection database."))
+  (:default-initargs
+   :delay 1.0)
+  (:documentation
+   "This class is intended to be mixed into introspection formatting
+    style classes that produce their output after a certain delay."))
+
+;; Dummy event => wait for the configured delay in order to collect
+;; introspection information, then perform the style-specific
+;; formatting.
+(defmethod rsb.formatting:format-event :before ((event  t)
+                                                (style  delay-mixin)
+                                                (target t)
+                                                &key &allow-other-keys)
+  (when-let ((delay (style-delay style)))
+    (sleep delay)))
+
 ;;; `style-monitor/events'
 
 (defclass style-monitor/events (database-mixin
@@ -200,15 +225,9 @@
 ;;; `style-object-tree'
 
 (defclass style-object-tree (database-mixin
-                             object-tree-printing-mixin)
-  ((delay :initarg  :delay
-          :type     (or null positive-real)
-          :reader   style-delay
-          :documentation
-          "Amount of time in seconds to wait before printing a
-           snapshot of the introspection database."))
-  (:default-initargs
-   :delay 1.0)
+                             object-tree-printing-mixin
+                             delay-mixin)
+  ()
   (:documentation
    "Quickly gather and print a snapshot of the introspection tree.
 
@@ -234,8 +253,6 @@
                                         (target t)
                                         &key &allow-other-keys)
   (fresh-line target)
-  (let+ (((&structure-r/o style- database max-depth delay) style))
-    (when delay
-      (sleep delay))
+  (let+ (((&structure-r/o style- database max-depth) style))
     (print-object-tree database target max-depth))
   nil)

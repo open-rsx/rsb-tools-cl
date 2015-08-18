@@ -107,7 +107,8 @@
 
 ;;; `style-json'
 
-(defclass style-json (database-mixin)
+(defclass style-json (database-mixin
+                      delay-mixin)
   ()
   (:documentation
    "Serialize introspection information to JSON."))
