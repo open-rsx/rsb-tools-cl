@@ -1,6 +1,6 @@
 ;;;; timeline.lisp --- Render a timeline view of received events.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -38,7 +38,7 @@
   (let+ (((&structure %cell- count max-size glyph) cell)
          (new-count (- end start))
          (new-size  (reduce #'max events
-                            :key           #'rsb.stats:event-size/power-of-2
+                            :key           (rcurry #'rsb.stats:event-size/power-of-2 0)
                             :initial-value 0
                             :start         start
                             :end           end)))
