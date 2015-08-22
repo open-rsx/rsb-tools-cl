@@ -11,17 +11,20 @@
 (defun event-size (event &optional (replacement-value :n/a))
   "Try to determine and return the size of the payload of EVENT in
    bytes. Return REPLACEMENT-VALUE, if the size cannot be determined."
-  (or (meta-data event :rsb.transport.payload-size)
-      (let ((data (event-data event)))
-        (typecase data
-          (integer
-           (ceiling (integer-length data) 8))
-          ((cons t (not list))
-           replacement-value)
-          (sequence
-           (length data))
-          (t
-           replacement-value)))))
+  (labels ((payload-size (payload)
+             (typecase payload
+               (integer
+                (ceiling (integer-length payload) 8))
+               (rsb.converter::annotated
+                (payload-size (rsb.converter::annotated-wire-data payload)))
+               ((cons t (not list))
+                replacement-value)
+               (sequence
+                (length payload))
+               (t
+                replacement-value))))
+    (or (meta-data event :rsb.transport.payload-size)
+        (payload-size (event-data event)))))
 
 (defun event-size/power-of-2 (event &optional (replacement-value :n/a))
   "Like `event-size', but the returned size is rounded to the nearest
