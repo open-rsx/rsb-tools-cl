@@ -29,7 +29,7 @@
             (let+ (((&structure-r/o %cell- count max-size) cell))
               (glyph-for-data count max-size)))))
 
-(defun %cell-update (cell events
+(defun cell-%update (cell events
                      &key
                      (start 0)
                      (end   (length events)))
@@ -117,12 +117,12 @@
 (defmethod collects? ((style timeline))
   t)
 
-(defmethod format-header ((style  timeline)
-                          (target t))
+(defmethod format-header ((style timeline) (target t))
   (let+ (((&accessors-r/o
            ((&values (lower upper) now) bounds/expanded)
            (width        column-width)
-           (tic-distance style-tic-distance)) style)
+           (tic-distance style-tic-distance))
+          style)
          (tic-distance* (min tic-distance (1- width)))
          (delta         (/ (- upper lower)
                            (1- (/ width tic-distance*)))))
@@ -147,12 +147,15 @@
   ;; Copy cached characters into the output vector and write it out in
   ;; a single batch operation.
   (let+ (((&accessors-r/o (width column-width)
-                          (cache style-%cache)) style)
+                          (cache style-%cache))
+          style)
          (output (make-string width)))
     (declare (type list cache))
     (map-into output #'cell-glyph cache)
     (write-string output target)))
 
+;; This method is necessary to satisfy the constraint that a primary
+;; method has to exist but it should not actually get called.
 (defmethod format-event ((event  t)
                          (style  timeline)
                          (target t)
@@ -173,7 +176,8 @@
 
 (defmethod adjust-cache! ((style timeline))
   (let+ (((&accessors-r/o ((lower-bound upper-bound) bounds/expanded)
-                          (width                     column-width)) style)
+                          (width                     column-width))
+          style)
          ((&accessors (cache style-%cache)) style)
          (delta       (floor (- upper-bound lower-bound) width))
          (cache-upper (or (when-let ((first (first cache)))
@@ -185,13 +189,12 @@
           (push (%make-cell lower upper) cache))
 
     ;; Drop old cells at the tail of the cache.
-    ;; TODO(jmoringe, 2012-03-21): slow
     (when-let ((tail (nthcdr width cache)))
       (setf (cdr tail) nil))))
 
 (defmethod fill-cache! ((style timeline))
-  (let+ (((&structure-r/o
-           style- timestamp (events %events) (cache %cache)) style))
+  (let+ (((&structure-r/o style- timestamp (events %events) (cache %cache))
+          style))
     ;; Iterate over bins of the form [LOWER, UPPER] for all
     ;; not-yet-populated cache cells.
     (iter outer
@@ -216,7 +219,7 @@
                   (incf count)
                   (in outer (next event))
                   (finally-protected
-                   (%cell-update cell events/bin :end count)))))
+                   (cell-%update cell events/bin :end count)))))
 
     ;; Drop events.
     (setf (style-%events style) '())))
