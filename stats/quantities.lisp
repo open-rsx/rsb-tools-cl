@@ -1,6 +1,6 @@
 ;;;; quantities.lisp --- A collection of simple quantities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -64,13 +64,11 @@
                            :extractor (rcurry #'timestamp :create)
                            :order     2
                            :filter    (lambda (x y)
-                                        (local-time:timestamp-difference y x))
-                           :format    "~,3F")
+                                        (local-time:timestamp-difference y x)))
       (extract-function-mixin
        filter-mixin
        collecting-mixin
-       moments-mixin
-       format-mixin)
+       moments-mixin)
     "This quantity measures the period time based on event
      timestamps. The default behavior consists in using creation
      timestamps.")

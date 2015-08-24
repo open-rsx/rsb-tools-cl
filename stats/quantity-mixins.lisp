@@ -207,8 +207,10 @@
 
 ;;; `moments-mixin' mixin class
 
-(defclass moments-mixin ()
+(defclass moments-mixin (format-mixin)
   ()
+  (:default-initargs
+   :format "~,3F ± ~,3F")
   (:documentation
    "This mixin class is intended to be mixed into quantity classes
     that provided mean and variance of a collection of accumulated
@@ -221,12 +223,12 @@
         (values (mean values) (standard-deviation values)))))
 
 (defmethod format-value ((quantity moments-mixin) (stream t))
-  (apply #'format stream "~,3F ± ~,3F"
+  (apply #'format stream (quantity-format quantity)
          (multiple-value-list (quantity-value quantity))))
 
 ;;; `histogram-mixin' mixin class
 
-(defclass histogram-mixin ()
+(defclass histogram-mixin (format-mixin)
   ((values :initarg  :values
            :type     hash-table
            :reader   quantity-%values
@@ -234,6 +236,8 @@
            :documentation
            "Stores a mapping from values in the quantity's domain to
             the respective frequencies of these values."))
+  (:default-initargs
+   :format "~:[N/A~;~:*~{~{~A: ~D~}~^, ~}~]")
   (:documentation
    "This mixin class is intended to be mixed into quantity classes
     that accumulate values in form of a histogram."))
@@ -253,7 +257,7 @@
 
 (defmethod format-value ((quantity histogram-mixin)
                          (stream   t))
-  (format stream "~:[N/A~;~:*~{~{~A: ~D~}~^, ~}~]"
+  (format stream (quantity-format quantity)
           (map 'list (lambda (cons) (list (car cons) (cdr cons)))
                (sort (quantity-value quantity) #'> :key #'cdr))))
 
