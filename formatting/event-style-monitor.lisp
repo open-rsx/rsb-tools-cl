@@ -165,7 +165,7 @@
             (service-provider:register-provider/class
              'style ,spec :class ',class-name)))))
 
-  (define-monitor-style (scope :key #'event-scope :test #'scope=)
+  (define-monitor-style (scope/flat :key #'event-scope :test #'scope=)
     "This style groups events by scope and periodically displays
      various statistics for events in each scope-group."
     ;; Specification for group column.
@@ -181,10 +181,7 @@
     :rate :throughput :latency :timeline :type/40 :size :origin/40)
 
   (service-provider:register-provider/class ; alias
-   'style :monitor/timeline :class 'style-monitor/scope)
-
-  (service-provider:register-provider/class ; alias
-   'style :monitor :class 'style-monitor/scope)
+   'style :monitor/timeline :class 'style-monitor/scope/flat)
 
   (define-monitor-style (origin :key #'event-origin :test #'uuid:uuid=)
     "This style groups events by origin and periodically displays
@@ -229,7 +226,130 @@
     ;; Specifications for remaining columns.
     :rate :throughput :latency :scope/40 :timeline :type/40 :size :origin/40))
 
+;;; Scope-tree monitor style
+;;;
+;;; Uses a tree of scopes to group sub-styles.
+
+(defclass monitor-line-style/tree (basic-monitor-line-style)
+  ((parent   :initarg  :parent
+             :accessor style-parent
+             :initform nil)
+   (children :type     list
+             :accessor style-children
+             :initform '()))
+  (:documentation
+   "Instances of this class are lines in the output of a tree-oriented
+    monitor style.
+
+    As with the superclass, `basic-monitor-line-style', lines contain
+    columns. To represent the tree structure, this class adds a list
+    of child lines."))
+
+(defclass style-monitor/scope/tree (sorted-monitor-style)
+  ((max-depth :initarg  :max-depth
+              :type     non-negative-integer
+              :reader   style-max-depth
+              :initform 3)
+   (children  :type     (or null (cons t null))
+              :accessor style-children
+              :initform '())
+   (cache     :type     hash-table
+              :accessor style-%cache
+              :initform (make-hash-table :test #'equal)))
+  (:default-initargs
+   :key              #'event-scope
+   :test             #'scope=
+   :columns          (lambda (value)
+                       (sublis *basic-columns*
+                               (list (%make-last-scope-component-column value)
+                                     :rate :throughput :latency :timeline
+                                     :type/40 :size :origin/40)))
+   :line-style-class 'monitor-line-style/tree))
+
+;; Name and aliases
+(dolist (name '(:monitor/scope/tree :monitor/scope :monitor))
+  (service-provider:register-provider/class
+   'style name :class 'style-monitor/scope/tree))
+
+(defmethod style-parent ((style style-monitor/scope/tree))
+  nil)
+
+(defmethod sub-style-for ((style style-monitor/scope/tree) (event t))
+  (let+ (((&structure-r/o style- key max-depth %cache) style)
+         ((&flet parent-scope-event (components)
+            (make-event (make-scope (butlast components)) nil)))
+         ;; Traverse super-scopes up to root creating sub-styles along
+         ;; the way as necessary.
+         ((&labels one-component (event)
+            (let* ((scope      (funcall key event))
+                   (components (scope-components scope))
+                   (sub-style  (unless (> (length components) max-depth)
+                                 (first (call-next-method style event))))
+                   (ancestors  (unless (scope= scope rsb::+root-scope+)
+                                 (one-component (parent-scope-event
+                                                 components))))
+                   (parent     (or (first ancestors) style)))
+              (cond
+                ((not sub-style))
+                (parent
+                 (setf (style-parent sub-style) parent)
+                 (pushnew sub-style (style-children parent) :test #'eq)))
+              (list* sub-style ancestors))))
+         (components (scope-components (funcall key event))))
+    ;; If possible, use cached sub-style list. The cache is flushed
+    ;; when sub-styles are pruned.
+    (ensure-gethash components %cache (one-component event))))
+
+(defmethod prune-sub-styles :around ((style style-monitor/scope/tree))
+  (let+ ((old-value (style-sub-styles style))
+         (new-value (progn
+                      (call-next-method)
+                      (style-sub-styles style)))
+         (removed   (set-difference old-value new-value :test #'eq))
+         ((&flet remove-from-parent (child)
+            (when-let* ((child  (cdr child))
+                        (parent (style-parent child)))
+              (removef (style-children parent) child :test #'eq)))))
+    ;; Since removal of sub-styles invalidates the cache, flush it.
+    (when removed
+      (clrhash (style-%cache style)))
+    (mapc #'remove-from-parent removed)))
+
+(defmethod format-event ((event  (eql :trigger))
+                         (style  style-monitor/scope/tree)
+                         (target stream)
+                         &key max-columns max-lines)
+  (let+ (((&structure-r/o style- sort-predicate sort-key) style)
+         ((&flet print-first-line (stream depth node)
+            ;; Columns widths are adjusted prior to each redisplay. It
+            ;; is therefore OK to mutate them here. Specifically, we
+            ;; take away from the respective first column (contains
+            ;; scope) the width consumed by the tree structure
+            ;; indentation.
+            (decf (column-width (first (style-columns node))) (* 2 depth))
+            (format-event event node stream)))
+         ((&flet node-children (node)
+            (let ((children (copy-list (style-children node))))
+              (sort children sort-predicate :key sort-key)))))
+   (when-let ((root (first (style-children style))))
+     (utilities.print-tree:print-tree
+      target root
+      (utilities.print-tree:make-node-printer
+       #'print-first-line nil #'node-children))))
+  (terpri target))
+
 ;;; Utility functions
+
+(defun %make-last-scope-component-column (scope)
+  (list :constant
+        :name      "Scope"
+        :value     scope
+        :formatter (lambda (scope stream)
+                     (let ((component (lastcar (scope-components scope))))
+                       (format stream "~@[~A~]/" component)))
+        :widths    '(:range 16)
+        :priority  2.2
+        :alignment :left))
 
 (defun %make-column-key-function (column)
   "Return a function of one argument, a style object, that extracts
