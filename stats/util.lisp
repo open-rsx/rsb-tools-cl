@@ -36,8 +36,13 @@
 
 (defun event-type/simple (event)
   "Return an object designating the type of EVENT."
-  (or (meta-data event :rsb.transport.wire-schema)
-      (type-of (event-data event))))
+  (cond
+    ((meta-data event :rsb.transport.wire-schema))
+    ((typep (event-data event) 'rsb.converter::annotated)
+     (cons 'rsb.converter::annotated
+           (rsb.converter::annotated-wire-schema (event-data event))))
+    (t
+     (type-of (event-data event)))))
 
 ;;; Printer
 
