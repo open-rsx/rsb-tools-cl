@@ -42,13 +42,12 @@
 
       `((:header-frequency nil)
         (,(make-event "/foo" "bar"))
-        ;; 15 8 10 21 21 20 9 8 8
-        ".*│EVENTID…│<nomethod>│/foo/                          │\"bar\"                  │WIRE-SCHEMA\\?│  3 B│ORIGIN\\? │     NIL
+        ".*│EVENTID…│<nomethod>│/foo/                  │\"bar\"                      │WIRE-SCHEMA\\?    │  3 B│ORIGIN\\? │     NIL
 ")
       `((:header-frequency nil)
         (,(make-event "/foo" "bar") ,(make-event "/fez" "whoop"))
-        ".*│EVENTID…│<nomethod>│/foo/                          │\"bar\"                  │WIRE-SCHEMA\\?│  3 B│ORIGIN\\? │     NIL
-.*│EVENTID…│<nomethod>│/fez/                          │\"whoop\"                │WIRE-SCHEMA\\?│  5 B│ORIGIN\\? │     NIL
+        ".*│EVENTID…│<nomethod>│/foo/                  │\"bar\"                      │WIRE-SCHEMA\\?    │  3 B│ORIGIN\\? │     NIL
+.*│EVENTID…│<nomethod>│/fez/                  │\"whoop\"                    │WIRE-SCHEMA\\?    │  5 B│ORIGIN\\? │     NIL
 "))))
 
 ;; Local Variables:

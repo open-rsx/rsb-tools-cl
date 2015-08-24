@@ -1,6 +1,6 @@
 ;;;; dynamic-width.lisp --- Tools for dynamic width columns.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -65,7 +65,8 @@
   :test #'equalp)
 
 (define-constant +optimize-widths-random-state+
-    (make-random-state)
+    #-sbcl (make-random-state)
+    #+sbcl (sb-ext:seed-random-state 0)
   :test #'equalp)
 
 (defun %optimize-widths (width specs priorities separator-width)
