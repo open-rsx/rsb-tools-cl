@@ -229,13 +229,26 @@
 ;;; `histogram-mixin' mixin class
 
 (defclass histogram-mixin (format-mixin)
-  ((values :initarg  :values
+  ((key    :initarg  :key
+           :type     (or null function)
+           :reader   quantity-key
+           :initform nil
+           :documentation
+           "A function that maps values to things suitable for use as
+            keys in the VALUES hash-table.")
+   (values :initarg  :values
            :type     hash-table
            :reader   quantity-%values
            :initform (make-hash-table :test #'equalp)
            :documentation
-           "Stores a mapping from values in the quantity's domain to
-            the respective frequencies of these values."))
+           "Stores a mapping from values in the quantity's
+            domain (potentially transformed by KEY) to the respective
+            frequencies of these values. Concretely, members of the
+            mapping are of the form
+
+              (KEY VALUE) => (VALUE . COUNT)
+
+            ."))
   (:default-initargs
    :format "~:[N/A~;~:*~{~{~A: ~D~}~^, ~}~]")
   (:documentation
@@ -243,14 +256,18 @@
     that accumulate values in form of a histogram."))
 
 (defmethod quantity-values ((quantity histogram-mixin))
-  (hash-table-values (quantity-%values quantity)))
+  (mapcar #'cdr (hash-table-values (quantity-%values quantity))))
 
 (defmethod quantity-value ((quantity histogram-mixin))
-  (hash-table-alist (quantity-%values quantity)))
+  (hash-table-values (quantity-%values quantity)))
 
 (defmethod update! ((quantity histogram-mixin)
                     (value    t))
-  (incf (gethash value (quantity-%values quantity) 0)))
+  (let ((key (if-let ((key (quantity-key quantity)))
+               (funcall key value)
+               value)))
+    (incf (cdr (ensure-gethash key (quantity-%values quantity)
+                               (cons value 0))))))
 
 (defmethod reset! ((quantity histogram-mixin))
   (clrhash (quantity-%values quantity)))

@@ -298,7 +298,7 @@
   "~:[~
      N/A~
    ~;~:*~
-     ~{~{~A: ~/rsb.formatting:print-human-readable-count/~}~^, ~}~
+     ~{~{~/rsb::print-id/: ~/rsb.formatting:print-human-readable-count/~}~^, ~}~
    ~]")
 
 (defvar *basic-columns*

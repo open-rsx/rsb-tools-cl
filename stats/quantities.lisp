@@ -150,8 +150,8 @@
      frequent methods are printed first.")
 
   (define-simple-quantity (origin
-                           :extractor (compose #'princ-to-string
-                                               #'event-origin))
+                           :extractor #'event-origin
+                           :key       #'princ-to-string)
       (extract-function-mixin
        histogram-mixin)
     "The value of this quantity is a histogram of event origins
