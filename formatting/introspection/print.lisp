@@ -191,7 +191,7 @@
 
 (defmethod print-entry ((target stream)
                         (entry  remote-introspection-database)
-                        (what   (eql :first))
+                        (what   t)
                         &rest args &key filter &allow-other-keys)
   (declare (ignore filter))
   (apply #'print-object-tree1 entry target args))
