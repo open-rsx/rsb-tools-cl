@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for the formatting module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -316,6 +316,14 @@
   ;; `style-audio-stream/wav' style class
   (:export
    #:style-audio-stream/wav)
+
+  ;; Order of magnitude functions
+  (:export
+   #:print-human-readable-value
+   #:print-human-readable-order-of-magnitude
+   #:print-human-readable-count
+   #:print-human-readable-size
+   #:print-human-readable-duration)
 
   ;; Formatting functions
   (:export

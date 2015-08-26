@@ -98,6 +98,7 @@ RSB-related systems."
 
                               (:file       "protocol")
 
+                              (:file       "orders-of-magnitude")
                               (:file       "format-functions")
                               (:file       "dynamic-width")))
 
@@ -172,6 +173,7 @@ system."
 
                               (:file       "protocol")
 
+                              (:file       "orders-of-magnitude")
                               (:file       "dynamic-width")))
 
                 (:module     "formatting"
