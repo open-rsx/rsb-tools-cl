@@ -6,6 +6,23 @@
 
 (cl:in-package #:rsb.formatting)
 
+(defun make-style-service-help-string (&key
+                                       (service          'style)
+                                       initarg-blacklist)
+  (with-output-to-string (stream)
+    (format stream "The following formatting styles are currently ~
+                    available:~@
+                    ~@
+                    ")
+    (let* ((providers (service-provider:service-providers service))
+           (classes   (mapcar (lambda (provider)
+                                (list
+                                 (service-provider:provider-name provider)
+                                 (service-provider:provider-class provider)))
+                              providers)))
+      (rsb.common:print-classes-help-string
+       classes stream :initarg-blacklist initarg-blacklist))))
+
 (defun make-style-help-string (&key
                                (show :default))
   "Return a help string that explains how to specify a formatting
@@ -31,23 +48,14 @@
                     ")
     (rsb.common:with-abbreviation
         (stream '(:styles :columns :quantities) show)
-      (format stream "The following formatting styles are ~
-                      currently available:~@
-                      ~@
-                      ")
-      (let* ((providers (service-provider:service-providers 'style))
-             (classes   (mapcar (lambda (provider)
-                                  (list
-                                   (service-provider:provider-name provider)
-                                   (service-provider:provider-class provider)))
-                                providers)))
-        (rsb.common:print-classes-help-string
-         classes stream :initarg-blacklist '(:stream :pretty-state
-                                             :quantities :count
-                                             :sub-styles :test :key
-                                             :sort-predicate :sort-key
-                                             :code)))
-
+      (write-string
+       (make-style-service-help-string
+        :initarg-blacklist '(:stream :pretty-state
+                             :quantities :count
+                             :sub-styles :test :key
+                             :sort-predicate :sort-key
+                             :code))
+       stream)
       (format stream "~%~%")
       (rsb.common:with-abbreviation (stream :columns show)
         (format stream "In column-based formatting styles, columns can ~

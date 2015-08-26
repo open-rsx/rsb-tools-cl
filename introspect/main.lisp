@@ -25,19 +25,10 @@
 (defun make-style-help-string (&key (show :default))
   (with-output-to-string (stream)
     (rsb.common:with-abbreviation (stream :styles show)
-      (format stream "The following formatting styles are currently ~
-                      available:~@
-                      ~@
-                      ")
-      (let* ((providers (service-provider:service-providers
-                         'rsb.formatting.introspection::style))
-             (classes   (mapcar (lambda (provider)
-                                  (list
-                                   (service-provider:provider-name provider)
-                                   (service-provider:provider-class provider)))
-                                providers)))
-        (rsb.common:print-classes-help-string
-         classes stream :initarg-blacklist '(:database))))))
+      (write-string (rsb.formatting::make-style-service-help-string
+                     :service           'rsb.formatting.introspection::style
+                     :initarg-blacklist '(:database))
+                    stream))))
 
 (defun make-examples-string (&key (program-name "rsb introspect"))
   (format nil
