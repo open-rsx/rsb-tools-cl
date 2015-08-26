@@ -1,6 +1,6 @@
 ;;;; event-style-monitor.lisp --- Style that aggregates events in sub-styles.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -147,7 +147,7 @@
           :priority  3.2
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate/9 :throughput/13 :latency :type/40 :timeline :origin/40)
+    :rate :throughput :latency :type/40 :timeline :origin/40)
 
   (define-monitor-style (scope :key #'event-scope :test #'scope=)
     "This style groups events by scope and periodically displays
@@ -162,7 +162,7 @@
           :priority  3.2
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate/9 :throughput/13 :latency :type/40 :size/20 :origin/40)
+    :rate :throughput :latency :type/40 :size :origin/40)
 
   (service-provider:register-provider/class ; alias
    'style :monitor :class 'style-monitor/scope)
@@ -177,7 +177,7 @@
           :width     38
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate/9 :throughput/13 :latency :scope/40 :type/40 :size/20)
+    :rate :throughput :latency :scope/40 :type/40 :size)
 
   (define-monitor-style (type
                          :key  #'rsb.stats:event-type/simple
@@ -191,7 +191,7 @@
           :widths    '(:range 35)
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate/9 :throughput/13 :latency :scope/40 :size/20 :origin/40)
+    :rate :throughput :latency :scope/40 :size :origin/40)
 
   (define-monitor-style (size
                          :key  #'rsb.stats:event-size/power-of-2
@@ -203,10 +203,12 @@
     (list :constant
           :name      "Size"
           :value     value
-          :width     15
+          :formatter (lambda (value stream)
+                       (rsb.formatting:print-human-readable-size stream value))
+          :width     5
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate/9 :throughput/13 :latency :scope/40 :type/40 :size/20 :origin/40))
+    :rate :throughput :latency :scope/40 :type/40 :size :origin/40))
 
 ;;; Utility functions
 

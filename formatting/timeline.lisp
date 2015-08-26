@@ -127,7 +127,7 @@
          (delta         (/ (- upper lower)
                            (1- (/ width tic-distance*)))))
     (iter (for i :from (- upper now) :downto (- lower now) :by delta)
-          (format target "~V@<~C~[ now~:;~:*~5,1F s~]~>"
+          (format target "~V@<~C~[ now~:;~:*~:/rsb.formatting:print-human-readable-duration/~]~>"
                   tic-distance*
                   (if *textual-output-can-use-utf-8?* #\↓ #\v)
                   (/ i 1000000000)))))

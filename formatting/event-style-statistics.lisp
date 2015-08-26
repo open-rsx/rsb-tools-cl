@@ -1,6 +1,6 @@
 ;;;; event-style-statistics.lisp --- Column-oriented formatting of statistics.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -39,8 +39,8 @@
   ()
   (:default-initargs
    :columns (sublis *basic-columns*
-                    '(:now :rate/12 :throughput/13 :latency :scope/40
-                      :type/40 :size/20 :origin/40 :newline)))
+                    '(:now :rate :throughput :latency :scope/40
+                      :type/40 :size :origin/40 :newline)))
   (:documentation
    "This formatting style computes a number of configurable
     statistical quantities from received events collected over a

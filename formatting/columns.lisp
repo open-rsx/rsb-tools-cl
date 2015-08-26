@@ -134,18 +134,18 @@
     (let ((*print-length* (column-width column)))
       (format stream "~/rsb::print-event-data/" (event-data event))))
 
-  (define-simple-column (:data-size 9
+  (define-simple-column (:data-size 5
                          :print-name "Data Size")
       "Emit an indication of the size of the data contained in the
        event, if the size can be determined."
-    (format stream "~:[N/A~;~:*~,,,3:D~]" (event-size event nil)))
+    (print-human-readable-size stream (event-size event :n/a)))
 
-  (define-simple-column (:notification-size 9
+  (define-simple-column (:notification-size 5
                          :print-name "Notification Size")
       "Emit an indication of the size of the notification in which the
        event has been transmitted, if the size can be determined."
-    (format stream "~:[N/A~;~:*~,,,3:D~]"
-            (meta-data event :rsb.transport.notification-size)))
+    (print-human-readable-size
+     stream (or (meta-data event :rsb.transport.notification-size) :n/a)))
 
   ;; Request/Reply stuff
   (define-simple-column (:call ((:range 26) :left))
@@ -287,6 +287,20 @@
 ;;; For use in `columns-mixin' and subclasses such as
 ;;; `style-compact/*' `style-statistics/*' and `style-monitor/*'.
 
+(defvar *human-readable-count-format*
+  "~/rsb.formatting:print-human-readable-count/")
+
+(defvar *human-readable-size-format*
+  "~/rsb.formatting:print-human-readable-size/")
+
+(defvar *human-readable-duration-moments-format*
+  "~:/rsb.formatting:print-human-readable-duration/ ~
+   ± ~/rsb.formatting:print-human-readable-duration/")
+
+(defvar *human-readable-size-moments-format*
+  "~/rsb.formatting:print-human-readable-size/ ~
+   ± ~/rsb.formatting:print-human-readable-size/")
+
 (defvar *generic-histogram-format*
   "~:[~
      N/A~
@@ -303,37 +317,45 @@
 
 (defvar *basic-columns*
   `(;; Event Properties
-    (:now           . (:now :priority 1.5))
-    (:receive       . (:timestamp :key :receive :priority 1.5))
-    (:wire-schema   . (:wire-schema :priority 2.4))
+    (:now         . (:now :priority 1.5))
+    (:receive     . (:timestamp :key :receive :priority 1.5))
+    (:wire-schema . (:wire-schema :priority 2.4))
     ;; Quantities
-    (:rate/9        . (:quantity  :quantity :rate       :widths 9))
-    (:rate/12       . (:quantity  :quantity :rate       :widths 12))
-    (:throughput/13 . (:quantity  :quantity :throughput :widths 13))
-    (:latency       . (:quantity  :quantity (:expected
-                                             :name     "Latency"
-                                             :target   (:latency
-                                                        :from :send
-                                                        :to   :receive)
-                                             :expected (:type (or (eql :n/a)
-                                                                  (real (0) 0.010))))
-                       :widths    (:range 16)
-                       :priority  2.2))
-    (:origin/40     . (:quantity
-                       :quantity  (:origin :format ,*origin-histogram-format*)
-                       :widths    (:range 40)
-                       :alignment :left))
-    (:scope/40      . (:quantity
-                       :quantity  (:scope :format ,*generic-histogram-format*)
-                       :widths    (:range 40)
-                       :alignment :left))
-    (:type/40       . (:quantity
-                       :quantity  (:type :format ,*generic-histogram-format*)
-                       :widths    (:range 40)
-                       :alignment :left))
-    (:size/20       . (:quantity
-                       :quantity  :size
-                       :widths    20)))
+    (:rate        . (:quantity
+                     :quantity  (:rate
+                                 :format ,*human-readable-count-format*)
+                     :widths    4))
+    (:throughput  . (:quantity
+                     :quantity  (:throughput
+                                 :format ,*human-readable-size-format*)
+                     :widths    5))
+    (:latency     . (:quantity
+                     :quantity  (:expected
+                                 :name     "Latency"
+                                 :target   (:latency
+                                            :from   :send
+                                            :to     :receive
+                                            :format ,*human-readable-duration-moments-format*)
+                                 :expected (:type (or (eql :n/a)
+                                                      (real (0) 0.010))))
+                     :widths    14
+                     :priority  2.2))
+    (:origin/40   . (:quantity
+                     :quantity  (:origin :format ,*origin-histogram-format*)
+                     :widths    (:range 40)
+                     :alignment :left))
+    (:scope/40    . (:quantity
+                     :quantity  (:scope :format ,*generic-histogram-format*)
+                     :widths    (:range 40)
+                     :alignment :left))
+    (:type/40     . (:quantity
+                     :quantity  (:type :format ,*generic-histogram-format*)
+                     :widths    (:range 40)
+                     :alignment :left))
+    (:size        . (:quantity
+                     :quantity  (:size
+                                 :format ,*human-readable-size-moments-format*)
+                     :widths    13)))
   "Contains an alist of column specification entries of the form
 
      (NAME . SPEC)
