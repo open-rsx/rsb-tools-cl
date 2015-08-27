@@ -188,9 +188,14 @@
           (for lower previous upper                 :initially cache-upper)
           (push (%make-cell lower upper) cache))
 
-    ;; Drop old cells at the tail of the cache.
-    (when-let ((tail (nthcdr width cache)))
-      (setf (cdr tail) nil))))
+    ;; Add and drop cells at the tail of the cache.
+    (iter (repeat width)
+          (for tail :first cache :then (cdr tail))
+          (when (null (cdr tail))
+            (let ((cell (%make-cell 0 0)))
+              (setf (%cell-glyph cell) #\Space)
+              (setf (cdr tail) (cons cell nil))))
+          (finally (setf (cdr tail) nil)))))
 
 (defmethod fill-cache! ((style timeline))
   (let+ (((&structure-r/o style- timestamp (events %events) (cache %cache))
