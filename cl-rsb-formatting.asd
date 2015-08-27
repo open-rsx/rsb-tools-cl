@@ -163,7 +163,8 @@ system."
                 (:version :lift                  "1.7.1")
 
                 (:version :cl-rsb-formatting     #.(version/string))
-                (:version :cl-rsb-formatting-png #.(version/string)))
+                (:version :cl-rsb-formatting-png #.(version/string))
+                (:version :rsb-formatting-json   #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
                  :pathname   "test/formatting"

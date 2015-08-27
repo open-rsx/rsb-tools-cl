@@ -25,11 +25,10 @@
            data.")
   smoke
 
-  (let ((*configuration* +configuration-only-inprocess+)
-        (transports      '((:inprocess :enabled t) (t :enabled nil))))
+  (let ((*configuration* +configuration-only-inprocess+))
     (with-participants ((introspection :remote-introspection
                                        rsb.introspection:+introspection-scope+
                                        :receiver-uris '("/"))
-                        (listener :listener "/"))
+                        (listener      :listener "/"))
       (json:decode-json-from-string
        (json:encode-json-to-string introspection)))))
