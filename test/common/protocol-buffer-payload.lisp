@@ -14,7 +14,7 @@
 (addtest (protocol-buffer-payload-root
           :documentation
           "Smoke test for parsing protocol buffer messages.")
-         grammar/smoke
+  grammar/smoke
 
   (ensure-cases (input expected)
       `(;; Some invalid cases.
