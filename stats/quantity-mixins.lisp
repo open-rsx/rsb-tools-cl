@@ -80,8 +80,7 @@
 
 (defmethod update! ((quantity meta-data-mixin)
                     (event    event))
-  (let+ (((&accessors-r/o (key          quantity-key)
-                          (when-missing quantity-when-missing)) quantity))
+  (let+ (((&structure-r/o quantity- key when-missing) quantity))
     (case key
       (:keys
        (mapc (curry #'update! quantity) (meta-data-keys event)))
@@ -151,8 +150,7 @@
     processing."))
 
 (defmethod quantity-values ((quantity filter-mixin))
-  (let+ (((&accessors-r/o (order  quantity-order)
-                          (filter quantity-filter)) quantity)
+  (let+ (((&structure-r/o quantity- order filter) quantity)
          (values (call-next-method)))
     (declare (type fixnum order) (type function filter))
     ;; When enough data has been collected, apply the filter function
