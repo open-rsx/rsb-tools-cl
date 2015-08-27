@@ -101,7 +101,8 @@
 
 (defmethod json:encode-json ((object remote-introspection)
                              &optional (stream json:*json-output*))
-  (json:encode-json (introspection-database object) stream))
+  (with-database-lock (object)
+    (json:encode-json (introspection-database object) stream)))
 
 (cl:in-package #:rsb.formatting.introspection)
 
@@ -127,7 +128,5 @@
                                         (style  style-json)
                                         (target t)
                                         &key &allow-other-keys)
-  (let+ (((&structure-r/o style- database) style))
-    (with-database-lock (database)
-      (json:encode-json database target)))
+  (json:encode-json (style-database style) target)
   nil)
