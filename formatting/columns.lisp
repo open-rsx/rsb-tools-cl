@@ -287,28 +287,53 @@
 ;;; For use in `columns-mixin' and subclasses such as
 ;;; `style-compact/*' `style-statistics/*' and `style-monitor/*'.
 
+(defvar *generic-histogram-format*
+  "~:[~
+     N/A~
+   ~;~:*~
+     ~{~{~A: ~/rsb.formatting:print-human-readable-count/~}~^, ~}~
+   ~]")
+
+(defvar *origin-histogram-format*
+  "~:[~
+     N/A~
+   ~;~:*~
+     ~{~{~A: ~/rsb.formatting:print-human-readable-count/~}~^, ~}~
+   ~]")
+
 (defvar *basic-columns*
-  '(;; Event Properties
+  `(;; Event Properties
     (:now           . (:now :priority 1.5))
     (:receive       . (:timestamp :key :receive :priority 1.5))
     (:wire-schema   . (:wire-schema :priority 2.4))
     ;; Quantities
-    (:rate/9        . (:quantity :quantity :rate       :widths 9))
-    (:rate/12       . (:quantity :quantity :rate       :widths 12))
-    (:throughput/13 . (:quantity :quantity :throughput :widths 13))
-    (:latency       . (:quantity :quantity (:expected
-                                            :name     "Latency"
-                                            :target   (:latency
-                                                       :from :send
-                                                       :to   :receive)
-                                            :expected (:type (or (eql :n/a)
-                                                                 (real (0) 0.010))))
-                       :widths   (:range 16)
-                       :priority 2.2))
-    (:origin/40     . (:quantity :quantity :origin     :widths (:range 40) :alignment :left))
-    (:scope/40      . (:quantity :quantity :scope      :widths (:range 40) :alignment :left))
-    (:type/40       . (:quantity :quantity :type       :widths (:range 40) :alignment :left))
-    (:size/20       . (:quantity :quantity :size       :widths 20)))
+    (:rate/9        . (:quantity  :quantity :rate       :widths 9))
+    (:rate/12       . (:quantity  :quantity :rate       :widths 12))
+    (:throughput/13 . (:quantity  :quantity :throughput :widths 13))
+    (:latency       . (:quantity  :quantity (:expected
+                                             :name     "Latency"
+                                             :target   (:latency
+                                                        :from :send
+                                                        :to   :receive)
+                                             :expected (:type (or (eql :n/a)
+                                                                  (real (0) 0.010))))
+                       :widths    (:range 16)
+                       :priority  2.2))
+    (:origin/40     . (:quantity
+                       :quantity  (:origin :format ,*origin-histogram-format*)
+                       :widths    (:range 40)
+                       :alignment :left))
+    (:scope/40      . (:quantity
+                       :quantity  (:scope :format ,*generic-histogram-format*)
+                       :widths    (:range 40)
+                       :alignment :left))
+    (:type/40       . (:quantity
+                       :quantity  (:type :format ,*generic-histogram-format*)
+                       :widths    (:range 40)
+                       :alignment :left))
+    (:size/20       . (:quantity
+                       :quantity  :size
+                       :widths    20)))
   "Contains an alist of column specification entries of the form
 
      (NAME . SPEC)
