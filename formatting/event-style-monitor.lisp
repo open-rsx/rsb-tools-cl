@@ -29,12 +29,17 @@
                                widths-caching-mixin
                                separator-mixin
                                header-printing-mixin)
-  ((columns :initarg    :columns
-            :type       function
-            :reader     style-columns
-            :documentation
-            "Stores a specification for creating columns used by
-             sub-styles of the style."))
+  ((columns          :initarg    :columns
+                     :type       function
+                     :reader     style-columns
+                     :documentation
+                     "Stores a specification for creating columns used
+                      by sub-styles of the style.")
+   (line-style-class :initarg  :line-style-class
+                     :reader   style-line-style-class
+                     :documentation
+                     "Stores the name of a class that should be used
+                      when making instances for use as line styles."))
   (:default-initargs
    :sub-styles       nil
 
@@ -45,8 +50,8 @@
 
    :separator        :clear
 
-   :columns          (missing-required-initarg
-                      'basic-monitor-style :columns))
+   :columns          (missing-required-initarg 'basic-monitor-style :columns)
+   :line-style-class 'basic-monitor-line-style)
   (:documentation
    "This class serves as a superclass for formatting style classes
     which group events according to some criterion and periodically
@@ -67,11 +72,11 @@
 
 (defmethod make-sub-style-entry ((style basic-monitor-style)
                                  (value t))
-  (let+ (((&structure-r/o style- key test columns) style))
+  (let+ (((&structure-r/o style- key test columns line-style-class) style))
     (declare (type function key test columns))
     (when-let ((columns (funcall columns value)))
       (cons (lambda (event) (funcall test (funcall key event) value))
-            (make-instance 'basic-monitor-line-style :columns columns)))))
+            (make-instance line-style-class :columns columns)))))
 
 (defmethod style-dynamic-width-columns ((style basic-monitor-style))
   (unless (emptyp (style-sub-styles style))
