@@ -35,9 +35,9 @@
 ;;; `redump' command class
 
 (defclass redump ()
-  ((output-file :initarg  :output-file
-                :type     pathname
+  ((output-file :type     pathname
                 :reader   redump-output-file
+                :writer   (setf redump-%output-file)
                 :documentation
                 "The file into which the current image should be
                  dumped.")
@@ -68,6 +68,16 @@
 
 (service-provider:register-provider/class
  'command :redump :class 'redump)
+
+(defmethod shared-initialize :after ((instance   redump)
+                                     (slot-names t)
+                                     &key
+                                     (output-file nil output-file-supplied?))
+  (when output-file-supplied?
+    (setf (redump-%output-file instance)
+          (etypecase output-file
+            (string   (parse-namestring output-file))
+            (pathname output-file)))))
 
 (defmethod command-execute ((command redump) &key error-policy)
   (declare (ignore error-policy))
