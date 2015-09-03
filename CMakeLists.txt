@@ -127,6 +127,10 @@ option(WITH_PNG_SUPPORT "Build with support for PNG image payloads." ON)
 if(WITH_PNG_SUPPORT)
     add_silent_load(cl-rsb-formatting-png)
 endif()
+option(WITH_JSON_SUPPORT "Build with support for JSON formatting." ON)
+if(WITH_JSON_SUPPORT)
+    add_silent_load(rsb-formatting-json)
+endif()
 option(WITH_WEB_SUPPORT "Enable support for serving introspection and other information via HTTP." ON)
 if(WITH_WEB_SUPPORT)
     add_silent_load(rsb-tools-commands-web)
@@ -352,7 +356,8 @@ add_test(NAME    "logger/filter"
 foreach(STYLE discard meta-data payload detailed
               compact statistics
               monitor monitor/scope monitor/origin monitor/type monitor/size
-              timeline/scope timeline/origin)
+              timeline/scope timeline/origin
+              json)
     add_test(NAME    "logger/style=${STYLE}"
              COMMAND "${MAIN_EXECUTABLE}" logger
                      --debug --style "${STYLE}"
