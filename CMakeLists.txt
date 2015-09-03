@@ -233,6 +233,8 @@ foreach(SYSTEM cl-rsb-common cl-rsb-formatting cl-rsb-stats rsb-tools-commands)
     set_tests_properties("test-${SYSTEM}" PROPERTIES RUN_SERIAL TRUE)
 endforeach()
 
+set(EXIT_AFTER_THREE_SECONDS "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))")
+
 # --help, --help-all and --version for all binaries.
 foreach(TOOL ${TOOLS})
     add_test(NAME    "${TOOL}/help"
@@ -255,7 +257,7 @@ foreach(POLICY continue abort)
     add_test(NAME    "logger/on-error=${POLICY}"
             COMMAND  "${MAIN_EXECUTABLE}" logger
                      --debug --on-error "${POLICY}"
-                     --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                     --eval "${EXIT_AFTER_THREE_SECONDS}"
                      inprocess:)
     add_test(NAME    "send/on-error=${POLICY}"
              COMMAND "${MAIN_EXECUTABLE}" send
@@ -273,7 +275,7 @@ add_test(NAME   "logger/idl-path/on-error=continue"
         COMMAND "${MAIN_EXECUTABLE}" logger
                 --debug --on-error continue
                 --idl-path "no-such-directory"
-                --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                --eval "${EXIT_AFTER_THREE_SECONDS}"
                  inprocess:)
 add_test(NAME   "send/idl-path/on-error=continue"
          COMMAND "${MAIN_EXECUTABLE}" send
@@ -332,12 +334,12 @@ endforeach()
 add_test(NAME    "logger/multiple-uris"
          COMMAND "${MAIN_EXECUTABLE}" logger
                  --debug
-                 --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
                  inprocess:/foo inprocess:/bar)
 add_test(NAME    "logger/queue-capacity"
          COMMAND "${MAIN_EXECUTABLE}" logger
                  --debug
-                 --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
                  --max-queued-events 1
                  inprocess:/foo)
 
@@ -345,7 +347,7 @@ add_test(NAME    "logger/queue-capacity"
 add_test(NAME    "logger/filter"
          COMMAND "${MAIN_EXECUTABLE}" logger
                  --debug
-                 --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
                  --filter "scope :scope \"/foo\""
                  inprocess:/)
 
@@ -361,7 +363,7 @@ foreach(STYLE discard meta-data payload detailed
     add_test(NAME    "logger/style=${STYLE}"
              COMMAND "${MAIN_EXECUTABLE}" logger
                      --debug --style "${STYLE}"
-                     --eval "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))"
+                     --eval "${EXIT_AFTER_THREE_SECONDS}"
                      inprocess:)
     add_test(NAME   "call/style=${STYLE}/no-wait"
             COMMAND "${MAIN_EXECUTABLE}" call
