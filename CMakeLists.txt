@@ -384,15 +384,13 @@ foreach(URLS "inprocess:" "inprocess:;inprocess:/")
 
     set(EXIT)
     if (STYLE MATCHES "monitor/object-tree|monitor/events")
-      set(EXIT "--eval;(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))")
+      set(EXIT "--eval;${EXIT_AFTER_THREE_SECONDS}")
     endif()
 
     add_test(NAME    "introspect/${CLEAN_URLS}/${CLEAN_STYLE}"
              COMMAND "${MAIN_EXECUTABLE}" introspect
                      --debug
-                     ${EXIT}
-                     ${STYLE}
-                     ${URLS})
+                     ${EXIT} ${STYLE} ${URLS})
   endforeach()
 endforeach()
 
