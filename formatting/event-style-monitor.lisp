@@ -151,16 +151,13 @@
               (class-name (format-symbol *package* "~A/~A"
                                          :style-monitor kind))
               ((&values column-specs nil documentation)
-               (parse-body doc-and-column-specs :documentation t))
-              (columns (sublis (mapcar (lambda+ ((key . value))
-                                         `(,key . (quote ,value)))
-                                       *basic-columns*)
-                               column-specs)))
+               (parse-body doc-and-column-specs :documentation t)))
          `(progn
             (defclass ,class-name (sorted-monitor-style)
               ()
               (:default-initargs
-               :columns (lambda (value) (list ,@columns))
+               :columns (lambda (value)
+                          (sublis *basic-columns* (list ,@column-specs)))
                ,@initargs)
               ,@(when documentation
                   `((:documentation ,documentation))))
