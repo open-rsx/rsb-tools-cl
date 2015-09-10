@@ -28,8 +28,8 @@
               ,@(when doc
                   `((:documentation ,doc))))
 
-            (service-provider:register-provider/class 'quantity ',designator
-              :class ',class-name)))))
+            (service-provider:register-provider/class
+             'quantity ',designator :class ',class-name)))))
 
   (define-simple-quantity (count
                            :extractor (constantly 1)
@@ -151,7 +151,14 @@
 
   (define-simple-quantity (origin
                            :extractor #'event-origin
-                           :key       #'princ-to-string)
+                           :key       (lambda (uuid)
+                                        (when uuid
+                                          (list (uuid::time-low      uuid)
+                                                (uuid::time-mid      uuid)
+                                                (uuid::time-high     uuid)
+                                                (uuid::clock-seq-var uuid)
+                                                (uuid::clock-seq-low uuid)
+                                                (uuid::node          uuid)))))
       (extract-function-mixin
        histogram-mixin)
     "The value of this quantity is a histogram of event origins
