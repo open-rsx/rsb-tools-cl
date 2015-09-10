@@ -168,21 +168,6 @@
             (service-provider:register-provider/class
              'style ,spec :class ',class-name)))))
 
-  (define-monitor-style (timeline :key #'event-scope :test #'scope=)
-    "This style groups events by scope and periodically displays
-     various statistics for events in each scope-group."
-    ;; Specification for group column.
-    (list :constant
-          :name      "Scope"
-          :value     value
-          :formatter (lambda (value stream)
-                       (write-string (scope-string value) stream))
-          :widths    '(:range 39)
-          :priority  3.2
-          :alignment :left)
-    ;; Specifications for remaining columns.
-    :rate :throughput :latency :type/40 :timeline :origin/40)
-
   (define-monitor-style (scope :key #'event-scope :test #'scope=)
     "This style groups events by scope and periodically displays
      various statistics for events in each scope-group."
@@ -196,7 +181,10 @@
           :priority  3.2
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate :throughput :latency :type/40 :size :origin/40)
+    :rate :throughput :latency :timeline :type/40 :size :origin/40)
+
+  (service-provider:register-provider/class ; alias
+   'style :monitor/timeline :class 'style-monitor/scope)
 
   (service-provider:register-provider/class ; alias
    'style :monitor :class 'style-monitor/scope)
@@ -211,7 +199,7 @@
           :width     38
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate :throughput :latency :scope/40 :type/40 :size)
+    :rate :throughput :latency :scope/40 :timeline :type/40 :size)
 
   (define-monitor-style (type
                          :key  #'rsb.stats:event-type/simple
@@ -225,7 +213,7 @@
           :widths    '(:range 35)
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate :throughput :latency :scope/40 :size :origin/40)
+    :rate :throughput :latency :scope/40 :timeline :size :origin/40)
 
   (define-monitor-style (size
                          :key  #'rsb.stats:event-size/power-of-2
@@ -242,7 +230,7 @@
           :width     5
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate :throughput :latency :scope/40 :type/40 :size :origin/40))
+    :rate :throughput :latency :scope/40 :timeline :type/40 :size :origin/40))
 
 ;;; Utility functions
 
