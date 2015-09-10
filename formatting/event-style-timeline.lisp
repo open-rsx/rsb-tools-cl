@@ -8,7 +8,7 @@
 
 ;;; Class `basic-timeline-style'
 
-(defclass basic-timeline-style (basic-monitor-style
+(defclass basic-timeline-style (sorted-monitor-style
                                 temporal-bounds-mixin
                                 timestamp-mixin)
   ()

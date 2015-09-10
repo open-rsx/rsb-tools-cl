@@ -21,10 +21,9 @@
 
 ;;; Class `basic-monitor-style'
 
-(defclass basic-monitor-style (output-buffering-mixin
+(defclass monitor-style-mixin (output-buffering-mixin
                                periodic-printing-mixin
                                sub-style-grouping-mixin
-                               sub-style-sorting-mixin
                                activity-based-sub-style-pruning-mixin
                                widths-caching-mixin
                                separator-mixin
@@ -43,21 +42,83 @@
   (:default-initargs
    :sub-styles       nil
 
-   :sort-predicate   #'column<
-   :sort-key         (%make-column-key-function 0)
-
    :header-frequency 1
 
    :separator        :clear
 
-   :columns          (missing-required-initarg 'basic-monitor-style :columns)
+   :columns          (missing-required-initarg 'monitor-style-mixin :columns)
    :line-style-class 'basic-monitor-line-style)
+  (:documentation
+   "This class is intended to be mixed into formatting style classes
+    which group events according to some criterion and periodically
+    display information for events within each group in one line of
+    text."))
+
+(defmethod make-sub-style-entry ((style monitor-style-mixin)
+                                 (value t))
+  (let+ (((&structure-r/o style- key test columns line-style-class) style))
+    (declare (type function key test columns))
+    (when-let ((columns (funcall columns value)))
+      (cons (lambda (event) (funcall test (funcall key event) value))
+            (make-instance line-style-class :columns columns)))))
+
+(defmethod style-dynamic-width-columns ((style monitor-style-mixin))
+  ;; Return columns of first sub-style (i.e. first line) for
+  ;; width-related computations.
+  (unless (emptyp (style-sub-styles style))
+    (style-dynamic-width-columns (cdr (first-elt (style-sub-styles style))))))
+
+(defmethod format-header ((style  monitor-style-mixin)
+                          (stream t))
+  ;; Use first sub-style (i.e first line) to format the column
+  ;; headers.
+  (unless (emptyp (style-sub-styles style))
+    (format-header (cdr (first-elt (style-sub-styles style))) stream)))
+
+(defmethod format-event :before ((event  (eql :trigger))
+                                 (style  monitor-style-mixin)
+                                 (stream t)
+                                 &key
+                                 (width (or *print-right-margin* 80))
+                                 &allow-other-keys)
+  ;; Before displaying sub-styles, compute widths based on first
+  ;; sub-style (i.e. first line), then propagate to remaining
+  ;; sub-styles.
+  (let ((sub-styles (mapcar #'cdr (style-sub-styles style))))
+    (unless (emptyp sub-styles)
+      (let* ((sub-style (first-elt sub-styles))
+             (columns   (style-dynamic-width-columns sub-style))
+             (separator (style-separator-width       sub-style))
+             (widths    (style-compute-column-widths
+                         style columns width :separator-width separator)))
+        (iter (for sub-style in-sequence sub-styles)
+              (let ((columns (style-dynamic-width-columns sub-style)))
+                (style-assign-column-widths sub-style columns widths)))))))
+
+(defmethod format-event ((event  (eql :trigger))
+                         (style  monitor-style-mixin)
+                         (stream t)
+                         &key &allow-other-keys)
+  ;; Print all sub-styles (i.e. lines), separated by newlines.
+  (iter (for (_ . sub-style) in-sequence (style-sub-styles style))
+        (format-event event sub-style stream)
+        (terpri stream)))
+
+;;; `sorted-monitor-style'
+
+(defclass sorted-monitor-style (monitor-style-mixin
+                                sub-style-sorting-mixin)
+  ()
+  (:default-initargs
+   :sort-predicate #'column<
+   :sort-key       (%make-column-key-function 0))
   (:documentation
    "This class serves as a superclass for formatting style classes
     which group events according to some criterion and periodically
-    display information for events within each group."))
+    display information for events within each group as a sorted list
+    of text lines."))
 
-(defmethod shared-initialize :after ((instance   basic-monitor-style)
+(defmethod shared-initialize :after ((instance   sorted-monitor-style)
                                      (slot-names t)
                                      &key
                                      (sort-column   nil sort-column-supplied?)
@@ -70,44 +131,12 @@
               (complement #'column<)
               #'column<))))
 
-(defmethod make-sub-style-entry ((style basic-monitor-style)
-                                 (value t))
-  (let+ (((&structure-r/o style- key test columns line-style-class) style))
-    (declare (type function key test columns))
-    (when-let ((columns (funcall columns value)))
-      (cons (lambda (event) (funcall test (funcall key event) value))
-            (make-instance line-style-class :columns columns)))))
-
-(defmethod style-dynamic-width-columns ((style basic-monitor-style))
-  (unless (emptyp (style-sub-styles style))
-    (style-dynamic-width-columns (cdr (first-elt (style-sub-styles style))))))
-
-(defmethod format-header ((style  basic-monitor-style)
-                          (stream t))
-  (unless (emptyp (style-sub-styles style))
-    (format-header (cdr (first-elt (style-sub-styles style))) stream)))
-
-(defmethod format-event :before ((event  (eql :trigger))
-                                 (style  basic-monitor-style)
-                                 (stream t)
-                                 &key
-                                 (width (or *print-right-margin* 80))
-                                 &allow-other-keys)
-  (let ((sub-styles (style-sub-styles/sorted style)))
-    (unless (emptyp sub-styles)
-      (let* ((sub-style (first-elt sub-styles))
-             (columns   (style-dynamic-width-columns sub-style))
-             (separator (style-separator-width       sub-style))
-             (widths    (style-compute-column-widths
-                         style columns width :separator-width separator)))
-        (iter (for sub-style in-sequence sub-styles)
-              (let ((columns (style-dynamic-width-columns sub-style)))
-                (style-assign-column-widths sub-style columns widths)))))))
-
 (defmethod format-event ((event  (eql :trigger))
-                         (style  basic-monitor-style)
+                         (style  sorted-monitor-style)
                          (stream t)
                          &key &allow-other-keys)
+  ;; Like `monitor-style-mixin', but display sorted sequence of
+  ;; sub-styles.
   (iter (for sub-style in-sequence (style-sub-styles/sorted style))
         (format-event event sub-style stream)
         (terpri stream)))
@@ -128,7 +157,7 @@
                                        *basic-columns*)
                                column-specs)))
          `(progn
-            (defclass ,class-name (basic-monitor-style)
+            (defclass ,class-name (sorted-monitor-style)
               ()
               (:default-initargs
                :columns (lambda (value) (list ,@columns))
