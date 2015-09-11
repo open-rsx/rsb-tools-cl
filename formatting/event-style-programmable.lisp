@@ -28,6 +28,7 @@
     (id              (princ-to-string (event-id event)))
     (scope           (scope-string (event-scope event)))
     (origin          (event-origin event))
+    (method          (event-method event))
     (data            (event-data event))
     ,@(iter (for timestamp in '(create send receive deliver))
             (collect `(,timestamp (timestamp event ,(make-keyword timestamp))))
