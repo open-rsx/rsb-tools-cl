@@ -24,5 +24,6 @@
 
 (deftestsuite commands-root ()
   ()
+  (:timeout 20)
   (:documentation
    "Root unit test suite for the commands module."))

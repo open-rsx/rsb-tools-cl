@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for unit tests of the cl-rsb-common system.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -22,5 +22,6 @@
 
 (deftestsuite common-root ()
   ()
+  (:timeout 20)
   (:documentation
    "Root unit test suite for the cl-rsb-common system."))
