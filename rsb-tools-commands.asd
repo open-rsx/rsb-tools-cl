@@ -103,6 +103,7 @@
 
                 (:module     "commands-bridge"
                  :pathname   "src/commands/bridge"
+                 :depends-on ("commands")
                  :serial     t
                  :components ((:file       "package")
                               (:file       "conditions")
