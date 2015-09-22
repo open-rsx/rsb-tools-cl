@@ -282,22 +282,30 @@
     of child lines."))
 
 (defclass style-monitor/scope/tree (sorted-monitor-style)
-  ((max-depth :initarg  :max-depth
-              :type     non-negative-integer
-              :reader   style-max-depth
-              :initform 3)
-   (children  :type     (or null (cons t null))
-              :accessor style-children
-              :initform '())
-   (cache     :type     hash-table
-              :accessor style-%cache
-              :initform (make-hash-table :test #'equal)))
+  ((max-depth        :initarg  :max-depth
+                     :type     non-negative-integer
+                     :reader   style-max-depth
+                     :initform 3)
+   (collapse-scopes? :initarg  :collapse-scopes?
+                     :type     boolean
+                     :reader   style-collapse-scopes?
+                     :initform t
+                     :documentation
+                     "Controls whether lines corresponding to chains
+                      of scopes with exactly one known sub-scope are
+                      collapsed into a single line.")
+   (children         :type     (or null (cons t null))
+                     :accessor style-children
+                     :initform '())
+   (cache            :type     hash-table
+                     :accessor style-%cache
+                     :initform (make-hash-table :test #'equal)))
   (:default-initargs
    :key              #'event-scope
    :test             #'scope=
    :default-columns  (mapcar #'expand-column-spec
                              (list (lambda (value)
-                                     (%make-last-scope-component-column value))
+                                     (%make-scope-suffix-column value))
                                    :rate :throughput :latency :timeline
                                    :type/40 :size :origin/40 :method/20))
    :line-style-class 'monitor-line-style/tree))
@@ -351,38 +359,65 @@
       (clrhash (style-%cache style)))
     (mapc #'remove-from-parent removed)))
 
+(declaim (special *suffix-length*))
+
 (defmethod format-event ((event  (eql :trigger))
                          (style  style-monitor/scope/tree)
                          (target stream)
                          &key)
-  (let+ (((&structure-r/o style- sort-predicate sort-key) style)
-         ((&flet print-first-line (stream depth node)
+  (let+ (((&structure-r/o style- sort-predicate sort-key collapse-scopes?)
+          style)
+         ((&flet+ print-first-line (stream depth (collapsed-count . node))
             ;; Columns widths are adjusted prior to each redisplay. It
             ;; is therefore OK to mutate them here. Specifically, we
             ;; take away from the respective first column (contains
             ;; scope) the width consumed by the tree structure
             ;; indentation.
             (decf (column-width (first (style-columns node))) (* 2 depth))
-            (format-event event node stream)))
-         ((&flet node-children (node)
-            (let ((children (copy-list (style-children node))))
-              (sort children sort-predicate :key sort-key)))))
-   (when-let ((root (first (style-children style))))
-     (utilities.print-tree:print-tree
-      target root
-      (utilities.print-tree:make-node-printer
-       #'print-first-line nil #'node-children))))
+            ;; Bind `*suffix-length*' for appropriate scope suffix
+            ;; printing in case singleton nodes have been collapsed.
+            (let ((*suffix-length* (1+ collapsed-count)))
+              (format-event event node stream))))
+         ;; Recursively replace "singleton" nodes (nodes that have
+         ;; exactly one child) with the child, keeping track of the
+         ;; length of the replacement chain.
+         ((&labels collapse-singletons (node &optional (collapsed-count 0))
+            (let ((children (style-children node)))
+              (if (and collapse-scopes? (length= 1 children))
+                  (collapse-singletons (first children) (1+ collapsed-count))
+                  (cons collapsed-count node)))))
+         ((&flet+ node-children ((&ign . node))
+            (let ((children (mapcar #'collapse-singletons
+                                    (style-children node))))
+              (sort children sort-predicate :key (compose sort-key #'cdr))))))
+    (when-let ((root (first (style-children style))))
+      (utilities.print-tree:print-tree
+       target (collapse-singletons root)
+       (utilities.print-tree:make-node-printer
+        #'print-first-line nil #'node-children))))
   (terpri target))
 
 ;;; Utility functions
 
-(defun %make-last-scope-component-column (scope)
+(defvar *suffix-length* 1
+  "Length of the scope suffix that should be printed.
+
+   Values greater than 1 arise when \"singleton\" nodes (nodes with
+   exactly one child) are collapsed.")
+
+(defun %make-scope-suffix-column (scope)
   (list :constant
         :name      "Scope"
         :value     scope
         :formatter (lambda (scope stream)
-                     (let ((component (lastcar (scope-components scope))))
-                       (format stream "~@[~A~]/" component)))
+                     ;; `suffix-length' is greater than the number of
+                     ;; components iff either the root scope has been
+                     ;; collapsed or SCOPE is the root scope.
+                     (let ((components    (scope-components scope))
+                           (suffix-length *suffix-length*))
+                       (format stream "~:[~;/~]~{~A~^/~}"
+                               (> suffix-length (length components))
+                               (last components suffix-length))))
         :widths    '(:range 16)
         :priority  2.2
         :alignment :left))
