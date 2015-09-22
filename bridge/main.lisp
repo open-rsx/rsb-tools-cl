@@ -55,7 +55,7 @@
     (rsb.formatting:with-print-limits (*standard-output*)
       ;; Check bridge specification options.
       (unless spec
-        (error "~@<Supply a bridge specification as remainder of the
+        (error "~@<Supply a bridge specification as remainder of the ~
                 commandline.~@:>"))
 
       (with-logged-warnings
