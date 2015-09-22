@@ -23,6 +23,12 @@
 (define-condition specification-error (specification-condition
                                        rsb-error)
   ()
+  (:report
+   (lambda (condition stream)
+     (format stream "~@<Bridge specification ~A is ~
+                     invalid.~/more-conditions:maybe-print-cause/~@:>"
+             (specification-condition-spec condition)
+             condition)))
   (:documentation
    "This error is signaled when a bridge specification is invalid."))
 
