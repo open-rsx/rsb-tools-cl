@@ -96,10 +96,10 @@
         (t
          (loop :for (scientific . factor) :in *scientific* :do
             (let ((input    (if scientific
-                                (print (concatenate 'string input scientific))
+                                (concatenate 'string input scientific)
                                 input))
-                  (expected (print (float (* factor expected) 1.0f0))))
-             (ensure-same (print (do-it input)) expected :test #'equal))))))))
+                  (expected (float (* factor expected) 1.0f0)))
+              (ensure-same (do-it input) expected :test #'equal))))))))
 
 (addtest (protocol-buffer-payload-root
           :documentation
