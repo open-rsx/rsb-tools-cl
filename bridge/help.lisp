@@ -25,13 +25,14 @@
                     ~2@Tunidirectional-forwarding-specification: ~
                       (input-specification)+ ~
                       \"->\" ~
-                      (filter)* ~
+                      (filter)* transform?~
                       (output-specification)+~@
                     ~2@Tbidirectional-forwarding-specification: ~
                       (input-specification)+ ~
                        \"<->\" ~
                        (output-specification)+~@
                     ~2@Tfilter: FILTER~@
+                    ~2@Ttransform: TRANSFORM~@
                     ~2@Tinput-specification: URI~@
                     ~2@Toutput-specification: URI~@
                     ~@

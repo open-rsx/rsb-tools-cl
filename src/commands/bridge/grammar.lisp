@@ -66,17 +66,22 @@
 (defrule/s connection
     (or connection/bidirectional connection/unidirectional))
 
-(let+ (((&flet make-connection (inputs outputs &optional filters)
+(let+ (((&flet make-connection (inputs outputs
+                                &optional filters transform)
           (bp:node* (:connection)
-            (* :inputs  inputs)
-            (* :outputs outputs)
-            (* :filters filters)))))
+            (* :inputs    inputs)
+            (* :outputs   outputs)
+            (* :filters   filters)
+            (1 :transform transform)))))
 
   (defrule connection/unidirectional
-      (and (+ input/?s) right-arrow-keyword/?s (* filter/?s) output-list)
-    (:destructure (inputs operator filters outputs)
+      (and (+ input/?s)
+           right-arrow-keyword/?s
+           (* filter/?s) (? transform/?s)
+           output-list)
+    (:destructure (inputs operator filters transform outputs)
       (declare (ignore operator))
-      (list (make-connection inputs outputs filters))))
+      (list (make-connection inputs outputs filters transform))))
 
   (defrule connection/bidirectional
       (and (+ input/?s) left-right-arrow-keyword/?s output-list)
@@ -117,18 +122,25 @@
   (:lambda (uri)
     (bp:node* (:output :uri uri))))
 
-(defrule/s filter
-    (and pipe-keyword/?s (+ (not pipe/end)) pipe/end)
-  (:function second)
-  (:text t)
-  (:lambda (spec)
-    (let+ (((class &rest initargs)
-            (rsb.common:parse-instantiation-spec spec)))
-      (bp:node* (:filter :class class :initargs initargs)))))
+(macrolet
+    ((define-rule (name open-keyword close-keyword kind)
+       `(defrule/s ,name
+          (and ,open-keyword (+ (not ,close-keyword)) ,close-keyword)
+        (:function second)
+        (:text t)
+        (:function rsb.common:parse-instantiation-spec)
+        (:destructure (class &rest initargs)
+          (bp:node* (,kind :class class :initargs initargs))))))
+
+  (define-rule filter    pipe-keyword/?s  pipe/end  :filter)
+  (define-rule transform slash-keyword/?s slash/end :transform))
 
 (defrule pipe/end
-    (and (& (and pipe-keyword/?s (* filter/?s) output-list))
+    (and (& (and pipe-keyword/?s (* filter/?s) (? transform/?s) output-list))
          pipe-keyword))
+
+(defrule slash/end
+    (and (& (and slash-keyword/?s output-list)) slash-keyword))
 
 (defun uri-absolute-path? (uri)
   (let ((path (puri:uri-parsed-path uri)))
@@ -160,6 +172,7 @@
                     ,string
                   (:constant ,(make-keyword name))))))
   (define-keyword-rule pipe             #\|)
+  (define-keyword-rule slash            #\/)
   (define-keyword-rule right-arrow      "->")
   (define-keyword-rule left-right-arrow "<->")
   (define-keyword-rule semicolon        #\;))

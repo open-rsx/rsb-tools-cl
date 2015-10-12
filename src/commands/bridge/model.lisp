@@ -19,13 +19,15 @@
                  (not (eq kind :scalar))))
               (scalar-slots    (remove-if #'composite-slot? slots))
               (composite-slots (set-difference slots scalar-slots))
-              ((&flet+ make-scalar-slot ((name &ign &key type))
+              ((&flet+ make-scalar-slot ((name kind &key type))
                  `(,name nil :type ,type :read-only t)))
               ((&flet+ make-composite-slot ((name kind &key type))
-                 (cond
-                   ((equal kind '(:composite 1))
+                 (etypecase kind
+                   ((cons (eql :composite) (cons (eql  1) null))
                     `(,name nil :type ,type))
-                   ((equal kind '(:composite *))
+                   ((cons (eql :composite) (cons (eql ?) null))
+                    `(,name nil :type (or null ,type)))
+                   ((cons (eql :composite) (cons (eql *) null))
                     `(,name nil :type list)))))
               ((&flet+ make-keyword-parameter((name &rest &ign))
                  `(,name (missing-required-argument ,(make-keyword name)))))
@@ -39,10 +41,10 @@
                          (left     ,name)
                          (right    ,type)
                          &key)
-                      ,(cond
-                         ((equal slot-kind '(:composite 1))
+                      ,(etypecase slot-kind
+                         ((cons (eql :composite) (cons (member 1 ?()) null))
                           `(setf (,accessor-name left) right))
-                         ((equal slot-kind '(:composite *))
+                         ((cons (eql :composite) (cons (eql *) null))
                           `(appendf (,accessor-name left) (list right))))
                       left)))))
          `(progn
@@ -70,13 +72,14 @@
     (initargs :scalar :type list))
 
   (define-model-class (:transform)
-    (transform :scalar :type t))
+    (class    :scalar :type symbol)
+    (initargs :scalar :type list))
 
   (define-model-class (:connection)
     (inputs          (:composite *) :type input-description)
     (outputs         (:composite *) :type output-description)
     (filters         (:composite *) :type filter-description)
-    (transform       (:composite 1) :type t)
+    (transform       (:composite ?) :type transform-description)
     (other-direction (:composite 1) :type t))
 
   (define-model-class (:bridge)

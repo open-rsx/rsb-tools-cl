@@ -412,6 +412,11 @@ add_test(NAME    "bridge/smoke/unidirectional"
                  --debug
                  --eval "${EXIT_AFTER_THREE_SECONDS}"
                  "inprocess:/foo -> inprocess:/bar")
+add_test(NAME    "bridge/smoke/transform"
+         COMMAND "${MAIN_EXECUTABLE}" bridge
+                 --debug
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
+                 "inprocess:/foo -> /prefix-scope :prefix \"/baz\"/ inprocess:/bar")
 add_test(NAME    "bridge/smoke/bidirectional"
          COMMAND "${MAIN_EXECUTABLE}" bridge
                  --debug

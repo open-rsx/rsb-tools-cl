@@ -90,6 +90,7 @@
                                      listeners
                                      informers
                                      filters
+                                     transform
                                      (timestamp-events? t)
                                      handler
                                      self-filters)
@@ -115,6 +116,7 @@
                        :filters            filters
                        :converters         converter
                        :handlers           (list handler)
+                       :transform          transform
                        :filter-ids         (mapcar #'cdr (cdr (assoc uri self-filters)))
                        :drop-components    (components-to-drop uri)
                        :timestamp-events?  timestamp-events?))
@@ -247,7 +249,7 @@
   (let+ (((&structure bridge- %queue) instance)
          (i 0))
     (setf %queue (make-queue :max-queued-events max-queued-events))
-    (mapc (lambda+ ((listeners informers filters))
+    (mapc (lambda+ ((listeners informers filters transform))
             (let+ (((&values handler set-connection) (make-handler %queue))
                    (which (princ-to-string (incf i))))
               (funcall set-connection
@@ -258,6 +260,7 @@
                               :listeners          listeners
                               :informers          informers
                               :filters            filters
+                              :transform          transform
                               :timestamp-events?  timestamp-events?
                               :handler            handler
                               :self-filters       self-filters)))))

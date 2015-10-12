@@ -36,13 +36,19 @@
             (apply #'rsb.filter:make-filter
                    (filter-description-class description)
                    (filter-description-initargs description))))
+         ((&flet make-transform (description)
+            (apply #'rsb.transform:make-transform
+                   (transform-description-class description)
+                   (transform-description-initargs description))))
          ((&flet process-spec (spec)
             (let+ (((&structure-r/o
-                     connection-description- inputs outputs filters)
+                     connection-description- inputs outputs filters transform)
                     spec))
               (list (mapcar #'extract-input-uri  inputs)
                     (mapcar #'extract-output-uri outputs)
-                    (mapcar #'make-filter        filters)))))
+                    (mapcar #'make-filter        filters)
+                    (when transform
+                      (make-transform transform))))))
          (connections (mapcar #'process-spec
                               (bridge-description-connections spec))))
     (apply #'call-next-method class prototype scope
