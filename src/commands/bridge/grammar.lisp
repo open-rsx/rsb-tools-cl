@@ -131,13 +131,24 @@
     (or (emptyp path) (starts-with :absolute path))))
 
 (defrule/s uri
-    (uri-absolute-path? any-uri))
+    (uri-absolute-path? parsable-uri))
 
-(defrule any-uri
-    (+ (not (or whitespace semicolon-keyword
-                pipe-keyword left-right-arrow-keyword right-arrow-keyword)))
-  (:text t)
+(defun parsable-uri? (uri)
+  (ignore-errors (puri:parse-uri uri)))
+
+(defrule parsable-uri
+    (parsable-uri? uri-characters)
   (:function puri:parse-uri))
+
+(defrule uri-characters
+    (+ (or (not (or whitespace ";" "->" "<->")) uri-characters/special))
+  (:text t))
+
+(defrule uri-characters/special
+    (and (or ";" "->" "<->") (& (or uri-characters
+                                    ";" "->" "<->"
+                                    (not character))))
+  (:function first))
 
 (macrolet ((define-keyword-rule (name string)
              (let ((rule-name (symbolicate name '#:-keyword)))
