@@ -118,13 +118,17 @@
     (bp:node* (:output :uri uri))))
 
 (defrule/s filter
-    (and pipe-keyword/?s (+ (not #\|)) #\|)
+    (and pipe-keyword/?s (+ (not pipe/end)) pipe/end)
   (:function second)
   (:text t)
   (:lambda (spec)
     (let+ (((class &rest initargs)
             (rsb.common:parse-instantiation-spec spec)))
       (bp:node* (:filter :class class :initargs initargs)))))
+
+(defrule pipe/end
+    (and (& (and pipe-keyword/?s (* filter/?s) output-list))
+         pipe-keyword))
 
 (defun uri-absolute-path? (uri)
   (let ((path (puri:uri-parsed-path uri)))
