@@ -142,7 +142,7 @@
 (macrolet ((define-keyword-rule (name string)
              (let ((rule-name (symbolicate name '#:-keyword)))
                `(defrule/s ,rule-name
-                    (and ,string (* whitespace))
+                    ,string
                   (:constant ,(make-keyword name))))))
   (define-keyword-rule pipe             #\|)
   (define-keyword-rule right-arrow      "->")
