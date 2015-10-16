@@ -178,7 +178,7 @@
   (define-keyword-rule semicolon        #\;))
 
 (defrule whitespace
-    (or #\Space #\Tab))
+    (+ (or #\Space #\Tab)))
 
 (defun parse-spec (source)
   (esrap:parse 'bridge-specification source))

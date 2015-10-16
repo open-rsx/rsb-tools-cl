@@ -32,12 +32,17 @@
         ((:spec "socket:/foo <-> socket:/foo/bar")   caused-by-forwarding-cycle-error) ; bidirectional, maybe cycle
 
         ;; These are Ok.
+        ((:spec "socket:/foo-> socket:/bar")         t)
+        ((:spec "socket:/foo ->socket:/bar")         t)
         ((:spec "socket:/foo -> socket:/bar")        t)
+        ((:spec "socket:/foo ->    socket:/bar")     t)
         ((:spec "socket:/foo <-> socket:/bar")       t)
         ((:spec "socket:/ -> spread:/")              t)
         ((:spec "socket: -> /drop-payload/ spread:") t)
         ((:spec "socket:/ <-> spread:/")             t)
         ((:spec "/foo -> /bar; /baz -> /fez")        t)
+        ((:spec "/foo -> /bar ;/baz -> /fez")        t)
+        ((:spec "/foo -> /bar ; /baz -> /fez")       t)
         ((:spec "/a -> /b" :max-queued-events 10)    t))
 
     (let+ (((&flet do-it () (apply #'make-command :bridge initargs))))
