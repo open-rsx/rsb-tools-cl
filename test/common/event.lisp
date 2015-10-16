@@ -16,13 +16,15 @@
           "Smoke test for the `parse-payload-spec' function")
   parse-payload-spec/smoke
 
-  (let* ((pathname      (asdf:system-relative-pathname
+  (let+ ((pathname      (asdf:system-relative-pathname
                          :cl-rsb-common
                          #P"test/data/simple.protocol-buffer-text"))
          (a-file        (format nil "~S" pathname))
          (a-utf-8-file  (format nil "~S:utf-8" pathname))
          (a-binary-file (format nil "~S:binary" pathname))
-         (a-pb-payload  "pb:.rsb.protocol.Notification:{data:\"foo\"}"))
+         (a-pb-payload  "pb:.rsb.protocol.Notification:{data:\"foo\"}")
+         ((&flet pb-file (namestring)
+            (format nil "pb:.rsb.protocol.Notification:~A" namestring))))
     (ensure-cases (input expected-payload)
         `( ;; Some invalid cases
           ("("                            error)
@@ -40,6 +42,8 @@
           (,a-utf-8-file                  ,(read-file-into-string pathname))
           (,a-binary-file                 ,(read-file-into-byte-vector pathname))
           (,a-pb-payload                  rsb.protocol:notification)
+          (,(pb-file a-file)              rsb.protocol:notification)
+          (,(pb-file a-utf-8-file)        rsb.protocol:notification)
           ("1"                            1)
           (".1"                           .1)
           ("\"bar\""                      "bar"))
