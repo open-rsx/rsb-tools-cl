@@ -7,6 +7,7 @@
 (cl:defpackage #:rsb.common.test
   (:use
    #:cl
+   #:alexandria
    #:let-plus
    #:lift
 

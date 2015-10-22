@@ -137,7 +137,9 @@ system."
 
                 (:version :lift          "1.7.1")
 
-                (:version :cl-rsb-common #.(version/string)))
+                (:version :cl-rsb-common #.(version/string))
+
+                (:version :rsb-protocol  #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "common"
                  :pathname   "test/common"

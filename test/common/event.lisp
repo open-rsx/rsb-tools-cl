@@ -12,6 +12,53 @@
    "Test suite for event and payload parsing functions."))
 
 (addtest (common-event-root
+          :doumentation
+          "Smoke test for the `parse-payload-spec' function")
+  parse-payload-spec/smoke
+
+  (let* ((pathname      (asdf:system-relative-pathname
+                         :cl-rsb-common
+                         #P"test/data/simple.protocol-buffer-text"))
+         (a-file        (format nil "~S" pathname))
+         (a-utf-8-file  (format nil "~S:utf-8" pathname))
+         (a-binary-file (format nil "~S:binary" pathname))
+         (a-pb-payload  "pb:.rsb.protocol.Notification:{data:\"foo\"}"))
+    (ensure-cases (input expected-payload)
+        `( ;; Some invalid cases
+          ("("                            error)
+          ("/("                           error)
+          ("/()"                          error)
+          ("pb:.foo.Bar:#P\"foo\":binary" error)
+          ("1 \"foo\""                    error)
+
+          ;; Different payload types.
+          (""                             ,rsb.converter:+no-value+)
+          ("false"                        nil)
+          ("true"                         t)
+          ("/bar"                         ,(rsb:make-scope "/bar"))
+          (,a-file                        ,(read-file-into-string pathname))
+          (,a-utf-8-file                  ,(read-file-into-string pathname))
+          (,a-binary-file                 ,(read-file-into-byte-vector pathname))
+          (,a-pb-payload                  rsb.protocol:notification)
+          ("1"                            1)
+          (".1"                           .1)
+          ("\"bar\""                      "bar"))
+
+      (let+ (((&flet do-it () (parse-payload-spec input)))
+             ((&flet scope=-or-equalp (left right)
+                (or (and (typep left 'rsb:scope) (typep right 'rsb:scope)
+                         (rsb:scope= left right))
+                    (equalp left right)))))
+        (case expected-payload
+          (error
+           (ensure-condition 'error (do-it)))
+          (rsb.protocol:notification
+           (ensure (typep (do-it) 'rsb.protocol:notification)))
+          (t
+           (ensure-same (do-it) expected-payload
+                        :test #'scope=-or-equalp)))))))
+
+(addtest (common-event-root
           :documentation
           "Smoke test for the `parse-call-spec' function.")
   parse-call-spec/smoke
