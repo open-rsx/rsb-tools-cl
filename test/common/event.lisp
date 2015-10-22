@@ -54,7 +54,7 @@
                   (equalp left right)))))
      (case expected-uri
        (call-specificiation-error
-        #+no (ensure-condition 'call-specificiation-error (do-it)))
+        (ensure-condition 'call-specification-error (do-it)))
        (t
         (let+ (((&values server-uri method arg) (do-it)))
           (ensure-same server-uri expected-uri
