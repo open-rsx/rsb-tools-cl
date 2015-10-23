@@ -15,46 +15,38 @@
    :item    (make-common-options :show show)
    ;;
    :item    (defgroup (:header "Display Options")
-              (switch :long-name       "verbose"
-                      :short-name      "b"
-                      :default-value   nil
-                      :description
-                      "Display all available information.")
-              (switch :long-name       "configuration"
-                      :short-name      "f"
-                      :default-value   nil
-                      :description
-                      "Display information regarding the default configuration?")
-              (switch :long-name       "connectors"
-                      :short-name      "c"
-                      :default-value   nil
-                      :description
-                      "Display information regarding available transport implementations?")
-              (switch :long-name       "converters"
-                      :short-name      "v"
-                      :default-value   nil
-                      :description
-                      "Display information regarding available converters?")
-              (switch :long-name       "filters"
-                      :short-name      "i"
-                      :default-value   nil
-                      :description
-                      "Display information regarding available filters?")
-              (switch :long-name       "transforms"
-                      :short-name      "t"
-                      :default-value   nil
-                      :description
-                      "Display information regarding available event transformations?")
-              (switch :long-name       "event-processing"
-                      :short-name      "e"
-                      :default-value   nil
-                      :description
-                      "Display information regarding available event processing strategies?")
-              (switch :long-name       "participants"
-                      :short-name      "p"
-                      :default-value   nil
-                      :description
-                      "Display information regarding available participant kinds?"))
+              (flag :long-name  "verbose"
+                    :short-name "b"
+                    :description
+                    "Display all available information.")
+              (flag :long-name  "configuration"
+                    :short-name "f"
+                    :description
+                    "Display information regarding the default configuration?")
+              (flag :long-name  "connectors"
+                    :short-name "c"
+                    :description
+                    "Display information regarding available transport implementations?")
+              (flag :long-name  "converters"
+                    :short-name "v"
+                    :description
+                    "Display information regarding available converters?")
+              (flag :long-name  "filters"
+                    :short-name "i"
+                    :description
+                    "Display information regarding available filters?")
+              (flag :long-name  "transforms"
+                    :short-name "t"
+                    :description
+                    "Display information regarding available event transformations?")
+              (flag :long-name  "event-processing"
+                    :short-name "e"
+                    :description
+                    "Display information regarding available event processing strategies?")
+              (flag :long-name  "participants"
+                    :short-name "p"
+                    :description
+                    "Display information regarding available participant kinds?"))
    ;; Append RSB options.
    :item    (make-options
              :show? (or (eq show t)
