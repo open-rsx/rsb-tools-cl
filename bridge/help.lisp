@@ -61,7 +61,7 @@
 (defun make-examples-string (&key
                              (program-name "rsb bridge"))
   "Make and return a string containing usage examples of the program."
-  (format nil "~2@T~A 'spread:/from -> socket:/to'~@
+  (format nil "~2@T~A 'spread:/from -> spread:/to'~@
                ~@
                In the above example, the ~:*~A command is used to ~
                establish unidirectional forwarding from scope /from to ~
