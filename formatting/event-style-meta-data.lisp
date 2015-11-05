@@ -51,7 +51,7 @@
                          &allow-other-keys)
   (let+ (((&structure-r/o style- routing-info? timestamps? user-items? causes?)
           style)
-         (*print-lines* max-lines) ; TODO avoid?
+         (*print-lines* max-lines)      ; TODO avoid?
          (produced-output? nil))
     (when (not (or routing-info? timestamps? user-items? causes?))
       (return-from format-event))
@@ -75,20 +75,37 @@
 
       ;; Framework and user timestamps.
       (when timestamps?
-        (let* ((keys   (append *framework-timestamps*
-                               (set-difference (timestamp-keys event)
-                                               *framework-timestamps*)))
-               (values (mapcar (curry #'timestamp event) keys))
-               (names  (mapcar #'timestamp-name keys))
-               (width  (length (extremum names #'> :key #'length))))
+        (let+ (((&flet difference (earlier later)
+                  (when (and earlier later)
+                    (local-time:timestamp-difference later earlier))))
+               ((&flet lookup (key)
+                  (cons key (timestamp event key))))
+               ((&flet maybe-timestamp< (left right)
+                  (when (and left right)
+                    (local-time:timestamp< left right))))
+               (framework-cells (mapcar #'lookup *framework-timestamps*))
+               (other-keys      (set-difference (timestamp-keys event)
+                                                *framework-timestamps*))
+               (other-cells     (sort (mapcar #'lookup other-keys)
+                                      #'local-time:timestamp< :key #'cdr))
+               (sorted          (merge 'list framework-cells other-cells
+                                       #'maybe-timestamp< :key #'cdr))
+               (names           (mapcar (compose #'timestamp-name #'car) sorted))
+               (width           (length (extremum names #'> :key #'length)))
+               (values          (mapcar #'cdr sorted))
+               (differences     (mapcar #'difference (list* nil values) values)))
           (format stream "~:[~;~@:_~]Timestamps~
                           ~@:_~2@T~@<~
                             ~{~{~
-                            ~VA ~:[<none>~;~:*~A~]~
+                              ~VA ~:[~
+                                ~*<none>~
+                              ~:;~
+                                ~:*~A~@[ (~:/rsb.formatting::print-human-readable-duration/)~]~
+                              ~]~
                             ~}~^~@:_~}~
                           ~:>"
                   produced-output?
-                  (mapcar #'list (circular-list width) names values)))
+                  (mapcar #'list (circular-list width) names values differences)))
         (setf produced-output? t))
 
       ;; Meta-data.
