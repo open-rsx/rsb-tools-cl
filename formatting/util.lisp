@@ -10,23 +10,49 @@
 
 ;; TODO duplicated in stats/util.lisp. Maybe we can fix that at some
 ;; point.
+
+(defun payload-size (payload)
+  "Return nil or two values: 1) the size of PAYLOAD 2) a keyword
+   designating the unit in which the size is measured."
+  (typecase payload
+    (integer
+     (values (ceiling (integer-length payload) 8) :octet))
+    (rsb.converter::annotated
+     (payload-size (rsb.converter::annotated-wire-data payload)))
+    ((cons t (not list))
+     nil)
+    (octet-vector
+     (values (length payload) :octet))
+    (string
+     (values (length payload) :character))
+    (sequence
+     (values (length payload) :element))))
+
+(defun payload-type (payload)
+  (typecase payload
+    (string
+     'string)
+    (t
+     (class-name (class-of payload)))))
+
 (defun event-size (event &optional (replacement-value :n/a))
   "Try to determine and return the size of the payload of EVENT in
    bytes. Return REPLACEMENT-VALUE, if the size cannot be determined."
-  (labels ((payload-size (payload)
-             (typecase payload
-               (integer
-                (ceiling (integer-length payload) 8))
-               (rsb.converter::annotated
-                (payload-size (rsb.converter::annotated-wire-data payload)))
-               ((cons t (not list))
-                replacement-value)
-               (sequence
-                (length payload))
-               (t
-                replacement-value))))
-    (or (meta-data event :rsb.transport.payload-size)
-        (payload-size (event-data event)))))
+  (let+ (((&flet maybe-return (size &optional unit)
+            (when size (return-from event-size (values size unit)))) ))
+    (multiple-value-call #'maybe-return (payload-size (event-data event)))
+    (maybe-return (meta-data event :rsb.transport.payload-size) :octet)
+    replacement-value))
+
+(defun event-payload-description (event)
+  "Return three values describing the payload of EVENT: 1) a type
+   designator 2) a size 3) a keyword describing the unit in which the
+   size is measured."
+  (let+ ((data                (event-data event))
+         (type                (or (meta-data event :rsb.transport.wire-schema)
+                                  (payload-type data)))
+         ((&values size unit) (event-size event nil)))
+    (values type size unit)))
 
 ;;; Timestamp handling
 

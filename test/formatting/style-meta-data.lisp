@@ -74,6 +74,6 @@ Timestamps
   send    <none>
   receive <none>
   deliver <none>
-  \\*FOO    .*
+  \\*foo    .*
 "
                                  (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))

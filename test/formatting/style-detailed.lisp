@@ -36,7 +36,7 @@ Timestamps
   send    <none>
   receive <none>
   deliver <none>
-Payload SB-KERNEL::SIMPLE-CHARACTER-STRING
+Payload: STRING, 3 characters
   \"bar\"
 "
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))

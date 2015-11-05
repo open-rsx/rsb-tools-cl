@@ -26,10 +26,16 @@
     (call-next-method)
 
     ;; Payload.
-    (let ((data (event-data event)))
-      (format stream "Payload: ~S~
+    (let+ ((data (event-data event))
+           ((&values type length unit) (event-payload-description event)))
+      (format stream "Payload: ~A~:[~*~;, ~:*~:D ~(~A~)~2:*~P~*~]~
                       ~@:_~2@T"
-              (class-name (class-of data)))
+              (typecase type
+                ((and symbol (not keyword))
+                 (with-standard-io-syntax (prin1-to-string type)))
+                (t
+                 type))
+              length unit)
       (pprint-logical-block (stream (list data))
         (format-payload data :any stream
                              :max-lines   (- max-lines 11)
