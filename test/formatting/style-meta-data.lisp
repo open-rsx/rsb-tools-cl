@@ -32,10 +32,10 @@ Event
   Origin          <none>
   Method          <none>
 Timestamps
-  CREATE  .*
-  SEND    <none>
-  RECEIVE <none>
-  DELIVER <none>
+  create  .*
+  send    <none>
+  receive <none>
+  deliver <none>
 "
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
 
@@ -49,10 +49,10 @@ Event
   Origin          <none>
   Method          <none>
 Timestamps
-  CREATE  .*
-  SEND    <none>
-  RECEIVE <none>
-  DELIVER <none>
+  create  .*
+  send    <none>
+  receive <none>
+  deliver <none>
 Meta-Data
   FEZ \"whoop\"
 "
@@ -70,10 +70,10 @@ Event
   Origin          <none>
   Method          <none>
 Timestamps
-  CREATE  .*
-  SEND    <none>
-  RECEIVE <none>
-  DELIVER <none>
+  create  .*
+  send    <none>
+  receive <none>
+  deliver <none>
   \\*FOO    .*
 "
                                  (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))

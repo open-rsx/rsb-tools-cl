@@ -42,11 +42,18 @@
              (type (integer 0 999999999) nsecs))
     (+ (* secs 1000000000) nsecs)))
 
+(defvar *keyword-readtable*
+  (let ((readtable (with-standard-io-syntax (copy-readtable))))
+    (setf (readtable-case readtable) :invert)
+    readtable))
+
 (defun timestamp-name (name)
   "For non-framework timestamps return \"*NAME\"."
   (if (framework-timestamp? name)
-      (string name)
-      (concatenate 'string "*" (string name))))
+      (string-downcase name)
+      (with-standard-io-syntax
+        (let ((*readtable* *keyword-readtable*))
+          (format nil "*~A" name)))))
 
 ;;; Predicates
 

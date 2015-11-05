@@ -32,11 +32,11 @@ Event
   Origin          <none>
   Method          <none>
 Timestamps
-  CREATE  .*
-  SEND    <none>
-  RECEIVE <none>
-  DELIVER <none>
-Payload: SB-KERNEL::SIMPLE-CHARACTER-STRING
+  create  .*
+  send    <none>
+  receive <none>
+  deliver <none>
+Payload SB-KERNEL::SIMPLE-CHARACTER-STRING
   \"bar\"
 "
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
@@ -51,10 +51,10 @@ Event
   Origin          <none>
   Method          <none>
 Timestamps
-  CREATE  .*
-  SEND    <none>
-  RECEIVE <none>
-  DELIVER <none>
+  create  .*
+  send    <none>
+  receive <none>
+  deliver <none>
 Meta-Data
   FEZ \"whoop\"
 Payload: .*
