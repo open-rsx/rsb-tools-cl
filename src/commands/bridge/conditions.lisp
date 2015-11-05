@@ -25,10 +25,11 @@
   ()
   (:report
    (lambda (condition stream)
-     (format stream "~@<Bridge specification ~A is ~
-                     invalid.~/more-conditions:maybe-print-cause/~@:>"
-             (specification-condition-spec condition)
-             condition)))
+     (let ((*print-circle* t))
+       (format stream "~@<Bridge specification ~A is ~
+                       invalid.~/more-conditions:maybe-print-cause/~@:>"
+               (specification-condition-spec condition)
+               condition))))
   (:documentation
    "This error is signaled when a bridge specification is invalid."))
 

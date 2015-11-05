@@ -117,7 +117,9 @@
             (funcall
              (ecase kind
                (error
-                (curry #'cerror "Continue anyway" 'forwarding-cycle-error))
+                (lambda (&rest args)
+                  (with-simple-restart (continue "Continue anyway")
+                    (apply #'error 'forwarding-cycle-error args))))
                (warning
                 (curry #'warn 'forwarding-cycle-warning)))
              :source      input
