@@ -15,7 +15,7 @@
 
    #:rsb.tools.commands
 
-   #:com.dvlsoft.clon)
+   #:net.didierverna.clon)
 
   (:export
    #:main)

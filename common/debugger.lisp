@@ -27,7 +27,7 @@
                     (*print-right-margin* right-margin)
                     (*print-miser-width*  miser-width))
                 (format *error-output* "~&~@<~A~:>~%" condition))))
-          (com.dvlsoft.clon:exit 1))))
+          (uiop:quit 1))))
 
 ;;; Swank
 

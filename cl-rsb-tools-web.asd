@@ -74,7 +74,7 @@
   :description "A tool for serving system information (e.g. introspection) via HTTP."
   :depends-on  (:alexandria
 
-                :com.dvlsoft.clon
+                :net.didierverna.clon
 
                 (:version :cl-rsb-common          #.(version/string))
 

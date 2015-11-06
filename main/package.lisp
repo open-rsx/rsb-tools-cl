@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for the main rsb tools program.
 ;;;;
-;;;; Copyright (C) 2011, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -9,7 +9,8 @@
    #:cl
    #:alexandria
    #:let-plus
-   #:com.dvlsoft.clon
+
+   #:net.didierverna.clon
 
    #:rsb.tools.commands)
 

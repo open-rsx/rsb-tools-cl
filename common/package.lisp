@@ -13,7 +13,7 @@
    #:iterate
    #:more-conditions
 
-   #:com.dvlsoft.clon
+   #:net.didierverna.clon
 
    #:rsb)
 

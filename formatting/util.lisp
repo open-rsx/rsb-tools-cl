@@ -216,7 +216,7 @@
 (defun stream-line-width (stream)
   "Return the line width of STREAM or nil, if it cannot be
    determined."
-  (when-let* ((package (find-package :com.dvlsoft.clon))
+  (when-let* ((package (find-package :net.didierverna.clon))
               (symbol  (find-symbol "STREAM-LINE-WIDTH" package)))
     (ignore-errors (funcall symbol stream))))
 
