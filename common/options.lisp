@@ -128,7 +128,7 @@ can be used to search directories recursively. If the file designated by FILE-OR
           (collect (funcall transform value/string)))))
 
 (defun process-commandline-options (&key
-                                    (commandline    (com.dvlsoft.clon::cmdline))
+                                    (commandline    (net.didierverna.clon::cmdline))
                                     (version        '(0 1 0))
                                     more-versions
                                     update-synopsis

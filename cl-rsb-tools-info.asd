@@ -76,7 +76,7 @@ via RSB."
   :depends-on  (:alexandria
                 :let-plus
 
-                :com.dvlsoft.clon
+                :net.didierverna.clon
 
                 (:version :cl-rsb             #.(version/string :revision? nil))
 

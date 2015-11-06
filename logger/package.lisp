@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for rsb-logger module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -18,7 +18,7 @@
 
    #:rsb.tools.commands
 
-   #:com.dvlsoft.clon)
+   #:net.didierverna.clon)
 
   (:export
    #:main)

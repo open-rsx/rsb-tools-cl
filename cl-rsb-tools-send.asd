@@ -79,7 +79,7 @@ via RSB."
                 (:version :log4cl             "1.1.1")
 
                 :cl-ppcre
-                :com.dvlsoft.clon
+                :net.didierverna.clon
 
                 (:version :cl-rsb             #.(version/string :revision? nil))
 

@@ -78,7 +78,7 @@ See `version/list' for details on keyword parameters."
                 (:version :lparallel          "2.1.2")
                 (:version :log4cl             "1.1.1")
 
-                :com.dvlsoft.clon
+                :net.didierverna.clon
 
                 (:version :cl-rsb             #.(version/string :revision? nil))
 
