@@ -60,4 +60,22 @@ Meta-Data
 Payload: .*
   1
 "
+               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
+    `(()
+      (,(make-event "/foo/bar/baz" (nibbles:octet-vector 1 2 255)))
+      ,(format nil "~80,,,VA
+Event
+  Scope           /foo/bar/baz/
+  Id              <none>
+  Sequence number <none>
+  Origin          <none>
+  Method          <none>
+Timestamps
+  create  .*
+  send    <none>
+  receive <none>
+  deliver <none>
+Payload: .*, 3 octets
+  0 01 02 FF                                              ...                  ~@
+"
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))
