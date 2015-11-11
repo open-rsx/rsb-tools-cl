@@ -31,27 +31,35 @@
         ("<>"
          (:message ()))
         ("{foo:1}"
-         (:message (:field ((:field (:value ((:literal () :value 1)))
-                                    :name "foo")))))
+         (:message (:field (((:field (:value (((:literal () :value 1) . ())))
+                                     :name "foo")
+                             . ())))))
         ("{foo:1.0}"
-         (:message (:field ((:field (:value ((:literal () :value 1.0f0)))
-                                    :name "foo")))))
+         (:message (:field (((:field (:value (((:literal () :value 1.0f0) . ())))
+                                     :name "foo")
+                             . ())))))
         ("{foo:\"foo\\000\"}"
-         (:message (:field ((:field (:value ((:literal () :value ,(format nil "foo~C" #\Nul))))
-                                    :name "foo")))))
+         (:message (:field (((:field (:value (((:literal () :value ,(format nil "foo~C" #\Nul))
+                                               . ())))
+                                     :name "foo")
+                             . ())))))
         ("<foo:[1,2]>"
-         (:message (:field ((:field (:value ((:literal () :value 1)
-                                             (:literal () :value 2)))
-                                    :name "foo")))))
+         (:message (:field (((:field (:value (((:literal () :value 1) . ())
+                                              ((:literal () :value 2) . ())))
+                                     :name "foo")
+                             . ())))))
         ("{foo:-1}"
-         (:message (:field ((:field (:value ((:literal () :value -1)))
-                                    :name "foo")))))
+         (:message (:field (((:field (:value (((:literal () :value -1) . ())))
+                                     :name "foo")
+                             . ())))))
         ("{foo:+1}"
-         (:message (:field ((:field (:value ((:literal () :value 1)))
-                                    :name "foo")))))
+         (:message (:field (((:field (:value (((:literal () :value 1) . ())))
+                                     :name "foo")
+                             . ())))))
         ("{foo:1}"
-         (:message (:field ((:field (:value ((:literal () :value 1)))
-                                    :name "foo"))))))
+         (:message (:field (((:field (:value (((:literal () :value 1) . ())))
+                                     :name "foo")
+                             . ()))))))
 
     (let+ (((&flet do-it ()
               (let ((architecture.builder-protocol:*builder* 'list))
