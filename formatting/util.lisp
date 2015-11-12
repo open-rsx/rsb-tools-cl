@@ -100,7 +100,8 @@
        (unwind-protect
             (progn
               (when *print-right-margin*
-                (decf *print-right-margin* ,amount))
+                (setf *print-right-margin*
+                      (max 0 (- *print-right-margin* ,amount))))
               ,@(when initial-fresh-line?
                   `((format ,stream-var "~&")))
               (pprint-logical-block (,stream-var nil
@@ -216,9 +217,10 @@
 (defun stream-line-width (stream)
   "Return the line width of STREAM or nil, if it cannot be
    determined."
-  (when-let* ((package (find-package :net.didierverna.clon))
-              (symbol  (find-symbol "STREAM-LINE-WIDTH" package)))
-    (ignore-errors (funcall symbol stream))))
+  (ignore-errors
+   (let ((value (uiop:symbol-call
+                 '#:net.didierverna.clon '#:stream-line-width stream)))
+     (unless (eql 0 value) value))))
 
 (defmacro with-print-limits ((stream) &body body)
   "Execute BODY with `*print-right-margin*' and `*print-miser-width*'
