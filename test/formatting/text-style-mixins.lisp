@@ -1,12 +1,14 @@
 ;;;; text-style--mixins.lisp --- Unit tests for the text style mixin classes.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:rsb.formatting.test)
 
-;;; Mock formatter class
+;;; `separator-mixin'
+
+;; Mock formatter class
 
 (defclass mock-style-separator (separator-mixin)
   ()
@@ -18,8 +20,6 @@
                          (stream stream)
                          &key &allow-other-keys)
   (princ #\* stream))
-
-;;; `separator-mixin'
 
 (deftestsuite separator-mixin-root (formatting-root)
   ()
@@ -62,6 +62,53 @@ on `format-event' for `separator-mixin'.")
     `((:separator "&&&")
       (,(make-event "/a" "b") ,(make-event "/c" "d"))
       "&&&\\*&&&\\*")))
+
+;;; `max-lines-mixin'
+
+;; Mock formatter class
+
+(defclass mock-style-max-lines (max-lines-mixin) ())
+
+(defmethod format-event ((event  t)
+                         (style  mock-style-max-lines)
+                         (target t)
+                         &key)
+  (pprint-logical-block (target (list event))
+    (dotimes (i 3) (format target "~D~%" i))))
+
+(deftestsuite max-lines-mixin-root (formatting-root)
+  ()
+  (:documentation
+   "Test suite for the `max-lines-mixin' mixin class."))
+
+(addtest (max-lines-mixin-root
+          :documentation
+          "Test constructing `max-lines-mixin' instances.")
+  construction
+
+  (ensure-cases (initargs)
+      '(()
+        (:max-lines nil)
+        (:max-lines 10))
+    (apply #'make-instance 'max-lines-mixin initargs)))
+
+(addtest (max-lines-mixin-root
+          :documentation
+          "Test some simple cases of formatting events using methods
+           on `format-event' for `max-lines-mixin'.")
+  smoke
+
+  (ensure-style-cases (mock-style-max-lines)
+    `((:max-lines nil)
+      (,(make-event "/a" "b"))
+      "0
+1
+2")
+
+    `((:max-lines 2)
+      (,(make-event "/a" "b"))
+      "0
+1 ..")))
 
 ;;; `width-specification-mixin'
 

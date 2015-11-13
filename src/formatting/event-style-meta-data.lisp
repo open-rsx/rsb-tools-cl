@@ -1,12 +1,13 @@
 ;;;; event-style-meta-data.lisp --- Meta-data-only formatting style class.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:rsb.formatting)
 
-(defclass style-meta-data (separator-mixin)
+(defclass style-meta-data (separator-mixin
+                           max-lines-mixin)
   ((routing-info? :initarg  :routing-info?
                   :type     boolean
                   :accessor style-routing-info?

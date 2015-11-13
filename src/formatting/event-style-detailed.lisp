@@ -8,6 +8,8 @@
 
 (defclass style-detailed (style-meta-data)
   ()
+  (:default-initargs
+   :max-lines 200)
   (:documentation
    "Format each event on multiple lines with as many details as
     possible."))

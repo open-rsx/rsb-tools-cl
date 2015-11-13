@@ -213,6 +213,27 @@
     (list
      (map nil (rcurry #'print-separator stream max-columns) spec))))
 
+;;; `max-lines-mixin'
+
+(defclass max-lines-mixin ()
+  ((max-lines :initarg  :max-lines
+              :type     (or null non-negative-integer)
+              :reader   style-max-lines
+              :initform nil
+              :documentation
+              "Nil, indicating no limitation, or the maximum number of
+               lines the style should produce for a single event."))
+  (:documentation
+   "This class is indented to be mixed into style classes which allow
+    restricting the amount of output to a given number of lines."))
+
+(defmethod format-event :around ((event  t)
+                                 (style  max-lines-mixin)
+                                 (target t)
+                                 &key)
+  (let ((*print-lines* (style-max-lines style)))
+    (call-next-method)))
+
 ;;; `width-specification-mixin'
 
 (defclass width-specification-mixin ()

@@ -6,7 +6,8 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defclass style-payload (separator-mixin)
+(defclass style-payload (separator-mixin
+                         max-lines-mixin)
   ((payload-style :reader   style-payload-style
                   :writer   (setf style-%payload-style)
                   :documentation

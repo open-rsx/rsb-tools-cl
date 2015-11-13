@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for the formatting module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -219,6 +219,11 @@
   ;; `separator-mixin' mixin class
   (:export
    #:separator-mixin)
+
+  ;; `max-lines-mixin' mixin class
+  (:export
+   #:max-lines-mixin
+   #:style-max-lines)
 
   ;; `image-output-mixin' mixin class
   (:export
