@@ -125,9 +125,9 @@
       (when causes?
         (when-let ((causes (event-causes event)))
           (format stream "~:[~;~@:_~]Causes~
-                        ~@:_~2@T~@<~
-                          ~{~A~^~@:_~}~
-                        ~:>"
+                          ~@:_~2@T~@<~
+                            ~{~A~^~@:_~}~
+                          ~:>"
                   produced-output?
                   (map 'list #'event-id->uuid (event-causes event))))))
 
