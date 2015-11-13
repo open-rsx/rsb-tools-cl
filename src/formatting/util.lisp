@@ -122,13 +122,10 @@
 
 ;;;
 
-(defun format-maybe (stream value)
-  "Print VALUE onto STREAM unless it is nil."
-  (format stream "~:[N/A~;~:*~A~]" value))
-
 (defun format-aligned-items (stream keys values
                              &key
-                             (value-formatter #'format-maybe))
+                             (value-formatter (lambda (stream value)
+                                                (format stream "~A" value))))
   "Format KEYS and VALUES onto STREAM such that keys and values align
    vertically across output lines."
   (let ((width (reduce #'max keys
