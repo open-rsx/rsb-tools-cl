@@ -1,6 +1,6 @@
 ;;;; timeline.lisp --- Render a timeline view of received events.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -135,7 +135,7 @@
 (defmethod format-event ((event  (eql :trigger))
                          (style  timeline)
                          (target t)
-                         &key &allow-other-keys)
+                         &key)
   ;; Return early if the style is effectively disabled.
   (when (zerop (column-width style))
     (return-from format-event))
@@ -159,13 +159,13 @@
 (defmethod format-event ((event  t)
                          (style  timeline)
                          (target t)
-                         &key &allow-other-keys)
+                         &key)
   (error "Should not get called"))
 
 (defmethod format-event :around ((event  t)
                                  (style  timeline)
                                  (target t)
-                                 &key &allow-other-keys)
+                                 &key)
   ;; Collect non-trigger events into STYLE's buffer. Pass through
   ;; trigger events.
   (if (eq event :trigger)

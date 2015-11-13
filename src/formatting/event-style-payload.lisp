@@ -1,6 +1,6 @@
 ;;;; event-style-payload.lisp --- Formatting style that only processes the payload.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -30,17 +30,17 @@
 (defmethod format-event ((event  t)
                          (style  style-payload)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   (format-payload event (style-payload-style style) stream))
 
 (defmethod format-event ((event  event)
                          (style  style-payload)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   (format-payload (event-data event) (style-payload-style style) stream))
 
 (defmethod format-event :after ((event  t)
                                 (style  style-payload)
                                 (stream t)
-                                &key &allow-other-keys)
+                                &key)
   (force-output stream))

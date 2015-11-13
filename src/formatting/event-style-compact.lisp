@@ -1,6 +1,6 @@
 ;;;; event-style-compact.lisp --- Compact event formatting style class.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -65,8 +65,7 @@
                                  (style  event-style-compact)
                                  (stream t)
                                  &key
-                                 (width (or *print-right-margin* 80))
-                                 &allow-other-keys)
+                                 (width (or *print-right-margin* 80)))
   (let+ (((&structure-r/o style- sub-styles) style)
          ((&flet do-sub-style (sub-style)
             (let* ((columns   (style-dynamic-width-columns sub-style))

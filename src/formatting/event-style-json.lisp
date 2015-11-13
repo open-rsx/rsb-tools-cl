@@ -1,6 +1,6 @@
 ;;;; event-style-json.lisp --- Formatting things as JSON data.
 ;;;;
-;;;; Copyright (C) 2012, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2012, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -21,13 +21,13 @@
 (defmethod format-event ((thing  event)
                          (style  style-json)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   (json:encode-json thing stream))
 
 (defmethod format-payload ((thing  t)
                            (style  style-json)
                            (stream t)
-                           &key &allow-other-keys)
+                           &key)
   (json:encode-json thing stream))
 
 ;;; Utilities

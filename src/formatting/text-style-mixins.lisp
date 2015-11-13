@@ -1,6 +1,6 @@
 ;;;; text-style-mixins.lisp --- Mixin classes for textual formatting style classes.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -83,7 +83,7 @@
 (defmethod format-event :around ((event  t)
                                  (style  periodic-printing-mixin)
                                  (stream t)
-                                 &key &allow-other-keys)
+                                 &key)
   "Protect against concurrent access to STYLE and store STREAM for use
    in timer-driven output."
   (bt:with-recursive-lock-held ((style-%lock style))
@@ -120,7 +120,7 @@
 (defmethod format-event :around ((event  (eql :trigger))
                                  (style  output-buffering-mixin)
                                  (stream t)
-                                 &rest args &key &allow-other-keys)
+                                 &rest args &key)
   (write-string
    (with-output-to-string (stream)
      (apply #'call-next-method event style stream args))
@@ -146,7 +146,7 @@
 (defmethod format-event :before ((event  t)
                                  (style  header-printing-mixin)
                                  (stream t)
-                                 &key &allow-other-keys)
+                                 &key)
   (let+ (((&structure-r/o style- header-frequency) style))
     (when (and header-frequency
                (zerop (mod (style-count style) header-frequency)))
@@ -179,11 +179,9 @@
 (defmethod format-event :before ((event  t)
                                  (style  separator-mixin)
                                  (stream t)
-                                 &key
-                                 (max-columns (or *print-right-margin* 80))
-                                 &allow-other-keys)
+                                 &key)
   "Print a separator before each event."
-  (print-separator (style-separator style) stream max-columns))
+  (print-separator (style-separator style) stream (or *print-right-margin* 80)))
 
 ;; Utility functions
 
@@ -293,7 +291,7 @@
 (defmethod format-event :around ((event  t)
                                  (style  width-mixin)
                                  (stream t)
-                                 &key &allow-other-keys)
+                                 &key)
   (call-with-width-limit
    stream (column-width style) (column-alignment style)
    (lambda (stream) (call-next-method event style stream))))
@@ -409,7 +407,7 @@
 (defmethod format-event ((event  t)
                          (style  columns-mixin)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   (let+ (((&structure-r/o style- columns separator) style)
          (produced-output?))
     (iter (for column in columns)

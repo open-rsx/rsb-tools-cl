@@ -1,6 +1,6 @@
 ;;;; protocol.lisp --- Protocol for formatting of RSB events.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -8,10 +8,7 @@
 
 ;;; Event formatting protocol
 
-(defgeneric format-event (event style stream
-                          &key
-                          max-lines
-                          max-columns)
+(defgeneric format-event (event style stream &key &allow-other-keys)
   (:documentation
    "Format EVENT onto STREAM using a style designated by STYLE.
     MAX-LINES controls specifies the maximum number of lines the
@@ -19,10 +16,7 @@
     number of columns individual output lines are allowed to take
     up."))
 
-(defgeneric format-payload (data style stream
-                            &key
-                            max-lines
-                            max-columns)
+(defgeneric format-payload (data style stream &key &allow-other-keys)
   (:documentation
    "Format the event payload DATA onto STREAM using a formatting style
     designated by STYLE.

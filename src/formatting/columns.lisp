@@ -61,7 +61,7 @@
                   (defmethod format-event ((event  ,event-class)
                                            (column ,class-name)
                                            (stream t)
-                                           &key &allow-other-keys)
+                                           &key)
                     ,@body)))))
 
   ;; Output control
@@ -205,7 +205,7 @@
 (defmethod format-event ((event  t)
                          (column column-constant)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   (funcall (column-formatter column) (column-value column) stream))
 
 ;;; Timestamp and meta-data columns
@@ -247,13 +247,11 @@
   (define-meta-data-column (:timestamp :width '(15 32)))
   (define-meta-data-column (:meta-data)))
 
-(defmethod format-event ((event event) (column timestamp) (stream t)
-                         &key &allow-other-keys)
+(defmethod format-event ((event event) (column timestamp) (stream t) &key)
   (print-timestamp stream (timestamp event (column-key column))
                    (< (column-width column) 32)))
 
-(defmethod format-event ((event event) (column meta-data) (stream t)
-                         &key &allow-other-keys)
+(defmethod format-event ((event event) (column meta-data) (stream t) &key)
   (format stream "~:[N/A~;~:*~A~]" (meta-data event (column-key column))))
 
 ;;; Count column
@@ -276,10 +274,7 @@
   (:documentation
    "Count the number of output operations and emit that number."))
 
-(defmethod format-event ((event  t)
-                         (column column-count)
-                         (stream t)
-                         &key &allow-other-keys)
+(defmethod format-event ((event  t) (column column-count) (stream t) &key)
   (format stream "~:D" (incf (column-count column))))
 
 ;;; Some useful column and style specifications

@@ -1,6 +1,6 @@
 ;;;; payload-collections.lisp --- Format event collections.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -20,7 +20,7 @@
 (defmethod format-payload ((data   rsb.protocol:notification)
                            (style  t)
                            (stream stream)
-                           &key &allow-other-keys)
+                           &key)
   ;; TODO(jmoringe, 2012-02-05): there should be a dedicated serialization
   (handler-case
       (let ((event (rsb.transport.socket::notification->event*
@@ -43,7 +43,7 @@
 (defmethod format-payload ((data   rsb.protocol.collections:events-by-scope-map/scope-set)
                            (style  t)
                            (stream stream)
-                           &key &allow-other-keys)
+                           &key)
   (let+ (((&accessors-r/o
            (scope         rsb.protocol.collections:events-by-scope-map/scope-set-scope)
            (notifications rsb.protocol.collections:events-by-scope-map/scope-set-notifications))
@@ -59,7 +59,7 @@
 (defmethod format-payload ((data   rsb.protocol.collections:events-by-scope-map)
                            (style  t)
                            (stream stream)
-                           &key &allow-other-keys)
+                           &key)
   (let ((sets (rsb.protocol.collections:events-by-scope-map-sets data)))
     (format stream "Events by Scope (~D Scope~:P)~&~2@T"
             (length sets))

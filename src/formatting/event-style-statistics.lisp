@@ -1,6 +1,6 @@
 ;;;; event-style-statistics.lisp --- Column-oriented formatting of statistics.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -21,7 +21,7 @@
 (defmethod format-event :around ((event  t)
                                  (style  statistics-columns-mixin)
                                  (stream t)
-                                 &key &allow-other-keys)
+                                 &key)
   ;; Update quantities.
   (if (eq event :trigger)
       (call-next-method)
@@ -54,8 +54,7 @@
                                  (style  style-statistics)
                                  (stream t)
                                  &key
-                                 (width (or *print-right-margin* 80))
-                                 &allow-other-keys)
+                                 (width (or *print-right-margin* 80)))
   (let* ((columns   (style-dynamic-width-columns style))
          (separator (style-separator-width       style))
          (widths    (style-compute-column-widths

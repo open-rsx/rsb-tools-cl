@@ -1,6 +1,6 @@
 ;;;; style-mixins.lisp --- Mixin classes for formatting style classes.
 ;;;;
-;;;; Copyright (C) 2011, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -23,7 +23,7 @@
 (defmethod format-event :after ((event  t)
                                 (style  counting-mixin)
                                 (stream t)
-                                &key &allow-other-keys)
+                                &key)
   (incf (style-count style)))
 
 ;;; `activity-tracking-mixin'
@@ -43,7 +43,7 @@
 (defmethod format-event :around ((event  t)
                                  (style  activity-tracking-mixin)
                                  (stream t)
-                                 &key &allow-other-keys)
+                                 &key)
   (unless (eq event :trigger)
     (setf (style-last-activity style) (local-time:now)))
   (call-next-method))
@@ -87,7 +87,7 @@
 (defmethod format-event ((event  t)
                          (style  delegating-mixin)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   "Delegate formatting of EVENT on STREAM to appropriate sub-styles of
    STYLE."
   (delegate event style stream))
@@ -139,7 +139,7 @@
 (defmethod format-event :around ((event  t)
                                  (style  sub-style-grouping-mixin)
                                  (stream t)
-                                 &key &allow-other-keys)
+                                 &key)
   (if (eq event :trigger)
       (call-next-method)
       (delegate event style stream)))
@@ -201,7 +201,7 @@
 (defmethod format-event :before ((event  (eql :trigger))
                                  (style  sub-style-pruning-mixin)
                                  (stream t)
-                                 &key &allow-other-keys)
+                                 &key)
   (prune-sub-styles style))
 
 ;;; `activity-based-sub-style-pruning-mixin'

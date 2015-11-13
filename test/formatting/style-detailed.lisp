@@ -1,6 +1,6 @@
 ;;;; style-detailed.lisp --- Unit tests for the detailed formatting style.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -76,6 +76,6 @@ Timestamps
   receive <none>
   deliver <none>
 Payload: .*, 3 octets
-  0 01 02 FF                                              ...                  ~@
+  0 01 02 FF                                              ... *~@
 "
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))

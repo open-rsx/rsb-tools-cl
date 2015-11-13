@@ -46,12 +46,9 @@
 (defmethod format-event ((event  event)
                          (style  style-meta-data)
                          (stream t)
-                         &key
-                         (max-lines 20)
-                         &allow-other-keys)
+                         &key)
   (let+ (((&structure-r/o style- routing-info? timestamps? user-items? causes?)
           style)
-         (*print-lines* max-lines)      ; TODO avoid?
          (produced-output? nil))
     (when (not (or routing-info? timestamps? user-items? causes?))
       (return-from format-event))

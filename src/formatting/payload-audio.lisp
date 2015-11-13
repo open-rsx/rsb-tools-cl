@@ -1,6 +1,6 @@
 ;;;; payload-audio.lisp --- Format event payloads as audio streams.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -15,7 +15,7 @@
 (defmethod format-event ((event  event)
                          (style  style-audio-stream)
                          (target t)
-                         &key &allow-other-keys)
+                         &key)
   (format-payload (event-data event) style target))
 
 (defmethod make-descriptor ((style  style-audio-stream)
@@ -46,5 +46,5 @@
 (defmethod format-payload ((data   rst.audition:sound-chunk)
                            (style  style-audio-stream/raw)
                            (target t)
-                           &key &allow-other-keys)
+                           &key)
   (write-sequence (rst.audition:sound-chunk-data data) target))

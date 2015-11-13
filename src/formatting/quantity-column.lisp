@@ -1,6 +1,6 @@
 ;;;; quantity-column.lisp ---
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -45,7 +45,7 @@
 (defmethod format-event :around ((event  t)
                                  (style  quantity-column)
                                  (stream t)
-                                 &key &allow-other-keys)
+                                 &key)
   (if (eq event :trigger)
       (call-next-method)
       (rsb.stats:update! (column-quantity style) event)))
@@ -53,13 +53,13 @@
 (defmethod format-event ((event  t)
                          (style  quantity-column)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   (error "Should not get called"))
 
 (defmethod format-event ((event  (eql :trigger))
                          (style  quantity-column)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   (let+ (((&accessors-r/o (quantity column-quantity)) style))
     (rsb.stats:format-value quantity stream)
     (rsb.stats:reset! quantity)))

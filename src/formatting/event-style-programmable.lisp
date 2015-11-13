@@ -1,6 +1,6 @@
 ;;;; event-style-progammable.lisp --- A programmable formatting style.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -148,7 +148,7 @@
 (defmethod format-event ((event  event)
                          (style  style-programmable)
                          (stream stream)
-                         &key &allow-other-keys)
+                         &key)
   (let+ (((&structure-r/o style- bindings code) style))
    (handler-bind
        (((and error (not stream-error))
@@ -305,7 +305,7 @@
 (defmethod format-event ((event  event)
                          (style  style-programmable/template)
                          (stream stream)
-                         &key &allow-other-keys)
+                         &key)
   (handler-bind
       (((and error (not stream-error))
         (lambda (condition)

@@ -1,6 +1,6 @@
 ;;;; style-image-png.lisp --- Format event payloads as PNG images.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -22,8 +22,7 @@
                            (stream stream)
                            &key
                            (width  (style-width  style))
-                           (height (style-height style))
-                           &allow-other-keys)
+                           (height (style-height style)))
   (check-type width  dimension-spec/full)
   (check-type height dimension-spec/full)
 

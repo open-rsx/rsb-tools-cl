@@ -1,6 +1,6 @@
 ;;;; binary-style-mixins.lisp --- Mixin classes for binary event formatting classes.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -47,7 +47,7 @@
 (defmethod format-payload :before ((data   t)
                                    (style  data-consistency-mixin)
                                    (target t)
-                                   &key &allow-other-keys)
+                                   &key)
   (let* ((data-descriptor   (make-descriptor style data target))
          (target-descriptor (descriptor-for-target style target)))
     (cond

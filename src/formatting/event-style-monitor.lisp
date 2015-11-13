@@ -79,8 +79,7 @@
                                  (style  monitor-style-mixin)
                                  (stream t)
                                  &key
-                                 (width (or *print-right-margin* 80))
-                                 &allow-other-keys)
+                                 (width (or *print-right-margin* 80)))
   ;; Before displaying sub-styles, compute widths based on first
   ;; sub-style (i.e. first line), then propagate to remaining
   ;; sub-styles.
@@ -98,7 +97,7 @@
 (defmethod format-event ((event  (eql :trigger))
                          (style  monitor-style-mixin)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   ;; Print all sub-styles (i.e. lines), separated by newlines.
   (iter (for (_ . sub-style) in-sequence (style-sub-styles style))
         (format-event event sub-style stream)
@@ -134,7 +133,7 @@
 (defmethod format-event ((event  (eql :trigger))
                          (style  sorted-monitor-style)
                          (stream t)
-                         &key &allow-other-keys)
+                         &key)
   ;; Like `monitor-style-mixin', but display sorted sequence of
   ;; sub-styles.
   (iter (for sub-style in-sequence (style-sub-styles/sorted style))
@@ -318,7 +317,7 @@
 (defmethod format-event ((event  (eql :trigger))
                          (style  style-monitor/scope/tree)
                          (target stream)
-                         &key max-columns max-lines)
+                         &key)
   (let+ (((&structure-r/o style- sort-predicate sort-key) style)
          ((&flet print-first-line (stream depth node)
             ;; Columns widths are adjusted prior to each redisplay. It
