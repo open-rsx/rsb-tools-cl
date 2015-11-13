@@ -397,7 +397,6 @@
   (when payload-style
     (setf (style-%payload-style instance)
           (typecase payload-style
-            ((eql :any)       payload-style) ; TODO temporary hack
             ((or symbol cons) (make-style payload-style))
             (t                payload-style)))))
 

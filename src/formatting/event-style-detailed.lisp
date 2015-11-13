@@ -10,7 +10,7 @@
                           payload-style-mixin)
   ()
   (:default-initargs
-   :payload-style :any
+   :payload-style :payload-generic/pretty
    :max-lines     200)
   (:documentation
    "Format each event on multiple lines with as many details as

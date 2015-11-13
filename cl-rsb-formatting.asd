@@ -115,12 +115,12 @@ RSB-related systems."
                  :depends-on ("formatting-early"
                               "formatting-mixins")
                  :serial     t
-                 :components ((:file       "payload")
-
-                              ;; Column classes
+                 :components (;; Column classes
                               (:file       "columns")
 
                               ;; Payload formatting classes
+                              (:file       "payload-generic")
+
                               (:file       "rst-forward")
                               (:file       "payload-audio")
                               (:file       "payload-audio-wav")

@@ -18,7 +18,7 @@
    of events.")
 
 (defmethod format-payload ((data   rsb.protocol:notification)
-                           (style  t)
+                           (style  payload-style-generic/pretty)
                            (stream stream)
                            &key)
   ;; TODO(jmoringe, 2012-02-05): there should be a dedicated serialization
@@ -41,7 +41,7 @@
               condition))))
 
 (defmethod format-payload ((data   rsb.protocol.collections:events-by-scope-map/scope-set)
-                           (style  t)
+                           (style  payload-style-generic/pretty)
                            (stream stream)
                            &key)
   (let+ (((&accessors-r/o
@@ -57,7 +57,7 @@
             (format-payload notification style stream)))))
 
 (defmethod format-payload ((data   rsb.protocol.collections:events-by-scope-map)
-                           (style  t)
+                           (style  payload-style-generic/pretty)
                            (stream stream)
                            &key)
   (let ((sets (rsb.protocol.collections:events-by-scope-map-sets data)))

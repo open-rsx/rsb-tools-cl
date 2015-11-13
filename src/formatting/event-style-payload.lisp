@@ -11,7 +11,7 @@
                          payload-style-mixin)
   ()
   (:default-initargs
-   :payload-style :any)
+   :payload-style :payload-generic/pretty)
   (:documentation
    "Only format the payload of each event, but not the meta-data."))
 
