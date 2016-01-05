@@ -1,6 +1,6 @@
 ;;;; model.lisp --- Description of bridge configurations.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -20,6 +20,7 @@
               (scalar-slots    (remove-if #'composite-slot? slots))
               (composite-slots (set-difference slots scalar-slots))
               ((&flet+ make-scalar-slot ((name kind &key type))
+                 (declare (ignore kind))
                  `(,name nil :type ,type :read-only t)))
               ((&flet+ make-composite-slot ((name kind &key type))
                  (etypecase kind
