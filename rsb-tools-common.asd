@@ -88,40 +88,24 @@ RSB-related systems."
   :encoding    :utf-8
   :components  ((:module     "common"
                  :pathname   "src/common"
+                 :serial     t
                  :components ((:file       "package")
 
-                              (:file       "conditions"
-                               :depends-on ("package"))
-                              (:file       "variables"
-                               :depends-on ("package"))
+                              (:file       "conditions")
+                              (:file       "variables")
 
-                              (:file       "error-handling"
-                               :depends-on ("package"))
+                              (:file       "error-handling")
 
-                              (:file       "idl-loading"
-                               :depends-on ("package" "conditions"))
+                              (:file       "logging")
+                              (:file       "debugger")
+                              (:file       "interactive")
+                              (:file       "help")
+                              (:file       "protocol-buffer-payload")
+                              (:file       "event")
+                              (:file       "options")
 
-                              (:file       "logging"
-                               :depends-on ("package"))
-                              (:file       "debugger"
-                               :depends-on ("package"))
-                              (:file       "interactive"
-                               :depends-on ("package"))
-                              (:file       "help"
-                               :depends-on ("package"))
-                              (:file       "protocol-buffer-payload"
-                               :depends-on ("package"))
-                              (:file       "event"
-                               :depends-on ("package"
-                                            "protocol-buffer-payload"))
-                              (:file       "options"
-                               :depends-on ("package" "variables"
-                                            "error-handling" "debugger"
-                                            "logging" "help"))
-
-                              (:file       "idl-options"
-                               :depends-on ("package" "idl-loading"
-                                            "options")))))
+                              (:file       "idl-loading")
+                              (:file       "idl-options"))))
 
   :in-order-to ((test-op (test-op :rsb-tools-common-test))))
 
