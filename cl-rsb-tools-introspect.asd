@@ -75,16 +75,17 @@
   :depends-on  (:alexandria
                 :let-plus
                 :iterate
-                (:version :log4cl               "1.1.1")
+                (:version :log4cl                        "1.1.1")
 
                 :net.didierverna.clon
 
-                (:version :cl-rsb               #.(version/string :revision? nil))
-                (:version :rsb-introspection    #.(version/string :revision? nil))
+                (:version :cl-rsb                        #.(version/string :revision? nil))
+                (:version :rsb-introspection             #.(version/string :revision? nil))
 
-                (:version :rsb-tools-common     #.(version/string))
-                (:version :cl-rsb-formatting    #.(version/string))
-                (:version :rsb-tools-commands   #.(version/string)))
+                (:version :rsb-tools-common              #.(version/string))
+                (:version :cl-rsb-formatting             #.(version/string))
+                (:version :rsb-formatting-and-rsb-common #.(version/string))
+                (:version :rsb-tools-commands            #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "introspect"
                  :serial     t
