@@ -34,7 +34,7 @@
 (defun start-swank (&key (port-file "./swank-port.txt"))
   "Start a swank server and write its port to \"./swank-port.txt\"."
   ;; Load swank, if necessary.
-  (unless (asdf::system-loaded-p (asdf:find-system :swank))
+  (unless (asdf:component-loaded-p (asdf:find-system :swank))
     (ql:quickload :swank))
   ;; Delete old port file.
   (when (probe-file port-file)
