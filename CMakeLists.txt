@@ -1,6 +1,6 @@
 # CMakeLists.txt --- CMake build description file.
 #
-# Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
 #
 # Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -228,7 +228,7 @@ add_custom_target(binary ALL DEPENDS "${MAIN_EXECUTABLE}")
 enable_testing()
 
 # Lift-based tests for formatting and stats systems.
-foreach(SYSTEM cl-rsb-common cl-rsb-formatting cl-rsb-stats rsb-tools-commands)
+foreach(SYSTEM rsb-tools-common cl-rsb-formatting cl-rsb-stats rsb-tools-commands)
     configure_lisp_redirect("test-${SYSTEM}"
                             "--eval \"(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))\"
                              --eval \"(asdf:test-system :${SYSTEM})\"")

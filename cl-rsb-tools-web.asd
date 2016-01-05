@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-web.asd --- Webion utility based on rsb-webion.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -76,8 +76,7 @@
 
                 :net.didierverna.clon
 
-                (:version :cl-rsb-common          #.(version/string))
-
+                (:version :rsb-tools-common       #.(version/string))
                 (:version :rsb-tools-commands     #.(version/string))
                 (:version :rsb-tools-commands-web #.(version/string)))
   :encoding    :utf-8

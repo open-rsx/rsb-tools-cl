@@ -1,10 +1,10 @@
-;;;; cl-rsb-common.asd --- Common functions for cl-rsb-based utilities.
+;;;; rsb-tools-common.asd --- Common functions for cl-rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-common-system
+(cl:defpackage #:rsb-tools-common-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-common-system)
+(cl:in-package #:rsb-tools-common-system)
 
 ;;; Version stuff
 
@@ -66,7 +66,7 @@ See `version/list' for details on keyword parameters."
 
 ;;; System definition
 
-(defsystem :cl-rsb-common
+(defsystem :rsb-tools-common
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
@@ -87,6 +87,7 @@ RSB-related systems."
                 (:version :rsb-clon #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "common"
+                 :pathname   "src/common"
                  :components ((:file       "package")
 
                               (:file       "conditions"
@@ -122,24 +123,24 @@ RSB-related systems."
                                :depends-on ("package" "idl-loading"
                                             "options")))))
 
-  :in-order-to ((test-op (test-op :cl-rsb-common-test))))
+  :in-order-to ((test-op (test-op :rsb-tools-common-test))))
 
-;;; System definition for test of the cl-rsb-common system
+;;; System definition for test of the rsb-tools-common system
 
-(defsystem :cl-rsb-common-test
+(defsystem :rsb-tools-common-test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "This system contains tests for the cl-rsb-common
+  :description "This system contains tests for the rsb-tools-common
 system."
   :depends-on  (:let-plus
 
-                (:version :lift          "1.7.1")
+                (:version :lift             "1.7.1")
 
-                (:version :cl-rsb-common #.(version/string))
+                (:version :rsb-tools-common #.(version/string))
 
-                (:version :rsb-protocol  #.(version/string :revision? nil)))
+                (:version :rsb-protocol     #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "common"
                  :pathname   "test/common"
@@ -150,7 +151,7 @@ system."
                               (:file       "protocol-buffer-payload")))))
 
 (defmethod perform ((operation test-op)
-                    (component (eql (find-system :cl-rsb-common-test))))
+                    (component (eql (find-system :rsb-tools-common-test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
            :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
-                            "lift-rsb-common.config")))
+                            "lift-rsb-tools-common.config")))

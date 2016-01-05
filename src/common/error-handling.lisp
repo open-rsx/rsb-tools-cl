@@ -1,10 +1,10 @@
 ;;;; error-handling.lisp --- Toplevel error handling functions.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+;;;; Copyright (C) 2012, 2013, 2014, 2016 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;;;
 ;;;; This file may be licensed under the terms of the
 
-(cl:in-package #:rsb.common)
+(cl:in-package #:rsb.tools.common)
 
 ;;; Toplevel error handling strategies
 

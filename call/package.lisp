@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for the call utility.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -14,9 +14,8 @@
    #:rsb
    #:rsb.patterns.request-reply
 
-   #:rsb.common
+   #:rsb.tools.common
    #:rsb.formatting
-
    #:rsb.tools.commands
 
    #:net.didierverna.clon)

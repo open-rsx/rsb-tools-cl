@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-send.asd --- RSB sending utility based on cl-rsb.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -83,8 +83,7 @@ via RSB."
 
                 (:version :cl-rsb             #.(version/string :revision? nil))
 
-                (:version :cl-rsb-common      #.(version/string))
-
+                (:version :rsb-tools-common   #.(version/string))
                 (:version :rsb-tools-commands #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "send"

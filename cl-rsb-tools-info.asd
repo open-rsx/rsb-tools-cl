@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-info.asd --- RSB information query utility.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -80,9 +80,8 @@ via RSB."
 
                 (:version :cl-rsb             #.(version/string :revision? nil))
 
-                (:version :cl-rsb-common      #.(version/string))
+                (:version :rsb-tools-common   #.(version/string))
                 (:version :cl-rsb-formatting  #.(version/string))
-
                 (:version :rsb-tools-commands #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "info"

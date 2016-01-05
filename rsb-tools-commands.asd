@@ -1,6 +1,6 @@
 ;;;; rsb-tools-commands.asd --- System definition for the rsb-tools-commands system.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -81,7 +81,7 @@
 
                 (:version :cl-rsb                        #.(version/string :revision? nil))
                 (:version :rsb-model                     #.(version/string :revision? nil)) ; for bridge
-                (:version :cl-rsb-common                 #.(version/string :revision? nil))
+                (:version :rsb-tools-common              #.(version/string :revision? nil))
                 (:version :cl-rsb-formatting             #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "commands"

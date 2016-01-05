@@ -1,10 +1,10 @@
 ;;;; event.lisp --- Unit tests for parsing events and payloads.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.common.test)
+(cl:in-package #:rsb.tools.common.test)
 
 (deftestsuite common-event-root (common-root)
   ()
@@ -17,7 +17,7 @@
   parse-payload-spec/smoke
 
   (let+ ((pathname      (asdf:system-relative-pathname
-                         :cl-rsb-common
+                         :rsb-tools-common
                          #P"test/data/simple.protocol-buffer-text"))
          (a-file        (format nil "~S" pathname))
          (a-utf-8-file  (format nil "~S:utf-8" pathname))

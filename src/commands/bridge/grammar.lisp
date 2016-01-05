@@ -1,6 +1,6 @@
 ;;;; grammar.lisp --- Grammar for simple forwarding specification .
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -128,7 +128,7 @@
           (and ,open-keyword (+ (not ,close-keyword)) ,close-keyword)
         (:function second)
         (:text t)
-        (:function rsb.common:parse-instantiation-spec)
+        (:function parse-instantiation-spec)
         (:destructure (class &rest initargs)
           (bp:node* (,kind :class class :initargs initargs))))))
 

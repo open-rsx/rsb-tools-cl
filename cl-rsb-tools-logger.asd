@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-logger.asd --- RSB Logging utility based cl-rsb.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -83,12 +83,10 @@ exchanged on a given RSB bus or channel."
 
                 (:version :cl-rsb                        #.(version/string :revision? nil))
 
-                (:version :cl-rsb-common                 #.(version/string))
+                (:version :rsb-tools-common              #.(version/string))
                 (:version :cl-rsb-stats                  #.(version/string))
-
                 (:version :rsb-formatting-and-rsb-common #.(version/string))
                 (:version :rsb-formatting-and-rsb-stats  #.(version/string))
-
                 (:version :rsb-tools-commands            #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "logger"

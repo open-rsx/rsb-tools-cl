@@ -1,10 +1,10 @@
-;;;; conditions.lisp --- Conditions used in the cl-rsb-common system.
+;;;; conditions.lisp --- Conditions used in the rsb-tools-common system.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.common)
+(cl:in-package #:rsb.tools.common)
 
 ;;; Event and payload-related conditions
 

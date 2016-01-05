@@ -1,10 +1,10 @@
 ;;;; protocol-buffer-payload.lisp --- Unit tests for protocol buffer payloads.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.common.test)
+(cl:in-package #:rsb.tools.common.test)
 
 (deftestsuite protocol-buffer-payload-root (common-root)
   ()
@@ -63,7 +63,7 @@
 
     (let+ (((&flet do-it ()
               (let ((architecture.builder-protocol:*builder* 'list))
-                (esrap:parse 'rsb.common::message input)))))
+                (esrap:parse 'rsb.tools.common::message input)))))
        (case expected
         (error (ensure-condition 'error (do-it)))
         (t     (ensure-same (do-it) expected :test #'equal))))))
@@ -97,7 +97,7 @@
 
     (let+ (((&flet do-it (&optional (input input))
               (let ((architecture.builder-protocol:*builder* 'list))
-                (esrap:parse 'rsb.common::float input)))))
+                (esrap:parse 'rsb.tools.common::float input)))))
       (case expected
         (error
          (ensure-condition 'error (do-it)))
@@ -126,7 +126,7 @@
         ("{data: \"\\000\\000\"}"))
 
     (let+ (((&flet do-it ()
-              (rsb.common::build-protocol-buffer-message
+              (rsb.tools.common::build-protocol-buffer-message
                (pb:find-descriptor ".rsb.protocol.Notification") input))))
       (case expected
         (error (ensure-condition 'error (do-it)))

@@ -1,10 +1,10 @@
 ;;;; interactive.lisp --- Functions for interactive stuff.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.common)
+(cl:in-package #:rsb.tools.common)
 
 (defmacro with-interactive-interrupt-exit ((&key
                                             (signals       '(sb-posix:SIGINT

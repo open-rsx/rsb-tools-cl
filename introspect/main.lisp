@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the introspect tool.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -24,7 +24,7 @@
 
 (defun make-style-help-string (&key (show :default))
   (with-output-to-string (stream)
-    (rsb.common:with-abbreviation (stream :styles show)
+    (with-abbreviation (stream :styles show)
       (write-string (rsb.formatting::make-style-service-help-string
                      :service           'rsb.formatting.introspection::style
                      :initarg-blacklist '(:database))

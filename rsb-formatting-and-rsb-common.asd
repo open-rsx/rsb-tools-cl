@@ -1,6 +1,6 @@
 ;;;; rsb-formatting-and-rsb-common.asd --- Commandline options for formatting styles.
 ;;;;
-;;;; Copyright (C) 2013, 2015 Jan Moringen
+;;;; Copyright (C) 2013, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -18,7 +18,7 @@
   :description "This system adds formatting-related handling of
 commandline options."
   :depends-on  ((:version :cl-rsb-formatting #.(version/string))
-                (:version :cl-rsb-common     #.(version/string)))
+                (:version :rsb-tools-common  #.(version/string)))
   :encoding    :utf-8
   :components  ((:file       "help"
                  :pathname   "formatting/help")))

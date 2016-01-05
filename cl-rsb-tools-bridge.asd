@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-bridge.asd --- RSB Logging utility based cl-rsb.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -82,8 +82,7 @@ See `version/list' for details on keyword parameters."
 
                 (:version :cl-rsb             #.(version/string :revision? nil))
 
-                (:version :cl-rsb-common      #.(version/string))
-
+                (:version :rsb-tools-common   #.(version/string))
                 (:version :rsb-tools-commands #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "bridge"

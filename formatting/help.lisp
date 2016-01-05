@@ -1,6 +1,6 @@
 ;;;; help.lisp --- Help text generation for formatting options.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -20,7 +20,7 @@
                                  (service-provider:provider-name provider)
                                  (service-provider:provider-class provider)))
                               providers)))
-      (rsb.common:print-classes-help-string
+      (rsb.tools.common:print-classes-help-string
        classes stream :initarg-blacklist initarg-blacklist))))
 
 (defun make-style-help-string (&key
@@ -46,7 +46,7 @@
                       the :columns argument\)~@
                     ~@
                     ")
-    (rsb.common:with-abbreviation
+    (rsb.tools.common:with-abbreviation
         (stream '(:styles :columns :quantities) show)
       (write-string
        (make-style-service-help-string
@@ -57,7 +57,7 @@
                              :code))
        stream)
       (format stream "~%~%")
-      (rsb.common:with-abbreviation (stream :columns show)
+      (rsb.tools.common:with-abbreviation (stream :columns show)
         (format stream "In column-based formatting styles, columns can ~
                         be selected and configured using the :columns ~
                         argument and a syntax of the form~@
@@ -73,7 +73,7 @@
                         The following columns are available:~@
                         ~@
                         ")
-        (rsb.common:print-classes-help-string
+        (rsb.tools.common:print-classes-help-string
          (column-classes) stream))
 
       (when-let* ((package   (find-package :rsb.stats))
@@ -85,7 +85,7 @@
                                         (service-provider:provider-class provider)))
                                      providers)))
         (format stream "~%~%")
-        (rsb.common:with-abbreviation (stream :quantities show)
+        (rsb.tools.common:with-abbreviation (stream :quantities show)
           (format stream "In the statistics style, statistical ~
                           quantities are used in columns. These ~
                           columns can be configured using the :columns ~
@@ -104,6 +104,6 @@
                           The following quantities are available:~@
                           ~@
                           ")
-          (rsb.common:print-classes-help-string
+          (rsb.tools.common:print-classes-help-string
            classes stream
            :initarg-blacklist '(:extractor :reduce-by :start-time :values)))))))

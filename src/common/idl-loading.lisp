@@ -1,10 +1,10 @@
 ;;;; idl-loading.lisp --- Loading IDL files at runtime.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011, 2012, 2013, 2014, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.common)
+(cl:in-package #:rsb.tools.common)
 
 ;;; IDL loading protocol
 

@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-introspect.asd --- Introspection utility based on rsb-introspection.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -82,9 +82,8 @@
                 (:version :cl-rsb               #.(version/string :revision? nil))
                 (:version :rsb-introspection    #.(version/string :revision? nil))
 
-                (:version :cl-rsb-common        #.(version/string))
+                (:version :rsb-tools-common     #.(version/string))
                 (:version :cl-rsb-formatting    #.(version/string))
-
                 (:version :rsb-tools-commands   #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "introspect"

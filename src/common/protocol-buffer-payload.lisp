@@ -1,10 +1,10 @@
 ;;;; protocol-buffer-payload.lisp --- Protocol-buffer payload construction utilities.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.common)
+(cl:in-package #:rsb.tools.common)
 
 ;;; Entry point
 
