@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for the main rsb tools program.
 ;;;;
-;;;; Copyright (C) 2011, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -16,10 +16,6 @@
 
   (:export
    #:main)
-
-  (:export
-   #:make-static
-   #:make-dynamic)
 
   (:documentation
    "Package definition for the main rsb tools program."))
