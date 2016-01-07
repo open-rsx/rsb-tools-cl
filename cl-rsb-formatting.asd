@@ -114,32 +114,27 @@ RSB-related systems."
                  :pathname   "src/formatting"
                  :depends-on ("formatting-early"
                               "formatting-mixins")
+                 :serial     t
                  :components ((:file       "payload")
 
                               ;; Column classes
                               (:file       "columns")
 
                               ;; Payload formatting classes
-                              (:file       "payload-collection"
-                               :depends-on ("event-style-detailed"))
-
                               (:file       "rst-forward")
-                              (:file       "payload-audio"
-                               :depends-on ("rst-forward"))
-                              (:file       "payload-audio-wav"
-                               :depends-on ("payload-audio"))
+                              (:file       "payload-audio")
+                              (:file       "payload-audio-wav")
 
                               ;; Event formatting style classes
                               (:file       "event-style-discard")
                               (:file       "event-style-meta-data")
                               (:file       "event-style-payload")
-                              (:file       "event-style-detailed"
-                               :depends-on ("event-style-meta-data"))
-                              (:file       "event-style-compact"
-                               :depends-on ("columns"))
-                              (:file       "event-style-columns"
-                               :depends-on ("columns"))
-                              (:file       "event-style-programmable")))
+                              (:file       "event-style-detailed")
+                              (:file       "event-style-compact")
+                              (:file       "event-style-columns")
+                              (:file       "event-style-programmable")
+
+                              (:file       "payload-collection"))) ; Uses detailed style at load-time
 
                 (:module     "formatting-introspection"
                  :pathname   "src/formatting/introspection"
