@@ -180,5 +180,5 @@
 (defrule whitespace
     (+ (or #\Space #\Tab)))
 
-(defun parse-spec (source)
-  (esrap:parse 'bridge-specification source))
+(defun parse-spec (source &key (rule 'bridge-specification))
+  (esrap:parse rule source))
