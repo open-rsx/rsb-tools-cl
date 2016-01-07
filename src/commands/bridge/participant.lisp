@@ -207,7 +207,10 @@
                   rsb.patterns:child-container-mixin
                   rsb.patterns:configuration-inheritance-mixin
                   rsb:participant)
-  ((%queue :accessor bridge-%queue))
+  ((%queue :accessor bridge-%queue)
+   (%count :accessor bridge-%count
+           :type     non-negative-integer
+           :initform 0))
   (:documentation
    "A participant that forwards events between multiple RSB buses.
 
@@ -229,30 +232,48 @@
                                      self-filters
                                      (timestamp-events? t)
                                      max-queued-events)
-  (let+ (((&structure bridge- %queue) instance)
-         (i 0))
+  (let+ (((&structure bridge- %queue) instance))
     (setf %queue (rsb.tools.commands::make-queue :max-queued-events max-queued-events))
     (mapc (lambda+ ((listeners informers filters transform))
-            (let+ (((&values handler set-connection) (make-handler %queue))
-                   (which (princ-to-string (incf i))))
-              (funcall set-connection
-                       (setf (rsb.patterns:participant-child
-                              instance which :connection)
-                             (rsb.patterns:make-child-participant
-                              instance which :connection
-                              :listeners          listeners
-                              :informers          informers
-                              :filters            filters
-                              :transform          transform
-                              :timestamp-events?  timestamp-events?
-                              :handler            handler
-                              :self-filters       self-filters)))))
+            (let+ (((&values connection which)
+                    (rsb.patterns:make-child-participant
+                     instance :new :connection
+                     :listeners         listeners
+                     :informers         informers
+                     :filters           filters
+                     :transform         transform
+                     :timestamp-events? timestamp-events?
+                     :self-filters      self-filters)))
+              (setf (rsb.patterns:participant-child
+                     instance which :connection)
+                    connection)))
           connections)))
 
 (defmethod rsb.patterns:make-child-scope ((participant bridge)
                                           (which       t)
                                           (kind        (eql :connection)))
   (participant-scope participant))
+
+(defmethod rsb.patterns:make-child-participant ((participant bridge)
+                                                (which       (eql :new))
+                                                (kind        (eql :connection))
+                                                &rest args &key)
+  (let+ (((&structure bridge- %count) participant)
+         (which (princ-to-string (incf %count))))
+    (values (apply #'rsb.patterns:make-child-participant
+                   participant which kind args)
+            which)))
+
+(defmethod rsb.patterns:make-child-participant ((participant bridge)
+                                                (which       t)
+                                                (kind        (eql :connection))
+                                                &rest args &key)
+  (let+ (((&structure bridge- %queue) participant)
+         ((&values handler set-connection) (make-handler %queue))
+         (connection (apply #'call-next-method participant which kind
+                            :handler handler args)))
+    (funcall set-connection connection)
+    connection))
 
 (defgeneric stop (bridge)
   (:method ((bridge bridge))
