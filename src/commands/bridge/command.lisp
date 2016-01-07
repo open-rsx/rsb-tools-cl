@@ -1,6 +1,6 @@
 ;;;; bridge.lisp --- Implementation of the bridge command.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -18,6 +18,7 @@
                                          (scope     scope)
                                          &rest args &key
                                          spec
+                                         connections
                                          self-filters)
   (let+ ((self-filters self-filters)
          ((&flet register-description-data (description data)
@@ -49,12 +50,14 @@
                     (mapcar #'make-filter        filters)
                     (when transform
                       (make-transform transform))))))
-         (connections (mapcar #'process-spec
-                              (bridge-description-connections spec))))
+         (connections (append (when spec
+                                (mapcar #'process-spec
+                                        (bridge-description-connections spec)))
+                              connections)))
     (apply #'call-next-method class prototype scope
            :connections  connections
            :self-filters self-filters
-           (remove-from-plist args :spec :self-filters))))
+           (remove-from-plist args :spec :connections :self-filters))))
 
 ;;; `bridge' command class
 
