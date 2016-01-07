@@ -124,4 +124,5 @@
                               :self-filters      self-filters
                               :max-queued-events max-queued-events
                               :error-policy      error-policy)
-      (rsb.patterns.bridge::pump-events bridge))))
+      (rsb.patterns.bridge:pump-events bridge))))
+
