@@ -21,4 +21,4 @@ commandline options."
                 (:version :rsb-tools-common  #.(version/string)))
   :encoding    :utf-8
   :components  ((:file       "help"
-                 :pathname   "formatting/help")))
+                 :pathname   "src/formatting/help")))

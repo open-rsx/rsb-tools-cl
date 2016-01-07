@@ -1,6 +1,6 @@
 ;;;; cl-rsb-formatting.asd --- Formatting functions for cl-rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -89,7 +89,7 @@ RSB-related systems."
                 (:version :rsb-introspection             #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
-                 :pathname   "formatting"
+                 :pathname   "src/formatting"
                  :serial     t
                  :components ((:file       "package")
                               (:file       "types")
@@ -104,13 +104,14 @@ RSB-related systems."
                               (:file       "dynamic-width")))
 
                 (:module     "formatting-mixins"
-                 :pathname   "formatting"
+                 :pathname   "src/formatting"
                  :depends-on ("formatting-early")
                  :components ((:file       "style-mixins")
                               (:file       "text-style-mixins")
                               (:file       "binary-style-mixins")))
 
                 (:module     "formatting"
+                 :pathname   "src/formatting"
                  :depends-on ("formatting-early"
                               "formatting-mixins")
                  :components ((:file       "payload")
@@ -141,7 +142,7 @@ RSB-related systems."
                               (:file       "event-style-programmable")))
 
                 (:module     "formatting-introspection"
-                 :pathname   "formatting/introspection"
+                 :pathname   "src/formatting/introspection"
                  :depends-on ("formatting-early")
                  :serial     t
                  :components ((:file       "package")

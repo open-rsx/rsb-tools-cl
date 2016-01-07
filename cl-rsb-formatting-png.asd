@@ -1,6 +1,6 @@
 ;;;; cl-rsb-formatting-png.asd --- Formatting support for PNG payloads.
 ;;;;
-;;;; Copyright (C) 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2013, 2014, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -27,6 +27,7 @@
                 (:version :cl-rsb-formatting #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting"
+                 :pathname   "src/formatting"
                  :components ((:file       "payload-image-png"))))
 
   :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))

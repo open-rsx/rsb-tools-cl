@@ -1,6 +1,6 @@
 ;;;; rsb-formatting-json.asd --- Formatting support for JSON payloads.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -26,10 +26,11 @@
                 (:version :cl-rsb-formatting #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "formatting"
+                 :pathname   "src/formatting"
                  :components ((:file       "event-style-json")))
 
                 (:module     "formatting-introspection"
-                 :pathname   "formatting/introspection"
+                 :pathname   "src/formatting/introspection"
                  :depends-on ("formatting")
                  :components ((:file       "json"))))
 
