@@ -154,3 +154,43 @@
     (mapc #'add-inputs+outputs connections)
     (map-product #'check-pair all-outputs all-inputs)
     (values description problems)))
+
+;;; Utility functions
+
+(declaim (ftype (function (bridge-description list) (values list list))
+                bridge-description->connection-list))
+(defun bridge-description->connection-list (spec self-filters)
+  (let+ ((self-filters self-filters)
+         ((&flet register-description-data (description data)
+            (setf self-filters
+                  (sublis (list (cons description data))
+                          self-filters))
+            data))
+         ((&flet extract-input-uri (description)
+            (register-description-data
+             description (input-description-uri description))))
+         ((&flet extract-output-uri (description)
+            (let ((uri (puri:copy-uri (output-description-uri description)))
+                  (id  (uuid:make-v4-uuid)))
+              (register-description-data description (cons uri id)))))
+         ((&flet make-filter (description)
+            (apply #'rsb.filter:make-filter
+                   (filter-description-class description)
+                   (filter-description-initargs description))))
+         ((&flet make-transform (description)
+            (apply #'rsb.transform:make-transform
+                   (transform-description-class description)
+                   (transform-description-initargs description))))
+         ((&flet process-spec (spec)
+            (let+ (((&structure-r/o
+                     connection-description- inputs outputs filters transform)
+                    spec))
+              (list (mapcar #'extract-input-uri  inputs)
+                    (mapcar #'extract-output-uri outputs)
+                    (mapcar #'make-filter        filters)
+                    (when transform
+                      (make-transform transform))))))
+         (connections (when spec
+                        (mapcar #'process-spec
+                                (bridge-description-connections spec)))))
+    (values connections self-filters)))
