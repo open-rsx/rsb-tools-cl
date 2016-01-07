@@ -43,7 +43,10 @@
    #:command-payload
 
    #:style-mixin
-   #:command-style)
+   #:command-style
+
+   #:event-queue-mixin
+   #:command-max-queued-events)
 
   ;; General purpose command classes
   (:export

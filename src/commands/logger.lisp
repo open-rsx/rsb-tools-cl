@@ -47,26 +47,17 @@
 ;;; `logger' command class
 
 (defclass logger (source-mixin
+                  event-queue-mixin
                   output-stream-mixin
                   style-mixin
                   print-items:print-items-mixin)
-  ((filters           :initarg  :filters
-                      :type     list
-                      :reader   logger-filters
-                      :initform '()
-                      :documentation
-                      "List of objects implementing the filter
-                       protocol. Only events accepted by all filters
-                       are processed.")
-   (max-queued-events :initarg  :max-queued-events
-                      :type     (or null positive-integer)
-                      :reader   logger-max-queued-events
-                      :initform 200
-                      :documentation
-                      "The maximum number of events which may be
-                       queued for processing at any given time. Note
-                       that choosing a large value can require a large
-                       amount of memory."))
+  ((filters :initarg  :filters
+            :type     list
+            :reader   logger-filters
+            :initform '()
+            :documentation
+            "List of objects implementing the filter protocol. Only
+             events accepted by all filters are processed."))
   (:default-initargs
    :filters (list *only-user-events-filter*))
   (:documentation
@@ -109,10 +100,10 @@
 
 (defmethod command-execute ((command logger) &key error-policy)
   (let+ (((&accessors-r/o (uris              command-uris)
+                          (max-queued-events command-max-queued-events)
                           (stream            command-stream)
                           (style             command-style)
-                          (filters           logger-filters)
-                          (max-queued-events logger-max-queued-events))
+                          (filters           logger-filters))
           command)
          (converters (ensure-fallback-converter))
          ((&values queue handler)

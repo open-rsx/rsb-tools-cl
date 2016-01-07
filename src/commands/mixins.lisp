@@ -1,6 +1,6 @@
 ;;;; mixins.lisp --- Mixins class used by the commands module.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -213,3 +213,20 @@
   (:documentation
    "This class is intended to be mixed into command classes that store
     a response timeout."))
+
+;;; `event-queue-mixin' mixin
+
+(defclass event-queue-mixin ()
+  ((max-queued-events :initarg  :max-queued-events
+                      :type     (or null positive-integer)
+                      :reader   command-max-queued-events
+                      :initform 200
+                      :documentation
+                      "The maximum number of events which may be
+                       queued for processing at any given time.
+
+                       Note that choosing a large value can require a
+                       large amount of memory."))
+  (:documentation
+   "This class is intended to be mixed into command classes that
+    perform some kind of event queuing."))

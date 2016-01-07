@@ -8,7 +8,8 @@
 
 ;;; `bridge' command class
 
-(defclass bridge (print-items:print-items-mixin)
+(defclass bridge (rsb.tools.commands:event-queue-mixin
+                  print-items:print-items-mixin)
   ((spec              :initarg  :spec
                       :type     bridge-description
                       :reader   bridge-spec
@@ -22,16 +23,7 @@
                       "Stores a list of filters necessary to prevent
                        forwarding cycles that would otherwise be
                        caused by events sent by the bridge and then
-                       received by the bridge.")
-   (max-queued-events :initarg  :max-queued-events
-                      :type     (or null positive-integer)
-                      :reader   bridge-max-queued-events
-                      :initform 200
-                      :documentation
-                      "The maximum number of events which may be
-                       queued for processing at any given time. Note
-                       that choosing a large value can require a large
-                       amount of memory."))
+                       received by the bridge."))
   (:default-initargs
    :spec (missing-required-initarg 'bridge :spec))
   (:documentation
@@ -77,7 +69,10 @@
   ;;
   ;; which the participant turns into a set of filters while creating
   ;; its child-participants.
-  (let+ (((&structure-r/o bridge- spec self-filters max-queued-events) command)
+  (let+ (((&accessors-r/o (max-queued-events command-max-queued-events)
+                          (spec              bridge-spec)
+                          (self-filters      bridge-self-filters))
+          command)
          ((&values connections self-filters)
           (bridge-description->connection-list spec self-filters))
          (converters (rsb.tools.commands::ensure-fallback-converter)))
