@@ -83,3 +83,125 @@
                               :max-queued-events max-queued-events
                               :error-policy      error-policy)
       (rsb.patterns.bridge:pump-events bridge))))
+
+;;; `bridge-service' command class
+
+(defclass bridge-service (rsb.tools.commands:event-queue-mixin
+                          destination-mixin
+                          print-items:print-items-mixin)
+  ()
+  (:documentation
+   "TODO"))
+
+(service-provider:register-provider/class
+ 'rsb.tools.commands::command :bridge-service :class 'bridge-service)
+
+(defmethod command-execute ((command bridge-service) &key error-policy)
+  (let+ (((&structure-r/o command- destination max-queued-events) command)
+         (converters (rsb.tools.commands::ensure-fallback-converter)))
+    (with-participant (bridge :bridge "/"
+                              :converters        converters
+                              :max-queued-events max-queued-events
+                              :error-policy      error-policy)
+      (call-with-control-service
+       destination bridge #'rsb.patterns.bridge:pump-events))))
+
+(defun call-with-control-service (uri bridge thunk)
+  (let ((uri (let+ (((&accessors (path puri:uri-path)) uri))
+               (if (ends-with #\/ path)
+                   uri
+                   (puri:copy-uri uri :path  (concatenate 'string path "/"))))))
+    (with-participants ((server   :local-server uri)
+                        (informer :informer     (puri:merge-uris "state" uri)))
+      (log:info "~@<Providing remote interface for ~A at ~A.~@:>" bridge uri)
+      (let+ (((&flet notify (state &optional (value rsb.converter:+no-value+))
+                (send informer (make-event
+                                (merge-scopes (make-scope (list state))
+                                              (participant-scope informer))
+                                value))))
+             (count  0)
+             (groups (make-hash-table :test #'equal))
+             (lock   (bt:make-lock "Bridge Control Service"))
+             ((&flet make-group-scope (which)
+                (merge-scopes (make-scope (list which))
+                              (participant-scope server))))
+             ((&flet+ dispose-group ((group-which . connections))
+                (loop :for (which . nil) :in connections :do
+                   (setf (rsb.patterns:participant-child
+                          bridge which :connection)
+                         nil))
+                (remhash group-which groups)
+                (notify "child-removed" (make-group-scope group-which)))))
+        (rsb.patterns.request-reply:with-methods (server)
+            (("terminate" ()
+               (log:info "~@<Termination requested.~@:>")
+               (bt:with-lock-held (lock)
+                 (rsb.patterns.bridge:stop bridge)
+                 (notify "terminated")))
+             ;; Bridge operations.
+             ("reset" ()
+               (log:info "~@<Received request to dispose of all connection groups.~@:>")
+               (bt:with-lock-held (lock)
+                 (mapc #'dispose-group (hash-table-values groups)))
+               rsb.converter:+no-value+)
+             ("connect" (spec string)
+               (log:info "~@<Received request to add a connection ~
+                          group to ~A according to specification~
+                          ~@:_~@:_~
+                          ~@<│ ~@;~A~:>~
+                          ~@:_~@:_~
+                          .~:>"
+                         bridge spec)
+               (bt:with-lock-held (lock)
+                 (let+ (;; TODO comment
+                        ((&values connections self-filters)
+                         (handler-bind ((forwarding-cycle-warning
+                                         (lambda (condition)
+                                           (log:warn "~A" condition)
+                                           (muffle-warning condition)))
+                                        (forwarding-cycle-error
+                                         (lambda (condition)
+                                           (log:warn "~A" condition)
+                                           (continue condition))))
+                           (multiple-value-call
+                               #'bridge-description->connection-list
+                             (check-description (parse-spec spec)))))
+                        ((&flet+ make-connection
+                             ((listeners informers filters transform))
+                           (let+ (((&values connection which)
+                                   (rsb.patterns:make-child-participant
+                                    bridge :new :connection
+                                    :listeners         listeners
+                                    :informers         informers
+                                    :filters           filters
+                                    :transform         transform
+                                    :timestamp-events? t
+                                    :self-filters      self-filters)))
+                             (cons which
+                                   (setf (rsb.patterns:participant-child
+                                          bridge which :connection)
+                                         connection)))))
+                        (connections   (mapcar #'make-connection connections))
+                        (which         (princ-to-string (incf count)))
+                        (control-scope (make-group-scope which)))
+                   (setf (gethash which groups) (cons which connections))
+                   (notify "child-added" control-scope)
+                   (scope-string control-scope))))
+             ;; Connection operations
+             ("destroy" (scope scope)
+               (log:info "~@<Received request to removed connection ~
+                          designated by ~A.~@:>"
+                         (scope-string scope))
+               (bt:with-lock-held (lock)
+                 (let* ((scope (make-scope scope))
+                        (which (lastcar (scope-components scope)))
+                        (group (or (gethash which groups)
+                                   (error "~@<No such connection group: ~S.~@:>"
+                                          which))))
+                   (dispose-group group)))
+               rsb.converter:+no-value+))
+
+          (notify "ready")
+          (unwind-protect
+               (funcall thunk bridge)
+            (ignore-errors (notify "terminating"))))))))
