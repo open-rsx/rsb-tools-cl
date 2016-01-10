@@ -1,6 +1,6 @@
 ;;;; participant.lisp --- Bridge-related specialized participants.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -73,12 +73,12 @@
   (:documentation
    "A participant that forwards events between multiple RSB buses.
 
-    Child participants listen a \"source\" RSB bus (or multiple source
-    buses) and collect events. Other child participants publish these
-    events on a \"destination\" RSB bus (or multiple destination
+    Child participants listen on a \"source\" RSB bus (or multiple
+    source buses) and collect events. Other child participants publish
+    these events on a \"destination\" RSB bus (or multiple destination
     buses).
 
-    Forwarded events can optionally transformed when traversing the
+    Forwarded events can optionally be transformed when traversing the
     bridge. In addition, events can be be tagged with the identity of
     the bridge participant and the time of traversal of the bridge."))
 

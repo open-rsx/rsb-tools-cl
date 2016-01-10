@@ -1,4 +1,4 @@
-;;;; bridge.lisp --- Implementation of the bridge command.
+;;;; command.lisp --- Implementation of the bridge command.
 ;;;;
 ;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
@@ -103,6 +103,9 @@
                                       (slot-names t)
                                       &rest args &key
                                       spec)
+  ;; `check-description' signals (continuable) errors and warnings for
+  ;; detected cycles and returns a list of necessary "self-filters" as
+  ;; its second value.
   (let+ (((&values spec self-filters)
           (with-condition-translation
               (((error specification-error) :spec spec))
