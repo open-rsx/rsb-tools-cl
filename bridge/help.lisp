@@ -1,6 +1,6 @@
 ;;;; help.lisp --- Help text generation for the bridge program.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -80,4 +80,14 @@
                Note the use of single quotes (') to prevent the shell ~
                from breaking up the forwarding specification into ~
                multiple arguments because of the whitespace in it."
+          program-name))
+
+(defun make-examples-string/service (&key
+                                     (program-name "rsb bridge-service"))
+  "Make and return a string containing usage examples of the program."
+  (format nil "~2@T~A socket:/control~@
+               ~@
+               In the above example, the ~:*~A command provides its ~
+               remote interface below the /control scope using the ~
+               socket transport."
           program-name))
