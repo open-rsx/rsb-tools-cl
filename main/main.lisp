@@ -7,14 +7,16 @@
 (cl:in-package #:rsb.tools.main)
 
 (defvar *name->entry-point*
-  '(("info"       . rsb.tools.info:main)
-    ("logger"     . rsb.tools.logger:main)
-    ("call"       . rsb.tools.call:main)
-    ("send"       . rsb.tools.send:main)
-    ("introspect" . rsb.tools.introspect:main)
-    ("web"        . rsb.tools.web:main)
-    ("bridge"     . rsb.tools.bridge:main)
-    ("server"     . rsb.tools.server:main))
+  '(("info"           . rsb.tools.info:main)
+    ("logger"         . rsb.tools.logger:main)
+    ("call"           . rsb.tools.call:main)
+    ("send"           . rsb.tools.send:main)
+    ("introspect"     . rsb.tools.introspect:main)
+    ("web"            . rsb.tools.web:main)
+    ("bridge"         . rsb.tools.bridge:main)
+    ("server"         . rsb.tools.server:main)
+
+    ("bridge-service" . rsb.tools.bridge:main/service))
   "Stores a mapping from program names to entry point functions.")
 
 (defun program-pathname->name (program-pathname)
