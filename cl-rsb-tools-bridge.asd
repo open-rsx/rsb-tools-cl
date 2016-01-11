@@ -89,4 +89,5 @@ See `version/list' for details on keyword parameters."
                  :serial     t
                  :components ((:file       "package")
                               (:file       "help")
-                              (:file       "main")))))
+                              (:file       "main")
+                              (:file       "service")))))

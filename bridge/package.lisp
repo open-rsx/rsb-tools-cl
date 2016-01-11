@@ -20,7 +20,8 @@
    #:net.didierverna.clon)
 
   (:export
-   #:main)
+   #:main
+   #:main/service)
 
   (:documentation
    "Main package of the `cl-rsb-tools-bridge' system."))
