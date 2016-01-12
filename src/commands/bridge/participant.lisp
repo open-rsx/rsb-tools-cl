@@ -29,39 +29,15 @@
 (defun make-bridge-timestamp-key (id &key (which '#:received) )
   (format-symbol :keyword "~A.~A.~@:(~A~).~A" '#:rsb '#:bridge id which))
 
-(defun make-annotating-converter-for-everything ()
-  `((t . ,(make-instance 'rsb.converter::annotating))))
-
-(defun make-queue (&key max-queued-events)
-  (apply #'lparallel.queue:make-queue
-         (when max-queued-events
-           (list :fixed-capacity max-queued-events))))
-
 (defun make-handler (queue)
-  (let ((connection))
-    (values
-     (lambda (event)
-       (lparallel.queue:with-locked-queue queue
-         ;; When QUEUE is full, establish a restart for flushing it
-         ;; and signal an error.
-         (when (lparallel.queue:queue-full-p/no-lock queue)
-           (restart-case
-               (error 'rsb.tools.commands::queue-overflow-error
-                      :capacity (lparallel.queue:queue-count/no-lock queue)
-                      :count    (lparallel.queue:queue-count/no-lock queue))
-             (continue (&optional condition)
-               :report (lambda (stream)
-                         (format stream "~@<Flush all queued events ~
-                                         and try to continue.~@:>"))
-               (declare (ignore condition))
-               (iter (until (lparallel.queue:queue-empty-p/no-lock queue))
-                     (lparallel.queue:pop-queue/no-lock queue)))))
-
-         ;; Potentially after flushing QUEUE, push EVENT onto it.
-         (when connection
-           (lparallel.queue:push-queue/no-lock (cons connection event) queue))))
-     (lambda (new-value)
-       (setf connection new-value)))))
+  (let ((connection nil)
+        (handler    (rsb.tools.commands::make-handler queue)))
+    (declare (type function handler))
+    (values (lambda (event)
+              (when connection
+                (funcall handler (cons connection event))))
+            (lambda (new-value)
+              (setf connection new-value)))))
 
 ;;; `connection'
 
@@ -99,7 +75,7 @@
             (setf (rsb.patterns:participant-child instance scope kind)
                   (apply #'rsb.patterns:make-child-participant
                          instance scope kind args))))
-         (converter (make-annotating-converter-for-everything)) ; TODO not always correct: depends on filters and transforms
+         (converter (rsb.tools.commands::make-annotating-converter-for-everything)) ; TODO not always correct: depends on filters and transforms
          ((&flet components-to-drop (uri)
             (length (scope-components (rsb:uri->scope-and-options uri))))))
     ;; Create listener and informer child participants.
@@ -248,7 +224,7 @@
                                      max-queued-events)
   (let+ (((&structure bridge- %queue) instance)
          (i 0))
-    (setf %queue (make-queue :max-queued-events max-queued-events))
+    (setf %queue (rsb.tools.commands::make-queue :max-queued-events max-queued-events))
     (mapc (lambda+ ((listeners informers filters transform))
             (let+ (((&values handler set-connection) (make-handler %queue))
                    (which (princ-to-string (incf i))))

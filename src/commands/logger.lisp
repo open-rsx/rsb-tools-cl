@@ -1,6 +1,6 @@
 ;;;; logger.lisp --- Implementation of the logger command.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -31,32 +31,6 @@
   (:documentation
    "This error is signaled when an attempt is made to push an item
     onto a full fixed-capacity queue."))
-
-(defun make-queue-and-handler (&key max-queued-events)
-  (let ((queue (apply #'lparallel.queue:make-queue
-                      (when max-queued-events
-                        (list :fixed-capacity max-queued-events)))))
-    (values
-     queue
-     (lambda (event)
-       (lparallel.queue:with-locked-queue queue
-         ;; When QUEUE is full, establish a restart for flushing it
-         ;; and signal an error.
-         (when (lparallel.queue:queue-full-p/no-lock queue)
-           (restart-case
-               (error 'queue-overflow-error
-                      :capacity (lparallel.queue:queue-count/no-lock queue)
-                      :count    (lparallel.queue:queue-count/no-lock queue))
-             (continue (&optional condition)
-               :report (lambda (stream)
-                         (format stream "~@<Flush all queued events ~
-                                         and try to continue.~@:>"))
-               (declare (ignore condition))
-               (iter (until (lparallel.queue:queue-empty-p/no-lock queue))
-                     (lparallel.queue:pop-queue/no-lock queue)))))
-
-         ;; Potentially after flushing QUEUE, push EVENT onto it.
-         (lparallel.queue:push-queue/no-lock event queue))))))
 
 (defun make-queue-pushing-listener (handler uri error-policy filters converters)
   (let ((listener (make-participant :listener uri
