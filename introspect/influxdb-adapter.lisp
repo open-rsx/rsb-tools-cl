@@ -4,7 +4,7 @@
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.tools.introspect)
+(cl:in-package #:rsb.formatting.introspection)
 
 (defclass style-influxdb-adapter (database-mixin
                                   rsb.formatting:periodic-printing-mixin)
@@ -44,7 +44,7 @@
               InfluxDB endpoint."))
   (:default-initargs
    :print-interval 4
-   :db             (missing-required-initarg 'style-influxdb-adapter :db))
+   :db             (more-conditions:missing-required-initarg 'style-influxdb-adapter :db))
   (:documentation
    "Pushes aggregated introspection information into an InfluxDB instance.
 
@@ -110,16 +110,17 @@
          ((&flet timing-information (info &optional clock-offset?)
             (values
              (if clock-offset? '(#1="latency" "clock_offset") '(#1#))
-             (list* (rsb.introspection:info-latency info)
+             (list* (rsb.model:info-latency info)
                     (when clock-offset?
-                      (list (rsb.introspection:info-clock-offset info)))))))
-         ((&flet count-participants (entry)
-            (let+ ((participants (rsb.introspection:introspection-participants entry))
+                      (list (rsb.model:info-clock-offset info)))))))
+         ((&flet count-participants (node)
+            (declare (type rsb.model:process-node node))
+            (let+ ((participants (rsb.introspection:introspection-participants node))
                    ((&flet count-of-kind (kind)
                       (count-if
                        (lambda (entry)
-                         (let ((info (rsb.introspection:entry-info entry)))
-                           (eq (rsb.introspection:participant-info-kind info) kind)))
+                         (let ((info (rsb.model:node-info entry)))
+                           (eq (rsb.model:participant-info-kind info) kind)))
                        participants))))
               (values
                (list* "participants"
@@ -129,11 +130,11 @@
          ((&flet post-named-process (process-entry)
             "POST information for the process PROCESS-ENTRY and its
              participants."
-            (let+ ((info         (rsb.introspection:entry-info process-entry))
-                   (process-id   (rsb.introspection:process-info-process-id info))
+            (let+ ((info         (rsb.model:node-info process-entry))
+                   (process-id   (rsb.model:process-info-process-id info))
                    (program-name (simplify-program-name
-                                  (rsb.introspection:process-info-program-name info)))
-                   (display-name (rsb.introspection:process-info-display-name info))
+                                  (rsb.model:process-info-program-name info)))
+                   (display-name (rsb.model:process-info-display-name info))
                    ((&values timing-columns timing-values)
                     (timing-information info))
                    ((&values participant-columns participant-values)
@@ -163,31 +164,33 @@
                             (make-safe-name hostname))
                     (list* "count"            columns)
                     (list* (length processes) counts)))))
-         ((&flet count-processes (entry)
+         ((&flet count-processes (node)
             "Return values that reflect the number of processes in
              specific states."
-            (let+ ((processes (rsb.introspection:entry-children entry))
+            (declare (type rsb.model:host-node node))
+            (let+ ((processes (rsb.model:node-children node))
                    ((&flet count-in-state (state)
                       (count-if
-                       (lambda (entry)
-                         (let ((info (rsb.introspection:entry-info entry)))
-                           (eq (rsb.introspection:process-info-state info)
-                               state)))
+                       (lambda (node)
+                         (declare (type rsb.model:process-node node))
+                         (let ((info (rsb.model:node-info node)))
+                           (eq (rsb.model:process-info-state info) state)))
                        processes)))
                   (states '(:crashed)))
              (values (mapcar (curry #'format nil "processes.~(~A~)") states)
                      (mapcar #'count-in-state states)))))
-         ((&flet one-host (entry)
-            "POST information for the host ENTRY and its processes."
-            (let+ ((info (rsb.introspection:entry-info entry))
-                   (hostname (rsb.introspection:host-info-hostname info))
+         ((&flet one-host (node)
+            "POST information for the host NODE and its processes."
+            (declare (type rsb.model:host-node node))
+            (let+ ((info     (rsb.model:node-info node))
+                   (hostname (rsb.model:host-info-hostname info))
                    ((&values timing-columns timing-values)
                     (timing-information info t))
                    ((&values process-columns process-values)
-                    (count-processes entry))
-                   (processes (rsb.introspection:entry-children entry))
-                   (named-processes (remove-if-not (compose #'rsb.introspection:process-info-display-name
-                                                            #'rsb.introspection:entry-info)
+                    (count-processes node))
+                   (processes (rsb.model:node-children node))
+                   (named-processes (remove-if-not (compose #'rsb.model:process-info-display-name
+                                                            #'rsb.model:node-info)
                                                    processes))
                    (unnamed-processes (set-difference processes named-processes)))
               (post (format nil "introspection.host.~A" (make-safe-name hostname))
@@ -196,7 +199,7 @@
               (mapc #'post-named-process named-processes)
               (post-unnamed-processes hostname unnamed-processes)))))
     (rsb.introspection:with-database-lock (database)
-      (mapc #'one-host (rsb.introspection:entry-children
+      (mapc #'one-host (rsb.model:node-children
                         (rsb.introspection::introspection-database database))))))
 
 ;;; Utility functions
