@@ -1,6 +1,6 @@
 ;;;; command.lisp --- Tests for the bridge command class.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -43,6 +43,8 @@
         ((:spec "/foo -> /bar; /baz -> /fez")        t)
         ((:spec "/foo -> /bar ;/baz -> /fez")        t)
         ((:spec "/foo -> /bar ; /baz -> /fez")       t)
+        ((:spec "/foo -> /bar ;
+                 /baz -> /fez")                      t)
         ((:spec "/a -> /b" :max-queued-events 10)    t))
 
     (let+ (((&flet do-it () (apply #'make-command :bridge initargs))))
