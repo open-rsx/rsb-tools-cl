@@ -86,6 +86,10 @@
   (define-model-class (:bridge)
     (connections (:composite *) :type connection-description)))
 
+(defmethod print-object ((object connection-description) stream)
+  (let ((*print-circle* t))
+    (call-next-method)))
+
 ;;; Model checks
 
 (defmethod communication? ((output output-description)
