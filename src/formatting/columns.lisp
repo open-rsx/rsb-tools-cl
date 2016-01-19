@@ -1,6 +1,6 @@
 ;;;; columns.lisp --- Some column classes.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -347,6 +347,11 @@
     (:scope/40    . (:quantity
                      :quantity  (:scope :format ,*generic-histogram-format*)
                      :widths    (:range 40)
+                     :alignment :left))
+    (:method/20   . (:quantity
+                     :quantity  (:method :format ,*generic-histogram-format*)
+                     :widths    (:range 20)
+                     :priority  1.8
                      :alignment :left))
     (:type/40     . (:quantity
                      :quantity  (:type :format ,*generic-histogram-format*)

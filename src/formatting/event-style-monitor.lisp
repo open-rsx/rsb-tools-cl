@@ -1,6 +1,6 @@
 ;;;; event-style-monitor.lisp --- Style that aggregates events in sub-styles.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -178,7 +178,7 @@
           :priority  3.2
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate :throughput :latency :timeline :type/40 :size :origin/40)
+    :rate :throughput :latency :timeline :type/40 :size :origin/40 :method/20)
 
   (service-provider:register-provider/class ; alias
    'style :monitor/timeline :class 'style-monitor/scope/flat)
@@ -193,7 +193,7 @@
           :width     38
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate :throughput :latency :scope/40 :timeline :type/40 :size)
+    :rate :throughput :latency :scope/40 :timeline :type/40 :size :method/20)
 
   (define-monitor-style (type
                          :key  #'rsb.stats:event-type/simple
@@ -207,7 +207,7 @@
           :widths    '(:range 35)
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate :throughput :latency :scope/40 :timeline :size :origin/40)
+    :rate :throughput :latency :scope/40 :timeline :size :origin/40 :method/20)
 
   (define-monitor-style (size
                          :key  #'rsb.stats:event-size/power-of-2
@@ -224,7 +224,7 @@
           :width     5
           :alignment :left)
     ;; Specifications for remaining columns.
-    :rate :throughput :latency :scope/40 :timeline :type/40 :size :origin/40))
+    :rate :throughput :latency :scope/40 :timeline :type/40 :size :origin/40 :method/20))
 
 ;;; Scope-tree monitor style
 ;;;
@@ -263,7 +263,7 @@
                        (sublis *basic-columns*
                                (list (%make-last-scope-component-column value)
                                      :rate :throughput :latency :timeline
-                                     :type/40 :size :origin/40)))
+                                     :type/40 :size :origin/40 :method/20)))
    :line-style-class 'monitor-line-style/tree))
 
 ;; Name and aliases
