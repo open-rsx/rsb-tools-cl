@@ -10,20 +10,20 @@
 
 (defclass bridge (rsb.tools.commands:event-queue-mixin
                   print-items:print-items-mixin)
-  ((spec              :initarg  :spec
-                      :type     bridge-description
-                      :reader   bridge-spec
-                      :documentation
-                      "Stores the specification according to which the
-                       bridge should be constructed and configured.")
-   (self-filters      :initarg  :self-filters
-                      :type     list
-                      :reader   bridge-self-filters
-                      :documentation
-                      "Stores a list of filters necessary to prevent
-                       forwarding cycles that would otherwise be
-                       caused by events sent by the bridge and then
-                       received by the bridge."))
+  ((spec         :initarg  :spec
+                 :type     bridge-description
+                 :reader   bridge-spec
+                 :documentation
+                 "Stores the specification according to which the
+                  bridge should be constructed and configured.")
+   (self-filters :initarg  :self-filters
+                 :type     list
+                 :reader   bridge-self-filters
+                 :documentation
+                 "Stores a list of filters necessary to prevent
+                  forwarding cycles that would otherwise be caused by
+                  events sent by the bridge and then received by the
+                  bridge."))
   (:default-initargs
    :spec (missing-required-initarg 'bridge :spec))
   (:documentation
