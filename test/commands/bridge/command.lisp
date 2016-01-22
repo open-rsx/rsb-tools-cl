@@ -68,38 +68,46 @@
           "Smoke test for the `bridge' command.")
   smoke
 
-  (let* ((rsb:*configuration* *config*)
-         (error    nil)
-         (command  (make-command :bridge :spec "/foo -> /bar"))
-         (thread   (bt:make-thread
-                    (lambda ()
-                      (let ((rsb:*configuration* *config*))
-                        (handler-case
-                            (restart-case
-                                (command-execute command)
-                              (abort ()))
-                          (error (condition)
-                            (setf error condition)))))))
-         (received (lparallel.queue:make-queue)))
-    (unwind-protect
-         (rsb:with-participants
-             ((informer :informer "/foo")
-              (listener :listener "/bar"
-                        :handlers (list (rcurry #'lparallel.queue:push-queue
-                                                received))))
-           (sleep 1) ; TODO racy
-           (rsb:send informer (rsb:make-event "/foo/baz" 1))
-           (loop :until (not (lparallel.queue:queue-empty-p received))))
+  (let+
+      (((&flet test (spec expected-scope expected-data)
+          (let* ((rsb:*configuration* *config*)
+                 (error    nil)
+                 (command  (make-command :bridge :spec spec))
+                 (thread   (bt:make-thread
+                            (lambda ()
+                              (let ((rsb:*configuration* *config*))
+                                (handler-case
+                                    (restart-case
+                                        (command-execute command)
+                                      (abort ()))
+                                  (error (condition)
+                                    (setf error condition)))))))
+                 (received (lparallel.queue:make-queue)))
+            (unwind-protect
+                 (rsb:with-participants
+                     ((informer :informer "/foo")
+                      (listener :listener "/bar"
+                                :handlers (list (rcurry #'lparallel.queue:push-queue
+                                                        received))))
+                   (sleep 1) ; TODO racy
+                   (rsb:send informer (rsb:make-event "/foo/baz" 1))
+                   (loop :until (not (lparallel.queue:queue-empty-p received))))
 
-      (bt:interrupt-thread thread (lambda () (abort)))
-      (ignore-errors (bt:join-thread thread)))
+              (bt:interrupt-thread thread (lambda () (abort)))
+              (ignore-errors (bt:join-thread thread)))
 
-    ;; Check for errors.
-    (when error (error error))
+            ;; Check for errors.
+            (when error (error error))
 
-    ;; Check forwarded event.
-    (ensure-same (lparallel.queue:queue-count received) 1)
-    (let ((event (lparallel.queue:pop-queue received)))
-      (ensure-same (rsb:event-scope event) "/bar/baz" :test #'rsb:scope=)
-      (ensure-same (rsb:event-data event) 1)
-      (ensure-same (length (rsb:timestamp-alist event)) 5))))
+            ;; Check forwarded event.
+            (ensure-same (lparallel.queue:queue-count received) 1)
+            (let ((event (lparallel.queue:pop-queue received)))
+              (ensure-same (rsb:event-scope event) expected-scope
+                           :test #'rsb:scope=)
+              (ensure-same (rsb:event-data event) expected-data)
+              (ensure-same (length (rsb:timestamp-alist event)) 5))))))
+
+    (test "/foo -> /bar"
+          "/bar/baz" 1)
+    (test "/foo -> /drop-payload/ /bar"
+          "/bar/baz" rsb.transform:+dropped-payload+)))

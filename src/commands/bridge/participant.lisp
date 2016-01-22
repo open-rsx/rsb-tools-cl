@@ -66,7 +66,6 @@
                                      listeners
                                      informers
                                      filters
-                                     transform
                                      (timestamp-events? t)
                                      handler
                                      self-filters)
@@ -75,27 +74,35 @@
             (setf (rsb.patterns:participant-child instance scope kind)
                   (apply #'rsb.patterns:make-child-participant
                          instance scope kind args))))
-         (converter (rsb.tools.commands::make-annotating-converter-for-everything)) ; TODO not always correct: depends on filters and transforms
+         ;; TODO First approximation of smart converter
+         ;; configuration. See wip-transform-model rsb-cl branch
+         (transform (let ((initargs (rsb.patterns:make-child-initargs
+                                     instance t :listener)))
+                      (getf initargs :transform)))
+         ((&flet annotating ()
+            (rsb.tools.commands::make-annotating-converter-for-everything)))
          ((&flet components-to-drop (uri)
             (length (scope-components (rsb:uri->scope-and-options uri))))))
-    ;; Create listener and informer child participants.
+    ;; Create informer …
     (mapc (lambda (uri)
             (let+ (((&values uri id) (if (consp uri)
                                          (values (car uri) (cdr uri))
                                          uri)))
               (apply #'add-child uri :informer
-                     :converters converter
-                     (when id (list :id id)))))
+                     (append
+                      (unless transform (list :converters (annotating)))
+                      (when   id        (list :id         id))))))
           informers)
+    ;; … and listener child participants (the latter potentially with
+    ;; filters and transforms).
     (mapc (lambda (uri)
-            (add-child uri :listener
-                       :filters            filters
-                       :converters         converter
-                       :handlers           (list handler)
-                       :transform          transform
-                       :filter-ids         (mapcar #'cdr (cdr (assoc uri self-filters)))
-                       :drop-components    (components-to-drop uri)
-                       :timestamp-events?  timestamp-events?))
+            (apply #'add-child uri :listener
+                   :filters            filters
+                   :handlers           (list handler)
+                   :filter-ids         (mapcar #'cdr (cdr (assoc uri self-filters)))
+                   :drop-components    (components-to-drop uri)
+                   :timestamp-events?  timestamp-events?
+                   (unless transform (list :converters (annotating)))))
           listeners)))
 
 (defun make-bridge-listener-filters (ids)
