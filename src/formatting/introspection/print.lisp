@@ -1,6 +1,6 @@
 ;;;; print.lisp --- Printing of introspection information.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -19,19 +19,28 @@
 
 (defun print-participant-info-markup (stream participant-info
                                       &optional colon? at?)
-  (declare (ignore colon? at?))
+  ;; If COLON? is true, include properties of PARTICIPANT-INFO that
+  ;; only make sense when describing a live system.
+  (declare (ignore at?))
   (let+ (((&structure-r/o participant-info- kind id scope type)
           participant-info))
-    (format stream "~/rsb::print-id/~
-                    ~18,0T~
-                    ~:[~
-                      ~A~
-                      ~35,0T~A<~A>~
-                      ~58,0T~A~
-                    ~:;~
-                      <missing>~
-                    ~]"
-            id (eq :proxy kind) :active kind type (scope-string scope))))
+    (format stream "~/rsb::print-id/~18,0T" id)
+    (if colon?
+        (format stream "~:[~
+                          ~A~
+                          ~35,0T~A<~A>~
+                          ~58,0T~A~
+                        ~:;~
+                          <missing>~
+                        ~]"
+                (eq :proxy kind) :active kind type (scope-string scope))
+        (format stream "~:[~
+                          ~16,0T~A<~A>~
+                          ~48,0T~A~
+                        ~:;~
+                          <missing>~
+                        ~]"
+                (eq :proxy kind) kind type (scope-string scope)))))
 
 ;;; Process
 
@@ -41,7 +50,9 @@
 
 (defun print-process-info-markup (stream process-info
                                   &optional colon? at?)
-  (declare (ignore colon? at?))
+  ;; If COLON? is true, include properties of PROCESS-INFO that only
+  ;; make sense when describing a live system.
+  (declare (ignore at?))
   (let+ ((remote? (typep process-info 'remote-process-info))
          ((&structure
            process-info-
@@ -51,20 +62,24 @@
     (write-string ; next four lines hack around limitations of nested pretty streams
      (with-output-to-string (stream)
        (let ((*print-right-margin* (when-let ((right-margin *print-right-margin*))
-                                     (- right-margin 3))))
-         (format stream "~6,,,'0@A~
-                         ~17,0T~@[ ~/rsb.formatting.introspection::print-process-state-markup/~]~
-                         ~25,0T~@[ (~/rsb.formatting.introspection::print-elapsed-time/)~]~
-                         ~35,0T~@<~:[~A~:;~:*~A (~A)~]~@[ ~:_~{~A~^ ~:_~}~]~@:>"
-                 process-id
-                 (when remote? state)
-                 (when remote? (info-most-recent-activity process-info))
+                                             (- right-margin 3))))
+         (format stream "~6,,,'0@A~16,0T"
+                 process-id)
+         (when colon?
+           (format stream "~@[ ~/rsb.formatting.introspection::print-process-state-markup/~]~
+                           ~25,0T~@[ (~/rsb.formatting.introspection::print-elapsed-time/)~]~
+                           ~35,0T"
+                   (when remote? state)
+                   (when remote? (info-most-recent-activity process-info))))
+         (format stream "~@<~:[~A~:;~:*~A (~A)~]~@[ ~:_~{~A~^ ~:_~}~]~@:>"
                  display-name program-name commandline-arguments)))
      stream)))
 
 (defun print-process-info-details-markup (stream process-info
                                           &optional colon? at?)
-  (declare (ignore colon? at?))
+  ;; If COLON? is true, include properties of PROCESS-INFO that
+  ;; only make sense when describing a live system.
+  (declare (ignore at?))
   (let+ ((remote? (typep process-info 'remote-process-info))
          ((&accessors (start-time     process-info-start-time)
                       (executing-user process-info-executing-user)
@@ -72,16 +87,24 @@
                       (transports     process-info-transports)
                       (latency        info-latency))
           process-info))
-   (format stream "Uptime    ~@[ ~/rsb.formatting.introspection::print-elapsed-time/~]~
-                   ~24,0T│ User        ~:[?~:;~:*~A~]~
-                   ~@:_Latency ~/rsb.formatting.introspection::print-time-offset-markup/~
-                   ~24,0T│ RSB Version ~:[?~:;~:*~A~]~
-                   ~@:_Transports~@[ ~@<~{~A~^, ~_~}~:>~]"
-           start-time             executing-user
-           (when remote? latency) rsb-version
-           (when remote?
-             (mapcar (lambda (uri) (puri:merge-uris (puri:uri "/") uri))
-                     transports)))))
+    (if colon?
+        (format stream "Uptime    ~@[ ~/rsb.formatting.introspection::print-elapsed-time/~]~
+                        ~24,0T│ User        ~:[?~:;~:*~A~]~
+                        ~@:_Latency ~/rsb.formatting.introspection::print-time-offset-markup/~
+                        ~24,0T│ RSB Version ~:[?~:;~:*~A~]"
+                start-time             executing-user
+                (when remote? latency) rsb-version)
+        (format stream "Start~
+                        ~37,0T│ User        ~:[?~:;~:*~A~]~
+                        ~@:_~
+                        ~@[~A~]~
+                        ~37,0T│ RSB Version ~:[?~:;~:*~A~]"
+                executing-user start-time rsb-version))
+    (format stream "~@:_~
+                    Transports~@[ ~@<~{~A~^, ~_~}~:>~]"
+            (when remote?
+              (mapcar (lambda (uri) (puri:merge-uris (puri:uri "/") uri))
+                      transports)))))
 
 ;;; Host
 
@@ -105,14 +128,17 @@
           value))
 
 (defun print-host-info-markup (stream host-info &optional colon? at?)
-  (declare (ignore colon? at?))
+  ;; If COLON? is true, include properties of HOST-INFO that only make
+  ;; sense when describing a live system.
+  (declare (ignore at?))
   (let* ((remote?              (typep host-info 'remote-host-info))
          (state                (when remote? (host-info-state host-info)))
          (most-recent-activity (when remote? (info-most-recent-activity host-info))))
-    (format stream "~A~
-                    ~17,0T~@[ ~/rsb.formatting.introspection::print-host-state-markup/~]~
-                    ~25,0T~@[ (~/rsb.formatting.introspection::print-elapsed-time/)~]"
-            (host-info-hostname host-info) state most-recent-activity)))
+    (format stream "~A" (host-info-hostname host-info))
+    (when colon?
+      (format stream "~17,0T~@[ ~/rsb.formatting.introspection::print-host-state-markup/~]~
+                      ~25,0T~@[ (~/rsb.formatting.introspection::print-elapsed-time/)~]"
+              state most-recent-activity))))
 
 (defun truncate-string (string max)
   (let ((length (length string)))
@@ -121,7 +147,9 @@
         string)))
 
 (defun print-host-info-details-markup (stream host-info &optional colon? at?)
-  (declare (ignore colon? at?))
+  ;; If COLON? is true, include properties of HOST-INFO that only make
+  ;; sense when describing a live system.
+  (declare (ignore at?))
   (let+ (((&structure-r/o
            host-info-
            machine-type machine-version software-type software-version)
@@ -129,14 +157,22 @@
          (remote?      (typep host-info 'remote-host-info))
          (clock-offset (when remote? (info-clock-offset host-info)))
          (latency      (when remote? (info-latency host-info))))
-    (format stream "Clock offset ~/rsb.formatting.introspection::print-time-offset-markup/~
-                    ~24,0T│ Machine type    ~:[?~:;~:*~A~]~
-                    ~60,0T│ Software type    ~:[?~:;~:*~A~]~
-                    ~@:_Latency      ~/rsb.formatting.introspection::print-time-offset-markup/~
-                    ~24,0T│ Machine version ~:[?~:;~:*~A~]~
-                    ~60,0T│ Software version ~:[?~:;~:*~A~]"
-     clock-offset machine-type                         software-type
-     latency      (truncate-string machine-version 17) software-version)))
+    (if colon?
+        (format stream "Clock offset ~/rsb.formatting.introspection::print-time-offset-markup/~
+                        ~24,0T│ Machine type    ~:[?~:;~:*~A~]~
+                        ~60,0T│ Software type    ~:[?~:;~:*~A~]~
+                        ~@:_Latency      ~/rsb.formatting.introspection::print-time-offset-markup/~
+                        ~24,0T│ Machine version ~:[?~:;~:*~A~]~
+                        ~60,0T│ Software version ~:[?~:;~:*~A~]"
+                clock-offset machine-type                         software-type
+                latency      (truncate-string machine-version 17) software-version)
+        (format stream "Machine type    ~:[?~:;~:*~A~]~
+                        ~36,0T│ Software type    ~:[?~:;~:*~A~]~
+                        ~@:_~
+                        Machine version ~:[?~:;~:*~A~]~
+                        ~36,0T│ Software version ~:[?~:;~:*~A~]"
+                machine-type                         software-type
+                (truncate-string machine-version 17) software-version))))
 
 ;;; Tree printing
 
@@ -148,46 +184,46 @@
   (:method ((entry process-entry))
     (sort-participants (node-children entry))))
 
-(defgeneric print-entry (target entry what &key filter))
+(defgeneric print-entry (target entry what &key filter stateful?))
 
 (defmethod print-entry ((target stream)
                         (entry  rsb.model:info-mixin)
                         (what   t)
-                        &key &allow-other-keys)
-  (print-entry target (node-info entry) what))
+                        &rest args &key &allow-other-keys)
+  (apply #'print-entry target (node-info entry) what args))
 
 (defmethod print-entry ((target stream)
                         (entry  participant-info)
                         (what   (eql :first))
-                         &key &allow-other-keys)
-  (print-participant-info-markup target entry)
+                         &key stateful? &allow-other-keys)
+  (print-participant-info-markup target entry stateful?)
   nil) ; return value indicates "no further content"
 
 (defmethod print-entry ((target stream)
                         (entry  process-info)
                         (what   (eql :first))
-                         &key &allow-other-keys)
-  (print-process-info-markup target entry)
+                         &key stateful? &allow-other-keys)
+  (print-process-info-markup target entry stateful?)
   t) ; return value indicates "more content available"
 
 (defmethod print-entry ((target stream)
                         (entry  process-info)
                         (what   (eql :content))
-                         &key &allow-other-keys)
-  (print-process-info-details-markup target entry))
+                         &key stateful? &allow-other-keys)
+  (print-process-info-details-markup target entry stateful?))
 
 (defmethod print-entry ((target stream)
                         (entry  host-info)
                         (what   (eql :first))
-                         &key &allow-other-keys)
-  (print-host-info-markup target entry)
+                         &key stateful? &allow-other-keys)
+  (print-host-info-markup target entry stateful?)
   t) ; return value indicates "more content available"
 
 (defmethod print-entry ((target stream)
                         (entry  host-info)
                         (what   (eql :content))
-                         &key &allow-other-keys)
-  (print-host-info-details-markup target entry))
+                         &key stateful? &allow-other-keys)
+  (print-host-info-details-markup target entry stateful?))
 
 (defmethod print-entry ((target stream)
                         (entry  remote-introspection-database)
@@ -207,7 +243,9 @@
 
 (defun print-object-tree1 (tree stream &rest args
                            &key
-                           (filter (constantly t)))
+                           (filter   (constantly t))
+                           stateful?)
+  (declare (ignore stateful?))
   (let* ((args    (remove-from-plist args :filter))
          (printer (utilities.print-tree:make-folding-node-printer
                    (lambda (stream depth entry)

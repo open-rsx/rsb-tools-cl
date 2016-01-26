@@ -1,6 +1,6 @@
 ;;;; introspect.lisp --- Tests for the introspect command class.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -33,7 +33,9 @@
           :stream      ,*standard-output*))
         ((:uris        (,(puri:uri "/"))
           :style-spec  "object-tree"
-          :stream-spec :error-output)))
+          :stream-spec :error-output))
+        ((:uris        (,(puri:uri "/"))
+          :style-spec  "object-tree :stateful? nil")))
 
     (let+ (((&flet do-it () (apply #'make-command :introspect initargs))))
       (case expected

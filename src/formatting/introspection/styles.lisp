@@ -1,6 +1,6 @@
 ;;;; styles.lisp --- Printing and other processing of introspection information.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -104,12 +104,19 @@
                maximum depth up to which the tree of introspection
                objects should be printed.
 
-               Nodes below that depth should not be printed."))
+               Nodes below that depth should not be printed.")
+   (stateful? :initarg  :stateful?
+              :reader   style-stateful?
+              :initform t
+              :documentation
+              "When true, print object properties such as current
+               state or latency that only make sense when describing a
+               live system."))
   (:documentation
    "This class is intended to be mixed into style classes which print
     trees of introspection objects."))
 
-(defun print-object-tree (database stream max-depth)
+(defun print-object-tree (database stream &key max-depth stateful?)
   (let+ (((&flet filter (target entry what &key depth)
             (declare (ignore target entry what))
             (cond
@@ -117,7 +124,7 @@
                '(:first :content :children))
               ((or (not max-depth) (not depth) (<= depth max-depth))
                '(:first :content))))))
-    (print-entry stream database t :filter #'filter)))
+    (print-entry stream database t :filter #'filter :stateful? stateful?)))
 
 ;;; `delay-mixin'
 
@@ -219,8 +226,10 @@
                                         (target t)
                                         &key &allow-other-keys)
   (fresh-line target)
-  (let+ (((&structure-r/o style- database max-depth) style))
-    (print-object-tree database target max-depth)))
+  (let+ (((&structure-r/o style- database max-depth stateful?) style))
+    (print-object-tree database target
+                       :max-depth max-depth
+                       :stateful? stateful?)))
 
 ;;; `style-object-tree'
 
@@ -253,6 +262,8 @@
                                         (target t)
                                         &key &allow-other-keys)
   (fresh-line target)
-  (let+ (((&structure-r/o style- database max-depth) style))
-    (print-object-tree database target max-depth))
+  (let+ (((&structure-r/o style- database max-depth stateful?) style))
+    (print-object-tree database target
+                       :max-depth max-depth
+                       :stateful? stateful?))
   nil)
