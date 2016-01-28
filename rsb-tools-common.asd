@@ -75,6 +75,7 @@ See `version/list' for details on keyword parameters."
 RSB-related systems."
   :depends-on  (:let-plus
                 (:version :log4cl "1.1.1")
+                :uiop
 
                 :esrap
                 :cl-ppcre

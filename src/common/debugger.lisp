@@ -40,7 +40,7 @@
   (when (probe-file port-file)
     (delete-file port-file))
   ;; Start the swank server.
-  (funcall (find-symbol "START-SERVER" :swank) port-file))
+  (uiop:symbol-call '#:swank '#:start-server port-file :dont-close t))
 
 (defun enable-swank-on-signal (&key (signal #+(and sbcl (not win32)) sb-posix:SIGUSR1))
   "Install a handler for SIGNAL that starts a swank server."
