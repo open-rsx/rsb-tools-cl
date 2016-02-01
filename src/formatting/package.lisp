@@ -249,6 +249,11 @@
   (:export
    #:temporal-bounds-mixin)
 
+  ;; `payload-style-mixin' mixin class
+  (:export
+   #:payload-style-mixin
+   #:style-payload-style)
+
   ;; `style-meta-data' style class
   (:export
    #:style-meta-data

@@ -6,10 +6,12 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defclass style-detailed (style-meta-data)
+(defclass style-detailed (style-meta-data
+                          payload-style-mixin)
   ()
   (:default-initargs
-   :max-lines 200)
+   :payload-style :any
+   :max-lines     200)
   (:documentation
    "Format each event on multiple lines with as many details as
     possible."))
@@ -40,5 +42,5 @@
                    type))
                 length unit)
         (pprint-logical-block (stream (list data))
-          (format-payload data :any stream)))))
+          (format-payload data (style-payload-style style) stream)))))
   (terpri stream))

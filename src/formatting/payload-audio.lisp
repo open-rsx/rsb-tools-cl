@@ -47,4 +47,5 @@
                            (style  style-audio-stream/raw)
                            (target t)
                            &key)
-  (write-sequence (rst.audition:sound-chunk-data data) target))
+  (write-sequence (rst.audition:sound-chunk-data data) target)
+  (force-output target))

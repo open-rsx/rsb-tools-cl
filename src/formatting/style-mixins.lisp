@@ -377,3 +377,32 @@
 
     (real
      (floor spec 1/1000000000))))
+
+;;; `payload-style-mixin'
+
+(defclass payload-style-mixin ()
+  ((payload-style :reader   style-payload-style
+                  :writer   (setf style-%payload-style)
+                  :documentation
+                  "Stores a style instance which should be used to
+                   format payloads."))
+  (:documentation
+   "This class is intended to be mixed into style classes that process
+    event payloads."))
+
+(defmethod shared-initialize :after ((instance   payload-style-mixin)
+                                     (slot-names t)
+                                     &key
+                                     payload-style)
+  (when payload-style
+    (setf (style-%payload-style instance)
+          (typecase payload-style
+            ((eql :any)       payload-style) ; TODO temporary hack
+            ((or symbol cons) (make-style payload-style))
+            (t                payload-style)))))
+
+(defmethod format-event ((event  event)
+                         (style  payload-style-mixin)
+                         (stream t)
+                         &key)
+  (format-payload (event-data event) (style-payload-style style) stream))
