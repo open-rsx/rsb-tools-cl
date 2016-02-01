@@ -24,7 +24,8 @@
 
     `(()
       (,(make-event "/foo" "bar"))
-      ,(format nil "~80,,,VA
+      ,(format nil "
+~80,,,VA
 Event
   Scope           /foo/
   Id              <none>
@@ -37,13 +38,13 @@ Timestamps
   receive <none>
   deliver <none>
 Payload: STRING, 3 characters
-  \"bar\"
-"
+  \"bar\""
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
 
     `(()
       (,(make-event "/foo/bar/baz" 1 :fez "whoop"))
-      ,(format nil "~80,,,VA
+      ,(format nil "
+~80,,,VA
 Event
   Scope           /foo/bar/baz/
   Id              <none>
@@ -58,12 +59,12 @@ Timestamps
 Meta-Data
   FEZ \"whoop\"
 Payload: .*
-  1
-"
+  1"
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
     `(()
       (,(make-event "/foo/bar/baz" (nibbles:octet-vector 1 2 255)))
-      ,(format nil "~80,,,VA
+      ,(format nil "
+~80,,,VA
 Event
   Scope           /foo/bar/baz/
   Id              <none>
@@ -76,6 +77,5 @@ Timestamps
   receive <none>
   deliver <none>
 Payload: .*, 3 octets
-  0 01 02 FF                                              ... *~@
-"
+  0 01 02 FF                                              ... *"
                (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))

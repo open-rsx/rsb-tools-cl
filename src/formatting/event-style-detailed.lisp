@@ -33,7 +33,8 @@
              ((&values type length unit) (event-payload-description event))
              (*print-lines* (when *print-lines*
                               (max 0 (- *print-lines* 11)))))
-        (format stream "Payload: ~A~:[~*~;, ~:*~:D ~(~A~)~2:*~P~*~]~
+        (format stream "~@:_~
+                        Payload: ~A~:[~*~;, ~:*~:D ~(~A~)~2:*~P~*~]~
                         ~@:_~2@T"
                 (typecase type
                   ((and symbol (not keyword))
@@ -42,5 +43,4 @@
                    type))
                 length unit)
         (pprint-logical-block (stream (list data))
-          (format-payload data (style-payload-style style) stream)))))
-  (terpri stream))
+          (format-payload data (style-payload-style style) stream))))))

@@ -35,7 +35,8 @@
                   :documentation
                   "Should the causes of the event be printed?"))
   (:default-initargs
-   :separator `((:rule ,(if *textual-output-can-use-utf-8?* #\─ #\-))
+   :separator `(#\Newline
+                (:rule ,(if *textual-output-can-use-utf-8?* #\─ #\-))
                 #\Newline))
   (:documentation
    "Format the meta-data of each event on multiple lines, but do not
@@ -127,6 +128,4 @@
                             ~{~A~^~@:_~}~
                           ~:>"
                   produced-output?
-                  (map 'list #'event-id->uuid (event-causes event))))))
-
-    (terpri stream)))
+                  (map 'list #'event-id->uuid (event-causes event))))))))
