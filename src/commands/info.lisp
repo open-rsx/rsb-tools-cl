@@ -1,6 +1,6 @@
 ;;;; info.lisp --- Entry point of the info tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -99,6 +99,9 @@
           command)
          (stream (command-stream command))
          (produced-output? nil)
+         ((&flet sorted-providers (service)
+            (sort (copy-list (service-provider:service-providers service))
+                  #'string< :key #'service-provider:provider-name)))
          ((&flet format-service-providers (service)
             (format stream "~:[~;~2&~]~@(~A~)s~
                       ~&~2@T~@<~
@@ -110,7 +113,7 @@
                               (list (service-provider:provider-name provider)
                                     (when-let ((documentation (documentation provider t)))
                                       (first-line-or-less documentation))))
-                            (service-provider:service-providers service)))
+                            (sorted-providers service)))
             (setf produced-output? t))))
 
     (when version?
