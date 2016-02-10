@@ -151,13 +151,7 @@
       (setf produced-output? t))
 
     (when converters?
-      (format stream "~:[~;~2&~]Converters~
-                      ~&~2@T~@<~
-                        ~{+ ~<~@;~@{~A~*~}~:>~^~@:_~}~
-                      ~:>"
-              produced-output?
-              (rsb.converter:converter-classes))
-      (setf produced-output? t))
+      (format-service-providers 'rsb.converter::converter))
 
     (when filters?
       (format stream "~:[~;~2&~]Filters~&~2@T"
@@ -174,8 +168,7 @@
                       ~&~2@T~@<~
                         ~:[<none>~;~{+ ~<~@;~@{~A~*~}~:>~^~@:_~}~]~
                       ~:>"
-              produced-output?
-              (rsb.event-processing:processor-classes))
+              produced-output? '())
       (setf produced-output? t))
 
     (when participants?
