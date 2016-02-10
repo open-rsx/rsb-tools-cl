@@ -292,14 +292,17 @@
 
 ;;; Column class family
 
-(dynamic-classes:define-findable-class-family column
-  "This class family consists of column classes, instances of which
-   can be used in column-based formatting styles. Column classes have
-   to implement the column protocol consisting of:
-   + `column-name'
-   + `column-width'
-   + [`column-produces-output?' default implementation available]
-   + `format-event'")
+(service-provider:define-service column
+  (:documentation
+   "Providers can be used in column-based formatting styles.
+
+    Column classes have to implement the column protocol consisting
+    of:
+
+    + `column-name'
+    + `column-width'
+    + [`column-produces-output?' default implementation available]
+    + `format-event'"))
 
 (defun make-column (spec)
   "Make and return a column instance according to SPEC. SPEC can
@@ -311,11 +314,9 @@
    instance."
   (etypecase spec
     (keyword
-     (make-instance (find-column-class spec)))
+     (service-provider:make-provider 'column spec))
     (list
-     (check-type spec (cons keyword list) "a keyword followed by initargs")
-     (let+ (((class &rest args) spec))
-       (apply #'make-instance (find-column-class class) args)))
+     (apply #'service-provider:make-provider 'column spec))
     (standard-object
      spec)))
 

@@ -1,16 +1,16 @@
 ;;;; mock-column.lisp --- A mock column class for tests.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:rsb.formatting.test)
 
-(defmethod find-column-class ((spec (eql :mock)))
-  (find-class 'mock-column))
-
 (defclass mock-column (width-mixin)
   ())
+
+(service-provider:register-provider/class
+ 'rsb.formatting::column :mock :class 'mock-column)
 
 (defmethod format-header ((thing  mock-column)
                           (target t))

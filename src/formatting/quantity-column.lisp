@@ -6,9 +6,6 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defmethod find-column-class ((spec (eql :quantity)))
-  (find-class 'quantity-column))
-
 (defclass quantity-column (width-specification-mixin
                            width-mixin)
   ((quantity :accessor column-quantity
@@ -20,6 +17,9 @@
   (:documentation
    "Instances of this class use an associated quantity instance to
     provide a name and the printed value."))
+
+(service-provider:register-provider/class
+ 'column :quantity :class 'quantity-column)
 
 (defmethod shared-initialize :after ((instance   quantity-column)
                                      (slot-names t)

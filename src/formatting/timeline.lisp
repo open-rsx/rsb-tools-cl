@@ -71,9 +71,6 @@
 
 ;;; `timeline' class
 
-(defmethod find-column-class ((spec (eql :timeline)))
-  (find-class 'timeline))
-
 (defclass timeline (temporal-bounds-mixin
                     timestamp-mixin
                     width-specification-mixin
@@ -107,6 +104,9 @@
    "Instances of this column class render a timeline view in which
     received events appear as dots. A corresponding header with time
     tics can also be produced."))
+
+(service-provider:register-provider/class
+ 'column :timeline :class 'timeline)
 
 (defmethod column< ((left timeline) (right timeline))
   (let+ (((&flet earliest-event (timeline)

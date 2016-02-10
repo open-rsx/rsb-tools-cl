@@ -36,9 +36,6 @@
                     ((&values body nil doc)
                      (parse-body doc-and-body :documentation t)))
                `(progn
-                  (defmethod find-column-class ((spec (eql ,name)))
-                    (find-class ',class-name))
-
                   (defclass ,class-name (,@(when width
                                              '(width-specification-mixin
                                                width-mixin))
@@ -53,6 +50,9 @@
                          `(:priority ,priority)))
                     ,@(when doc
                         `((:documentation ,doc))))
+
+                  (service-provider:register-provider/class
+                   'column ,name :class ',class-name)
 
                   ,@(unless width
                       `((defmethod column-width ((column ,class-name))
@@ -176,9 +176,6 @@
 
 ;;; Constant column
 
-(defmethod find-column-class ((spec (eql :constant)))
-  (find-class 'column-constant))
-
 (defclass column-constant (width-specification-mixin
                            width-mixin
                            basic-column)
@@ -199,6 +196,9 @@
    "Instances of this column class emit a print a specified constant
     value."))
 
+(service-provider:register-provider/class
+ 'column :constant :class 'column-constant)
+
 (defmethod column< ((left column-constant) (right column-constant))
   (value< (column-value left) (column-value right)))
 
@@ -214,9 +214,6 @@
     ((define-meta-data-column ((name &key (width 32)))
        (let ((class-name (intern (string name))))
          `(progn
-            (defmethod find-column-class ((spec (eql ,name)))
-              (find-class ',class-name))
-
             (defclass ,class-name (width-specification-mixin
                                    width-mixin
                                    basic-column)
@@ -235,6 +232,9 @@
                ,(format nil "Emit the ~(~A~) of the event designated by ~
                              the value of the :key initarg."
                         name)))
+
+            (service-provider:register-provider/class
+             'column ,name :class ',class-name)
 
             (defmethod shared-initialize :after ((instance   ,class-name)
                                                  (slot-names t)
@@ -256,9 +256,6 @@
 
 ;;; Count column
 
-(defmethod find-column-class ((spec (eql :count)))
-  (find-class 'column-count))
-
 (defclass column-count (width-specification-mixin
                         width-mixin
                         basic-column)
@@ -273,6 +270,9 @@
    :name  "Count")
   (:documentation
    "Count the number of output operations and emit that number."))
+
+(service-provider:register-provider/class
+ 'column :count :class 'column-count)
 
 (defmethod format-event ((event  t) (column column-count) (stream t) &key)
   (format stream "~:D" (incf (column-count column))))

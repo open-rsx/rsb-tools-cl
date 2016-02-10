@@ -74,7 +74,11 @@
                         ~@
                         ")
         (rsb.tools.common:print-classes-help-string
-         (column-classes) stream))
+         (mapcar (lambda (provider)
+                   (list (service-provider:provider-name provider)
+                         (service-provider:provider-class provider)))
+                 (service-provider:service-providers 'column))
+         stream))
 
       (when-let* ((package   (find-package :rsb.stats))
                   (symbol    (find-symbol "QUANTITY" :rsb.stats))

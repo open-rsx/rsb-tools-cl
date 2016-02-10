@@ -117,12 +117,8 @@
    #:column-width
    #:column-produces-output?)
 
-  ;; Column class family
+  ;; Column construction
   (:export
-   #:no-such-column-class
-   #:find-column-class
-   #:column-classes
-
    #:make-column)
 
   ;; Column widths protocol
