@@ -41,6 +41,25 @@
                                              (list :print-interval nil
                                                    :separator      nil))))))
 
+rsb.formatting::(defmethod format-event :before ((event  (eql :trigger)) ; TODO copied from monitor style
+                                 (style  rsb.tools.bridge::event-style-bridge)
+                                 (stream t)
+                                 &key
+                                 (width (or *print-right-margin* 80)))
+  ;; Before displaying sub-styles, compute widths based on first
+  ;; sub-style (i.e. first line), then propagate to remaining
+  ;; sub-styles.
+  (let ((sub-styles (mapcar #'cdr (style-sub-styles style))))
+    (unless (emptyp sub-styles)
+      (let* ((sub-style (first-elt sub-styles))
+             (columns   (style-dynamic-width-columns sub-style))
+             (separator (style-separator-width       sub-style))
+             (widths    (style-compute-column-widths
+                         style columns width :separator-width separator)))
+        (iter (for sub-style in-sequence sub-styles)
+              (let ((columns (style-dynamic-width-columns sub-style)))
+                (style-assign-column-widths sub-style columns widths)))))))
+
 (defmethod rsb.formatting:format-event ((event  (eql :trigger))
                                         (style  event-style-bridge)
                                         (target t)
