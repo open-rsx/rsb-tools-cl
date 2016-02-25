@@ -6,6 +6,19 @@
 
 (cl:in-package #:rsb.formatting)
 
+;;; `access-mixin'
+
+(defclass access-mixin ()
+  ()
+  (:documentation
+   "This class is intended to be mixed into style classes that access
+    parts of events."))
+
+(defmethod rsb.ep:access? ((processor access-mixin)
+                           (data      t)
+                           (mode      (eql :write)))
+  nil)
+
 ;;; `counting-mixin'
 
 (defclass counting-mixin ()
@@ -63,6 +76,12 @@
   (:documentation
    "This class is intended to be used in formatting classes that
     delegate to sub-styles based on dispatch predicates."))
+
+(defmethod rsb.ep:access? ((processor delegating-mixin)
+                           (part      t)
+                           (mode      t))
+  (some (compose (rcurry #'rsb.ep:access? part mode) #'cdr)
+        (style-sub-styles processor)))
 
 (defmethod sub-style-for ((style delegating-mixin)
                           (event t))
@@ -399,6 +418,11 @@
           (typecase payload-style
             ((or symbol cons) (make-style payload-style))
             (t                payload-style)))))
+
+(defmethod rsb.ep:access? ((processor payload-style-mixin)
+                           (part      (eql :data))
+                           (mode      (eql :read)))
+  (when (style-payload-style processor) t))
 
 (defmethod format-event ((event  event)
                          (style  payload-style-mixin)

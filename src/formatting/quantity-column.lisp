@@ -38,6 +38,11 @@
 (defmethod collects? ((column quantity-column))
   t)
 
+(defmethod rsb.ep:access? ((processor quantity-column)
+                           (part      t)
+                           (mode      t))
+  (rsb.ep:access? (column-quantity processor) part mode))
+
 (defmethod format-header ((column quantity-column)
                           (stream t))
   (format stream "~@(~A~)~@[ [~A]~]" (column-name column) nil))

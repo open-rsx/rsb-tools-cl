@@ -28,7 +28,8 @@
 (macrolet ((define-simple-column ((name width
                                    &key
                                    (event-class 'event)
-                                   (print-name  (string name)))
+                                   (print-name  (string name))
+                                   (access      '()))
                                   &body doc-and-body)
              (let+ (((&optional width (alignment :right) priority)
                      (ensure-list width))
@@ -53,6 +54,14 @@
 
                   (service-provider:register-provider/class
                    'column ,name :class ',class-name)
+
+                  ,@(mapcar
+                     (lambda (part)
+                       `(defmethod rsb.ep:access? ((column ,class-name)
+                                                   (part   (eql ',part))
+                                                   (mode   (eql :read)))
+                          t))
+                     access)
 
                   ,@(unless width
                       `((defmethod column-width ((column ,class-name))
@@ -92,7 +101,8 @@
     (format stream "~A" (column-name column)))
 
   ;; Event properties
-  (define-simple-column (:origin ((8 36) :left 1.5))
+  (define-simple-column (:origin ((8 36) :left 1.5)
+                         :access (:origin))
       "Emit an abbreviated representation of the id of the participant
        at which the event originated."
     (if (>= (column-width column) 36)
@@ -102,17 +112,20 @@
                 (event-origin event))))
 
   (define-simple-column (:sequence-number 8
-                         :print-name "Sequence Number")
+                         :print-name "Sequence Number"
+                         :access     (:sequence-number))
       "Emit the sequence number of the event."
     (format stream "~8,'0X" (event-sequence-number event)))
 
-  (define-simple-column (:method (10 :left))
+  (define-simple-column (:method (10 :left)
+                         :access (:method))
       "Emit the method of the event. If the event does not have an id,
        the string \"<nomethod>\" is emitted instead."
     (format stream "~:[<nomethod>~;~:*~:@(~10A~)~]"
             (event-method event)))
 
-  (define-simple-column (:id ((8 36) :left 1))
+  (define-simple-column (:id ((8 36) :left 1)
+                         :access (:id))
       "Emit an abbreviated representation of the id of the event."
     (if (>= (column-width column) 36)
         (format stream "~:[EVENTID? ~;~:*~:/rsb::print-id/~]"
@@ -120,42 +133,49 @@
         (format stream "~:[EVENTID? ~;~:*~/rsb::print-id/~]"
                 (event-id event))))
 
-  (define-simple-column (:scope ((:range 8) :left))
+  (define-simple-column (:scope ((:range 8) :left)
+                         :access (:scope))
       "Emit the scope of the event."
     (format stream "~A" (scope-string (event-scope event))))
 
-  (define-simple-column (:wire-schema ((:range 8) :left))
+  (define-simple-column (:wire-schema ((:range 8) :left)
+                         :access (:meta-data))
       "Emit wire-schema of the event, if possible."
     (format stream "~:[WIRE-SCHEMA?~;~:*~A~]"
             (meta-data event :rsb.transport.wire-schema)))
 
-  (define-simple-column (:data ((:range 8) :left))
+  (define-simple-column (:data ((:range 8) :left)
+                         :access (:data))
       "Emit a representation of the data contained in the event."
     (let ((*print-length* (column-width column)))
       (format stream "~/rsb::print-event-data/" (event-data event))))
 
   (define-simple-column (:data-size 5
-                         :print-name "Data Size")
+                         :print-name "Data Size"
+                         :access     (:data :meta-data))
       "Emit an indication of the size of the data contained in the
        event, if the size can be determined."
     (print-human-readable-size stream (event-size event :n/a)))
 
   (define-simple-column (:notification-size 5
-                         :print-name "Notification Size")
+                         :print-name "Notification Size"
+                         :access     (:meta-data))
       "Emit an indication of the size of the notification in which the
        event has been transmitted, if the size can be determined."
     (print-human-readable-size
      stream (or (meta-data event :rsb.transport.notification-size) :n/a)))
 
   ;; Request/Reply stuff
-  (define-simple-column (:call ((:range 26) :left))
+  (define-simple-column (:call ((:range 26) :left)
+                         :access (:method :data))
       "Emit a method call description. Should only be applied to
        events that actually are method calls."
     (let ((*print-length* most-positive-fixnum))
       (format stream "~/rsb.formatting::format-method/(~/rsb::print-event-data/)"
               event (event-data event))))
 
-  (define-simple-column (:call-id ((8 36) :left 1))
+  (define-simple-column (:call-id ((8 36) :left 1)
+                         :access (:causes))
       "Emit the request id of a reply event. Should only be applied to
        events that actually are replies to method calls."
     (let ((call-id (when-let ((cause (first (event-causes event))))
@@ -166,7 +186,8 @@
           (format stream "~:[CALLID? ~;~:*~/rsb::print-id/~]"
                   call-id))))
 
-  (define-simple-column (:result ((:range 26) :left))
+  (define-simple-column (:result ((:range 26) :left)
+                         :access (:method :data))
       "Emit a method reply description. Should only be applied to
        events that actually are replies to method calls."
     (let ((*print-length* most-positive-fixnum))
@@ -242,7 +263,12 @@
                                                  name)
               (setf (column-name instance)
                     (format nil "~@(~@[~A~]~A~)"
-                            name (column-key instance))))))))
+                            name (column-key instance))))
+
+            (defmethod rsb.ep:access? ((processor ,class-name)
+                                       (part      (eql ,name))
+                                       (mode      (eql :read)))
+              t)))))
 
   (define-meta-data-column (:timestamp :width '(15 32)))
   (define-meta-data-column (:meta-data)))

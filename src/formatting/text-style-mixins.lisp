@@ -391,6 +391,11 @@
   ;; specification for creating a column instance.
   (call-next-method (mapcar #'make-column new-value) style))
 
+(defmethod rsb.ep:access? ((processor columns-mixin)
+                           (part      t)
+                           (mode      t))
+  (rsb.ep:access? (style-columns processor) part mode))
+
 (defmethod format-header ((style  columns-mixin)
                           (stream t))
   (let+ (((&structure-r/o style- columns separator) style)

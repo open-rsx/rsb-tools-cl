@@ -161,7 +161,9 @@ system."
 
                 (:version :cl-rsb-formatting     #.(version/string))
                 (:version :cl-rsb-formatting-png #.(version/string))
-                (:version :rsb-formatting-json   #.(version/string)))
+                (:version :rsb-formatting-json   #.(version/string))
+
+                (:version :cl-rsb-test           #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
                  :pathname   "test/formatting"

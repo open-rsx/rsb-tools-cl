@@ -1,6 +1,6 @@
 ;;;; quantities.lisp --- A collection of simple quantities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -14,6 +14,7 @@
                                &key
                                (designator  (make-keyword name))
                                (pretty-name (format nil "~(~A~)" name))
+                               (access     '())
                                &allow-other-keys)
                               super-classes
                               &optional doc)
@@ -24,12 +25,20 @@
               ()
               (:default-initargs
                :name ,pretty-name
-               ,@(remove-from-plist initargs :designator :pretty-name))
+               ,@(remove-from-plist initargs :designator :pretty-name :access))
               ,@(when doc
                   `((:documentation ,doc))))
 
             (service-provider:register-provider/class
-             'quantity ',designator :class ',class-name)))))
+             'quantity ',designator :class ',class-name)
+
+            ,@(mapcar
+               (lambda (part)
+                 `(defmethod rsb.ep:access? ((processor ,class-name)
+                                             (part      (eql ',part))
+                                             (mode      (eql :read)))
+                    t))
+               access)))))
 
   (define-simple-quantity (count
                            :extractor (constantly 1)
@@ -64,7 +73,8 @@
                            :extractor (rcurry #'timestamp :create)
                            :order     2
                            :filter    (lambda (x y)
-                                        (local-time:timestamp-difference y x)))
+                                        (local-time:timestamp-difference y x))
+                           :access    (:timestamp))
       (extract-function-mixin
        filter-mixin
        collecting-mixin
@@ -75,7 +85,8 @@
 
   (define-simple-quantity (throughput
                            :extractor (rcurry #'event-size 0)
-                           :format    "~,3F")
+                           :format    "~,3F"
+                           :access    (:meta-data))
       (extract-function-mixin
        collecting-mixin
        reduction-mixin
@@ -88,7 +99,8 @@
      the actual throughput in some cases.")
 
   (define-simple-quantity (size
-                           :extractor (rcurry #'rsb.stats:event-size nil))
+                           :extractor (rcurry #'rsb.stats:event-size nil)
+                           :access    (:meta-data))
       (extract-function-mixin
        collecting-mixin
        moments-mixin)
@@ -99,7 +111,8 @@
      not reflect the actual size statistics in some cases.")
 
   (define-simple-quantity (size/log
-                           :extractor #'rsb.stats:event-size/power-of-2)
+                           :extractor #'rsb.stats:event-size/power-of-2
+                           :access    (:meta-data))
       (extract-function-mixin
        histogram-mixin)
     "The value of this measures is a histogram of event sizes -
@@ -110,7 +123,8 @@
   (define-simple-quantity (size/all-time
                            :pretty-name "Size"
                            :extractor   (rcurry #'rsb.stats:event-size nil)
-                           :format      "~:D")
+                           :format      "~:D"
+                           :access      (:meta-data))
       (extract-function-mixin
        all-time-mixin
        format-mixin)
@@ -121,7 +135,8 @@
       (notification-size
        :extractor (lambda (event)
                     (or (meta-data event :rsb.transport.notification-size)
-                        :n/a)))
+                        :n/a))
+       :access    (:meta-data))
       (extract-function-mixin
        collecting-mixin
        moments-mixin)
@@ -134,7 +149,8 @@
 
   (define-simple-quantity (scope
                            :extractor (compose #'scope-string
-                                               #'event-scope))
+                                               #'event-scope)
+                           :access    (:scope))
       (extract-function-mixin
        histogram-mixin)
     "The value of this quantity is a histogram of event scopes
@@ -158,7 +174,8 @@
                                                 (uuid::time-high     uuid)
                                                 (uuid::clock-seq-var uuid)
                                                 (uuid::clock-seq-low uuid)
-                                                (uuid::node          uuid)))))
+                                                (uuid::node          uuid))))
+                           :access    (:origin))
       (extract-function-mixin
        histogram-mixin)
     "The value of this quantity is a histogram of event origins
@@ -167,7 +184,8 @@
 
   (define-simple-quantity (wire-schema
                            :extractor (lambda (event)
-                                        (meta-data event :rsb.transport.wire-schema)))
+                                        (meta-data event :rsb.transport.wire-schema))
+                           :access    (:meta-data))
       (extract-function-mixin
        histogram-mixin)
     "The value of this quantity is a histogram of event wire-schemas
@@ -175,7 +193,8 @@
      frequent event origins are printed first.")
 
   (define-simple-quantity (type
-                           :extractor #'event-type/simple)
+                           :extractor #'event-type/simple
+                           :access    (:meta-data))
       (extract-function-mixin
        histogram-mixin)
     "The value of this quantity is a histogram of event types over a
@@ -203,6 +222,11 @@
     (error "~@<Value ~S specified for ~S initarg of ~S quantity, but ~
             moments cannot be computed over meta-data keys.~@:>"
            key :key 'meta-data-moments)))
+
+(defmethod rsb.ep:access? ((processor meta-data-moments)
+                           (part      (eql :meta-data))
+                           (mode      (eql :read)))
+  t)
 
 (defmethod update! ((quantity meta-data-moments)
                     (event    string))
@@ -272,6 +296,11 @@
                                       (quantity  latency))
   (setf (quantity-extractor quantity)
         (make-extractor (quantity-from quantity) new-value)))
+
+(defmethod rsb.ep:access? ((processor latency)
+                           (part      (eql :timestamp))
+                           (mode      (eql :read)))
+  t)
 
 (defmethod print-object ((object latency) stream)
   (print-unreadable-object (object stream :type t :identity t)
@@ -363,6 +392,11 @@
 
   (:method :after ((new-value t) (quantity expected))
     (setf (quantity-%expected quantity) new-value)))
+
+(defmethod rsb.ep:access? ((processor expected)
+                           (part      t)
+                           (mode      t))
+  (rsb.ep:access? (quantity-target processor) part mode))
 
 (defmethod quantity-value ((quantity expected))
   (let+ (((&structure-r/o quantity- target (check %check)) quantity))

@@ -6,7 +6,8 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defclass style-detailed (meta-data-mixin
+(defclass style-detailed (access-mixin
+                          meta-data-mixin
                           payload-style-mixin
                           separator-mixin
                           max-lines-mixin)

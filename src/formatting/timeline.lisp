@@ -117,6 +117,15 @@
 (defmethod collects? ((style timeline))
   t)
 
+(macrolet ((define-access?-method (part)
+             `(defmethod rsb.ep:access? ((processor timeline)
+                                         (part      (eql ,part))
+                                         (mode      (eql :read)))
+                t)))
+  (define-access?-method :data) ; only if rsb.transport.payload-size meta-data item is not available
+  (define-access?-method :meta-data)
+  (define-access?-method :timestamp-data))
+
 (defmethod format-header ((style timeline) (target t))
   (let+ (((&accessors-r/o
            ((&values (lower upper) now) bounds/expanded)

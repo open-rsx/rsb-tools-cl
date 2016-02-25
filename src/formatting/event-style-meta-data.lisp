@@ -39,6 +39,23 @@
    "This class is intended to be mixed into event formatting style
     classes that print meta-data of events."))
 
+(macrolet ((define-access?-method (part &body body)
+             `(defmethod rsb.ep:access? ((processor meta-data-mixin)
+                                         (part      (eql ,part))
+                                         (mode      (eql :read)))
+                ,@body)))
+  (define-access?-method :scope           (style-routing-info? processor))
+  (define-access?-method :id              (style-routing-info? processor))
+  (define-access?-method :sequence-number (style-routing-info? processor))
+  (define-access?-method :origin          (style-routing-info? processor))
+  (define-access?-method :method          (style-routing-info? processor))
+
+  (define-access?-method :timestamp       (style-timestamps?   processor))
+
+  (define-access?-method :meta-data       (style-user-items?   processor))
+
+  (define-access?-method :causes          (style-causes?       processor)))
+
 (defmethod format-event ((event  event)
                          (style  meta-data-mixin)
                          (stream t)
@@ -126,7 +143,8 @@
 
 ;;; `style-meta-data'
 
-(defclass style-meta-data (meta-data-mixin
+(defclass style-meta-data (access-mixin
+                           meta-data-mixin
                            separator-mixin
                            max-lines-mixin)
   ()

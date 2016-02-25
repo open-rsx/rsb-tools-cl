@@ -24,22 +24,22 @@
      (interpol:disable-interpol-syntax)))
 
 (defvar *style-programmable-default-bindings*
-  `((sequence-number (event-sequence-number event))
-    (id              (princ-to-string (event-id event)))
-    (scope           (scope-string (event-scope event)))
-    (origin          (event-origin event))
-    (method          (event-method event))
-    (data            (event-data event))
+  `((sequence-number (event-sequence-number %event))
+    (id              (princ-to-string (event-id %event)))
+    (scope           (scope-string (event-scope %event)))
+    (origin          (event-origin %event))
+    (method          (event-method %event))
+    (data            (event-data %event))
     ,@(iter (for timestamp in '(create send receive deliver))
-            (collect `(,timestamp (timestamp event ,(make-keyword timestamp))))
+            (collect `(,timestamp (timestamp %event ,(make-keyword timestamp))))
             (collect `(,(symbolicate timestamp "-UNIX")
                        (timestamp->unix
-                        (timestamp event ,(make-keyword timestamp)))))
+                        (timestamp %event ,(make-keyword timestamp)))))
             (collect `(,(symbolicate timestamp "-UNIX/NSEC")
                        (timestamp->unix/nsec
-                        (timestamp event ,(make-keyword timestamp))))))
-    (causes/event-id (event-causes event))
-    (causes/uuid     (map 'list #'event-id->uuid (event-causes event)))
+                        (timestamp %event ,(make-keyword timestamp))))))
+    (causes/event-id (event-causes %event))
+    (causes/uuid     (map 'list #'event-id->uuid (event-causes %event)))
     (skip-event      (throw 'skip-event nil)))
   "A list of default bindings available in instances of
    `style-programmable' and subclasses. Entries are like `cl:let'
@@ -49,26 +49,44 @@
 
    where FORM is evaluated to produce the value of VARIABLE.")
 
+(defvar *style-programmable-default-binding-access-info*
+  '((:scope           . (event scope))
+    (:origin          . (event origin id))
+    (:sequence-number . (event sequence-number id))
+    (:method          . (event method))
+    (:data            . (event data))
+    (:timestamp       . (event create  create-unix  create-unix/nsec
+                               send    send-unix    send-unix/nsec
+                               receive receive-unix receive-unix/nsec
+                               deliver deliver-unix deliver-unix/nsec))
+    (:meta-data       . (event))
+    (:cause           . (event causes/event-id causes/uuid))))
+
 (defclass style-programmable ()
-  ((bindings :initarg  :bindings
-             :type     list
-             :accessor style-bindings
-             :accessor style-%bindings
-             :initform *style-programmable-default-bindings*
-             :documentation
-             "Stores the bindings available in the output format
-              specification.")
-   (lambda   :type     function
-             :accessor style-%lambda
-             :documentation
-             "Stores the compiled output formatting function for the
-              style instance.")
-   (code     :type     list
-             :accessor style-code
-             :accessor style-%code
-             :documentation
-             "Stores the code producing the output of the style
-              instance."))
+  ((bindings      :initarg  :bindings
+                  :type     list
+                  :accessor style-bindings
+                  :accessor style-%bindings
+                  :initform *style-programmable-default-bindings*
+                  :documentation
+                  "Stores the bindings available in the output format
+                   specification.")
+   (lambda        :type     function
+                  :accessor style-%lambda
+                  :documentation
+                  "Stores the compiled output formatting function for
+                   the style instance.")
+   (code          :type     list
+                  :accessor style-code
+                  :accessor style-%code
+                  :documentation
+                  "Stores the code producing the output of the style
+                   instance.")
+   (used-bindings :accessor style-%used-bindings
+                  :initform '()
+                  :documentation
+                  "Stores a list of names of bindings used in the
+                   code."))
   (:default-initargs
    :code (missing-required-initarg 'style-programmable :code))
   (:documentation
@@ -91,15 +109,34 @@
   (when code-supplied?
     (setf (style-code instance) code)))
 
-(defmethod (setf style-code) :before ((new-value t)
-                                      (style     style-programmable))
-  (let+ (((&structure style- (lambda %lambda) (bindings %bindings)) style))
-    (setf lambda (compile-code style new-value bindings))))
+(flet ((recompile (style code bindings)
+         (setf (values (style-%lambda style) (style-%used-bindings style))
+               (compile-code style code bindings))))
 
-(defmethod (setf style-bindings) :before ((new-value list)
-                                          (style     style-programmable))
-  (let+ (((&structure style- (lambda %lambda) (code %code)) style))
-    (setf lambda (compile-code style code new-value))))
+  (defmethod (setf style-code) :before ((new-value t)
+                                        (style     style-programmable))
+    (recompile style new-value (style-%bindings style))
+    new-value)
+
+  (defmethod (setf style-bindings) :before ((new-value list)
+                                            (style     style-programmable))
+    (recompile style (style-%code style) new-value)
+    new-value))
+
+(defmethod rsb.ep:access? ((processor style-programmable)
+                           (part      t)
+                           (mode      (eql :read)))
+  (when-let ((bindings (cdr (assoc part *style-programmable-default-binding-access-info*))))
+    (log:debug "~@<Checking ~S access to ~S against bindings ~S~@:>"
+               mode part bindings)
+    (when-let ((used (intersection bindings (style-%used-bindings processor))))
+      (log:info "~@<Used binding~P ~{~S~^, ~} require ~S access to ~S~@:>"
+                (length used) used mode part)
+      t)))
+
+(define-condition binding-use (condition)
+  ((name :initarg :name
+         :reader  binding-use-name)))
 
 (defmethod compile-code ((style    style-programmable)
                          (code     t)
@@ -108,10 +145,13 @@
   ;; Try to compile CODE collecting and subsequently muffling all
   ;; errors and warnings since we do not want to leak these to the
   ;; caller.
-  (let+ ((conditions '())
+  (let+ ((used-bindings '())
+         (conditions    '())
+         ((&flet+ instrument-binding ((name value))
+            `(,name (note-binding-use ,name ,value))))
          ((&flet wrap-code (code)
-            `(lambda (event stream)
-               (declare (ignorable event stream))
+            `(lambda (%event stream)
+               (declare (ignorable %event stream))
                (flet ((timestamp->unix (timestamp)
                         (local-time:timestamp-to-unix timestamp))
                       (timestamp->unix/nsec (timestamp)
@@ -120,22 +160,32 @@
                            (local-time:nsec-of timestamp))))
                  (declare (ignorable #'timestamp->unix
                                      #'timestamp->unix/nsec))
-                 (symbol-macrolet (,@bindings)
-                   (catch 'skip-event ,@code))))))
+                 (macrolet ((note-binding-use (name value)
+                              (signal 'binding-use :name name)
+                              value))
+                   (symbol-macrolet
+                       (,@(mapcar #'instrument-binding
+                                  (list* '(event %event) bindings)))
+                     (catch 'skip-event ,@code)))))))
          ((&values function nil failed?)
           (block compile
             (handler-bind
-                (((or style-warning #+sbcl sb-ext:compiler-note)
-                   (lambda (condition)
-                     (log:warn "~@<Compiler said: ~A~@:>" condition)
-                     (muffle-warning)))
+                ((binding-use
+                  (lambda (condition)
+                    (let ((name (binding-use-name condition)))
+                      (log:debug "~@<Saw use of binding ~S~@:>" name)
+                      (pushnew name used-bindings))))
+                 ((or style-warning #+sbcl sb-ext:compiler-note)
+                  (lambda (condition)
+                    (log:warn "~@<Compiler said: ~A~@:>" condition)
+                    (muffle-warning)))
                  ((or error warning)
-                   (lambda (condition)
-                     (push condition conditions)
-                     (if (find-restart 'muffle-warning)
-                         (muffle-warning condition)
-                         (return-from
-                          compile (values nil nil t))))))
+                  (lambda (condition)
+                    (push condition conditions)
+                    (if (find-restart 'muffle-warning)
+                        (muffle-warning condition)
+                        (return-from
+                         compile (values nil nil t))))))
               (with-compilation-unit (:override t)
                 (compile nil (wrap-code code)))))))
     (when (or failed? conditions)
@@ -143,7 +193,7 @@
                          "~@<Failed to compile.~@[ Compiler said: ~
                           ~:{~&+_~@<~@;~A~:>~}~]~@:>"
                          (mapcar #'list conditions)))
-    function))
+    (values function used-bindings)))
 
 (defmethod format-event ((event  event)
                          (style  style-programmable)

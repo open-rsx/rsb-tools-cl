@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for unit tests of the formatting module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -35,7 +35,7 @@
   (:documentation
    "Root unit test suite for the formatting module."))
 
-(defmacro ensure-style-cases ((class &key (formatter ''format-event))
+(defmacro ensure-style-cases ((class &key (formatter 'format-event))
                               &body cases)
   "Generate tests cases for methods on `format-event' for CLASS
    according to CASES. Each element of cases has to be of the form
@@ -56,15 +56,28 @@
        (let+ ((instance (apply #'make-instance ',class args))
               ((&flet do-it ()
                  (with-output-to-string (stream)
-                   (map nil (rcurry ,formatter instance stream)
+                   (map nil (lambda (data)
+                              (rsb.test:with-access-checking ()
+                                (,formatter
+                                 (maybe-add-access-checking data instance)
+                                 instance
+                                 stream)))
                         data)))))
-         (if (eq expected :error)
-             (ensure-condition error (do-it))
-             (let ((output (do-it)))
-               (ensure-same (concatenate 'string "^" expected "$") output
-                            :test      #'ppcre:scan
-                            :report    "~@<The formatting style ~A, when ~
-                                        applied to ~:[no data~:;the data ~
-                                        ~:*~{~S~^, ~}~], produced the output ~
-                                        ~S, not ~S.~@:>"
-                            :arguments (instance data output expected))))))))
+         (case expected
+           (:error
+            (ensure-condition error (do-it)))
+           (t
+            (let ((output (do-it)))
+              (ensure-same (concatenate 'string "^" expected "$") output
+                           :test      #'ppcre:scan
+                           :report    "~@<The formatting style ~A, when ~
+                                       applied to ~:[no data~:;the data ~
+                                       ~:*~{~S~^, ~}~], produced the output ~
+                                       ~S, not ~S.~@:>"
+                           :arguments (instance data output expected)))))))))
+
+(defun maybe-add-access-checking (data processor)
+  (typecase data
+    (event (rsb.test:add-access-checking-to-event
+            data (rsb.test:access-rules-for-processor processor)))
+    (t     data)))

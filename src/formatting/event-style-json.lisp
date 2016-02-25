@@ -8,7 +8,8 @@
 
 ;;; `style-json'
 
-(defclass style-json (separator-mixin)
+(defclass style-json (access-mixin
+                      separator-mixin)
   ()
   (:default-initargs
    :separator nil)
@@ -17,6 +18,11 @@
 
 (service-provider:register-provider/class
  'style :json :class 'style-json)
+
+(defmethod rsb.ep:access? ((processor style-json)
+                           (part      t)
+                           (mode      (eql :read)))
+  t)
 
 (defmethod format-event ((thing  event)
                          (style  style-json)
