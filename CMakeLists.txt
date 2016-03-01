@@ -279,30 +279,37 @@ foreach(POLICY continue abort)
                      "inprocess:/foo -> inprocess:/bar")
 endforeach()
 
-# IDL loading and error policies for logger, send and call binaries.
-add_test(NAME   "logger/idl-path/on-error=continue"
-        COMMAND "${MAIN_EXECUTABLE}" logger
-                --debug --on-error continue
-                --idl-path "no-such-directory"
-                --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 inprocess:)
-add_test(NAME   "send/idl-path/on-error=continue"
-         COMMAND "${MAIN_EXECUTABLE}" send
-                 --debug --on-error continue
-                --idl-path "no-such-directory"
-                 1 inprocess:)
-add_test(NAME   "call/idl-path/on-error=continue"
-        COMMAND "${MAIN_EXECUTABLE}" call
-                --debug --on-error continue
-                --idl-path "no-such-directory"
-                --no-wait
-                "inprocess:/foo/bar(1)")
-add_test(NAME   "bridge/idl-path/on-error=continue"
-        COMMAND "${MAIN_EXECUTABLE}" bridge
-                --debug --on-error continue
-                --idl-path "no-such-directory"
-                --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 "inprocess:/foo -> inprocess:/bar")
+# IDL loading and error policies for logger, send, call and bridge
+# binaries.
+function(idl_tests SUFFIX OPTIONS)
+    add_test(NAME   "logger/${SUFFIX}"
+             COMMAND "${MAIN_EXECUTABLE}" logger
+                     --debug
+                     ${OPTIONS}
+                     --eval "${EXIT_AFTER_THREE_SECONDS}"
+                     inprocess:)
+    add_test(NAME   "send/${SUFFIX}"
+             COMMAND "${MAIN_EXECUTABLE}" send
+                     --debug
+                     ${OPTIONS}
+                     1 inprocess:)
+    add_test(NAME   "call/${SUFFIX}"
+             COMMAND "${MAIN_EXECUTABLE}" call
+                     --debug
+                     ${OPTIONS}
+                     --no-wait
+                     "inprocess:/foo/bar(1)")
+    add_test(NAME   "bridge/${SUFFIX}"
+             COMMAND "${MAIN_EXECUTABLE}" bridge
+                     --debug
+                     ${OPTIONS}
+                     --eval "${EXIT_AFTER_THREE_SECONDS}"
+                     "inprocess:/foo -> inprocess:/bar")
+endfunction()
+
+idl_tests(idl-path/on-error=contiue "--on-error=continue;--idl-path;no-such-directory")
+idl_tests(load-idl                  "--load-idl=${CMAKE_SOURCE_DIR}/test/data/test/Simple.proto")
+idl_tests(on-demand-idl-loading     "--idl-path=${CMAKE_SOURCE_DIR}/test/data/;--on-demand-idl-loading=blocking")
 
 add_test(NAME   "send/protocol-buffer-payload"
          COMMAND "${MAIN_EXECUTABLE}" send

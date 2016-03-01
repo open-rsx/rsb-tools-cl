@@ -86,7 +86,24 @@
 
   SOMESTUFF/**/MORESTUFF
 
-can be used to search directories recursively. If the file designated by FILE-OR-GLOB-EXPRESSION depend on additional data definition files (i.e. contain \"import\" statements), the list of directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times.")))
+can be used to search directories recursively. If the file designated by FILE-OR-GLOB-EXPRESSION depend on additional data definition files (i.e. contain \"import\" statements), the list of directories supplied via the --idl-path option is consulted to find these files. This option can be supplied multiple times.")
+    (enum   :long-name       "on-demand-idl-loading"
+            :enum            '(:none
+                               :blocking)
+            :default-value   :none
+            :argument-name   "BEHAVIOR"
+            :description
+            "Controls on-demand loading of required data definitions.
+
+  none
+
+    Do not attempt to load data definitions on demand.
+
+  blocking
+
+    Block computations requiring data definitions until the respective definition has been loaded and processed.
+
+Data definition files are located on the path specified using the --idl-path option.")))
 
 (defun make-error-handling-options (&key
                                      (show :default))

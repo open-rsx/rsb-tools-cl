@@ -31,4 +31,8 @@
                                         :transform #'identity)))
     (apply #'load-idl sources :auto
            (when purpose-supplied?
-             (list :purpose purpose)))))
+             (list :purpose purpose))))
+
+  ;; If requested, enable on-demand IDL loading.
+  (case (getopt :long-name "on-demand-idl-loading")
+    (:blocking (setf *load-idl-on-demand?* t))))
