@@ -97,15 +97,27 @@
 
 ;;; Protocol buffer specific stuff
 
+(defvar *load-cache* (make-hash-table :test #'equal)
+  "Cache for parsed descriptor objects that uses truenames as keys.")
+
+(defvar *emit-caches* (make-hash-table :test #'eq)
+  "Maps targets (i.e. :class, :serializer, etc.) to individual
+   hash-table caches which use descriptor objects as keys.")
+
 (defun process-descriptor (descriptor
                            &key
                            (emit '(:deserializer :extractor :offset)))
   "Emit a data-holder class and deserializer code for DESCRIPTOR."
   (log:info "~@<Emitting data holder~@[ and ~(~{~A~^, ~}~)~] for ~A~@:>"
             emit descriptor)
-  (prog1
-      (pbb:emit descriptor :class)
-    (map nil (curry #'pbb:emit descriptor) emit)))
+  (let+ (((&flet cache-arguments (which)
+            `(:cache ,(ensure-gethash which *emit-caches*
+                                      (make-hash-table :test #'eq))))))
+    (prog1
+        (pbb:emit descriptor `(:class ,@(cache-arguments :class)))
+      (map nil (lambda (target)
+                 (pbb:emit descriptor `(,target ,@(cache-arguments target))))
+           emit))))
 
 (macrolet
     ((define-load-method (type kind func)
@@ -116,7 +128,8 @@
                              &allow-other-keys)
           (log:info "~@<Parsing data definition from ~A~@:>" source)
           (apply #'process-descriptor
-                 (apply #',func source (remove-from-plist args :purpose))
+                 (let ((pbf:*cache* *load-cache*))
+                   (apply #',func source (remove-from-plist args :purpose)))
                  (when purpose-supplied?
                    (list :emit purpose))))))
 
