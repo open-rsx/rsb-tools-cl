@@ -73,7 +73,7 @@
       (with-logged-warnings
         (with-error-policy (error-policy)
           ;; Load IDLs as specified on the commandline. TODO should the command do this?
-          (process-idl-options)
+          (process-idl-options :purpose '(:deserializer))
 
           ;; The command creates the required participants and starts
           ;; the receiving and printing loop.
