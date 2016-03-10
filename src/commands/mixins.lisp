@@ -220,7 +220,7 @@
   ((max-queued-events :initarg  :max-queued-events
                       :type     (or null positive-integer)
                       :reader   command-max-queued-events
-                      :initform 200
+                      :initform 2000
                       :documentation
                       "The maximum number of events which may be
                        queued for processing at any given time.
