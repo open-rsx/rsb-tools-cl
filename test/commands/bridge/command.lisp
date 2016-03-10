@@ -69,35 +69,49 @@
   smoke
 
   (let+
-      (((&flet test (spec expected-scope expected-data)
-          (let* ((rsb:*configuration* *config*)
-                 (error    nil)
-                 (command  (make-command :bridge :spec spec))
-                 (thread   (bt:make-thread
-                            (lambda ()
-                              (let ((rsb:*configuration* *config*))
-                                (handler-case
-                                    (restart-case
-                                        (command-execute command)
-                                      (abort ()))
-                                  (error (condition)
-                                    (setf error condition)))))))
-                 (received (lparallel.queue:make-queue)))
+      (((&flet test (spec
+                     informer-url scope          data
+                     listener-url expected-scope expected-data
+                     expected-converter-calls)
+          (let* ((converter           (rsb.converter:make-converter
+                                       :call-tracking
+                                       :next (rsb:default-converters)))
+                 (rsb:*configuration* *config*)
+                 (command   (make-command :bridge :spec spec))
+                 (error     nil)
+                 (thread    (bt:make-thread
+                             (lambda ()
+                               (let ((rsb:*configuration*       *config*)
+                                     (rsb::*default-converters* `((t . ,converter)))
+                                     )
+                                 (handler-case
+                                     (restart-case
+                                         (command-execute command)
+                                       (abort ()))
+                                   (error (condition)
+                                     (setf error condition)))))))
+                 (received  (lparallel.queue:make-queue)))
             (unwind-protect
                  (rsb:with-participants
-                     ((informer :informer "/foo")
-                      (listener :listener "/bar"
+                     ((informer :informer informer-url)
+                      (listener :listener listener-url
                                 :handlers (list (rcurry #'lparallel.queue:push-queue
                                                         received))))
                    (sleep 1) ; TODO racy
-                   (rsb:send informer (rsb:make-event "/foo/baz" 1))
-                   (loop :until (not (lparallel.queue:queue-empty-p received))))
+                   (rsb:send informer (rsb:make-event scope data))
+                   (loop :while (lparallel.queue:queue-empty-p received)))
 
-              (bt:interrupt-thread thread (lambda () (abort)))
+              (bt:interrupt-thread thread #'abort)
               (ignore-errors (bt:join-thread thread)))
 
             ;; Check for errors.
             (when error (error error))
+
+            ;; Check converter calls.
+            (ensure-same (rsb.converter.test:converter-calls converter)
+                         (sublis `((:converter . ,converter))
+                                 expected-converter-calls)
+                         :test #'equal)
 
             ;; Check forwarded event.
             (ensure-same (lparallel.queue:queue-count received) 1)
@@ -107,7 +121,12 @@
               (ensure-same (rsb:event-data event) expected-data)
               (ensure-same (length (rsb:timestamp-alist event)) 5))))))
 
-    (test "/foo -> /bar"
-          "/bar/baz" 1)
-    (test "/foo -> /drop-payload/ /bar"
-          "/bar/baz" rsb.transform:+dropped-payload+)))
+    (test "socket:/foo -> socket:/bar"
+          "socket:/foo" "/foo/baz" 1
+          "socket:/bar" "/bar/baz" 1
+          ())
+    (test "socket:/foo -> /drop-payload/ socket:/bar"
+          "socket:/foo" "/foo/baz" 1
+          "socket:/bar" "/bar/baz" rsb.converter:+no-value+
+          `((rsb.converter:domain->wire
+             :converter ,rsb.transform:+dropped-payload+)))))

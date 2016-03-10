@@ -124,8 +124,12 @@
 
                 (:version :lift                   "1.7.1")
 
+                (:version :rsb-transport-socket   #.(version/string :revision? nil))
+
                 (:version :rsb-tools-commands     #.(version/string))
-                (:version :rsb-tools-commands-web #.(version/string)))
+                (:version :rsb-tools-commands-web #.(version/string))
+
+                (:version :cl-rsb-test            #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "commands"
                  :pathname   "test/commands"

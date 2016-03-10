@@ -70,15 +70,18 @@
                                      handler
                                      self-filters)
   (let+ (((&structure bridge- %queue) instance)
-         ((&flet add-child (scope kind &rest args)
-            (setf (rsb.patterns:participant-child instance scope kind)
-                  (apply #'rsb.patterns:make-child-participant
-                         instance scope kind args))))
-         ;; TODO First approximation of smart converter
-         ;; configuration. See wip-transform-model rsb-cl branch
+         ((&flet add-child (uri kind &rest args)
+            (let ((name (princ-to-string uri)))
+              (setf (rsb.patterns:participant-child instance name kind)
+                    (apply #'rsb.patterns:make-child-participant
+                           instance uri kind args)))))
          (transform (let ((initargs (rsb.patterns:make-child-initargs
                                      instance t :listener)))
                       (getf initargs :transform)))
+         (read?     (when transform
+                      (rsb.ep:access? transform :data :read)))
+         (write?    (when transform
+                      (rsb.ep:access? transform :data :write)))
          ((&flet annotating ()
             (rsb.tools.commands::make-annotating-converter-for-everything)))
          ((&flet components-to-drop (uri)
@@ -90,8 +93,8 @@
                                          uri)))
               (apply #'add-child uri :informer
                      (append
-                      (unless transform (list :converters (annotating)))
-                      (when   id        (list :id         id))))))
+                      (unless (or read? write?) (list :converters (annotating)))
+                      (when   id                (list :id         id))))))
           informers)
     ;; … and listener child participants (the latter potentially with
     ;; filters and transforms).
@@ -102,7 +105,7 @@
                    :filter-ids         (mapcar #'cdr (cdr (assoc uri self-filters)))
                    :drop-components    (components-to-drop uri)
                    :timestamp-events?  timestamp-events?
-                   (unless transform (list :converters (annotating)))))
+                   (unless read? (list :converters (annotating)))))
           listeners)))
 
 (defun make-bridge-listener-filters (ids)
