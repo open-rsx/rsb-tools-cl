@@ -264,8 +264,9 @@
 
 (defclass width-mixin ()
   ((width     :initarg  :width
-              :type     non-negative-integer
+              :type     (or null non-negative-integer)
               :accessor column-width
+              :initform nil
               :documentation
               "Stores the maximum acceptable output width for the
                formatter instance.")
@@ -296,7 +297,7 @@
 
 (defmethod print-object ((object width-mixin) stream)
   (print-unreadable-object (object stream :type t :identity t)
-    (format stream "~D ~A"
+    (format stream "~:[<no width>~;~:*~D~] ~A"
             (column-width object) (column-alignment object))))
 
 ;; Utility functions

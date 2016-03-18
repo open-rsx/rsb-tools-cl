@@ -39,7 +39,7 @@
   "Try to determine and return the size of the payload of EVENT in
    bytes. Return REPLACEMENT-VALUE, if the size cannot be determined."
   (let+ (((&flet maybe-return (size &optional unit)
-            (when size (return-from event-size (values size unit)))) ))
+            (when size (return-from event-size (values size unit))))))
     (multiple-value-call #'maybe-return (payload-size (event-data event)))
     (maybe-return (meta-data event :rsb.transport.payload-size) :octet)
     replacement-value))
