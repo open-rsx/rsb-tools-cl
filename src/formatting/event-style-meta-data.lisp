@@ -6,8 +6,9 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defclass style-meta-data (separator-mixin
-                           max-lines-mixin)
+;;; `meta-data-mixin'
+
+(defclass meta-data-mixin ()
   ((routing-info? :initarg  :routing-info?
                   :type     boolean
                   :accessor style-routing-info?
@@ -34,19 +35,12 @@
                   :initform t
                   :documentation
                   "Should the causes of the event be printed?"))
-  (:default-initargs
-   :separator `(#\Newline
-                (:rule ,(if *textual-output-can-use-utf-8?* #\─ #\-))
-                #\Newline))
   (:documentation
-   "Format the meta-data of each event on multiple lines, but do not
-    format event payloads."))
-
-(service-provider:register-provider/class
- 'style :meta-data :class 'style-meta-data)
+   "This class is intended to be mixed into event formatting style
+    classes that print meta-data of events."))
 
 (defmethod format-event ((event  event)
-                         (style  style-meta-data)
+                         (style  meta-data-mixin)
                          (stream t)
                          &key)
   (let+ (((&structure-r/o style- routing-info? timestamps? user-items? causes?)
@@ -129,3 +123,20 @@
                           ~:>"
                   produced-output?
                   (map 'list #'event-id->uuid (event-causes event))))))))
+
+;;; `style-meta-data'
+
+(defclass style-meta-data (meta-data-mixin
+                           separator-mixin
+                           max-lines-mixin)
+  ()
+  (:default-initargs
+   :separator `(#\Newline
+                (:rule ,(if *textual-output-can-use-utf-8?* #\─ #\-))
+                #\Newline))
+  (:documentation
+   "Format the meta-data of each event on multiple lines, but do not
+    format event payloads."))
+
+(service-provider:register-provider/class
+ 'style :meta-data :class 'style-meta-data)

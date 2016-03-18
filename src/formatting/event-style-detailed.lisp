@@ -6,11 +6,16 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defclass style-detailed (style-meta-data
-                          payload-style-mixin)
+(defclass style-detailed (meta-data-mixin
+                          payload-style-mixin
+                          separator-mixin
+                          max-lines-mixin)
   ()
   (:default-initargs
    :payload-style :payload-generic/pretty
+   :separator     `(#\Newline
+                    (:rule ,(if *textual-output-can-use-utf-8?* #\─ #\-))
+                    #\Newline)
    :max-lines     200)
   (:documentation
    "Format each event on multiple lines with as many details as
