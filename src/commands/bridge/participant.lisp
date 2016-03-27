@@ -78,8 +78,9 @@
          (transform (let ((initargs (rsb.patterns:make-child-initargs
                                      instance t :listener)))
                       (getf initargs :transform)))
-         (read?     (when transform
-                      (rsb.ep:access? transform :data :read)))
+         (read?     (or (when transform
+                          (rsb.ep:access? transform :data :read))
+                        (rsb.ep:access? filters :data :read)))
          (write?    (when transform
                       (rsb.ep:access? transform :data :write)))
          ((&flet annotating ()
