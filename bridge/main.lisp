@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the bridge tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -61,7 +61,8 @@
       (with-logged-warnings
         (with-error-policy (error-policy)
           ;; Load IDLs as specified on the commandline.
-          (process-idl-options)
+          (process-idl-options :purpose '(:deserializer
+                                          :packed-size :serializer))
 
           (let* ((spec    (rsb.tools.commands.bridge:parse-spec spec))
                  (command (make-command :bridge
