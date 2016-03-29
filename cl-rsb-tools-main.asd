@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-main.asd --- System definition for main binary of cl-rsb-tools.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -73,7 +73,9 @@ See `version/list' for details on keyword parameters."
   :license     "GPLv3" ; see COPYING file for details.
   :description "Main program and dispatch function for all cl-rsb
 tools."
-  :depends-on  ((:version :rsb-introspection       #.(version/string :revision? nil))
+  :depends-on  ((:version :asdf                    "3.1.5") ; for register-immutable-system
+
+                (:version :rsb-introspection       #.(version/string :revision? nil))
 
                 (:version :cl-rsb-tools-info       #.(version/string))
                 (:version :cl-rsb-tools-logger     #.(version/string))
@@ -93,4 +95,6 @@ tools."
 
 (defmethod perform :before ((operation program-op)
                             (component (eql (find-system :cl-rsb-tools-main))))
-  (mapc #'register-immutable-system (already-loaded-systems)))
+  (mapc (lambda (system)
+          (uiop:symbol-call '#:asdf '#:register-immutable-system system))
+        (already-loaded-systems)))
