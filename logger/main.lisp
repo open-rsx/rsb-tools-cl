@@ -34,7 +34,7 @@
                        (make-style-help-string :show show))
               (lispobj :long-name     "max-queued-events"
                        :typespec      '(or null positive-integer)
-                       :default-value 200
+                       :default-value 2000
                        :argument-name "NUMBER-OF-EVENTS"
                        :description
                        "The maximum number of events which may be queued for processing at any given time. Note that choosing a large value can require a large amount of memory."))
