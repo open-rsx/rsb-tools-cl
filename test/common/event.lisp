@@ -31,6 +31,7 @@
           ("/("                           error)
           ("/()"                          error)
           ("pb:.foo.Bar:#P\"foo\":binary" error)
+          ("pb:.foo.Bar:-:binary"         error)
           ("1 \"foo\""                    error)
 
           ;; Different payload types.

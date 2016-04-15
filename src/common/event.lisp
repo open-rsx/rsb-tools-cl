@@ -1,6 +1,6 @@
 ;;;; event.lisp --- Event construction utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -15,6 +15,10 @@
              ((string= spec "-")
               (read-stream-content-into-string *standard-input*))
              ((string= spec "-:binary")
+              (unless allow-binary?
+                (error "~@<Input from standard input stream cannot be ~
+                        interpreted as binary data in this ~
+                        context.~@:>"))
               (read-stream-content-into-byte-vector *standard-input*))
 
              ;; "#p"NAMESTRING"[:(binary|EXTERNAL-FORMAT)]" => read
@@ -22,9 +26,9 @@
              ((ppcre:register-groups-bind (namestring)
                   ("^#[pP]\"([^\"]+)\":binary$" spec)
                 (unless allow-binary?
-                  (error "~@<Binary content of file ~S cannot be used in ~
-                            this context.~@:>"
-                         namestring))
+                  (error "~@<Content of file ~S cannot be interpreted ~
+                          as binary data in this context.~@:>"
+                          namestring))
                 (read-file-into-byte-vector (parse-namestring namestring))))
              ((ppcre:register-groups-bind (namestring external-format)
                   ("^#[pP]\"([^\"]+)\"(?::(.+))?$" spec)

@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the call tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -52,12 +52,13 @@
                     buffer API and the --decode/--encode options of ~
                     the protoc binary.~@
                     ~@
-                    If ARGUMENT is of one the forms ~
-                    pb:.MESSAGE-TYPE-NAME:#P\"PATHNAME\" or ~
-                    pb:.MESSAGE-TYPE-NAME:#P\"PATHNAME\":ENCODING, a ~
-                    protocol buffer message of type MESSAGE-TYPE-NAME ~
-                    is constructed according to the contents of the ~
-                    file designated by PATHNAME.~@
+                    If ARGUMENT is of one the forms~@
+                    * pb:.MESSAGE-TYPE-NAME:#P\"PATHNAME\"~@
+                    * pb:.MESSAGE-TYPE-NAME:#P\"PATHNAME\":ENCODING~@
+                    * pb:.MESSAGE-TYPE-NAME:-~@
+                    , a protocol buffer message of type ~
+                    MESSAGE-TYPE-NAME is constructed according to the ~
+                    contents of the file designated by PATHNAME.~@
                     ~@
                     Note that, when written as part of a shell ~
                     command, some of the above forms may require ~
