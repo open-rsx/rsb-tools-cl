@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the send tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -105,8 +105,8 @@
            the destination URI from being processed by the shell (not ~
            necessary for all shells).~@
            ~@
-           ~2@Tcat my-data.txt | ~:*~A - 'socket:/printer'~@
-           ~2@Tcat my-data.txt | ~:*~A -:binary 'socket:/printer'~@
+           ~2@Tcat my-data.txt | ~:*~A -- - 'socket:/printer'~@
+           ~2@Tcat my-data.txt | ~:*~A -- -:binary 'socket:/printer'~@
            ~2@T~:*~A '#P\"my-data.txt\"' 'socket:/printer'~@
            ~2@T~:*~A '#P\"my-data.txt\":latin-1' 'socket:/printer'~@
            ~2@T~:*~A '#P\"my-data.txt\":binary' 'socket:/printer'~@
