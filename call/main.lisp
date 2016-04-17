@@ -52,7 +52,7 @@
                     buffer API and the --decode/--encode options of ~
                     the protoc binary.~@
                     ~@
-                    If ARGUMENT is of one the forms~@
+                    If ARGUMENT is of one of the forms~@
                     * pb:.MESSAGE-TYPE-NAME:#P\"PATHNAME\"~@
                     * pb:.MESSAGE-TYPE-NAME:#P\"PATHNAME\":ENCODING~@
                     * pb:.MESSAGE-TYPE-NAME:-~@

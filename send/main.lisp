@@ -50,7 +50,7 @@
                     buffer API and the --decode/--encode options of ~
                     the protoc binary.~@
                     ~@
-                    If EVENT-SPEC is of one the forms~@
+                    If EVENT-SPEC is of one of the forms~@
                     * pb:.MESSAGE-TYPE-NAME:#P\"PATHNAME\"~@
                     * pb:.MESSAGE-TYPE-NAME:#P\"PATHNAME\":ENCODING~@
                     * pb:.MESSAGE-TYPE-NAME:-~@
