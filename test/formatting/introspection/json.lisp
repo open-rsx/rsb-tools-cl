@@ -1,6 +1,6 @@
 ;;;; json.lisp --- Unit tests for the JSON-serialization of introspection data.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -29,6 +29,10 @@
     (with-participants ((introspection :remote-introspection
                                        rsb.introspection:+introspection-scope+
                                        :receiver-uris '("/"))
-                        (listener      :listener "/"))
-      (json:decode-json-from-string
-       (json:encode-json-to-string introspection)))))
+                        (nil           :listener "/"))
+      (let ((style (make-style :json
+                               :database introspection
+                               :service  'rsb.formatting.introspection::style)))
+        (json:decode-json-from-string
+         (with-output-to-string (stream)
+           (format-event :dummy style stream)))))))

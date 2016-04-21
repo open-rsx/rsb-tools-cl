@@ -21,9 +21,13 @@
   :depends-on  (:alexandria
                 :let-plus
 
-                :cl-json
+                (:version :architecture.builder-protocol.universal-builder "0.3")
+                (:version :architecture.builder-protocol.json              "0.3")
 
-                (:version :cl-rsb-formatting #.(version/string)))
+                (:version :rsb-builder                                     #.(version/string :revision? nil))
+                (:version :rsb-model-builder                               #.(version/string :revision? nil))
+
+                (:version :cl-rsb-formatting                               #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "formatting"
                  :pathname   "src/formatting"
