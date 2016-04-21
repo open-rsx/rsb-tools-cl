@@ -34,14 +34,18 @@
 
 (defmethod rsb.ep:handle ((sink introspection-snapshot-handler)
                           (data hunchentoot:request))
-  (setf (hunchentoot:header-out "Content-type") "application/json;charset=UTF-8")
-  (let+ (((&structure-r/o handler- database) sink)
-         (stream (flexi-streams:make-flexi-stream
-                  (hunchentoot:send-headers) :external-format :utf-8)))
-    (rsb.introspection:with-database-lock (database)
-      (let ((tree (rsb.introspection::introspection-database database)))
-        (architecture.builder-protocol.json:serialize-using-serializer
-         t tree stream (default-json-serializer))))))
+  (providing-api-endpoint (:request data) ()
+    "Replies with a snapshot of the available introspection information.
+
+     The introspection snapshot is structured as a tree with the root
+     containing host nodes, host nodes containing process nodes and
+     process nodes containing trees of nested participant nodes."
+    (lambda (stream)
+      (let ((database (handler-database sink)))
+        (rsb.introspection:with-database-lock (database)
+          (let ((tree (rsb.introspection::introspection-database database)))
+            (architecture.builder-protocol.json:serialize-using-serializer
+             t tree stream (default-json-serializer))))))))
 
 ;;; Utilities
 

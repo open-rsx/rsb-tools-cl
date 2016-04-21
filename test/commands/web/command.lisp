@@ -56,16 +56,19 @@
       (let+ (((&flet request (path accept
                               &key
                               (method          :get)
-                              query-parameters)
+                              query-parameters
+                              (expected-code   '(integer 200 (300))))
                 (let+ ((uri (puri:copy-uri (puri:uri "http://localhost")
                                            :port  port
                                            :path  path
                                            :query query-parameters))
                        ((&values body code headers)
                         (drakma:http-request uri :accept accept)))
-                  (ensure (< 199 code 300))
+                  (ensure (typep code expected-code)
+                          :report    "~@<Expected code ~D, but got ~D~@:>"
+                          :arguments (expected-code code))
                   body)))
-             ((&flet request/json (path &rest args &key)
+             ((&flet request/json (path &rest args &key &allow-other-keys)
                 (json:decode-json-from-source
                  (flexi-streams:make-flexi-stream
                   (flexi-streams:make-in-memory-input-stream
@@ -78,4 +81,10 @@
 
         ;; Test endpoint /api/introspection/snapshot
         (let ((endpoint "/api/introspection/snapshot"))
+          ;; Invalid requests.
+          (request endpoint "application/xml" :expected-code '(eql 415))
+
+          ;; Valid requests.
+          (request endpoint "text/html")
+
           (request/json endpoint))))))

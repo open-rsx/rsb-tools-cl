@@ -18,6 +18,18 @@
    #:response-timeout-mixin
    #:command-response-timeout)
 
+  ;; Conditions
+  (:export
+   #:argument-condition
+   #:argument-condition-parameter
+
+   #:argument-error
+
+   #:argument-type-error
+
+   #:argument-parse-error
+   #:argument-parse-error-raw-value)
+
   ;; Web command protocol
   (:export
    #:command-maker-handlers

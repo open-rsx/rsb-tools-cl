@@ -35,8 +35,12 @@
                  :pathname   "src/commands/web"
                  :serial     t
                  :components ((:file       "package")
+
                               (:file       "protocol")
+                              (:file       "conditions")
+
                               (:file       "mixins")
+                              (:file       "macros")
                               (:file       "command")
                               (:file       "introspection"))))
   :in-order-to ((test-op (test-op :rsb-tools-commands-web-test))))
