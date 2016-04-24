@@ -97,6 +97,36 @@ http://ADDRESS:PORT/api/introspection/snapshot
 
   A JSON-serialization of a snapshot of the introspection data for the system or systems specified via URI can be obtained here.
 
+http://ADDRESS:PORT/api/introspection/search
+
+  Query the introspection database using XPath, receive JSON-serialized results.
+
+  Return an atomic result for expressions not evaluating to node sets and an array of matches otherwise. An atomic result can be a number or string. For example, the result of the query
+
+    count(//@foo)
+
+  is a number. A match can be an attribute match or an element match.
+
+  Accepted query parameters:
+
+  * query [required]
+
+    The (non-empty) query string.
+
+    One of the following things:
+
+    * An XPath expression.
+
+    * One or more words: match any node (element, attribute, text) containing all words.
+
+  * start: non-negative-integer [optional]
+
+    Index of first node in match sequence that should be returned.
+
+  * limit: positive-integer [optional]
+
+    Number of nodes from the match sequence that should be returned.
+
 For all /api/** endpoints at least the content types text/html and application/json are supported.
 
 If the Accept header indicates that the response content type should be HTML, the response body is a HTML document containing a human-readable description of the endpoint.

@@ -95,3 +95,55 @@
       (request endpoint "text/html")
 
       (request/json endpoint))))
+
+
+(addtest (commands-web-command-root
+          :documentation
+          "Smoke test for the introspection/search endpoint of the
+           `web' command.")
+  introspection-search/smoke
+
+  (with-command-endpoint
+    (let ((endpoint "/api/introspection/search"))
+      ;; Invalid requests.
+      (request endpoint "application/xml" :expected-code '(eql 415))
+
+      (request/json endpoint :expected-code '(eql 400))
+      (request/json endpoint
+                    :query-parameters "query= "
+                    :expected-code    '(eql 400))
+      (request/json endpoint
+                    :query-parameters "query=///"
+                    :expected-code    '(eql 400))
+      (request/json endpoint
+                    :query-parameters "query=/&start=-1"
+                    :expected-code    '(eql 400))
+      (request/json endpoint
+                    :query-parameters "query=/nomatch&start=1"
+                    :expected-code    '(eql 400))
+      (request/json endpoint
+                    :query-parameters "query=/&limit=0"
+                    :expected-code    '(eql 400))
+      (request/json endpoint
+                    :query-parameters "query=count(//*)&start=1"
+                    :expected-code    '(eql 400))
+
+      ;; Valid requests.
+      (request endpoint "text/html")
+
+      (request/json endpoint :query-parameters "query=foo")
+      (request/json endpoint :query-parameters "query=foo bar")
+      (request/json endpoint :query-parameters "query=listener")
+      (request/json endpoint :query-parameters "query=listener&start=0")
+      (request/json endpoint :query-parameters "query=listener&limit=1")
+
+      (request/json endpoint :query-parameters "query=count(//*)")
+      (request/json endpoint :query-parameters "query=count(//*)&start=0")
+
+      (request/json endpoint :query-parameters "query=//*")
+      (request/json endpoint :query-parameters "query=//*&start=1")
+      (request/json endpoint :query-parameters "query=//*&limit=1")
+
+      (request/json endpoint :query-parameters "query=//@*")
+      (request/json endpoint :query-parameters "query=//@*&start=1")
+      (request/json endpoint :query-parameters "query=//@*&limit=1"))))

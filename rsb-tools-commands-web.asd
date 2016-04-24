@@ -20,16 +20,20 @@
   :description "Serve introspection information over HTTP."
   :depends-on  (:alexandria
                 :let-plus
-                (:version :log4cl              "1.1.1")
+                (:version :log4cl                              "1.1.1")
+
+                (:version :architecture.builder-protocol.json  "0.4")
+                (:version :architecture.builder-protocol.xpath "0.4")
 
                 :hunchentoot
 
-                (:version :cl-rsb              #.(version/string :revision? nil))
-                (:version :rsb-introspection   #.(version/string :revision? nil))
+                (:version :cl-rsb                              #.(version/string :revision? nil))
+                (:version :rsb-introspection                   #.(version/string :revision? nil))
+                (:version :rsb-model-builder                   #.(version/string :revision? nil))
 
-                (:version :rsb-tools-commands  #.(version/string))
+                (:version :rsb-tools-commands                  #.(version/string))
 
-                (:version :rsb-formatting-json #.(version/string)))
+                (:version :rsb-formatting-json                 #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "web"
                  :pathname   "src/commands/web"
