@@ -20,6 +20,13 @@
   (:shadow
    #:call-method)
 
+  ;; Utilities
+  (:export
+   #:coerce-to-scope-or-uri
+   #:scope-or-uri-string
+
+   #:uri-ensure-directory-path)
+
   ;; Command protocol
   (:export
    #:command-execute)

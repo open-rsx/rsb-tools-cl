@@ -6,18 +6,6 @@
 
 (cl:in-package #:rsb.tools.commands)
 
-;;; Utility functions
-
-(defun coerce-to-scope-or-uri (thing)
-  (etypecase thing
-    (string              (puri:parse-uri thing))
-    ((or scope puri:uri) thing)))
-
-(defun scope-or-uri-string (thing)
-  (etypecase thing
-    (puri:uri thing)
-    (scope    (scope-string thing))))
-
 ;;; `source-mixin'
 
 (defclass source-mixin ()

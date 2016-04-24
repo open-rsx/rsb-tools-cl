@@ -6,6 +6,24 @@
 
 (cl:in-package #:rsb.tools.commands)
 
+;;; Scopes and URIs
+
+(defun coerce-to-scope-or-uri (thing)
+  (etypecase thing
+    (string              (puri:parse-uri thing))
+    ((or scope puri:uri) thing)))
+
+(defun scope-or-uri-string (thing)
+  (etypecase thing
+    (puri:uri thing)
+    (scope    (scope-string thing))))
+
+(defun uri-ensure-directory-path (uri)
+  (let ((path (puri:uri-path uri)))
+    (if (ends-with #\/ path)
+        uri
+        (puri:copy-uri uri :path  (concatenate 'string path "/")))))
+
 ;;; Converters
 
 (defun ensure-fallback-converter (&key (converters (default-converters)))
