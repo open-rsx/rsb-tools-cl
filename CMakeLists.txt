@@ -304,6 +304,18 @@ add_test(NAME   "bridge/idl-path/on-error=continue"
                 --eval "${EXIT_AFTER_THREE_SECONDS}"
                  "inprocess:/foo -> inprocess:/bar")
 
+add_test(NAME   "send/protocol-buffer-payload"
+         COMMAND "${MAIN_EXECUTABLE}" send
+         --debug
+         --on-demand-idl-loading=blocking --idl-path=${CMAKE_SOURCE_DIR}/test/data/
+         "pb:.test.Simple:{data:\"foo\"}" inprocess:)
+add_test(NAME   "call/protocol-buffer-payload"
+         COMMAND "${MAIN_EXECUTABLE}" call
+                 --debug
+                 --on-demand-idl-loading=blocking --idl-path=${CMAKE_SOURCE_DIR}/test/data/
+                 --no-wait
+                 "inprocess:/foo/bar(pb:.test.Simple:{data:\"foo\"})")
+
 # Event meta-data specifications for send binary.
 foreach(ARG "--method=foo"
             "--meta-data=foo=bar"

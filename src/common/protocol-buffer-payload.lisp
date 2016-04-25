@@ -265,7 +265,10 @@
                                      descriptor
                                      message)
   (let* ((descriptor (etypecase descriptor
-                       (string          (pb:find-descriptor descriptor))
+                       (string          (ensure-idl-loaded
+                                         descriptor :purpose '(:packed-size
+                                                               :serializer
+                                                               :deserializer)))
                        (pb:message-desc descriptor)))
          (message    (or message
                          (make-instance (pb:descriptor-class descriptor)))))
