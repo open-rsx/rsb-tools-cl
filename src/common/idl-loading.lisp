@@ -139,3 +139,51 @@
 
   (define-load-method stream   :protobin pbf:load/binary)
   (define-load-method pathname :protobin pbf:load/binary))
+
+;;; Convenience functions
+
+(defun find-and-load-idl (qualified-name kind &rest args &key purpose)
+  "Find and load the definition of the IDL described by QUALIFIED-NAME
+   and KIND.
+
+   PURPOSE controls which methods are generated for the data type
+   after loading the definition."
+  (declare (ignore purpose))
+  (let+ (((&flet parse-name (qualified-name)
+            (let ((components (split-sequence #\. qualified-name
+                                              :remove-empty-subseqs t)))
+              (declare (type list components))
+              (values (subseq components 0 (1- (length components)))
+                      (lastcar components)))))
+         ((&flet make-file-pathname (path package name)
+            (reduce #'merge-pathnames
+                    (list (make-pathname :name name :type (string-downcase kind))
+                          (make-pathname :directory `(:relative ,@package))
+                          path))))
+         ((&flet find-definition (path package name)
+            (probe-file (make-file-pathname path package name))))
+         ((&values package name) (parse-name qualified-name))
+         (file (or (some (rcurry #'find-definition package name)
+                         pbf:*proto-load-path*)
+                   (failed-to-load-idl
+                    qualified-name
+                    (make-condition
+                     'simple-error
+                     :format-control   "~@<Could not find data type ~
+                                        definition for name ~S~@[ on ~
+                                        search path ~{~S~^, ~}~].~@:>"
+                     :format-arguments (list qualified-name
+                                             pbf:*proto-load-path*))))))
+    (apply #'load-idl file kind args)))
+
+(defvar *load-idl-on-demand?* nil)
+
+(defun ensure-idl-loaded (name &rest args &key purpose)
+  (declare (ignore purpose))
+  "Return descriptor of data type designated by NAME, loading it first
+   if necessary."
+  (or (pb:find-descriptor name :error? nil)
+      (when *load-idl-on-demand?*
+        (apply #'find-and-load-idl name :proto args)
+        nil)
+      (pb:find-descriptor name)))

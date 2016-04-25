@@ -46,7 +46,10 @@
 
   ;; IDL loading
   (:export
-   #:load-idl)
+   #:load-idl
+
+   #:find-and-load-idl
+   #:ensure-idl-loaded)
 
   ;; Logging
   (:export

@@ -131,9 +131,13 @@ system."
                  :pathname   "test/common"
                  :serial     t
                  :components ((:file       "package")
+
                               (:file       "error-handling")
+
+                              (:file       "protocol-buffer-payload")
                               (:file       "event")
-                              (:file       "protocol-buffer-payload")))))
+
+                              (:file       "idl-loading")))))
 
 (defmethod perform ((operation test-op)
                     (component (eql (find-system :rsb-tools-common-test))))

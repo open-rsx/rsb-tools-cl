@@ -1,0 +1,5 @@
+package test;
+
+message Simple {
+    required bytes data = 1;
+}
