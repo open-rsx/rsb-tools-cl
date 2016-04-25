@@ -106,6 +106,7 @@ RSB-related systems."
                               (:file       "options")
 
                               (:file       "idl-loading")
+                              (:file       "idl-loading-converter")
                               (:file       "idl-options"))))
 
   :in-order-to ((test-op (test-op :rsb-tools-common-test))))
