@@ -36,16 +36,19 @@
   ((source :initarg  :source
            :reader   failed-to-load-idl-source
            :documentation
-           ""))
+           "Stores a designator such as a name or definition source
+            location of the IDL that could not be loaded."))
+  (:default-initargs
+   :source (missing-required-initarg 'failed-to-load-idl :source))
   (:report
    (lambda (condition stream)
-     (format stream "~@<Failed to load data definition from source ~
-                     ~A.~/more-conditions::maybe-print-cause/~@:>"
+     (format stream "~@<Failed to load data definition ~
+                     ~A.~/more-conditions:maybe-print-cause/~@:>"
              (failed-to-load-idl-source condition)
              condition)))
   (:documentation
    "This error is signaled when an attempt to load a data definition
-    from some source fails."))
+    fails."))
 
 (defun failed-to-load-idl (source &optional cause)
   "Convenience function for signaling `failed-to-load-idl'."
