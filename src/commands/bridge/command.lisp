@@ -75,7 +75,8 @@
           command)
          ((&values connections self-filters)
           (bridge-description->connection-list spec self-filters))
-         (converters (rsb.tools.commands::ensure-fallback-converter)))
+         (converters (rsb.tools.common::maybe-ensure-idl-loading-converter
+                      :converters (rsb.tools.commands::ensure-fallback-converter))))
     (with-participant (bridge :bridge "/"
                               :converters        converters
                               :connections       connections

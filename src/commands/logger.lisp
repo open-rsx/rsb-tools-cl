@@ -105,7 +105,8 @@
                           (style             command-style)
                           (filters           logger-filters))
           command)
-         (converters (ensure-fallback-converter))
+         (converters (rsb.tools.common::maybe-ensure-idl-loading-converter
+                      :converters (ensure-fallback-converter)))
          ((&values queue handler)
           (make-queue-and-handler :max-queued-events max-queued-events))
          (listeners '()))

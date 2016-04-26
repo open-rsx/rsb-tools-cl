@@ -1,6 +1,6 @@
 ;;;; call.lisp --- Implementation of the call command.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -135,9 +135,11 @@
                 ((typep (event-data event) 'rsb.converter:no-value)
                  (values))
                 (t
-                 event))))))
+                 event)))))
+         (converters (rsb.tools.common::maybe-ensure-idl-loading-converter)))
     (log:info "~@<Using URI ~S method ~S arg ~A~@:>" destination method arg)
     (with-participant (server :remote-server destination
-                              :error-policy error-policy)
+                              :error-policy error-policy
+                              :converters   converters)
       (when-let ((reply (multiple-value-list (call/translate server))))
         (format-event (first reply) style *standard-output*)))))

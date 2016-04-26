@@ -1,6 +1,6 @@
 ;;;; send.lisp --- Entry point of the send tool.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -73,8 +73,11 @@
                           (meta-data   send-meta-data)
                           (timestamps  send-timestamps)
                           (causes      send-causes))
-          command))
-    (with-participant (informer :informer destination :error-policy error-policy)
+          command)
+         (converters (rsb.tools.common::maybe-ensure-idl-loading-converter)))
+    (with-participant (informer :informer destination
+                                :error-policy error-policy
+                                :converters   converters)
       (apply #'send informer payload
              (append (when method     (list :method     method))
                      (when timestamps (list :timestamps timestamps))
