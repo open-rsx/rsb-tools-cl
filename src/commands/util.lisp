@@ -40,6 +40,30 @@
 
 ;;; Queuing
 
+(define-condition queue-overflow-error (rsb-error)
+  ((capacity :initarg  :capacity
+             :type     non-negative-integer
+             :reader   queue-overflow-error-capacity
+             :documentation
+             "Stores the capacity of the queue in question.")
+   (count    :initarg  :count
+             :type     non-negative-integer
+             :reader   queue-overflow-error-count
+             :documentation
+             "Stores the number of queued items when the queue
+              overflowed."))
+  (:default-initargs
+   :capacity (missing-required-initarg 'queue-overflow-error :capacity)
+    :count    (missing-required-initarg 'queue-overflow-error :count))
+  (:report
+   (lambda (condition stream)
+     (format stream "~@<~:D event~:P in queue with capacity ~:D.~@:>"
+             (queue-overflow-error-capacity condition)
+             (queue-overflow-error-count    condition))))
+  (:documentation
+   "This error is signaled when an attempt is made to push an item
+    onto a full fixed-capacity queue."))
+
 (defun make-queue (&key max-queued-events)
   (apply #'lparallel.queue:make-queue
          (when max-queued-events
