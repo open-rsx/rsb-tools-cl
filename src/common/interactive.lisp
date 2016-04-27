@@ -8,7 +8,8 @@
 
 (defun call-with-interactive-interrupt-exit (thunk
                                              &key
-                                             (signals       `(,sb-posix:SIGINT
+                                             (signals       `(,sb-posix:SIGHUP
+                                                              ,sb-posix:SIGINT
                                                               ,sb-posix:SIGTERM))
                                              (target-thread (bt:current-thread)))
   (restart-case
