@@ -32,8 +32,7 @@
                     If EVENT-SPEC is the single character \"-\" or the ~
                     string \"-:binary\", the entire \"contents\" of ~
                     standard input (until end of file) is read as a ~
-                    string or octet-vector respectively and used as ~
-                    argument for the method send.~@
+                    string or octet-vector respectively and sent.~@
                     ~@
                     If EVENT-SPEC is of one the forms #P\"PATHNAME\", ~
                     #P\"PATHNAME\":ENCODING or #P\"PATHNAME\":binary, ~
