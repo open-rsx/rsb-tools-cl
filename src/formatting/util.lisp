@@ -138,48 +138,34 @@
           (format stream "~:(~VA~): " width key)
           (funcall value-formatter stream value))))
 
-(declaim (special *tracker*))
-
-(defvar *tracker* nil
-  "This variable should be dynamically bound to a hash-table which is
-   then used by `format-recursively' to detect already formatted
-   objects.")
-
 (let+ ((payload-generic/pretty-style)
        ((&flet payload-generic/pretty-style ()
           (or payload-generic/pretty-style
               (setf payload-generic/pretty-style
                     (make-style :payload-generic/pretty))))))
 
-  (defun format-recursively (stream value
-                             &key
-                             (tracker (or *tracker* (make-hash-table))))
-    (let ((*tracker* tracker))
-      (if (gethash value tracker)
-          (format stream "~A" value)
-          (progn
-            (setf (gethash value tracker) t)
-            (etypecase value
-              (string
-               (format stream "~S" value))
-              ((and nibbles:octet-vector (not (vector t 0)))
-               (pprint-logical-block (stream (list value))
-                 (format-payload value (payload-generic/pretty-style) stream)))
-              (sequence
-               (if (emptyp value)
-                   (format stream "<empty sequence>")
-                   (progn
-                     (pprint-newline :mandatory stream)
-                     (pprint-logical-block (stream (list value)
-                                                   :per-line-prefix "  ")
-                       (iter (for item in-sequence value)
-                             (unless (first-iteration-p)
-                               (format stream "~@:_"))
-                             (format-recursively stream item))))))
-              (standard-object
-               (format-instance stream value))
-              (t
-               (format stream "~A" value))))))))
+  (defun format-recursively (stream value)
+    (etypecase value
+      (string
+       (format stream "~S" value))
+      ((and nibbles:octet-vector (not (vector t 0)))
+       (pprint-logical-block (stream (list value))
+         (format-payload value (payload-generic/pretty-style) stream)))
+      (sequence
+       (if (emptyp value)
+           (format stream "<empty sequence>")
+           (progn
+             (pprint-newline :mandatory stream)
+             (pprint-logical-block (stream (list value)
+                                           :per-line-prefix "  ")
+               (iter (for item in-sequence value)
+                     (unless (first-iteration-p)
+                       (format stream "~@:_"))
+                     (format-recursively stream item))))))
+      (standard-object
+       (format-instance stream value))
+      (t
+       (format stream "~A" value)))))
 
 (defun format-instance (stream instance)
   "Format INSTANCE onto STREAM, handling slot values recursively."
