@@ -1,6 +1,6 @@
 ;;;; format-functions.lisp --- RSB-specific formatting functions.
 ;;;;
-;;;; Copyright (C) 2011, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -18,12 +18,6 @@
 
 (defun lines-exhausted? (line)
   (and *print-lines* (>= line *print-lines*)))
-
-(defun ascii-character-code? (code)
-  "Return non-nil if the character associated to CODE is both
-   printable and in the ASCII character set."
-  (or (member code '(8 10 13) :test #'=)
-      (<= 32 code 127)))
 
 ;;; Print functions
 
