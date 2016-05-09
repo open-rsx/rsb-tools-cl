@@ -146,7 +146,8 @@
 (defclass style-meta-data (access-mixin
                            meta-data-mixin
                            separator-mixin
-                           max-lines-mixin)
+                           max-lines-mixin
+                           output-forcing-mixin)
   ()
   (:default-initargs
    :separator `(#\Newline

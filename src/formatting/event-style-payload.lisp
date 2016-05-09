@@ -8,6 +8,7 @@
 
 (defclass style-payload (separator-mixin
                          max-lines-mixin
+                         output-forcing-mixin
                          payload-style-mixin)
   ()
   (:default-initargs

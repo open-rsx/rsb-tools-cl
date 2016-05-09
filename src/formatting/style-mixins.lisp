@@ -429,3 +429,17 @@
                          (stream t)
                          &key)
   (format-payload (event-data event) (style-payload-style style) stream))
+
+;;; `output-forcing-mixin'
+
+(defclass output-forcing-mixin ()
+  ()
+  (:documentation
+   "This class is intended to be mixed into style classes that have to
+    force output on the target stream after formatting an event."))
+
+(defmethod format-event :after ((event  t)
+                                (style  output-forcing-mixin)
+                                (stream stream)
+                                &key)
+  (force-output stream))

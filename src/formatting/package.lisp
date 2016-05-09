@@ -250,6 +250,10 @@
    #:payload-style-mixin
    #:style-payload-style)
 
+  ;; `output-forcing-mixin' mixin class
+  (:export
+   #:output-forcing-mixin)
+
   ;; `style-meta-data' style class
   (:export
    #:style-meta-data

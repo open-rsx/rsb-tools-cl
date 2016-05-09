@@ -10,7 +10,8 @@
                           meta-data-mixin
                           payload-style-mixin
                           separator-mixin
-                          max-lines-mixin)
+                          max-lines-mixin
+                          output-forcing-mixin)
   ()
   (:default-initargs
    :payload-style :payload-generic/pretty
