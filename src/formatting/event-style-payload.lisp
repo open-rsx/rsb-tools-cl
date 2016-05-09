@@ -18,3 +18,10 @@
 
 (service-provider:register-provider/class
  'style :payload :class 'style-payload)
+
+(defmethod format-event ((event  event)
+                         (style  style-payload)
+                         (stream t)
+                         &rest args &key)
+  (pprint-logical-block (stream (list event))
+    (apply #'call-next-method event style stream args)))
