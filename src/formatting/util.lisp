@@ -146,10 +146,9 @@
 
   (defun format-recursively (stream value)
     (etypecase value
-      (string
-       (format stream "~S" value))
-      ((and nibbles:octet-vector (not (vector t 0)))
-       (pprint-logical-block (stream (list value))
+      ((or string (and nibbles:octet-vector (not (vector t 0))))
+       (pprint-newline :mandatory stream)
+       (pprint-logical-block (stream (list value) :per-line-prefix "  ")
          (format-payload value (payload-generic/pretty-style) stream)))
       (sequence
        (if (emptyp value)
