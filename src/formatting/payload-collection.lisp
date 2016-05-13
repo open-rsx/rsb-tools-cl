@@ -61,7 +61,7 @@
                            (stream stream)
                            &key)
   (let ((sets (rsb.protocol.collections:events-by-scope-map-sets data)))
-    (format stream "Events by Scope (~D Scope~:P)~&~2@T"
+    (format stream "Events by Scope (~D Scope~:P)~@:_~2@T"
             (length sets))
     (pprint-logical-block (stream (coerce sets 'list))
       (iter (for set in-sequence sets)
