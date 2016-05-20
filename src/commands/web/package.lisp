@@ -24,5 +24,10 @@
 
    #:command-register-handler)
 
+  ;; Resource protocol
+  (:export
+   #:find-resource
+   #:map-resources)
+
   (:documentation
    "Package definition for the commands.web module."))

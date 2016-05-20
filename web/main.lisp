@@ -74,7 +74,9 @@ In most systems, all replies should arrive within a few milliseconds. However, c
                        :type            :directory
                        :argument-name   "DIRECTORY"
                        :description
-                       "Directory from which static content such as HTML pages and CSS files should be read.")
+                       "Directory from which static content such as HTML pages and CSS files should be read.
+
+If this option is not supplied, a built-in version of the static content is usually used.")
               (path    :long-name       "message-log-file"
                        :type            :file
                        :description
@@ -89,7 +91,7 @@ In most systems, all replies should arrive within a few milliseconds. However, c
    :item    (defgroup (:header "HTTP Endpoints")
               (make-text :contents"http://ADDRESS:PORT/
 
-  Contents of the directory specified via the document-root option is made available here.
+  Either the contents of the directory specified via the document-root option or built-in resource files are made available here.
 
 http://ADDRESS:PORT/api/introspection/snapshot
 

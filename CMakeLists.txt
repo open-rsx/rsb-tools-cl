@@ -139,6 +139,10 @@ option(WITH_WEB_SUPPORT "Enable support for serving introspection and other info
 if(WITH_WEB_SUPPORT)
     add_silent_load(rsb-tools-commands-web)
 endif()
+option(WITH_WEB_RESOURCES_SUPPORT "Enable support for including web resources in the target binary." ON)
+if(WITH_WEB_RESOURCES_SUPPORT)
+    add_silent_load(rsb-tools-commands-web-resources)
+endif()
 
 # Execute Lisp processes, potentially with output redirection.
 function(configure_lisp NAME CODE)

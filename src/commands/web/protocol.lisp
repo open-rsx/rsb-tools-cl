@@ -6,6 +6,8 @@
 
 (cl:in-package #:rsb.tools.commands.web)
 
+;;; Handler registration protocol
+
 (defgeneric command-make-handlers (command)
   (:documentation
    "COMMAND makes and returns a list of handlers with elements of the
@@ -26,3 +28,13 @@
 
     HANDLER is a function of one argument, a `hunchentoot:request',
     that should be called to handle requests arriving for PATH."))
+
+;;; Resource protocol
+
+(defgeneric find-resource (name container)
+  (:documentation
+   "Return the resource designated by NAME in CONTAINER."))
+
+(defgeneric map-resources (function container)
+  (:documentation
+   "Call FUNCTION with each resource contained in CONTAINER."))
