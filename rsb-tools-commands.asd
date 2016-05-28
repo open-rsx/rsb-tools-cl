@@ -80,7 +80,9 @@
                 (:version :utilities.print-items         "0.1")
 
                 (:version :cl-rsb                        #.(version/string :revision? nil))
+                (:version :rsb-patterns-request-reply    #.(version/string :revision? nil))
                 (:version :rsb-model                     #.(version/string :revision? nil)) ; for bridge
+
                 (:version :rsb-tools-common              #.(version/string :revision? nil))
                 (:version :cl-rsb-formatting             #.(version/string)))
   :encoding    :utf-8
