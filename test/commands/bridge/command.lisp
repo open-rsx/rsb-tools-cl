@@ -58,11 +58,6 @@
         (t
          (ensure (typep (princ-to-string (do-it)) 'string)))))))
 
-(defvar *config*
-  '(((:introspection :enabled)        . "0")
-    ((:transport :inprocess :enabled) . "1")
-    ((:transport :socket :enabled)    . "0")))
-
 (addtest (commands-bridge-command-root
           :documentation
           "Smoke test for the `bridge' command.")
@@ -76,12 +71,12 @@
           (let* ((converter (rsb.converter:make-converter
                              :call-tracking
                              :next (rsb:default-converters)))
-                 (rsb:*configuration* *config*)
+                 (rsb:*configuration* *safe-configuration*)
                  (command   (make-command :bridge :spec spec))
                  (error     nil)
                  (thread    (bt:make-thread
                              (lambda ()
-                               (let ((rsb:*configuration*       *config*)
+                               (let ((rsb:*configuration*       *safe-configuration*)
                                      (rsb::*default-converters* `((t . ,converter))))
                                  (handler-case
                                      (restart-case

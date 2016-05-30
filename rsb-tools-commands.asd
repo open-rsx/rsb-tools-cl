@@ -101,7 +101,9 @@
                               (:file       "logger")
                               (:file       "send")
                               (:file       "call")
-                              (:file       "introspect")))
+                              (:file       "introspect")
+
+                              (:file       "server")))
 
                 (:module     "commands-bridge"
                  :pathname   "src/commands/bridge"
@@ -147,6 +149,8 @@
                               (:file       "send")
                               (:file       "call")
                               (:file       "introspect")
+
+                              (:file       "server")
 
                               (:file       "web")))
 

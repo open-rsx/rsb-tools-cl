@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for unit tests of the tools.commands.bridge module.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -17,7 +17,9 @@
    #:rsb.tools.commands.bridge)
 
   (:import-from #:rsb.tools.commands.test
-   #:commands-root)
+   #:commands-root
+
+   #:*safe-configuration*)
 
   (:export
    #:commands-bridge-root)
