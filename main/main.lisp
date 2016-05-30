@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Dispatch function of the main tools program.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,7 +13,8 @@
     ("send"       . rsb.tools.send:main)
     ("introspect" . rsb.tools.introspect:main)
     ("web"        . rsb.tools.web:main)
-    ("bridge"     . rsb.tools.bridge:main))
+    ("bridge"     . rsb.tools.bridge:main)
+    ("server"     . rsb.tools.server:main))
   "Stores a mapping from program names to entry point functions.")
 
 (defun program-pathname->name (program-pathname)

@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-main.asd --- System definition for main binary of cl-rsb-tools.
+;;;; cl-rsb-tools-server.asd --- Standalone RSB server command.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-main-system
+(cl:defpackage #:cl-rsb-tools-server-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-main-system)
+(cl:in-package #:cl-rsb-tools-server-system)
 
 ;;; Version stuff
 
@@ -66,36 +66,23 @@ See `version/list' for details on keyword parameters."
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-main
+(defsystem :cl-rsb-tools-server
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "Main program and dispatch function for all cl-rsb
-tools."
-  :depends-on  ((:version :asdf                    "3.1.5") ; for register-immutable-system
+  :description "A standalone socket transport server."
+  :depends-on  (:alexandria
+                :let-plus
 
-                (:version :rsb-introspection       #.(version/string :revision? nil))
+                :net.didierverna.clon
 
-                (:version :cl-rsb-tools-info       #.(version/string))
-                (:version :cl-rsb-tools-logger     #.(version/string))
-                (:version :cl-rsb-tools-call       #.(version/string))
-                (:version :cl-rsb-tools-send       #.(version/string))
-                (:version :cl-rsb-tools-introspect #.(version/string))
-                (:version :cl-rsb-tools-web        #.(version/string))
-                (:version :cl-rsb-tools-bridge     #.(version/string))
-                (:version :cl-rsb-tools-server     #.(version/string))
+                (:version :cl-rsb             #.(version/string :revision? nil))
 
-                (:version :rsb-tools-commands      #.(version/string)))
+                (:version :rsb-tools-common   #.(version/string))
+                (:version :rsb-tools-commands #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "main"
+  :components  ((:module     "server"
+                 :serial     t
                  :components ((:file       "package")
-                              (:file       "main"
-                               :depends-on ("package")))))
-  :entry-point "rsb.tools.main:main")
-
-(defmethod perform :before ((operation program-op)
-                            (component (eql (find-system :cl-rsb-tools-main))))
-  (mapc (lambda (system)
-          (uiop:symbol-call '#:asdf '#:register-immutable-system system))
-        (already-loaded-systems)))
+                              (:file       "main")))))

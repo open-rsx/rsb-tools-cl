@@ -211,7 +211,7 @@ message(STATUS "Project is ${CMAKE_PROJECT_NAME} (${VERSION_FROM_LISP})")
 set(MAIN_NAME        "tools")
 set(MAIN_SYSTEM_NAME "cl-rsb-tools-main")
 set(MAIN_EXECUTABLE  "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}${CMAKE_EXECUTABLE_SUFFIX}")
-set(TOOLS            info logger call send introspect web bridge)
+set(TOOLS            info logger call send introspect web bridge server)
 set(ASDF_EXTRA_OUTPUT_TRANSLATIONS "((\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" #P\\\"cl-rsb-tools-main\\\")
                                     #P\\\"${CMAKE_CURRENT_BINARY_DIR}/tools\\\")")
 configure_lisp_redirect("${MAIN_NAME}"
@@ -451,6 +451,18 @@ add_test(NAME    "bridge/smoke/bidirectional"
                  --debug
                  --eval "${EXIT_AFTER_THREE_SECONDS}"
                  "inprocess:/foo <-> inprocess:/bar")
+
+# Server test
+add_test(NAME    "server/smoke"
+         COMMAND "${MAIN_EXECUTABLE}" server
+                 --debug
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
+                 "socket://localhost:0?portfile=-")
+add_test(NAME    "server/two-ports"
+         COMMAND "${MAIN_EXECUTABLE}" server
+                 --debug
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
+                 "socket://localhost:0?portfile=-" "socket://localhost:0?portfile=-")
 
 # redump test
 add_test("redump/simple"
