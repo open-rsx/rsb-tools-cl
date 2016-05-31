@@ -73,17 +73,16 @@
                      informer-url scope          data
                      listener-url expected-scope expected-data
                      expected-converter-calls)
-          (let* ((converter           (rsb.converter:make-converter
-                                       :call-tracking
-                                       :next (rsb:default-converters)))
+          (let* ((converter (rsb.converter:make-converter
+                             :call-tracking
+                             :next (rsb:default-converters)))
                  (rsb:*configuration* *config*)
                  (command   (make-command :bridge :spec spec))
                  (error     nil)
                  (thread    (bt:make-thread
                              (lambda ()
                                (let ((rsb:*configuration*       *config*)
-                                     (rsb::*default-converters* `((t . ,converter)))
-                                     )
+                                     (rsb::*default-converters* `((t . ,converter))))
                                  (handler-case
                                      (restart-case
                                          (command-execute command)
