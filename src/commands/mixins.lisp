@@ -33,7 +33,13 @@
 
 (defmethod command-execute :before ((command source-mixin) &key error-policy)
   (declare (ignore error-policy))
-  (log:info "~@<Using sources URI~P ~:*~{~S~^, ~}~@:>" (command-uris command)))
+  (let+ (((&structure-r/o command- uris) command))
+    (log:info "~@<~:[~
+                 No explicitly specified source URIs, using defaults~
+               ~;~
+                 ~:*Using source URI~P ~{~S~^, ~}~
+               ~]~@:>"
+              (length uris) uris)))
 
 ;;; `destination-mixin'
 
