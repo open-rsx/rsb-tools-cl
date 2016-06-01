@@ -133,6 +133,7 @@ RSB-related systems."
                               (:file       "event-style-compact")
                               (:file       "event-style-columns")
                               (:file       "event-style-programmable")
+                              (:file       "event-style-multiple-files")
 
                               (:file       "payload-collection"))) ; Uses detailed style at load-time
 
