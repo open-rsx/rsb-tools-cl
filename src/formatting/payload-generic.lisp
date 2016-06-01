@@ -16,13 +16,20 @@
 (service-provider:register-provider/class
  'style :payload-generic/pretty :class 'payload-style-generic/pretty)
 
+(defmethod format-payload :around ((payload t)
+                                   (style   payload-style-generic/pretty)
+                                   (stream  t)
+                                   &rest args &key)
+  (pprint-logical-block (stream (list payload))
+    (apply #'call-next-method payload style stream args)))
+
 (defmethod format-payload ((payload t)
                            (style   payload-style-generic/pretty)
                            (stream  t)
                            &key)
   ;; Default behavior is to print PAYLOAD using the Lisp pretty
   ;; printer.
-  (format stream "~@<~A~@:>" payload))
+  (princ payload stream))
 
 (defmethod format-payload ((payload vector)
                            (style   payload-style-generic/pretty)
@@ -79,5 +86,4 @@
                            (style   payload-style-generic/raw)
                            (stream  t)
                            &key)
-  (write-sequence payload stream)
-  (force-output stream))
+  (write-sequence payload stream))
