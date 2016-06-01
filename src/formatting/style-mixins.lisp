@@ -414,10 +414,7 @@
                                      &key
                                      payload-style)
   (when payload-style
-    (setf (style-%payload-style instance)
-          (typecase payload-style
-            ((or symbol cons) (make-style payload-style))
-            (t                payload-style)))))
+    (setf (style-%payload-style instance) (ensure-style payload-style))))
 
 (defmethod rsb.ep:access? ((processor payload-style-mixin)
                            (part      (eql :data))

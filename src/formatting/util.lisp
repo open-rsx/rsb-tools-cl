@@ -6,6 +6,13 @@
 
 (cl:in-package #:rsb.formatting)
 
+;;; Style creation
+
+(defun ensure-style (thing)
+  (typecase thing
+    ((or symbol cons) (make-style thing))
+    (t                thing)))
+
 ;;; Extractor functions
 
 ;; TODO duplicated in stats/util.lisp. Maybe we can fix that at some
