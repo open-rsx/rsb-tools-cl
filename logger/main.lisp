@@ -37,7 +37,12 @@
                        :default-value 2000
                        :argument-name "NUMBER-OF-EVENTS"
                        :description
-                       "The maximum number of events which may be queued for processing at any given time. Note that choosing a large value can require a large amount of memory."))
+                       "The maximum number of events which may be queued for processing at any given time. Note that choosing a large value can require a large amount of memory.")
+              (lispobj :long-name     "stop-after"
+                       :typespec      'positive-integer
+                       :argument-name "NUMBER-OF-EVENTS"
+                       :description
+                       "Terminate after the specified number of events have been processed."))
    :item    (make-idl-options)
    ;; Append RSB options.
    :item    (make-options
@@ -68,7 +73,12 @@
                                   (collect (apply #'rsb.filter:filter
                                                   (parse-instantiation-spec spec)))))
          (event-style       (getopt :long-name "style"))
-         (max-queued-events (getopt :long-name "max-queued-events")))
+         (max-queued-events (getopt :long-name "max-queued-events"))
+         (stop-after        (getopt :long-name "stop-after"))
+         (while-function    (when stop-after
+                              (lambda (count event)
+                                (declare (ignore event))
+                                (< count stop-after)))))
     (with-print-limits (*standard-output*)
       (with-logged-warnings
         (with-error-policy (error-policy)
@@ -81,6 +91,7 @@
                                 :uris              uris
                                 :style-spec        event-style
                                 :max-queued-events max-queued-events
+                                :while             while-function
                                 (when filters
                                   (list :filters filters)))))
             (with-interactive-interrupt-exit ()

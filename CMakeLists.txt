@@ -364,7 +364,7 @@ foreach(PAYLOAD ""
                      "inprocess:/foo/bar(${PAYLOAD})")
 endforeach()
 
-# Multiple URIs and queue capacity for logger
+# Multiple URIs, queue capacity and stop-after for logger
 add_test(NAME    "logger/multiple-uris"
          COMMAND "${MAIN_EXECUTABLE}" logger
                  --debug
@@ -375,6 +375,12 @@ add_test(NAME    "logger/queue-capacity"
                  --debug
                  --eval "${EXIT_AFTER_THREE_SECONDS}"
                  --max-queued-events 1
+                 inprocess:/foo)
+add_test(NAME    "logger/stop-after"
+         COMMAND "${MAIN_EXECUTABLE}" logger
+                 --debug
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
+                 --stop-after 10
                  inprocess:/foo)
 
 # Filters for logger
