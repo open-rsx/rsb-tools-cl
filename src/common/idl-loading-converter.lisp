@@ -75,24 +75,24 @@
          (converter (rsb.converter:make-converter
                      :idl-loading :target target))
          ((&flet substitute-in-sequence (converters)
-            (substitute converter target converters)))
-         ((&labels substitute-in-alist (converters)
-            (let* ((cell/old (assoc 'nibbles:octet-vector converters))
-                   (cell/new (cons 'nibbles:octet-vector
-                                   (substitute-converter (cdr cell/old)))))
-              (substitute cell/new cell/old converters))))
-         ((&labels substitute-in-caching-converter (converter)
-            (let* ((target     (rsb.converter:converter-target converter))
-                   (new-target (substitute-converter target)))
-              (rsb.converter:make-converter :caching :target new-target))))
-         ((&labels substitute-converter (converters)
-            (etypecase converters
-              (rsb.converter:caching-converter
-               (substitute-in-caching-converter converters))
-              ((cons cons)
-               (substitute-in-alist converters))
-              (sequence
-               (substitute-in-sequence converters))))))
-    (if ensure?
-        (substitute-converter converters)
-        converters)))
+            (substitute converter target converters))))
+    (labels ((substitute-in-alist (converters) ; TODO until let-plus merges adjacent &labels
+               (let* ((cell/old (assoc 'nibbles:octet-vector converters))
+                      (cell/new (cons 'nibbles:octet-vector
+                                      (substitute-converter (cdr cell/old)))))
+                 (substitute cell/new cell/old converters)))
+             (substitute-in-caching-converter (converter)
+               (let* ((target     (rsb.converter:converter-target converter))
+                      (new-target (substitute-converter target)))
+                 (rsb.converter:make-converter :caching :target new-target)))
+             (substitute-converter (converters)
+               (etypecase converters
+                 (rsb.converter:caching-converter
+                  (substitute-in-caching-converter converters))
+                 ((cons cons)
+                  (substitute-in-alist converters))
+                 (sequence
+                  (substitute-in-sequence converters)))))
+      (if ensure?
+          (substitute-converter converters)
+          converters))))
