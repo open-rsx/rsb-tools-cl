@@ -33,7 +33,16 @@
             :initform '()
             :documentation
             "List of objects implementing the filter protocol. Only
-             events accepted by all filters are processed."))
+             events accepted by all filters are processed.")
+   (while   :initarg  :while
+            :type     (or null function)
+            :reader   logger-while
+            :initform nil
+            :documentation
+            "Stores a function that, when called with the number of
+             events processed so far and the current event, returns
+             Boolean to indicate whether processing should
+             continue."))
   (:default-initargs
    :filters (list *only-user-events-filter*))
   (:documentation
@@ -53,7 +62,7 @@
 (service-provider:register-provider/class
  'command :logger :class 'logger)
 
-(defun process-events (queue stream style)
+(defun process-events (queue stream style &key while)
   "Process events in QUEUE until interrupted."
   (let ((continue-function nil)) ; TODO there is a macro for this in rsbag
     (restart-bind
@@ -68,18 +77,27 @@
                                                       failure and ~
                                                       continue ~
                                                       processing.~@:>"))))
-      (iter (for event next (lparallel.queue:pop-queue queue))
-            (when (first-iteration-p)
-              (setf continue-function (lambda () (iter:next-iteration))))
-            ;; Process EVENT with STYLE.
-            (format-event event style stream)))))
+      (macrolet
+          ((do-it (&optional while)
+             `(iter ,@(when while `((for i :from 0)))
+                    (for event next (lparallel.queue:pop-queue queue))
+                    (when (first-iteration-p)
+                      (setf continue-function
+                            (lambda () (iter:next-iteration))))
+                    ,@(when while `((while (funcall ,while i event))))
+                    ;; Process EVENT with STYLE.
+                    (format-event event style stream))))
+        (if while
+            (locally (declare (type function while)) (do-it while))
+            (do-it))))))
 
 (defmethod command-execute ((command logger) &key error-policy)
   (let+ (((&accessors-r/o (uris              command-uris)
                           (max-queued-events command-max-queued-events)
                           (stream            command-stream)
                           (style             command-style)
-                          (filters           logger-filters))
+                          (filters           logger-filters)
+                          (while             logger-while))
           command)
          (converters (rsb.tools.common::maybe-ensure-idl-loading-converter
                       :converters (ensure-fallback-converter)))
@@ -93,5 +111,5 @@
                               handler uri error-policy filters converters)
                              listeners))
                      uris)
-               (process-events queue stream style))
+               (process-events queue stream style :while while))
           (mapc #'detach/ignore-errors listeners))))

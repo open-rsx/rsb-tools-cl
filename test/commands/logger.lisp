@@ -1,6 +1,6 @@
 ;;;; logger.lisp --- Tests for the logger command class.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -41,7 +41,11 @@
           :stream            ,*error-output*))
         ((:uris              (,(puri:uri "/"))
           :style-spec        "detailed"
-          :stream-spec       :error-output)))
+          :stream-spec       :error-output))
+        ((:uris              (,(puri:uri "/"))
+          :style-spec        "detailed"
+          :while             ,(lambda (count event)
+                                (declare (ignore count event))))))
 
     (let+ (((&flet do-it () (apply #'make-command :logger initargs))))
       (case expected
