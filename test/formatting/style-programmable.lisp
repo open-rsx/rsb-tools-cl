@@ -1,6 +1,6 @@
 ;;;; style-programmable.lisp --- Unit tests for the programmable formatting style.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -66,6 +66,13 @@
       ,*simple-events*
       "/foo/ bar NIL
 /baz/ fez NIL
+")
+
+    `((:code ((princ count stream)
+              (terpri stream)))
+      ,*simple-events*
+      "0
+1
 ")
 
     ;; These should result in errors at "format time".
@@ -224,6 +231,10 @@
       "/foo/ bar
 /baz/ fez
 ")
+
+    `((:template "${count}")
+      ,*simple-events*
+      "01")
 
     ;; These should result in errors at "format time".
     `((:template "${(error \"intentional error\")}")

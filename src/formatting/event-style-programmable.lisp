@@ -24,7 +24,8 @@
      (interpol:disable-interpol-syntax)))
 
 (defvar *style-programmable-default-bindings*
-  `((sequence-number (event-sequence-number %event))
+  `((count           %count)
+    (sequence-number (event-sequence-number %event))
     (id              (princ-to-string (event-id %event)))
     (scope           (scope-string (event-scope %event)))
     (origin          (event-origin %event))
@@ -150,23 +151,26 @@
          ((&flet+ instrument-binding ((name value))
             `(,name (note-binding-use ,name ,value))))
          ((&flet wrap-code (code)
-            `(lambda (%event stream)
-               (declare (ignorable %event stream))
-               (flet ((timestamp->unix (timestamp)
-                        (local-time:timestamp-to-unix timestamp))
-                      (timestamp->unix/nsec (timestamp)
-                        (+ (* (expt 10 9)
-                              (local-time:timestamp-to-unix timestamp))
-                           (local-time:nsec-of timestamp))))
-                 (declare (ignorable #'timestamp->unix
-                                     #'timestamp->unix/nsec))
-                 (macrolet ((note-binding-use (name value)
-                              (signal 'binding-use :name name)
-                              value))
-                   (symbol-macrolet
-                       (,@(mapcar #'instrument-binding
-                                  (list* '(event %event) bindings)))
-                     (catch 'skip-event ,@code)))))))
+            `(lambda ()
+               (let ((%count -1))
+                 (lambda (%event stream)
+                   (declare (ignorable %event stream))
+                   (incf %count)
+                   (flet ((timestamp->unix (timestamp)
+                            (local-time:timestamp-to-unix timestamp))
+                          (timestamp->unix/nsec (timestamp)
+                            (+ (* (expt 10 9)
+                                  (local-time:timestamp-to-unix timestamp))
+                               (local-time:nsec-of timestamp))))
+                     (declare (ignorable #'timestamp->unix
+                                         #'timestamp->unix/nsec))
+                     (macrolet ((note-binding-use (name value)
+                                  (signal 'binding-use :name name)
+                                  value))
+                       (symbol-macrolet
+                           (,@(mapcar #'instrument-binding
+                                      (list* '(event %event) bindings)))
+                         (catch 'skip-event ,@code)))))))))
          ((&values function nil failed?)
           (block compile
             (handler-bind
@@ -186,13 +190,15 @@
                         (muffle-warning condition)
                         (return-from
                          compile (values nil nil t))))))
-              (with-compilation-unit (:override t)
-                (compile nil (wrap-code code)))))))
+              (funcall
+               (with-compilation-unit (:override t)
+                 (compile nil (wrap-code code))))))))
     (when (or failed? conditions)
       (format-code-error code
                          "~@<Failed to compile.~@[ Compiler said: ~
                           ~:{~&+_~@<~@;~A~:>~}~]~@:>"
                          (mapcar #'list conditions)))
+    (log:info "~@<Used bindings: ~:[none~;~:*~{~S~^, ~}~]~@:>" used-bindings)
     (values function used-bindings)))
 
 (defmethod format-event ((event  event)
