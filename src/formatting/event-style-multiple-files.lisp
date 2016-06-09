@@ -6,7 +6,7 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defclass event-style-multiple-files ()
+(defclass style-multiple-files ()
   ((filename-style :initarg  :filename-style
                    :reader   style-filename-style
                    :writer   (setf style-%filename-style)
@@ -29,16 +29,16 @@
                     for the event."))
   (:default-initargs
    :filename-style (missing-required-initarg
-                    'event-style-multiple-files :filename-style)
+                    'style-multiple-files :filename-style)
    :event-style    (missing-required-initarg
-                    'event-style-multiple-files :event-style))
+                    'style-multiple-files :event-style))
   (:documentation
    "Write style output to a new files for each event."))
 
 (service-provider:register-provider/class
- 'style :multiple-files :class 'event-style-multiple-files)
+ 'style :multiple-files :class 'style-multiple-files)
 
-(defmethod shared-initialize :after ((instance   event-style-multiple-files)
+(defmethod shared-initialize :after ((instance   style-multiple-files)
                                      (slot-names t)
                                      &key
                                      filename-style
@@ -49,7 +49,7 @@
     (setf (style-%event-style instance) (ensure-style event-style))))
 
 (defmethod format-event ((event  t)
-                         (style  event-style-multiple-files)
+                         (style  style-multiple-files)
                          (target t)
                          &rest args &key)
   (let+ (((&structure-r/o style- filename-style event-style) style)
@@ -63,5 +63,3 @@
                                      (remove-from-plist
                                       open-args :element-type)))
       (apply #'format-event event event-style stream args))))
-
-
