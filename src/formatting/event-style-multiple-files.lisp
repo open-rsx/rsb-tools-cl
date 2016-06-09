@@ -54,6 +54,13 @@
   (when event-style
     (setf (style-%event-style instance) (ensure-style event-style))))
 
+(defmethod rsb.ep:access? ((processor style-multiple-files)
+                           (part      t)
+                           (mode      t))
+  (let+ (((&structure-r/o style- filename-style event-style) processor))
+    (or (rsb.ep:access? filename-style part mode)
+        (rsb.ep:access? event-style part mode))))
+
 (defmethod format-event ((event  t)
                          (style  style-multiple-files)
                          (target t)
