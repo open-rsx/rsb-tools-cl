@@ -6,6 +6,8 @@
 
 (cl:in-package #:rsb.formatting)
 
+;;; `style-multiple-files'
+
 (defclass style-multiple-files ()
   ((filename-style :initarg  :filename-style
                    :reader   style-filename-style
@@ -95,3 +97,18 @@
                                      (remove-from-plist
                                       open-args :element-type)))
       (apply #'format-event event event-style stream args))))
+
+;;; `style-raw-files'
+
+(defclass style-raw-files (style-multiple-files)
+  ()
+  (:default-initargs
+   :filename-template "${count}.bin"
+   :event-style       '(:payload
+                        :separator     nil
+                        :payload-style :payload-generic/raw))
+  (:documentation
+   "Write raw payload data to a new file for each event."))
+
+(service-provider:register-provider/class
+ 'style :raw-files :class 'style-raw-files)
