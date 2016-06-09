@@ -20,11 +20,19 @@
 
   (ensure-cases (initargs &optional expected)
       '(;; Some invalid cases.
-        (()                          missing-required-initarg)
-        ((:filename-style :detailed) missing-required-initarg)
-        ((:event-style    :detailed) missing-required-initarg)
+        (()                              missing-required-initarg)
+        ((:filename-template "${count}") missing-required-initarg)
+        ((:filename-style    :detailed)  missing-required-initarg)
+        ((:event-style       :detailed)  missing-required-initarg)
+
+        ((:filename-template "${count}"
+          :filename-style    :detailed
+          :event-style       :detailed)
+                                         incompatible-initargs)
 
         ;; These are OK.
+        ((:filename-template "${count}"
+          :event-style       :detailed))
         ((:filename-style :detailed
           :event-style    :detailed)))
 
@@ -33,5 +41,7 @@
       (case expected
         (missing-required-initarg
          (ensure-condition missing-required-initarg (do-it)))
+        (incompatible-initargs
+         (ensure-condition incompatible-initargs (do-it)))
         (t
          (do-it))))))

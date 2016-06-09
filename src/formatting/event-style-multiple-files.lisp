@@ -28,10 +28,8 @@
                     style and a stream connected to the output file
                     for the event."))
   (:default-initargs
-   :filename-style (missing-required-initarg
-                    'style-multiple-files :filename-style)
-   :event-style    (missing-required-initarg
-                    'style-multiple-files :event-style))
+   :event-style (missing-required-initarg
+                 'style-multiple-files :event-style))
   (:documentation
    "Write style output to a new file for each event.
 
@@ -44,13 +42,34 @@
 (service-provider:register-provider/class
  'style :multiple-files :class 'style-multiple-files)
 
+(defmethod shared-initialize :before
+    ((instance   style-multiple-files)
+     (slot-names t)
+     &key
+     (filename-template nil filename-template-supplied?)
+     (filename-style    nil filename-style-supplied?))
+  (cond
+    ((not (or filename-template-supplied? filename-style-supplied?))
+     (missing-required-initarg 'style-multiple-files
+                               :filename-style-xor-filename-template))
+    ((and filename-template-supplied? filename-style-supplied?)
+     (incompatible-initargs 'style-multiple-files
+                            :filename-template filename-template
+                            :filename-style    filename-style))))
+
 (defmethod shared-initialize :after ((instance   style-multiple-files)
                                      (slot-names t)
                                      &key
+                                     filename-template
                                      filename-style
                                      event-style)
-  (when filename-style
-    (setf (style-%filename-style instance) (ensure-style filename-style)))
+  (cond
+    (filename-template
+     (setf (style-%filename-style instance)
+           (ensure-style `(:programmable/template
+                           :template ,filename-template))))
+    (filename-style
+     (setf (style-%filename-style instance) (ensure-style filename-style))))
   (when event-style
     (setf (style-%event-style instance) (ensure-style event-style))))
 
