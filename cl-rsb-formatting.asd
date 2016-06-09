@@ -187,6 +187,7 @@ system."
                               (:file       "style-detailed")
                               (:file       "style-compact")
                               (:file       "style-programmable")
+                              (:file       "style-multiple-files")
 
                               (:file       "style-json")))
 
