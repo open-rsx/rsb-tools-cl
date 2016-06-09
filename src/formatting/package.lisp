@@ -311,6 +311,13 @@
 
    #:style-template)
 
+  ;; `style-multiple-files'
+  (:export
+   #:style-multiple-files
+
+   #:style-filename-style
+   #:style-event-style)
+
   ;; `style-image/png' style class
   (:export
    #:style-image/png)
