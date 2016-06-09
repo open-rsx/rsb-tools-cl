@@ -33,7 +33,13 @@
    :event-style    (missing-required-initarg
                     'style-multiple-files :event-style))
   (:documentation
-   "Write style output to a new files for each event."))
+   "Write style output to a new file for each event.
+
+    The filename style is applied to events to determine the name of
+    the file into which the respective event should be written.
+
+    The event style is applied to events to produce the content of
+    these files."))
 
 (service-provider:register-provider/class
  'style :multiple-files :class 'style-multiple-files)
