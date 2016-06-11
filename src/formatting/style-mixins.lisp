@@ -6,19 +6,6 @@
 
 (cl:in-package #:rsb.formatting)
 
-;;; `access-mixin'
-
-(defclass access-mixin ()
-  ()
-  (:documentation
-   "This class is intended to be mixed into style classes that access
-    parts of events."))
-
-(defmethod rsb.ep:access? ((processor access-mixin)
-                           (data      t)
-                           (mode      (eql :write)))
-  nil)
-
 ;;; `counting-mixin'
 
 (defclass counting-mixin ()

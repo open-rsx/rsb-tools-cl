@@ -8,8 +8,7 @@
 
 ;;; `style-json'
 
-(defclass style-json (access-mixin
-                      separator-mixin)
+(defclass style-json (separator-mixin)
   ()
   (:default-initargs
    :separator nil)

@@ -143,8 +143,7 @@
 
 ;;; `style-meta-data'
 
-(defclass style-meta-data (access-mixin
-                           meta-data-mixin
+(defclass style-meta-data (meta-data-mixin
                            separator-mixin
                            max-lines-mixin
                            output-forcing-mixin)
