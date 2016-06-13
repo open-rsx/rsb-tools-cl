@@ -128,16 +128,22 @@
     to use a style object for outputting information in different
     ways."))
 
-(defmethod shared-initialize :before ((instance   style-mixin)
-                                      (slot-names t)
-                                      &key
-                                      (style      nil style-supplied?)
-                                      (style-spec nil style-spec-supplied?))
+(defmethod shared-initialize :before
+    ((instance   style-mixin)
+     (slot-names t)
+     &key
+     (style         nil style-supplied?)
+     (style-spec    nil style-spec-supplied?)
+     (style-service nil style-service-supplied?))
   (cond
-    ((and style-supplied? style-spec-supplied?)
-     (incompatible-initargs 'style-mixin
-                            :style      style
-                            :style-spec style-spec))
+    ((and style-supplied? (or style-spec-supplied?
+                              style-service-supplied?))
+     (apply #'incompatible-initargs 'style-mixin
+            :style style
+            (append (when style-spec-supplied?
+                      (list :style-spec style-spec))
+                    (when style-service-supplied?
+                      (list :style-service style-service)))))
     ((not (or style-supplied? style-spec-supplied?))
      (missing-required-initarg 'style-mixin
                                :style-xor-style-spec))))
