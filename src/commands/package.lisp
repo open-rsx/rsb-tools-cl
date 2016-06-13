@@ -35,6 +35,14 @@
   (:export
    #:make-command)
 
+  ;; Command style protocol and mixin
+  (:export
+   #:command-style
+   #:command-style-service
+   #:command-make-style
+
+   #:style-mixin)
+
   ;; Command mixin classes
   (:export
    #:output-stream-mixin
@@ -48,9 +56,6 @@
 
    #:payload-literal-mixin
    #:command-payload
-
-   #:style-mixin
-   #:command-style
 
    #:event-queue-mixin
    #:command-max-queued-events)

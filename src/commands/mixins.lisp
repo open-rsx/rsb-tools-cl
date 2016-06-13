@@ -156,8 +156,17 @@
      (style-service (command-style-service instance)))
   (when style-spec-supplied?
     (setf (command-%style instance)
-          (make-style (parse-instantiation-spec style-spec)
-                      :service style-service))))
+          (command-make-style instance style-spec style-service))))
+
+(defmethod command-make-style ((command  style-mixin)
+                               (spec     string)
+                               (service  t))
+  (command-make-style command (parse-instantiation-spec spec) service))
+
+(defmethod command-make-style ((command  style-mixin)
+                               (spec     t)
+                               (service  t))
+  (make-style spec :service service))
 
 ;;; `output-stream-mixin'
 

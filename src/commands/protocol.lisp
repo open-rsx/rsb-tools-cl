@@ -1,6 +1,6 @@
 ;;;; protocol.lisp --- Protocol provided by the commands module.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -38,3 +38,23 @@
   (:documentation
    "Providers of this service define commands which can be executed by
     the rsb commandline tool."))
+
+;;; Command style protocol
+
+(defgeneric command-style (command)
+  (:documentation
+   "Return the formatting style used by COMMAND."))
+
+(defgeneric command-style-service (command)
+  (:documentation
+   "Return a designator of the service that should be used to create
+    formatting style instances for COMMAND."))
+
+(defgeneric command-make-style (command spec service)
+  (:documentation
+   "Make and return a style instance according to SPEC and SERVICE.
+
+    SPEC is a string or sexp specification of the desired style.
+
+    SERVICE is designator of the service that should be used to make
+    the style instance."))
