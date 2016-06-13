@@ -1,6 +1,6 @@
 ;;;; mixins.lisp --- Tests for command mixin classes.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -13,7 +13,8 @@
 
 (addtest (output-stream-mixin-root
           :documentation
-          "Test construction of the `output-stream-mixin' command.")
+          "Test construction of the `output-stream-mixin' command
+           mixin class.")
   construction
 
   (ensure-cases (initargs &optional expected)

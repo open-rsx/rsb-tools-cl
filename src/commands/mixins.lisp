@@ -153,7 +153,7 @@
           (make-style (parse-instantiation-spec style-spec)
                       :service style-service))))
 
-;;; `output-stream' mixin
+;;; `output-stream-mixin'
 
 (defclass output-stream-mixin ()
   ((stream :initarg  :stream
