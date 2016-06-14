@@ -14,7 +14,8 @@
                                              (target-thread (bt:current-thread)))
   (restart-case
       (labels
-          ((initial-handler (signal info context)
+          (#-win32
+           (initial-handler (signal info context)
              (declare (ignore info context))
              (log:info "~@<Caught signal ~D; aborting thread ~
                         ~A.~@:>"
