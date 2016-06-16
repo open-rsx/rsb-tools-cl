@@ -54,7 +54,10 @@
                              :quantities :count
                              :sub-styles :test :key
                              :sort-predicate :sort-key
-                             :code))
+                             :code
+                             :builder
+                             :event-peek-function
+                             :payload-peek-function))
        stream)
       (format stream "~%~%")
       (rsb.tools.common:with-abbreviation (stream :columns show)
