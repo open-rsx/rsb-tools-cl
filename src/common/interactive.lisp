@@ -6,12 +6,13 @@
 
 (cl:in-package #:rsb.tools.common)
 
-(defun call-with-interactive-interrupt-exit (thunk
-                                             &key
-                                             (signals       `(,sb-posix:SIGHUP
-                                                              ,sb-posix:SIGINT
-                                                              ,sb-posix:SIGTERM))
-                                             (target-thread (bt:current-thread)))
+(defun call-with-interactive-interrupt-exit
+    (thunk
+     &key
+     (signals       #-win32 `(,sb-posix:SIGHUP
+                              ,sb-posix:SIGINT
+                              ,sb-posix:SIGTERM))
+     (target-thread (bt:current-thread)))
   (restart-case
       (labels
           (#-win32
