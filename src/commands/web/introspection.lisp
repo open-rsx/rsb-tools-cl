@@ -26,6 +26,12 @@
    "Instances of this class serve JSON-serialized introspection
     information."))
 
+(defun make-introspection-snapshot-handler (database)
+  (values "/api/introspection/snapshot"
+          (make-instance 'introspection-snapshot-handler :database database)))
+
+(pushnew 'make-introspection-snapshot-handler *default-handlers*)
+
 (defmethod rsb.ep:handle ((sink introspection-snapshot-handler)
                           (data hunchentoot:request))
   (setf (hunchentoot:header-out "Content-type") "application/json;charset=UTF-8")

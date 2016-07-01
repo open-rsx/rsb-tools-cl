@@ -6,6 +6,10 @@
 
 (cl:in-package #:rsb.tools.commands.web)
 
+(defvar *default-handlers* '()
+  "Stores a list of functions that return handlers and corresponding
+   paths.")
+
 (defclass web (source-mixin
                response-timeout-mixin
                http-server-mixin
@@ -27,9 +31,9 @@
 (defvar *database*)
 
 (defmethod command-make-handlers ((command web))
-  (list (cons "/introspection/json"
-              (make-instance 'introspection-snapshot-handler
-                             :database *database*))))
+  (mapcar (lambda (generator)
+            (multiple-value-call #'cons (funcall generator *database*)))
+          *default-handlers*))
 
 (defmethod command-execute ((command web) &key error-policy)
   (let+ (((&structure command- uris response-timeout) command))

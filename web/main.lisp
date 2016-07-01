@@ -91,7 +91,7 @@ In most systems, all replies should arrive within a few milliseconds. However, c
 
   Contents of the directory specified via the document-root option is made available here.
 
-http://ADDRESS:PORT/introspection/json
+http://ADDRESS:PORT/api/introspection/snapshot
 
   A JSON-serialization of a snapshot of the introspection data for the system or systems specified via URI can be obtained here."))
    ;; Append examples.
