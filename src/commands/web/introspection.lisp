@@ -6,43 +6,40 @@
 
 (cl:in-package #:rsb.tools.commands.web)
 
-;;; `introspection-json-handler'
+;;; `introspection-handler-mixin'
 
-(defclass introspection-json-handler (function
-                                      standard-object)
-  ((style :accessor handler-%style
-          :documentation
-          "Stores the introspection formatting style for serializing
-           the introspection data."))
-  (:metaclass closer-mop:funcallable-standard-class)
+(defclass introspection-handler-mixin (handler-mixin)
+  ((database :initarg  :database
+             :reader   handler-database))
   (:default-initargs
-   :database (missing-required-initarg 'introspection-json-handler :database))
+   :database (missing-required-initarg 'introspection-handler-mixin :database))
+  (:documentation
+   "This class is intended to be mixed into handler classes that serve
+    introspection information."))
+
+;;; `introspection-snapshot-handler'
+
+(defclass introspection-snapshot-handler (introspection-handler-mixin)
+  ()
+  (:metaclass closer-mop:funcallable-standard-class)
   (:documentation
    "Instances of this class serve JSON-serialized introspection
     information."))
 
-(defmethod initialize-instance :after ((instance introspection-json-handler)
-                                       &key
-                                       database)
-  (closer-mop:set-funcallable-instance-function
-   instance (lambda (request) (rsb.ep:handle instance request)))
-
-  ;; Instantiate the JSON introspection formatting style and attach
-  ;; the introspection database to it.
-  (let+ (((&structure handler- (style %style)) instance))
-    (setf style (rsb.formatting:make-style
-                 :json
-                 :service  'rsb.formatting.introspection::style
-                 :database database
-                 :delay    nil))))
-
-(defmethod detach ((participant introspection-json-handler))
-  (detach (handler-%style participant)))
-
-(defmethod rsb.ep:handle ((processor introspection-json-handler)
-                          (data      hunchentoot:request))
+(defmethod rsb.ep:handle ((sink introspection-snapshot-handler)
+                          (data hunchentoot:request))
   (setf (hunchentoot:header-out "Content-type") "application/json;charset=UTF-8")
-  (let+ (((&structure-r/o handler- (style %style)) processor)
+  (let+ (((&structure-r/o handler- database) sink)
          (stream (flexi-streams:make-flexi-stream
                   (hunchentoot:send-headers) :external-format :utf-8)))
-    (rsb.formatting:format-event :dummy style stream)))
+    (rsb.introspection:with-database-lock (database)
+      (let ((tree (rsb.introspection::introspection-database database)))
+        (architecture.builder-protocol.json:serialize-using-serializer
+         t tree stream (default-json-serializer))))))
+
+;;; Utilities
+
+(defun default-json-serializer ()
+  (rsb.formatting::make-json-serializer
+   :kind-transform (architecture.builder-protocol.json:default-kind-key-and-value-transform)
+   :peek-function  (rsb.formatting::make-json-peek-function)))

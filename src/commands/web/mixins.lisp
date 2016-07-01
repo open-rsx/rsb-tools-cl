@@ -194,6 +194,23 @@
       ;; Detach handlers.
       (mapc #'detach handlers))))
 
+;;; `handler-mixin'
+
+(defclass handler-mixin (function
+                         standard-object)
+  ()
+  (:metaclass closer-mop:funcallable-standard-class)
+  (:documentation
+   "This class is intended to be mixed into handler classes."))
+
+(defmethod initialize-instance :after ((instance handler-mixin) &key)
+  (closer-mop:set-funcallable-instance-function
+   instance (lambda (request) (rsb.ep:handle instance request))))
+
+(defmethod detach ((participant handler-mixin))
+  (when (next-method-p)
+    (call-next-method)))
+
 ;;; Utilities
 
 (defun print-server-url (stream thing &optional at? colon?)

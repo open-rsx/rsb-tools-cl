@@ -28,7 +28,7 @@
 
 (defmethod command-make-handlers ((command web))
   (list (cons "/introspection/json"
-              (make-instance 'introspection-json-handler
+              (make-instance 'introspection-snapshot-handler
                              :database *database*))))
 
 (defmethod command-execute ((command web) &key error-policy)
