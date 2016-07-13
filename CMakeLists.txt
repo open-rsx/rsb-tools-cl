@@ -237,6 +237,7 @@ foreach(SYSTEM rsb-tools-common cl-rsb-formatting cl-rsb-stats rsb-tools-command
     set_tests_properties("test-${SYSTEM}" PROPERTIES RUN_SERIAL TRUE)
 endforeach()
 
+set(SEND_EVENT_AFTER_TWO_SECONDS "(let ((timer (sb-ext:make-timer (lambda () (rsb:with-participant (i :informer \"inprocess:\") (rsb:send i 1)))))) (sb-ext:schedule-timer timer 2))")
 set(EXIT_AFTER_THREE_SECONDS "(let ((timer (sb-ext:make-timer (lambda () (sb-ext:exit))))) (sb-ext:schedule-timer timer 3))")
 
 # --help, --help-all and --version for all binaries.
@@ -404,6 +405,7 @@ foreach(STYLE discard meta-data payload detailed
     add_test(NAME    "logger/style=${STYLE}"
              COMMAND "${MAIN_EXECUTABLE}" logger
                      --debug --style "${STYLE}"
+                     --eval "${SEND_EVENT_AFTER_TWO_SECONDS}"
                      --eval "${EXIT_AFTER_THREE_SECONDS}"
                      inprocess:)
     add_test(NAME   "call/style=${STYLE}/no-wait"
