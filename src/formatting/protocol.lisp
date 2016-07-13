@@ -268,6 +268,9 @@
 (defmethod value< ((left real) (right real))
   (< left right))
 
+(defmethod value< ((left symbol) (right symbol))
+  (string< left right))
+
 (defmethod value< ((left string) (right string))
   (string< left right))
 
