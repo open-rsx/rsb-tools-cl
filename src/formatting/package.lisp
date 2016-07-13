@@ -27,6 +27,8 @@
    #:separator-spec
 
    #:width-specification
+   #:width-specification?
+   #:compatible-with-width-specification?
 
    #:print-interval
 
