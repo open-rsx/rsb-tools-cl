@@ -370,8 +370,9 @@ add_test(NAME    "logger/filter"
 # TODO: add these:
 # programmable/template :template #p"${CMAKE_CURRENT_SOURCE_DIR}/test/data/empty.template"
 # programmable/script   :template #p"${CMAKE_CURRENT_SOURCE_DIR}/test/data/empty.lisp"
+# compact :columns (:now (:scope :width 12))
 foreach(STYLE discard meta-data payload detailed
-              compact statistics
+              columns compact statistics
               monitor monitor/scope monitor/origin monitor/type monitor/size
               timeline/scope timeline/origin
               json)

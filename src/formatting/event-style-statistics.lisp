@@ -55,8 +55,8 @@
                                  (stream t)
                                  &key
                                  (width (or *print-right-margin* 80)))
-  (let* ((columns   (style-dynamic-width-columns style))
-         (separator (style-separator-width       style))
-         (widths    (style-compute-column-widths
-                     style columns width :separator-width separator)))
-    (style-assign-column-widths style columns widths)))
+  (let+ (((&structure-r/o style- dynamic-width-columns separator-width) style)
+         (widths (style-compute-column-widths
+                  style dynamic-width-columns width
+                  :separator-width separator-width)))
+    (style-assign-column-widths style dynamic-width-columns widths)))
