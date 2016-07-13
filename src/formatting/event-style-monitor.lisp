@@ -85,7 +85,7 @@
               (t
                (make-generator
                 (list* (first default-columns)
-                       (sublis *basic-columns* columns)))))))))
+                       (mapcar #'expand-column-spec columns)))))))))
 
 (defmethod make-sub-style-entry ((style monitor-style-mixin)
                                  (value t))
@@ -188,7 +188,8 @@
             (defclass ,class-name (sorted-monitor-style)
               ()
               (:default-initargs
-               :default-columns (sublis *basic-columns* (list ,@column-specs))
+               :default-columns (mapcar #'expand-column-spec
+                                        (list ,@column-specs))
                ,@initargs)
               ,@(when documentation
                   `((:documentation ,documentation))))
@@ -294,7 +295,7 @@
   (:default-initargs
    :key              #'event-scope
    :test             #'scope=
-   :default-columns  (sublis *basic-columns*
+   :default-columns  (mapcar #'expand-column-spec
                              (list (lambda (value)
                                      (%make-last-scope-component-column value))
                                    :rate :throughput :latency :timeline
