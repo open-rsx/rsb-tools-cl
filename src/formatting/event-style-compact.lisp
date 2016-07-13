@@ -21,7 +21,7 @@
          (dummy '(:constant :name "" :value "" :width 0)))
     (mapcar (lambda+ ((predicate . column-specs))
               (make-sub-style (cons predicate
-                                    (sublis *basic-columns* column-specs))))
+                                    (mapcar #'expand-column-spec column-specs))))
             `((,#'request-event? . (:receive
                                     :id :call ,dummy ,dummy
                                     :wire-schema :data-size :origin :sequence-number
