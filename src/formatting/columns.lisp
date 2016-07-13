@@ -362,3 +362,14 @@
 
    where NAME names the column specification SPEC. See `columns-mixin'
    for information regarding the processing of SPEC.")
+
+(defun expand-column-spec (spec &optional (templates *basic-columns*))
+  (let+ (((&flet find-template (name)
+            (cdr (assoc name templates)))))
+    (typecase spec
+      (keyword (or (find-template spec) spec))
+      (cons    (let+ (((name &rest args) spec))
+                 (if-let ((template (find-template name)))
+                   `(,(first template) ,@args ,@(rest template))
+                   spec)))
+      (t       spec))))
