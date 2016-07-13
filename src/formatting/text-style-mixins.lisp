@@ -246,19 +246,22 @@
     (missing-required-initarg 'width-specification-mixin
                               :widths-xor-width))
   (when (and widths-supplied? width-supplied?)
-    (incompatible-initargs 'width-specification-mixin
-                           :widths widths
-                           :width  width)))
+    (check-type widths (satisfies width-specification?))
+    (unless (compatible-with-width-specification? width widths)
+      (incompatible-initargs 'width-specification-mixin
+                             :widths widths
+                             :width  width))))
 
 (defmethod shared-initialize :after ((instance   width-specification-mixin)
                                      (slot-names t)
                                      &key
-                                     (widths nil widths-supplied?)
-                                     (width  nil width-supplied?))
-  (when width-supplied?
-    (setf (column-widths instance) width))
-  (when widths-supplied?
-    (setf (column-widths instance) widths)))
+                                       (widths nil widths-supplied?)
+                                       (width  nil width-supplied?))
+  (cond
+    (width-supplied?
+     (setf (column-widths instance) width))
+    (widths-supplied?
+     (setf (column-widths instance) widths))))
 
 ;;; `width-mixin'
 
