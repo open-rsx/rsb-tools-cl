@@ -28,9 +28,9 @@
                                widths-caching-mixin
                                separator-mixin
                                header-printing-mixin)
-  ((columns          :initarg    :columns
-                     :type       function
+  ((columns          :type       function
                      :reader     style-columns
+                     :accessor   style-%columns
                      :documentation
                      "Stores a specification for creating columns used
                       by sub-styles of the style.")
@@ -46,13 +46,46 @@
 
    :separator        :clear
 
-   :columns          (missing-required-initarg 'monitor-style-mixin :columns)
    :line-style-class 'basic-monitor-line-style)
   (:documentation
    "This class is intended to be mixed into formatting style classes
     which group events according to some criterion and periodically
     display information for events within each group in one line of
     text."))
+
+(defmethod initialize-instance :before ((instance monitor-style-mixin)
+                                        &key
+                                        (columns         nil columns-supplied?)
+                                        (default-columns nil default-columns-supplied?))
+  (declare (ignore columns default-columns))
+  (unless (or columns-supplied? default-columns-supplied?)
+    (missing-required-initarg
+     'monitor-style-mixin :columns-or-default-columns)))
+
+(defmethod shared-initialize :after
+    ((instance   monitor-style-mixin)
+     (slot-names t)
+     &key
+     (default-columns nil             default-columns-supplied?)
+     (columns         default-columns columns-supplied?))
+  (when (or columns-supplied? default-columns-supplied?)
+    (let+ (((&flet make-generator (specs)
+              (lambda (value)
+                (mapcar (lambda (spec)
+                          (if (functionp spec)
+                              (funcall spec value)
+                              spec))
+                        specs)))))
+      (setf (style-%columns instance)
+            (cond
+              ((not columns-supplied?)
+               (make-generator default-columns))
+              ((functionp columns)
+               columns)
+              (t
+               (make-generator
+                (list* (first default-columns)
+                       (sublis *basic-columns* columns)))))))))
 
 (defmethod make-sub-style-entry ((style monitor-style-mixin)
                                  (value t))
@@ -155,8 +188,7 @@
             (defclass ,class-name (sorted-monitor-style)
               ()
               (:default-initargs
-               :columns (lambda (value)
-                          (sublis *basic-columns* (list ,@column-specs)))
+               :default-columns (sublis *basic-columns* (list ,@column-specs))
                ,@initargs)
               ,@(when documentation
                   `((:documentation ,documentation))))
@@ -168,14 +200,15 @@
     "This style groups events by scope and periodically displays
      various statistics for events in each scope-group."
     ;; Specification for group column.
-    (list :constant
-          :name      "Scope"
-          :value     value
-          :formatter (lambda (value stream)
-                       (write-string (scope-string value) stream))
-          :widths    '(:range 38)
-          :priority  3.2
-          :alignment :left)
+    (lambda (value)
+      (list :constant
+            :name      "Scope"
+            :value     value
+            :formatter (lambda (value stream)
+                         (write-string (scope-string value) stream))
+            :widths    '(:range 38)
+            :priority  3.2
+            :alignment :left))
     ;; Specifications for remaining columns.
     :rate :throughput :latency :timeline :type/40 :size :origin/40 :method/20)
 
@@ -186,11 +219,12 @@
     "This style groups events by origin and periodically displays
      various statistics for events in each origin-group."
     ;; Specification for group column.
-    (list :constant
-          :name      "Origin"
-          :value     value
-          :width     38
-          :alignment :left)
+    (lambda (value)
+      (list :constant
+            :name      "Origin"
+            :value     value
+            :width     38
+            :alignment :left))
     ;; Specifications for remaining columns.
     :rate :throughput :latency :scope/40 :timeline :type/40 :size :method/20)
 
@@ -200,11 +234,12 @@
     "This style groups events by type and periodically displays
      various statistics for events in each type-group."
     ;; Specification for group column.
-    (list :constant
-          :name      "Type"
-          :value     value
-          :widths    '(:range 35)
-          :alignment :left)
+    (lambda (value)
+      (list :constant
+            :name      "Type"
+            :value     value
+            :widths    '(:range 35)
+            :alignment :left))
     ;; Specifications for remaining columns.
     :rate :throughput :latency :scope/40 :timeline :size :origin/40 :method/20)
 
@@ -215,13 +250,14 @@
      of 2) and periodically displays various statistics for events in
      each size-group."
     ;; Specification for group column.
-    (list :constant
-          :name      "Size"
-          :value     value
-          :formatter (lambda (value stream)
-                       (rsb.formatting:print-human-readable-size stream value))
-          :width     5
-          :alignment :left)
+    (lambda (value)
+      (list :constant
+            :name      "Size"
+            :value     value
+            :formatter (lambda (value stream)
+                         (rsb.formatting:print-human-readable-size stream value))
+            :width     5
+            :alignment :left))
     ;; Specifications for remaining columns.
     :rate :throughput :latency :scope/40 :timeline :type/40 :size :origin/40 :method/20))
 
@@ -258,11 +294,11 @@
   (:default-initargs
    :key              #'event-scope
    :test             #'scope=
-   :columns          (lambda (value)
-                       (sublis *basic-columns*
-                               (list (%make-last-scope-component-column value)
-                                     :rate :throughput :latency :timeline
-                                     :type/40 :size :origin/40 :method/20)))
+   :default-columns  (sublis *basic-columns*
+                             (list (lambda (value)
+                                     (%make-last-scope-component-column value))
+                                   :rate :throughput :latency :timeline
+                                   :type/40 :size :origin/40 :method/20))
    :line-style-class 'monitor-line-style/tree))
 
 ;; Name and aliases

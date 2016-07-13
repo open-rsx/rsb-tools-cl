@@ -1,6 +1,6 @@
 ;;;; event-style-timeline.lisp --- Event indicators on a simple timeline.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -70,7 +70,7 @@
             (defclass ,class-name (basic-timeline-style)
               ()
               (:default-initargs
-               :columns (lambda (value) (list ,@columns))
+               :default-columns (list ,@columns)
                ,@initargs)
               ,@(when documentation
                       `((:documentation ,documentation))))
@@ -83,14 +83,15 @@
      events occur as dots on a timeline. Separate \"lanes\" which
      share a common timeline are dynamically allocated as events
      occur. Events are grouped by scope."
-    (list :constant
-          :name      "Scope"
-          :value     value
-          :formatter (lambda (value stream)
-                       (write-string (scope-string value) stream))
-          :widths    '(:range 24)
-          :priority  2
-          :alignment :left)
+    (lambda (value)
+      (list :constant
+            :name      "Scope"
+            :value     value
+            :formatter (lambda (value stream)
+                         (write-string (scope-string value) stream))
+            :widths    '(:range 24)
+            :priority  2
+            :alignment :left))
     (list :timeline))
 
   (define-timeline-style (origin :key #'event-origin :test #'uuid:uuid=)
@@ -98,10 +99,11 @@
      events occur as dots on a timeline. Separate \"lanes\" which
      share a common timeline are dynamically allocated as events
      occur. Events are grouped by origin."
-    (list :constant
-          :name      "Origin"
-          :value     value
-          :widths    '(:range 8)
-          :priority  2
-          :alignment :left)
+    (lambda (value)
+      (list :constant
+            :name      "Origin"
+            :value     value
+            :widths    '(:range 8)
+            :priority  2
+            :alignment :left))
     (list :timeline)))
