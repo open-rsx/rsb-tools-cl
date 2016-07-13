@@ -1,6 +1,6 @@
 ;;;; types.lisp --- Types used in the formatting module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -91,6 +91,19 @@
                (cons
                 (every #'rec thing)))))
     (rec thing)))
+
+(defun compatible-with-width-specification? (value specification)
+  (labels ((check (specification)
+             (typecase specification
+               (non-negative-integer
+                (= value specification))
+               ((cons (eql :range))
+                (let+ (((&ign lower &optional upper) specification))
+                  (and (>= value lower)
+                       (or (not upper) (<= value upper)))))
+               (cons
+                (some #'check specification)))))
+    (check specification)))
 
 (deftype width-specification ()
   "Specification or list of specifications of the form
