@@ -185,6 +185,7 @@ system."
 
                               (:file       "style-meta-data")
                               (:file       "style-detailed")
+                              (:file       "style-columns")
                               (:file       "style-compact")
                               (:file       "style-programmable")
                               (:file       "style-multiple-files")
