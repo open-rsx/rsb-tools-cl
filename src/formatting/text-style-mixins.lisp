@@ -433,14 +433,17 @@
 ;;; `widths-caching-mixin'
 
 (defclass widths-caching-mixin ()
-  ((width-cache :type     vector
-                :accessor style-width-cache
-                :initform (make-array 1000
-                                      :initial-element nil
-                                      :adjustable      t)
-                :documentation
-                "Stores results of width computations indexed by
-                 target width."))
+  ((width-cache    :type     vector
+                   :accessor style-width-cache
+                   :initform (make-array 1000
+                                         :initial-element nil
+                                         :adjustable      t)
+                   :documentation
+                   "Stores results of width computations indexed by
+                    target width.")
+   (previous-width :type     (or null non-negative-integer)
+                   :accessor style-%previous-width
+                   :initform nil))
   (:documentation
    "This class is intended to be mixed into classes which perform
     column width computations. It add caching of computation results
@@ -452,14 +455,15 @@
                                         &key
                                         separator-width)
   (declare (ignore separator-width))
-  (let+ (((&structure-r/o style- width-cache) style)
+  (let+ (((&structure-r/o style- width-cache %previous-width) style)
          ((&flet ensure-cached-widths (width)
             (unless (< width (length width-cache))
               (adjust-array width-cache (1+ width) :initial-element nil))
-            (if-let ((value (aref width-cache width)))
-              (values value t)
-              (setf (aref width-cache width) (call-next-method))))))
-    (ensure-cached-widths width)))
+            (or (aref width-cache width)
+                (setf (aref width-cache width) (call-next-method))))))
+    (multiple-value-prog1
+        (values (ensure-cached-widths width) (equal %previous-width width))
+      (setf %previous-width width))))
 
 ;; Local Variables:
 ;; coding: utf-8

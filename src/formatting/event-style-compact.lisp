@@ -68,16 +68,17 @@
                                  (width (or *print-right-margin* 80)))
   (let+ (((&structure-r/o style- sub-styles) style)
          ((&flet do-sub-style (sub-style)
-            (let* ((columns   (style-dynamic-width-columns sub-style))
+            (let+ ((columns   (style-dynamic-width-columns sub-style))
                    (separator (style-separator-width       sub-style))
-                   (widths    (style-compute-column-widths
-                               sub-style columns width
-                               :separator-width separator)))
-              (style-assign-column-widths sub-style columns widths)
-              (values columns widths))))
+                   ((&values widths cached?) (style-compute-column-widths
+                                              sub-style columns width
+                                              :separator-width separator)))
+              (unless cached?
+                (style-assign-column-widths sub-style columns widths))
+              (values columns widths cached?))))
          ;; Compute widths for final sub-style which is the most
          ;; generic one.
-         ((&values columns widths)
+         ((&values columns widths cached?)
           (do-sub-style (cdr (lastcar sub-styles))))
          ((&flet do-subordinate-sub-style (sub-style)
             (map nil (lambda (column1 column2 width)
@@ -89,5 +90,6 @@
     ;; Assign column widths computed for final sub-style to shared
     ;; columns of other sub-styles. Then optimize remaining ("free")
     ;; column widths in these sub-styles.
-    (mapc (compose #'do-subordinate-sub-style #'cdr)
-          (butlast sub-styles))))
+    (unless cached?
+      (mapc (compose #'do-subordinate-sub-style #'cdr)
+            (butlast sub-styles)))))
