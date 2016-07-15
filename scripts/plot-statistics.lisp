@@ -10,16 +10,36 @@
   (setf (symbol-value 'initialized?) t
         *random-state*               (make-random-state t))
 
-  (let (;; Tunable parameters
-        (bucket-size      2) ; seconds
-        (type             "png")
-        (terminal-options "font \",8\" size 1400, 800")
-        ;; Internal variables
-        (data-file        (format nil "/tmp/~8,'0X.txt" (random (expt 16 8))))
-        (plot-file        (format nil "/tmp/~8,'0X.plt" (random (expt 16 8))))
-        (scopes           (make-hash-table :test #'eq))
-        (start-time       nil)
-        (last-output      (timestamp event :receive)))
+  (let+ (;; Tunable parameters
+         (bucket-size        2) ; seconds
+         (terminal-name      "pngcairo")
+         (terminal-options   "enhanced font \"Verdana,12\" size 2000, 1500")
+         (type               "png")
+         ;; http://www.gnuplotting.org/ease-your-plotting-with-config-snippets/
+         (borders
+          (format nil "set border 0~@
+                       set style line 101 lc rgb '#808080' lt 0 lw 2~@
+                       set grid back ls 101"))
+         ;; http://www.gnuplotting.org/tag/colormap/
+         (colors             #+no '(#x0072bd #xd95319 #xedb120 #x7e2f8e
+                                    #x77ac30 #x4dbeee #xa2142f))
+         (palette
+          (when colors
+            (with-output-to-string (stream)
+              (loop :for i :from 1 :to 100
+                 :for color :in (apply #'circular-list colors)
+                 :do (format stream "set style line ~D lt 1 lc rgb '#~6,'0X'~%"
+                             i color)
+                 :finally (write-string "set style increment user" stream)))))
+         (legend-entry-limit 40)
+         ;; Internal
+         ((&flet random-name (type)
+            (format nil "/tmp/~8,'0X.~A" (random (expt 16 8)) type)))
+         (data-file   (random-name "txt"))
+         (plot-file   (random-name "plt"))
+         (scopes      (make-hash-table :test #'eq))
+         (start-time  nil)
+         (last-output (timestamp %event :receive)))
 
     (defun make-quatities ()
       (mapcar  #'rsb.stats:make-quantity
@@ -79,8 +99,9 @@
       (let ((which  (ensure-list which))
             (first? first?))
         (labels ((do-quantity (index)
-                   (format stream "~:[, \\~%\"\"~:;~] u 1:~D w l title \"~A\""
-                           first? index scope)
+                   (let ((title (ppcre:regex-replace-all "_" scope "\\\\\\\\_")))
+                     (format stream "~:[, \\~%\"\"~:;~] u 1:~D w l title \"~A\""
+                             first? index title))
                    (setf first? nil))
                  (maybe-do-quantity (index name)
                    (when (member name which :test #'eq)
@@ -99,26 +120,34 @@
       (with-output-to-file (stream script :if-does-not-exist :create
                                           :if-exists         :supersede)
         (format stream "set terminal ~A ~@[~A~]
-                        set output \"~A.~3:*~A\"~2*
+                        set output \"~A.~A\"
+
+                        ~@[~A~]
+
+                        ~A
 
                         set xdata time
                         set timefmt \"%Y-%m-%dT%H:%M:%S+01:00\"
 
-                        set xtics font \",6\"
+                        set xtics font \",10\"
                         set xtics rotate by -30
 
-                        set offsets 0, 0, .001, .001
+                        set format y \"%.2s %cs\"
+                        set ytics font \",10\"
 
-                        set key outside above
-                        set key box
-
-                        set grid
+                        ~:[~
+                          unset key
+                        ~:;~
+                          set key outside above
+                        ~]
 
                         plot ~S"
-                type terminal-options output data-file)
-        (iter (for (scope . (id . _)) in    (sort scopes #'string<
+                terminal-name terminal-options output type
+                palette borders
+                (< (length scopes) legend-entry-limit) data-file)
+        (iter (for (scope . (id . _)) :in    (sort scopes #'string<
                                                   :key (compose #'scope-string #'car)))
-              (for first?            :first t :then nil)
+              (for first?             :first t :then nil)
               (write-plot-commands-for-scope
                stream (scope-string scope) (+ 2 (* 11 id)) first? :which which))))
 
@@ -129,7 +158,7 @@
                       (sb-ext:run-program "gnuplot" (list plot-file)
                                           :search t
                                           :error  *error-output*)
-                      (delete-file plot-file))))
+                      #+no (delete-file plot-file))))
 
               (mapc (lambda (which)
                       (do-plot (substitute
@@ -138,7 +167,7 @@
                         which))
                     '(:create-send :send-receive :rate
                       :period-time/create :period-time/send))
-              (when (probe-file data-file) (delete-file data-file))))
+              #+no (when (probe-file data-file) (delete-file data-file))))
           sb-ext:*exit-hooks*)))
 
-(process-event event)
+(process-event %event)
