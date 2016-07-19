@@ -308,7 +308,15 @@
                                      (%make-scope-suffix-column value))
                                    :rate :throughput :latency :timeline
                                    :type/40 :size :origin/40 :method/20))
-   :line-style-class 'monitor-line-style/tree))
+   :line-style-class 'monitor-line-style/tree)
+  (:documentation
+   "This style groups events according to the tree formed by their
+    scopes and periodically displays various statistics for events in
+    each scope-group.
+
+    The depth of the tree can be limited via the max-depth initarg and
+    collapsing of scopes with only a single sub-scope can be
+    controlled via the collapse-scopes? initarg."))
 
 ;; Name and aliases
 (dolist (name '(:monitor/scope/tree :monitor/scope :monitor))
