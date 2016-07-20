@@ -38,9 +38,8 @@
                             header-printing-mixin)
   ()
   (:default-initargs
-   :columns (sublis *basic-columns*
-                    '(:now :rate :throughput :latency :scope/40
-                      :type/40 :size :origin/40 :newline)))
+   :default-columns '(:now :rate :throughput :latency :scope/40
+                      :type/40 :size :origin/40 :newline))
   (:documentation
    "This formatting style computes a number of configurable
     statistical quantities from received events collected over a
@@ -49,6 +48,18 @@
 
 (service-provider:register-provider/class
  'style :statistics :class 'style-statistics)
+
+(defmethod shared-initialize :around
+    ((instance   style-statistics)
+     (slot-names t)
+     &rest args &key
+     (default-columns nil             default-columns-supplied?)
+     (columns         default-columns columns-supplied?))
+  (if (or columns-supplied? default-columns-supplied?)
+      (apply #'call-next-method instance slot-names
+             (list* :columns (mapcar #'expand-column-spec columns)
+                    (remove-from-plist args :columns :default-columns)))
+      (call-next-method)))
 
 (defmethod format-event :before ((event  (eql :trigger))
                                  (style  style-statistics)
