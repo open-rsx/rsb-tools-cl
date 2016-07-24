@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the web tool.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -87,9 +87,9 @@ In most systems, all replies should arrive within a few milliseconds. However, c
    :item    (make-options :show? (show-help-for? :rsb :show show))
    ;; HTTP endpoints.
    :item    (defgroup (:header "HTTP Endpoints")
-              (make-text :contents"http://ADDRESS:PORT/static
+              (make-text :contents"http://ADDRESS:PORT/
 
-  Contents of the directory specified via static-directory is made available here.
+  Contents of the directory specified via the document-root option is made available here.
 
 http://ADDRESS:PORT/introspection/json
 
