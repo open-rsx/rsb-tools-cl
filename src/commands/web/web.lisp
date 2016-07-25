@@ -1,6 +1,6 @@
 ;;;; web.lisp --- Serve system information via HTTP.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -33,10 +33,7 @@
                                    :database *database*)))))
 
 (defmethod command-execute ((command web) &key error-policy)
-  (let+ (((&structure
-           command- uris response-timeout address port static-directory
-           (acceptor %acceptor) handlers)
-          command))
+  (let+ (((&structure command- uris response-timeout) command))
     (with-participant
         (*database* :remote-introspection rsb.introspection:+introspection-scope+
                     :receiver-uris    uris
