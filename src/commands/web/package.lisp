@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for the commands.web module.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -20,8 +20,9 @@
 
   ;; Web command protocol
   (:export
-   #:command-register-handler
-   #:command-register-handlers)
+   #:command-maker-handlers
+
+   #:command-register-handler)
 
   (:documentation
    "Package definition for the commands.web module."))

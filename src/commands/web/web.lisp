@@ -26,11 +26,10 @@
 
 (defvar *database*)
 
-(defmethod command-register-handlers ((command web))
-  (mapc (curry #'apply #'command-register-handler command)
-        (list (list "/introspection/json"
-                    (make-instance 'introspection-json-handler
-                                   :database *database*)))))
+(defmethod command-make-handlers ((command web))
+  (list (cons "/introspection/json"
+              (make-instance 'introspection-json-handler
+                             :database *database*))))
 
 (defmethod command-execute ((command web) &key error-policy)
   (let+ (((&structure command- uris response-timeout) command))
