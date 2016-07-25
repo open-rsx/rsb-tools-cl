@@ -115,12 +115,12 @@
                       ~:[Not serving from filesystem~:;~:*Document ~
                       root is at ~S~]~%"
                    acceptor document-root)
-           (log:info "~@<~A is serving ~S as ~
+           (log:info "~@<~A is serving ~@[~S as ~]~
                       ~/rsb.tools.commands.web::print-server-url//~@:>"
                      command document-root acceptor)
 
            ;; Run
-           (sleep most-positive-fixnum))
+           (loop (sleep most-positive-fixnum)))
 
       ;; Clean up.
       (log:info "~@<~A is stopping acceptor ~A~@:>" command acceptor)
@@ -191,5 +191,5 @@
                          (hunchentoot:acceptor
                           (values (hunchentoot:acceptor-address thing)
                                   (hunchentoot:acceptor-port thing)))
-                         (list
+                         ((cons t (cons t null))
                           (values-list thing)))))
