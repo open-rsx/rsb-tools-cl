@@ -1,6 +1,6 @@
 ;;;; introspection.lisp --- Serve introspection information over HTTP.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -35,6 +35,9 @@
                  :service  'rsb.formatting.introspection::style
                  :database database
                  :delay    nil))))
+
+(defmethod detach ((participant introspection-json-handler))
+  (detach (handler-%style participant)))
 
 (defmethod rsb.ep:handle ((processor introspection-json-handler)
                           (data      hunchentoot:request))
