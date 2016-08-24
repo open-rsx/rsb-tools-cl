@@ -79,12 +79,13 @@
                                                       processing.~@:>"))))
       (macrolet
           ((do-it (&optional while)
-             `(iter ,@(when while `((for i :from 0)))
+             `(iter ,@(when while
+                        `((for i :from 0)
+                          (while (funcall ,while i event))))
                     (for event next (lparallel.queue:pop-queue queue))
                     (when (first-iteration-p)
                       (setf continue-function
                             (lambda () (iter:next-iteration))))
-                    ,@(when while `((while (funcall ,while i event))))
                     ;; Process EVENT with STYLE.
                     (format-event event style stream))))
         (if while
