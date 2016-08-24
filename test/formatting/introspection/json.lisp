@@ -30,9 +30,12 @@
                                        rsb.introspection:+introspection-scope+
                                        :receiver-uris '("/"))
                         (nil           :listener "/"))
-      (let ((style (make-style :json
-                               :database introspection
-                               :service  'rsb.formatting.introspection::style)))
+      (let ((style (make-style
+                    :json
+                    :database (rsb.introspection::introspection-database
+                               introspection)
+                    :service  'rsb.formatting.introspection::style)))
         (json:decode-json-from-string
          (with-output-to-string (stream)
-           (format-event :dummy style stream)))))))
+           (rsb.introspection:with-database-lock (introspection)
+             (format-event :dummy style stream))))))))

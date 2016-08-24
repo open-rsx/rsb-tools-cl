@@ -429,7 +429,8 @@ endforeach()
 
 # Introspection tests
 foreach(URLS "inprocess:" "inprocess:;inprocess:/")
-  foreach(STYLE "" "--style;object-tree" "--style;monitor/object-tree" "--style;monitor/events")
+  foreach(STYLE "" "--style;object-tree" "--style;monitor/object-tree"
+                "--style;monitor/events" "--style;json")
     string(REGEX REPLACE "[;:]" "_" CLEAN_URLS "${URLS}")
     string(REGEX REPLACE "[;-]" "_" CLEAN_STYLE "${STYLE}")
 

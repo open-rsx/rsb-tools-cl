@@ -141,13 +141,10 @@
    "This class is intended to be mixed into introspection formatting
     style classes that produce their output after a certain delay."))
 
-;; Dummy event => wait for the configured delay in order to collect
-;; introspection information, then perform the style-specific
-;; formatting.
-(defmethod rsb.formatting:format-event :before ((event  t)
-                                                (style  delay-mixin)
-                                                (target t)
-                                                &key &allow-other-keys)
+;; Receiving the database => wait for the configured delay in order to
+;; collect introspection information, then perform the style-specific
+;; operations.
+(defmethod (setf style-database) :after ((new-value t) (style delay-mixin))
   (when-let ((delay (style-delay style)))
     (sleep delay)))
 

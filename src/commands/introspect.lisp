@@ -1,6 +1,6 @@
 ;;;; introspect.lisp --- Implementation of the introspect command.
 ;;;;
-;;;; Copyright (C) 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -31,14 +31,16 @@
           command))
     (unwind-protect
          (with-participant
-             (database :remote-introspection rsb.introspection:+introspection-scope+
-                       :receiver-uris    uris
-                       :error-policy     error-policy
-                       :change-handler   (lambda (&rest event)
-                                           (rsb.ep:handle style event))
-                       :response-timeout response-timeout)
+             (introspection
+              :remote-introspection rsb.introspection:+introspection-scope+
+              :receiver-uris    uris
+              :error-policy     error-policy
+              :change-handler   (lambda (&rest event)
+                                  (rsb.ep:handle style event))
+              :response-timeout response-timeout)
            (setf (rsb.formatting.introspection::style-database style)
-                 database)
-           (when (rsb.formatting:format-event :dummy style stream)
+                 (rsb.introspection::introspection-database introspection))
+           (when (rsb.introspection:with-database-lock (introspection)
+                   (rsb.formatting:format-event :dummy style stream))
              (sleep most-positive-fixnum)))
       (detach/ignore-errors style))))

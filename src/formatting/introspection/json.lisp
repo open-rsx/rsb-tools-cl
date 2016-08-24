@@ -40,11 +40,8 @@
                                         (style  style-json)
                                         (target t)
                                         &key)
-  (let+ (((&structure-r/o style- (introspection database) builder %serializer)
-          style))
-    (with-database-lock (introspection)
-      (let ((database (introspection-database introspection)))
-        (architecture.builder-protocol:with-unbuilder (builder builder)
-          (architecture.builder-protocol.json:serialize-using-serializer
-           builder database target %serializer)))))
+  (let+ (((&structure-r/o style- database builder %serializer) style))
+    (architecture.builder-protocol:with-unbuilder (builder builder)
+      (architecture.builder-protocol.json:serialize-using-serializer
+       builder database target %serializer)))
   nil)
