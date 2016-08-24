@@ -72,26 +72,6 @@
               (:host-removed (unregister subject))))))
     (apply #'on-database-change :introspection data)))
 
-;;; `event-buffer-mixin'
-
-(defclass event-buffer-mixin ()
-  ((events :type     list
-           :accessor style-events
-           :initform '()
-           :documentation
-           "Buffers introspection events for periodic
-            batch-processing."))
-  (:documentation
-   "This class is intended to be mixed into style classes that
-    accumulate asynchronously received introspection database events
-    and periodically process batches of these events."))
-
-(defmethod rsb.formatting:format-event ((event  list)
-                                        (style  events-mixin)
-                                        (target t)
-                                        &key &allow-other-keys)
-  (push event (style-events style)))
-
 ;;; `object-tree-printing-mixin'
 
 (defclass object-tree-printing-mixin ()
