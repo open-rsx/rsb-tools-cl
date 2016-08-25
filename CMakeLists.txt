@@ -315,7 +315,8 @@ function(idl_tests SUFFIX OPTIONS)
 endfunction()
 
 idl_tests(idl-path/on-error=contiue "--on-error=continue;--idl-path;no-such-directory")
-idl_tests(load-idl                  "--load-idl=${CMAKE_SOURCE_DIR}/test/data/test/Simple.proto")
+idl_tests(load-idl/simple           "--load-idl=${CMAKE_SOURCE_DIR}/test/data/test/Simple.proto")
+idl_tests(load-idl/crlf             "--load-idl=${CMAKE_SOURCE_DIR}/test/data/test/CRLF.proto")
 idl_tests(on-demand-idl-loading     "--idl-path=${CMAKE_SOURCE_DIR}/test/data/;--on-demand-idl-loading=blocking")
 
 add_test(NAME   "send/protocol-buffer-payload"
