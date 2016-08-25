@@ -11,6 +11,14 @@
   (:documentation
    "Unit tests for the `style-json' formatting style class."))
 
+(defun make-vector-of-octet-vectors ()
+  (map 'vector #'nibbles:octet-vector (iota 3)))
+
+(defclass vector-of-octet-vectors-slot ()
+  ((vector-of-octet-vectors :initarg  :vector-of-octet-vectors
+                            :type     (array nibbles:octet-vector (*))
+                            :initform (make-vector-of-octet-vectors))))
+
 (addtest (style-json-root
           :documentation
           "Test some simple cases of formatting events using methods
@@ -38,6 +46,13 @@
                      \"causes\":\\[],\"metaData\":{\"createTime\":0,\"sendTime\":0,~
                      \"receiveTime\":0,\"deliverTime\":0,\"userTimes\":\\[],~
                      \"userInfos\":\\[]}}}"))
+    `(()
+      (,(make-event "/foo" (make-instance 'vector-of-octet-vectors-slot)))
+      ,(format nil "{\"scope\":\"\\\\/foo\\\\/\",\"metaData\":{},~
+                    \"timestamp\":{\"create\":\"[^\"]+\"},\"cause\":\\[],~
+                    \"data\":{\"vectorOfOctetVectors\":\\[\\[0],\\[1],\\[2]]}}"))
+
+
     ;; Meta-data
     `(()
       (,(make-event "/foo" 1 :method :|method|))

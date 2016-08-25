@@ -10,7 +10,7 @@
 
 (deftype pass-through-value ()
   "Values that can directly be converted into native JSON values."
-  '(or real string boolean))
+  '(or real string octet-vector boolean))
 
 (deftype stringify-value ()
   "Values that have to be turned into strings for JSON conversion."
