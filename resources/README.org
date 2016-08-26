@@ -11,6 +11,23 @@ immediately.
 The contents of this directory is organized as follows (and served by
 the web tool under corresponding URLs):
 
++ =base.css= ::
+     Global style defaults.
+
++ =index.html= ::
+     Start page.
+
++ =hack.html= ::
+
+     Instructions and download link for modifying the web interface.
+
++ =images/= ::
+     A pool of image resources used by all pages.
+
 + =lib/= ::
      Third-party libraries are downloaded into this directory at
      build-time.
+
++ =introspection/= ::
+     The introspection "module". Contains HTML, CSS and Javascript
+     files that comprise the introspection part of the web interface.

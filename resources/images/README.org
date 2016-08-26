@@ -1,0 +1,11 @@
++ =logo.png= ::
+     Specialized raster export of the RSB vector logo.
+
+     | Height     | 34px                    |
+     | Width      | implied by aspect ratio |
+     | Background | transparent             |
+
+     Export Command:
+     #+BEGIN_SRC sh
+       inkscape -f logo.svg -e logo.png -h 34
+     #+END_SRC

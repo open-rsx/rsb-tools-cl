@@ -1,0 +1,77 @@
+@import url(../lib/bootstrap-3.3.5/css/bootstrap.min.css);
+
+/*
+ * Body
+ */
+
+html body footer {
+    border-top: 1px solid #0088EE;
+    text-align: center;
+    font-size: 10pt;
+}
+
+/*
+ * Brand
+ */
+
+.navbar .navbar-brand {
+    height: 38px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    padding: 2px;
+    background: rgb(245, 245, 245);
+    border-radius: 4px;
+}
+
+.navbar-inverse .navbar-brand:visited {
+    background: rgb(245, 245, 245);
+}
+
+.navbar-inverse .navbar-brand:focus {
+    background: rgb(255, 255, 255);
+}
+
+.navbar-inverse .navbar-brand:hover {
+    background: rgb(255, 255, 255);
+}
+
+.navbar .navbar-brand img {
+    height: 34px;
+}
+
+/*
+ * Breadcrumbs
+ */
+
+.nav .breadcrumb {
+    float: left;
+    margin: 7px 10px;
+    vertical-align: middle;
+}
+
+/*
+ * Spin Animatino
+ */
+.glyphicon-spin {
+    -webkit-animation: spin 1000ms infinite linear;
+       -moz-animation: spin 1000ms infinite linear;
+            animation: spin 1000ms infinite linear;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(359deg);
+    }
+}
