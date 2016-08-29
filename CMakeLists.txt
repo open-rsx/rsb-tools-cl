@@ -231,6 +231,11 @@ add_custom_command(OUTPUT  "${MAIN_EXECUTABLE}"
                    COMMENT "Creating Lisp image ${MAIN_NAME} (this can take a long time)")
 add_custom_target(binary ALL DEPENDS "${MAIN_EXECUTABLE}")
 
+# Download third-party libraries for web command
+if(WITH_WEB_SUPPORT)
+    add_subdirectory(resources/lib)
+endif()
+
 # Tests
 enable_testing()
 

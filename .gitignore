@@ -1,2 +1,3 @@
 /build*
 /version.sexp
+/resources/lib/*-[0-9]*/

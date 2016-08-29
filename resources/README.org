@@ -7,3 +7,10 @@ binary and served from there. Alternatively, the web tool can serve
 this directory form the filesystem. The latter mode is useful for
 development since changes to the resource files are picked up
 immediately.
+
+The contents of this directory is organized as follows (and served by
+the web tool under corresponding URLs):
+
++ =lib/= ::
+     Third-party libraries are downloaded into this directory at
+     build-time.
