@@ -51,5 +51,6 @@
 
 (defun default-json-serializer ()
   (rsb.formatting::make-json-serializer
-   :kind-transform (architecture.builder-protocol.json:default-kind-key-and-value-transform)
-   :peek-function  (rsb.formatting::make-json-peek-function)))
+   :symbol-transform #'string-downcase
+   :kind-transform   (architecture.builder-protocol.json:default-kind-key-and-value-transform)
+   :peek-function    (rsb.formatting::make-json-peek-function)))
