@@ -52,16 +52,17 @@
            (funcall next builder relation relation-args node)
            t)))))
 
-(defun make-json-serializer (&key
-                             kind-transform
-                             peek-function)
-  (let+ ((symbol-transform (architecture.builder-protocol.json:default-symbol-transform))
-         (key-transform    (lambda (thing)
-                             (typecase thing
-                               (string thing)
-                               (symbol (funcall symbol-transform thing))
-                               (t      (maybe-stringify-value thing)))))
-         ((&flet initarg-transform (key value)
+(defun make-json-serializer
+    (&key
+     (symbol-transform (architecture.builder-protocol.json:default-symbol-transform))
+     (key-transform    (lambda (thing)
+                         (typecase thing
+                           (string thing)
+                           (symbol (funcall symbol-transform thing))
+                           (t      (maybe-stringify-value thing)))))
+     kind-transform
+     peek-function)
+  (let+ (((&flet initarg-transform (key value)
             (values (funcall symbol-transform key)
                     (prepare-initarg-value-for-json value)))))
     (architecture.builder-protocol.json:make-serializer
