@@ -25,7 +25,8 @@
    #:commands-bridge-root)
 
   (:documentation
-   "This package contains unit tests for the commands module."))
+   "This package contains unit tests for the commands.bridge
+    module."))
 
 (cl:in-package #:rsb.tools.commands.bridge.test)
 
