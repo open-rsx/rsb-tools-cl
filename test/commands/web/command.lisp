@@ -1,17 +1,17 @@
-;;;; web.lisp --- Tests for the web command class.
+;;;; command.lisp --- Tests for the web command class.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:in-package #:rsb.tools.commands.test)
+(cl:in-package #:rsb.tools.commands.web.test)
 
-(deftestsuite web-root (commands-root)
+(deftestsuite commands-web-command-root (commands-web-root)
   ()
   (:documentation
    "Test suite for the `web' command."))
 
-(addtest (web-root
+(addtest (commands-web-command-root
           :documentation
           "Test construction of the `web' command.")
   construction

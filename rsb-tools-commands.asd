@@ -150,9 +150,15 @@
                               (:file       "call")
                               (:file       "introspect")
 
-                              (:file       "server")
+                              (:file       "server")))
 
-                              (:file       "web")))
+                (:module     "web"
+                 :pathname   "test/commands/web"
+                 :depends-on ("commands")
+                 :serial     t
+                 :components ((:file       "package")
+
+                              (:file       "command")))
 
                 (:module     "bridge"
                  :pathname   "test/commands/bridge"
