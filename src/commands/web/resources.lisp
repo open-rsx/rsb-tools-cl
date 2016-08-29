@@ -68,7 +68,9 @@
    "Serves bundle resource files."))
 
 (defmethod rsb.ep:handle ((sink resource-handler) (data hunchentoot:request))
-  (let ((name (hunchentoot:request-pathname data)))
+  (let ((name (if (equal "/" (hunchentoot:script-name data))
+                  #P"index.html"
+                  (hunchentoot:request-pathname data))))
     (if-let ((content (find-resource name sink)))
       (progn
         (%static-resource-response (hunchentoot:mime-type name))
