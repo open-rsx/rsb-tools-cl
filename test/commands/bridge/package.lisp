@@ -19,7 +19,9 @@
   (:import-from #:rsb.tools.commands.test
    #:commands-root
 
-   #:*safe-configuration*)
+   #:*safe-configuration*
+
+   #:with-asynchronously-executing-command)
 
   (:export
    #:commands-bridge-root)

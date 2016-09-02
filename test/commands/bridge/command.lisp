@@ -73,33 +73,19 @@
                              :next (rsb:default-converters)))
                  (rsb:*configuration* *safe-configuration*)
                  (command   (make-command :bridge :spec spec))
-                 (error     nil)
-                 (thread    (bt:make-thread
-                             (lambda ()
-                               (let ((rsb:*configuration*       *safe-configuration*)
-                                     (rsb::*default-converters* `((t . ,converter))))
-                                 (handler-case
-                                     (restart-case
-                                         (command-execute command)
-                                       (abort ()))
-                                   (error (condition)
-                                     (setf error condition)))))))
                  (received  (lparallel.queue:make-queue)))
-            (unwind-protect
-                 (rsb:with-participants
-                     ((informer :informer informer-url)
-                      (listener :listener listener-url
-                                :handlers (list (rcurry #'lparallel.queue:push-queue
-                                                        received))))
-                   (sleep 1) ; TODO racy
-                   (rsb:send informer (rsb:make-event scope data))
-                   (loop :while (lparallel.queue:queue-empty-p received)))
 
-              (bt:interrupt-thread thread #'abort)
-              (ignore-errors (bt:join-thread thread)))
-
-            ;; Check for errors.
-            (when error (error error))
+            (with-asynchronously-executing-command
+                (command :bindings ((rsb:*configuration*       *safe-configuration*)
+                                    (rsb::*default-converters* `((t . ,converter)))))
+              (rsb:with-participants
+                  ((informer :informer informer-url)
+                   (listener :listener listener-url
+                             :handlers (list (rcurry #'lparallel.queue:push-queue
+                                                     received))))
+                (sleep 1) ; TODO racy
+                (rsb:send informer (rsb:make-event scope data))
+                (loop :while (lparallel.queue:queue-empty-p received))))
 
             ;; Check converter calls.
             (ensure-same (rsb.converter.test:converter-calls converter)
