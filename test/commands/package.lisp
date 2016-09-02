@@ -16,6 +16,10 @@
    #:rsb.tools.commands)
 
   (:export
+   #:call-with-asynchronously-executing-command
+   #:with-asynchronously-executing-command)
+
+  (:export
    #:commands-root)
 
   (:documentation
@@ -33,3 +37,28 @@
   '(((:introspection :enabled)        . "0")
     ((:transport :inprocess :enabled) . "1")
     ((:transport :socket :enabled)    . "0")))
+
+(defun call-with-asynchronously-executing-command (thunk command &key bindings)
+  (let+ ((error)
+         ((&flet thread-thunk ()
+            (progv (mapcar #'car bindings) (mapcar #'cdr bindings)
+              (handler-case
+                  (restart-case
+                      (command-execute command)
+                    (abort ()))
+                (error (condition)
+                  (setf error condition))))))
+         (thread (bt:make-thread #'thread-thunk)))
+    (prog1
+        (unwind-protect (funcall thunk)
+          (bt:interrupt-thread thread #'abort)
+          (ignore-errors (bt:join-thread thread)))
+      (when error (error error)))))
+
+(defmacro with-asynchronously-executing-command ((command &key bindings)
+                                                 &body body)
+  `(call-with-asynchronously-executing-command
+    (lambda () ,@body) ,command
+    :bindings (list ,@(mapcar (lambda+ ((var value))
+                                `(cons ',var ,value))
+                              bindings))))
