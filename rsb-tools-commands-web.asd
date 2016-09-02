@@ -50,6 +50,8 @@
   :depends-on  (:alexandria
                 :let-plus
 
+                :drakma
+
                 (:version :lift                    "1.7.1")
 
                 (:version :rsb-tools-commands-web  #.(version/string))

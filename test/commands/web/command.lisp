@@ -47,11 +47,35 @@
           "Smoke test for the `web' command.")
   smoke
 
-  (let ((configuration *introspection-configuration*)
-        (command       (make-command :web :uris '("/") :port 0)))
+  (let* ((port          (usocket:with-socket-listener (socket "localhost" 0)
+                          (usocket:get-local-port socket))) ; TODO racy
+         (configuration *introspection-configuration*)
+         (command       (make-command :web :uris '("/") :port port)))
     (with-asynchronously-executing-command
         (command :bindings ((rsb:*configuration* configuration)))
-      (sleep 1) ; TODO racy
-      (let ((rsb:*configuration* configuration))
-        (rsb:with-participant
-            (nil :listener "/rsbtest/tools/commands/web/listener"))))))
+      (let+ (((&flet request (path accept
+                              &key
+                              (method          :get)
+                              query-parameters)
+                (let+ ((uri (puri:copy-uri (puri:uri "http://localhost")
+                                           :port  port
+                                           :path  path
+                                           :query query-parameters))
+                       ((&values body code headers)
+                        (drakma:http-request uri :accept accept)))
+                  (ensure (< 199 code 300))
+                  body)))
+             ((&flet request/json (path &rest args &key)
+                (json:decode-json-from-source
+                 (flexi-streams:make-flexi-stream
+                  (flexi-streams:make-in-memory-input-stream
+                   (apply #'request path "application/json" args)))))))
+        (sleep 1) ; TODO racy
+        (let ((rsb:*configuration* configuration))
+          (rsb:with-participant
+              (nil :listener "/rsbtest/tools/commands/web/listener")))
+        (sleep 1) ; TODO racy
+
+        ;; Test endpoint /api/introspection/snapshot
+        (let ((endpoint "/api/introspection/snapshot"))
+          (request/json endpoint))))))
