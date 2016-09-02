@@ -37,5 +37,5 @@
                  :components ((:file       "package")
                               (:file       "protocol")
                               (:file       "mixins")
-                              (:file       "web")
+                              (:file       "command")
                               (:file       "introspection")))))

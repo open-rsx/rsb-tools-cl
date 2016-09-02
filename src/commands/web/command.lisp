@@ -1,4 +1,4 @@
-;;;; web.lisp --- Serve system information via HTTP.
+;;;; command.lisp --- Serve system information via HTTP.
 ;;;;
 ;;;; Copyright (C) 2015, 2016 Jan Moringen
 ;;;;
