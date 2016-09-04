@@ -59,9 +59,8 @@
           "Smoke test of the `logger' command class.")
   smoke
 
-  (let* ((scope               "/rsbtest/tools/commands/logger")
-         (configuration       *safe-configuration*)
-         (rsb:*configuration* configuration))
+  (let* ((scope         "/rsbtest/tools/commands/logger")
+         (configuration *safe-configuration*))
     (ensure-cases (initargs events expected
                    &key
                    (expected-event-count (length events)))
@@ -99,18 +98,15 @@
                         (declare (ignore event))
                         (< i expected-event-count)))
              (command (apply #'make-command :logger
-                             (append initargs `
-                                     (:stream ,output :while ,while))))
-             (sender  (bt:make-thread
-                       (lambda ()
-                         (sleep 1)      ; TODO racy
-                         (let ((rsb:*configuration* configuration))
-                           (rsb:with-participant (i :informer scope)
-                             (mapc (curry #'rsb:send i) events)))))))
-        (unwind-protect
-             (progn
-               (handler-bind ((error #'continue))
-                 (command-execute command :error-policy #'continue))
-               (ensure-same (get-output-stream-string output) expected
-                            :test #'string=))
-          (bt:join-thread sender))))))
+                             (append initargs `(:stream ,output
+                                                :while  ,while)))))
+        (with-asynchronously-executing-command
+            (command :bindings     ((rsb:*configuration* configuration))
+                     :error-policy #'continue)
+          (sleep 1) ; TODO racy
+          (let ((rsb:*configuration* configuration))
+            (rsb:with-participant (i :informer scope)
+              (mapc (curry #'rsb:send i) events)))
+          (sleep 1)) ; TODO racy
+        (ensure-same (get-output-stream-string output) expected
+                     :test #'string=)))))
