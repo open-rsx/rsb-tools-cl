@@ -132,7 +132,10 @@
 
 (defclass style-monitor/events (database-mixin
                                 events-mixin)
-  ()
+  ((stream :type     stream
+           :accessor style-%stream
+           :documentation
+           "Stores the stream to which events should be formatted."))
   (:documentation
    "Print relevant introspection events on the output stream.
 
@@ -147,20 +150,22 @@
                                         (style  style-monitor/events)
                                         (target t)
                                         &key &allow-other-keys)
+  (setf (style-%stream style) target)
   t)
 
 (defmethod rsb.formatting:format-event ((event  list)
                                         (style  style-monitor/events)
                                         (target t)
                                         &key &allow-other-keys)
-  (let+ (((timestamp object event subject) event)
+  (let+ (((&accessors-r/o (stream style-%stream)) style)
+         ((timestamp object event subject) event)
          ((&flet print-items (thing)
             (typecase thing
               (symbol          `((:name ,(string-downcase thing))))
               (standard-object (print-items:print-items thing))
               (t               `((:value ,(princ-to-string thing))))))))
     (unless (member event '(:clock-offset-changed :latency-changed))
-      (format target "~A ~
+      (format stream "~A ~
                       ~32@<~/print-items:format-print-items/~> ~
                       ~20@<~/print-items:format-print-items/~> ~
                       ~/print-items:format-print-items/~
