@@ -43,3 +43,22 @@
          (ensure-condition missing-required-initarg (do-it)))
         (t
          (ensure (typep (princ-to-string (do-it)) 'string)))))))
+
+(addtest (introspect-root
+          :documentation
+          "Smoke test for the `introspect' command.")
+  smoke
+
+  (let* ((configuration *introspection-configuration*)
+         (stream        (make-string-output-stream))
+         (command       (make-command :introspect
+                                      :uris       '("/")
+                                      :style-spec "monitor/events"
+                                      :stream     stream)))
+    (with-asynchronously-executing-command
+        (command :bindings ((rsb:*configuration* configuration)))
+      (sleep 1) ; TODO racy
+      (let ((rsb:*configuration* configuration))
+        (rsb:with-participant
+            (nil :listener "/rsbtest/tools/commands/introspect/listener"))))
+    (ensure (not (emptyp (get-output-stream-string stream))))))

@@ -38,6 +38,11 @@
     ((:transport :inprocess :enabled) . "1")
     ((:transport :socket :enabled)    . "0")))
 
+(defvar *introspection-configuration*
+  '(((:introspection :enabled)        . "1")
+    ((:transport :inprocess :enabled) . "1")
+    ((:transport :socket :enabled)    . "0")))
+
 (defun call-with-asynchronously-executing-command (thunk command
                                                    &key
                                                    bindings
