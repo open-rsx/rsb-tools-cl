@@ -19,7 +19,9 @@
   (:import-from #:rsb.tools.commands.test
    #:commands-root
 
-   #:*safe-configuration*)
+   #:*introspection-configuration*
+
+   #:with-asynchronously-executing-command)
 
   (:export
    #:commands-web-root)

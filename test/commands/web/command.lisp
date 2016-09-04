@@ -41,3 +41,17 @@
          (ensure-condition missing-required-initarg (do-it)))
         (t
          (ensure (typep (princ-to-string (do-it)) 'string)))))))
+
+(addtest (commands-web-command-root
+          :documentation
+          "Smoke test for the `web' command.")
+  smoke
+
+  (let ((configuration *introspection-configuration*)
+        (command       (make-command :web :uris '("/") :port 0)))
+    (with-asynchronously-executing-command
+        (command :bindings ((rsb:*configuration* configuration)))
+      (sleep 1) ; TODO racy
+      (let ((rsb:*configuration* configuration))
+        (rsb:with-participant
+            (nil :listener "/rsbtest/tools/commands/web/listener"))))))
