@@ -75,12 +75,12 @@ set(LISP_INIT_FILE       "" CACHE FILEPATH
     "File to load as Lisp init file.")
 set(LISP_INIT_CODE       "" CACHE STRING
     "Lisp code to be evaulated during initialization.")
-set(LISP_INIT "")
+set(LISP_INIT_BASE "")
 if(LISP_INIT_FILE)
-    set(LISP_INIT "${LISP_INIT} --userinit ${LISP_INIT_FILE}")
+    set(LISP_INIT_BASE "${LISP_INIT_BASE} --userinit ${LISP_INIT_FILE}")
 endif()
 if(LISP_INIT_CODE)
-    set(LISP_INIT "${LISP_INIT} --eval \"${LISP_INIT_CODE}\"")
+    set(LISP_INIT_BASE "${LISP_INIT_BASE} --eval \"${LISP_INIT_CODE}\"")
 endif()
 
 set(LISP_LOAD)
@@ -90,7 +90,7 @@ endfunction()
 
 option(WITH_SSL_SUPPORT "Build with support for HTTPS in client and server." OFF)
 if(NOT WITH_SSL_SUPPORT)
-    set(LISP_INIT "--eval \"(progn (pushnew :drakma-no-ssl *features*) (pushnew :hunchentoot-no-ssl *features*))\" ${LISP_INIT}")
+    set(LISP_INIT_BASE "--eval \"(progn (pushnew :drakma-no-ssl *features*) (pushnew :hunchentoot-no-ssl *features*))\" ${LISP_INIT_BASE}")
 endif()
 
 option(WITH_PROTOCOL_BUFFER_CONVERTER "Build with protocol buffer converter." ON)
@@ -184,6 +184,7 @@ set(SYSTEM_NAME "cl-rsb-tools-logger")
 project(rsb-tools "C")
 
 # Determine at least major and minor version components.
+set(LISP_INIT "${LISP_INIT_BASE}")
 set(REDIRECTIONS "ERROR_FILE \"${CMAKE_CURRENT_BINARY_DIR}/version.1.err\"")
 execute_lisp("version"
              "--eval \"(asdf:find-system :${SYSTEM_NAME})\"
@@ -219,7 +220,7 @@ set(MAIN_EXECUTABLE  "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}${CMAKE_EXECUTABLE
 set(TOOLS            info logger call send introspect web bridge server)
 set(ASDF_EXTRA_OUTPUT_TRANSLATIONS "((\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" #P\\\"cl-rsb-tools-main\\\")
                                     #P\\\"${CMAKE_CURRENT_BINARY_DIR}/tools\\\")")
-set(LISP_INIT "${LISP_INIT} ${LISP_LOAD}")
+set(LISP_INIT "${LISP_INIT_BASE} ${LISP_LOAD}")
 configure_lisp_redirect("${MAIN_NAME}"
                         "--eval \"(load-system :iterate)\"
                          --eval \"(setf iterate::*always-declare-variables* t)\"
@@ -236,6 +237,7 @@ enable_testing()
 # Lift-based tests for formatting and stats systems.
 foreach(SYSTEM rsb-tools-common cl-rsb-formatting cl-rsb-stats
                rsb-tools-commands rsb-tools-commands-web)
+    set(LISP_INIT "${LISP_INIT_BASE}")
     configure_lisp_redirect("test-${SYSTEM}"
                             "--eval \"(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))\"
                              --eval \"(asdf:test-system :${SYSTEM})\"")
