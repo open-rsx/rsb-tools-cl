@@ -234,7 +234,8 @@ add_custom_target(binary ALL DEPENDS "${MAIN_EXECUTABLE}")
 enable_testing()
 
 # Lift-based tests for formatting and stats systems.
-foreach(SYSTEM rsb-tools-common cl-rsb-formatting cl-rsb-stats rsb-tools-commands)
+foreach(SYSTEM rsb-tools-common cl-rsb-formatting cl-rsb-stats
+               rsb-tools-commands rsb-tools-commands-web)
     configure_lisp_redirect("test-${SYSTEM}"
                             "--eval \"(proclaim (quote (optimize (debug 3) (safety 3) (speed 0))))\"
                              --eval \"(asdf:test-system :${SYSTEM})\"")

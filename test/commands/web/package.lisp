@@ -17,8 +17,6 @@
    #:rsb.tools.commands.web)
 
   (:import-from #:rsb.tools.commands.test
-   #:commands-root
-
    #:*introspection-configuration*
 
    #:with-asynchronously-executing-command)
@@ -31,7 +29,7 @@
 
 (cl:in-package #:rsb.tools.commands.web.test)
 
-(deftestsuite commands-web-root (commands-root)
+(deftestsuite commands-web-root ()
   ()
   (:documentation
    "Root unit test suite for the tools.commands.web module."))

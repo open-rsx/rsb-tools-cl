@@ -131,7 +131,6 @@
                 (:version :rsb-transport-socket   #.(version/string :revision? nil))
 
                 (:version :rsb-tools-commands     #.(version/string))
-                (:version :rsb-tools-commands-web #.(version/string))
 
                 (:version :cl-rsb-test            #.(version/string :revision? nil)))
   :encoding    :utf-8
@@ -151,14 +150,6 @@
                               (:file       "introspect")
 
                               (:file       "server")))
-
-                (:module     "web"
-                 :pathname   "test/commands/web"
-                 :depends-on ("commands")
-                 :serial     t
-                 :components ((:file       "package")
-
-                              (:file       "command")))
 
                 (:module     "bridge"
                  :pathname   "test/commands/bridge"
