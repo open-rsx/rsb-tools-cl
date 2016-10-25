@@ -1,6 +1,6 @@
 ;;;; command.lisp --- Implementation of the bridge command.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -23,7 +23,10 @@
                  "Stores a list of filters necessary to prevent
                   forwarding cycles that would otherwise be caused by
                   events sent by the bridge and then received by the
-                  bridge."))
+                  bridge.")
+   (hook         :initarg  :hook
+                 :reader   bridge-hook
+                 :initform nil))
   (:default-initargs
    :spec (missing-required-initarg 'bridge :spec))
   (:documentation
@@ -71,7 +74,8 @@
   ;; its child-participants.
   (let+ (((&accessors-r/o (max-queued-events command-max-queued-events)
                           (spec              bridge-spec)
-                          (self-filters      bridge-self-filters))
+                          (self-filters      bridge-self-filters)
+                          (hook              bridge-hook))
           command)
          ((&values connections self-filters)
           (bridge-description->connection-list spec self-filters))
@@ -83,7 +87,7 @@
                               :self-filters      self-filters
                               :max-queued-events max-queued-events
                               :error-policy      error-policy)
-      (rsb.patterns.bridge:pump-events bridge))))
+      (rsb.patterns.bridge:pump-events bridge :hook hook))))
 
 ;;; `bridge-service' command class
 
