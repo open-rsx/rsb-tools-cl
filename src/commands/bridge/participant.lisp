@@ -283,8 +283,8 @@
   (:method ((bridge bridge))
     (lparallel.queue:push-queue :stop (bridge-%queue bridge))))
 
-(defgeneric pump-events (bridge)
-  (:method ((bridge bridge))
+(defgeneric pump-events (bridge &key hook)
+  (:method ((bridge bridge) &key hook)
     ;; Process events in QUEUE until interrupted.
     (let ((queue             (bridge-%queue bridge))
           (continue-function nil))
@@ -307,4 +307,6 @@
                  (return))
                 (cons
                  (destructuring-bind (connection . event) item
-                   (send connection event)))))))))
+                   (send connection event)
+                   (when hook
+                     (funcall hook connection event))))))))))
