@@ -267,12 +267,16 @@
 ;;; Uses a tree of scopes to group sub-styles.
 
 (defclass monitor-line-style/tree (basic-monitor-line-style)
-  ((parent   :initarg  :parent
-             :accessor style-parent
-             :initform nil)
-   (children :type     list
-             :accessor style-children
-             :initform '()))
+  ((parent         :initarg  :parent
+                   :accessor style-parent
+                   :initform nil)
+   (children       :type     list
+                   :accessor style-children
+                   :initform '())
+   (direct-events? :initarg  :direct-events?
+                   :type     boolean
+                   :accessor style-direct-events?
+                   :initform nil))
   (:documentation
    "Instances of this class are lines in the output of a tree-oriented
     monitor style.
@@ -332,7 +336,7 @@
             (make-event (make-scope (butlast components)) nil)))
          ;; Traverse super-scopes up to root creating sub-styles along
          ;; the way as necessary.
-         ((&labels one-component (event)
+         ((&labels one-component (event &optional exact?)
             (let* ((scope      (funcall key event))
                    (components (scope-components scope))
                    (sub-style  (unless (> (length components) max-depth)
@@ -341,16 +345,20 @@
                                  (one-component (parent-scope-event
                                                  components))))
                    (parent     (or (first ancestors) style)))
-              (cond
-                ((not sub-style))
-                (parent
-                 (setf (style-parent sub-style) parent)
-                 (pushnew sub-style (style-children parent) :test #'eq)))
+              (when sub-style
+                (setf (style-parent sub-style) parent)
+                ;; Record the fact that there has been at least one
+                ;; event exactly on SUB-STYLE's scope. This indicates
+                ;; to the scope collapsing logic that SUB-STYLE should
+                ;; not be collapsed.
+                (when exact?
+                  (setf (style-direct-events? sub-style) t))
+                (pushnew sub-style (style-children parent) :test #'eq))
               (list* sub-style ancestors))))
          (components (scope-components (funcall key event))))
     ;; If possible, use cached sub-style list. The cache is flushed
     ;; when sub-styles are pruned.
-    (ensure-gethash components %cache (one-component event))))
+    (ensure-gethash components %cache (one-component event t))))
 
 (defmethod prune-sub-styles :around ((style style-monitor/scope/tree))
   (let+ ((old-value (style-sub-styles style))
@@ -391,7 +399,9 @@
          ;; length of the replacement chain.
          ((&labels collapse-singletons (node &optional (collapsed-count 0))
             (let ((children (style-children node)))
-              (if (and collapse-scopes? (length= 1 children))
+              (if (and collapse-scopes?
+                       (length= 1 children)
+                       (not (style-direct-events? node)))
                   (collapse-singletons (first children) (1+ collapsed-count))
                   (cons collapsed-count node)))))
          ((&flet+ node-children ((&ign . node))
