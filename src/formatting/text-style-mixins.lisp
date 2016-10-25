@@ -310,9 +310,11 @@
    printed to the stream by THUNK on STREAM ensuring a width limit
    LIMIT and alignment according to ALIGN. ALIGN can be :left
    or :right."
-  (let* ((value  (with-output-to-string (stream)
+  (let+ ((value  (with-output-to-string (stream)
                    (funcall thunk stream)))
-         (length (length value)))
+         (length (length value))
+         ((&flet ellipsis ()
+            (if *textual-output-can-use-utf-8?* #\… #\.))))
     (cond
       ;; No room at all - print nothing.
       ((zerop limit))
@@ -320,15 +322,17 @@
       ;; Only room for a single character - print ellipsis if we have
       ;; any output.
       ((< limit 1 length)
-       (format stream "…"))
+       (format stream "~C" (ellipsis)))
 
       ;; Not enough room - print value and ellipsis.
       ((< limit length)
        (ecase align
          (:left
-          (format stream "~A…" (subseq value 0 (- limit 1))))
+          (format stream "~A~C"
+                  (subseq value 0 (- limit 1)) (ellipsis)))
          (:right
-          (format stream "…~A" (subseq value (1+ (- length limit)))))))
+          (format stream "~C~A"
+                  (ellipsis) (subseq value (1+ (- length limit)))))))
 
       ;; Enough room - pad value.
       (t
