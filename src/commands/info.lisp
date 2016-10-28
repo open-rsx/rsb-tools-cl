@@ -1,4 +1,4 @@
-;;;; info.lisp --- Entry point of the info tool.
+;;;; info.lisp --- Implementation of the info command.
 ;;;;
 ;;;; Copyright (C) 2011-2016 Jan Moringen
 ;;;;
