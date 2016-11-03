@@ -1,0 +1,9 @@
+This directory contains resources used by the RSB "web" tool, i.e. the
+tool runs a web server which serves the files in this directory (among
+other things).
+
+Typically, everything in this directory is included in the tools
+binary and served from there. Alternatively, the web tool can serve
+this directory form the filesystem. The latter mode is useful for
+development since changes to the resource files are picked up
+immediately.
