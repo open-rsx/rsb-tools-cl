@@ -42,8 +42,8 @@
       :report (lambda (stream)
                 (format stream "~@<Stop processing request ~A.~@:>" request))
       (declare (ignore condition))
-      (hunchentoot:abort-request-handler
-       hunchentoot:+http-internal-server-error+))))
+      (setf (hunchentoot:return-code*) hunchentoot:+http-internal-server-error+)
+      (hunchentoot:abort-request-handler))))
 
 (defmethod hunchentoot:acceptor-dispatch-request ((acceptor acceptor)
                                                   (request  t))
