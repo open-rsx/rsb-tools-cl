@@ -104,16 +104,17 @@
     (xpath:node-set
      ;; Drop requested number of elements from the pipe.
      (when (and start (plusp start))
-       (loop :with pipe = (xpath-sys:pipe-of result)
-          :for i :from 0
-          :repeat start
-          :when (xpath::pipe-empty-p pipe)
-          :do (argument-error
-               'start "~@<Start element ~:D requested, but result only ~
+       (let ((xpath:*navigator* navigator))
+         (loop :with pipe = (xpath-sys:pipe-of result)
+            :for i :from 0
+            :repeat start
+            :when (xpath::pipe-empty-p pipe)
+            :do (argument-error
+                 'start "~@<Start element ~:D requested, but result only ~
                        has ~:D element~:P.~@:>"
-               start i)
-          :do (setf pipe (xpath-sys:pipe-tail pipe))
-          :finally (setf (xpath-sys:pipe-of result) pipe)))
+                 start i)
+            :do (setf pipe (xpath-sys:pipe-tail pipe))
+            :finally (setf (xpath-sys:pipe-of result) pipe))))
      ;; Serialize requested number of nodes into the reply.
      (let ((count (when count (1+ count))))
        (lambda (stream)
