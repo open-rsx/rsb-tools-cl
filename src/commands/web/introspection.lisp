@@ -181,22 +181,22 @@
      is a number. A match can be an attribute match or an element
      match."
     (let ((navigator (make-instance
-                       'architecture.builder-protocol.xpath:navigator
-                       :builder       t
-                       :peek-function (lambda (builder relation relation-args node)
-                                        (declare (ignore builder relation relation-args))
-                                        (typecase node
-                                          (rsb.formatting::stringify-value
-                                           (rsb.formatting::maybe-stringify-value node))
-                                          (number
-                                           (princ-to-string node))
-                                          (string
-                                           node)
-                                          (t
-                                           t)))
-                       :printers      `((,(lambda (builder node)
-                                            (declare (ignore builder))
-                                            (typep node 'rsb.formatting::stringify-value))
+                      'architecture.builder-protocol.xpath:navigator
+                      :builder       t
+                      :peek-function (lambda (builder relation relation-args node)
+                                       (declare (ignore builder relation relation-args))
+                                       (typecase node
+                                         (rsb.formatting::stringify-value
+                                          (rsb.formatting::maybe-stringify-value node))
+                                         (number
+                                          (princ-to-string node))
+                                         (string
+                                          node)
+                                         (t
+                                          t)))
+                      :printers      `((,(lambda (builder node)
+                                           (declare (ignore builder))
+                                           (typep node 'rsb.formatting::stringify-value))
                                          . ,(lambda (builder node)
                                               (declare (ignore builder))
                                               (rsb.formatting::maybe-stringify-value node))))))
