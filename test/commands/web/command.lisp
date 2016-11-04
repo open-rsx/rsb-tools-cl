@@ -61,7 +61,7 @@
                         ((&values body code headers)
                          (drakma:http-request uri :accept accept)))
                    (ensure (typep code expected-code)
-                           :report    "~@<For request ~A ~A~A accept ~A, ~
+                           :report    "~@<For request ~A ~A?~A accept ~A, ~
                                       expected code ~D, but got ~D, ~S~@:>"
                            :arguments (method path query-parameters accept
                                        expected-code code
