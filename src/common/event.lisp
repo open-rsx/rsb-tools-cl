@@ -81,7 +81,7 @@
                                 :specification spec))
     (ppcre:register-groups-bind
         (server-uri method arg)
-        ("^(?:([-_a-zA-Z0-9/:&?#=+;]+))?/([-_a-zA-Z0-9]+)\\((.*)\\)$" spec)
+        ("^(?:(.+))?/([-_a-zA-Z0-9]+)\\((.*)\\)$" spec)
       (return-from parse-call-spec
         (values (rsb::parse-scope-or-uri (or server-uri "/"))
                 method
