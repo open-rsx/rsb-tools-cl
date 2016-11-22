@@ -20,6 +20,6 @@
     (find-and-load-idl ".some.Name" :proto))
 
   (let* ((data-directory        (asdf:system-relative-pathname
-                                 :rsb-tools-common-test "test/data/"))
+                                 :rsb-tools-common/test "test/data/"))
          (pbf:*proto-load-path* (list data-directory)))
     (find-and-load-idl ".test.Simple" :proto)))

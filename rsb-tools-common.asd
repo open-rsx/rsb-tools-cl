@@ -109,11 +109,11 @@ RSB-related systems."
                               (:file       "idl-loading-converter")
                               (:file       "idl-options"))))
 
-  :in-order-to ((test-op (test-op :rsb-tools-common-test))))
+  :in-order-to ((test-op (test-op :rsb-tools-common/test))))
 
 ;;; System definition for test of the rsb-tools-common system
 
-(defsystem :rsb-tools-common-test
+(defsystem :rsb-tools-common/test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
@@ -141,7 +141,7 @@ system."
                               (:file       "idl-loading")))))
 
 (defmethod perform ((operation test-op)
-                    (component (eql (find-system :rsb-tools-common-test))))
+                    (component (eql (find-system :rsb-tools-common/test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
            :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
                             "lift-rsb-tools-common.config")))

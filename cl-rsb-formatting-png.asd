@@ -30,4 +30,4 @@
                  :pathname   "src/formatting"
                  :components ((:file       "payload-image-png"))))
 
-  :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
+  :in-order-to ((test-op (test-op :cl-rsb-formatting/test))))

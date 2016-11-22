@@ -145,11 +145,11 @@ RSB-related systems."
                               (:file       "print")
                               (:file       "styles"))))
 
-  :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
+  :in-order-to ((test-op (test-op :cl-rsb-formatting/test))))
 
 ;;; System definition for tests of the cl-rsb-formatting system
 
-(defsystem :cl-rsb-formatting-test
+(defsystem :cl-rsb-formatting/test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
@@ -164,7 +164,7 @@ system."
                 (:version :cl-rsb-formatting-png #.(version/string))
                 (:version :rsb-formatting-json   #.(version/string))
 
-                (:version :cl-rsb-test           #.(version/string :revision? nil)))
+                (:version :cl-rsb/test           #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
                  :pathname   "test/formatting"
@@ -200,7 +200,7 @@ system."
                               (:file       "json")))))
 
 (defmethod perform ((operation test-op)
-                    (component (eql (find-system :cl-rsb-formatting-test))))
+                    (component (eql (find-system :cl-rsb-formatting/test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
            :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
                             "lift-rsb-formatting.config")))

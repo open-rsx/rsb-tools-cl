@@ -92,11 +92,11 @@ RSB-related systems."
                               (:file       "quantity-mixins")
                               (:file       "quantities"))))
 
-  :in-order-to ((test-op (test-op :cl-rsb-stats-test))))
+  :in-order-to ((test-op (test-op :cl-rsb-stats/test))))
 
 ;;; System definition for test of the cl-rsb-stats system
 
-(defsystem :cl-rsb-stats-test
+(defsystem :cl-rsb-stats/test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
@@ -115,7 +115,7 @@ system."
                               (:file       "quantities")))))
 
 (defmethod perform ((operation test-op)
-                    (component (eql (find-system :cl-rsb-stats-test))))
+                    (component (eql (find-system :cl-rsb-stats/test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
            :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
                             "lift-rsb-stats.config")))

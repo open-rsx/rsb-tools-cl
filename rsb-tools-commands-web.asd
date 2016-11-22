@@ -47,9 +47,9 @@
                               (:file       "macros")
                               (:file       "command")
                               (:file       "introspection"))))
-  :in-order-to ((test-op (test-op :rsb-tools-commands-web-test))))
+  :in-order-to ((test-op (test-op :rsb-tools-commands-web/test))))
 
-(defsystem :rsb-tools-commands-web-test
+(defsystem :rsb-tools-commands-web/test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
@@ -64,8 +64,8 @@
 
                 (:version :rsb-tools-commands-web  #.(version/string))
 
-                (:version :cl-rsb-test             #.(version/string :revision? nil))
-                (:version :rsb-tools-commands-test #.(version/string :revision? nil)))
+                (:version :cl-rsb/test             #.(version/string :revision? nil))
+                (:version :rsb-tools-commands/test #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "commands"
                  :pathname   "test/commands/web"
@@ -75,7 +75,7 @@
                               (:file       "command")))))
 
 (defmethod perform ((operation test-op)
-                    (component (eql (find-system :rsb-tools-commands-web-test))))
+                    (component (eql (find-system :rsb-tools-commands-web/test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
            :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
                             "lift-rsb-tools-commands-web.config")))

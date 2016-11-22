@@ -38,4 +38,4 @@
                  :depends-on ("formatting")
                  :components ((:file       "json"))))
 
-  :in-order-to ((test-op (test-op :cl-rsb-formatting-test))))
+  :in-order-to ((test-op (test-op :cl-rsb-formatting/test))))
