@@ -139,7 +139,7 @@
           (format target "~V@<~C~[ now~:;~:*~:/rsb.formatting:print-human-readable-duration/~]~>"
                   tic-distance*
                   (if *textual-output-can-use-utf-8?* #\↓ #\v)
-                  (/ i 1000000000)))))
+                  (round i 1000000000)))))
 
 (defmethod format-event ((event  (eql :trigger))
                          (style  timeline)
