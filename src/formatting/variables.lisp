@@ -6,6 +6,6 @@
 
 (cl:in-package #:rsb.formatting)
 
-(defvar *textual-output-can-use-utf-8?* #-win32 t #+win32 nil
-  "Controls whether UTF-8 (as opposed to ASCII) characters can be used
-   in textual output.")
+(defvar *output-unicode?* #-win32 t #+win32 nil
+  "Controls whether the full Unicode range of characters (as opposed
+   to ASCII) can be used in textual output.")

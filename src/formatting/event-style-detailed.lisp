@@ -15,7 +15,7 @@
   (:default-initargs
    :payload-style :payload-generic/pretty
    :separator     `(#\Newline
-                    (:rule ,(if *textual-output-can-use-utf-8?* #\─ #\-))
+                    (:rule ,(if *output-unicode?* #\─ #\-))
                     #\Newline)
    :max-lines     200)
   (:documentation

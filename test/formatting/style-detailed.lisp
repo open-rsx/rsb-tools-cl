@@ -39,7 +39,7 @@ Timestamps
   deliver <none>
 Payload: STRING, 3 characters
   \"bar\""
-               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
+               (if *output-unicode?* #\─ #\-) ""))
 
     `(()
       (,(make-event "/foo/bar/baz" 1 :fez "whoop"))
@@ -60,7 +60,7 @@ Meta-Data
   FEZ \"whoop\"
 Payload: .*
   1"
-               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
+               (if *output-unicode?* #\─ #\-) ""))
     `(()
       (,(make-event "/foo/bar/baz" (nibbles:octet-vector 1 2 255)))
       ,(format nil "
@@ -78,4 +78,4 @@ Timestamps
   deliver <none>
 Payload: .*, 3 octets
   0 01 02 FF                                              ... *"
-               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))
+               (if *output-unicode?* #\─ #\-) ""))))

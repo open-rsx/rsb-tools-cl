@@ -55,7 +55,7 @@
                   ((<=     0 size  1024) ,small)
                   ((<   1024 size 65536) ,medium)
                   (t                     ,large))))
-    (if *textual-output-can-use-utf-8?*
+    (if *output-unicode?*
         (cond
           ((zerop count) #\Space)
           ((= count 1)   (size-glyphs #\· #\▪ #\◾))
@@ -138,7 +138,7 @@
     (iter (for i :from (- upper now) :downto (- lower now) :by delta)
           (format target "~V@<~C~[ now~:;~:*~:/rsb.formatting:print-human-readable-duration/~]~>"
                   tic-distance*
-                  (if *textual-output-can-use-utf-8?* #\↓ #\v)
+                  (if *output-unicode?* #\↓ #\v)
                   (round i 1000000000)))))
 
 (defmethod format-event ((event  (eql :trigger))

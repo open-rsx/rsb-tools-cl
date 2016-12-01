@@ -150,7 +150,7 @@
   ()
   (:default-initargs
    :separator `(#\Newline
-                (:rule ,(if *textual-output-can-use-utf-8?* #\─ #\-))
+                (:rule ,(if *output-unicode?* #\─ #\-))
                 #\Newline))
   (:documentation
    "Format the meta-data of each event on multiple lines, but do not

@@ -37,7 +37,7 @@ Timestamps
   send    <none>
   receive <none>
   deliver <none>"
-               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
+               (if *output-unicode?* #\─ #\-) ""))
 
     `(()
       (,(make-event "/foo/bar/baz" 1 :fez "whoop"))
@@ -56,7 +56,7 @@ Timestamps
   deliver <none>
 Meta-Data
   FEZ \"whoop\""
-               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))
+               (if *output-unicode?* #\─ #\-) ""))
 
     `(()
       (,(let ((event (make-event "/foo/bar/baz" 1)))
@@ -76,4 +76,4 @@ Timestamps
   receive <none>
   deliver <none>
   \\*foo    .*"
-               (if *textual-output-can-use-utf-8?* #\─ #\-) ""))))
+               (if *output-unicode?* #\─ #\-) ""))))

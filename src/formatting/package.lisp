@@ -53,7 +53,7 @@
 
   ;; Variables
   (:export
-   #:*textual-output-can-use-utf-8?*)
+   #:*output-unicode?*)
 
   ;; Event formatting protocol
   (:export

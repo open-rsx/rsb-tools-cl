@@ -314,7 +314,7 @@
                    (funcall thunk stream)))
          (length (length value))
          ((&flet ellipsis ()
-            (if *textual-output-can-use-utf-8?* #\… #\.))))
+            (if *output-unicode?* #\… #\.))))
     (cond
       ;; No room at all - print nothing.
       ((zerop limit))
@@ -363,7 +363,7 @@
    (separator :initarg  :separator
               :type     string
               :accessor style-separator
-              :initform (if *textual-output-can-use-utf-8?* "│" "|")
+              :initform (if *output-unicode?* "│" "|")
               :documentation
               "Stores a separator string that is printed between the
                output produced by adjacent columns."))
