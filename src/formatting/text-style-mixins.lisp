@@ -75,8 +75,8 @@
                                  (style  periodic-printing-mixin)
                                  (stream t)
                                  &key)
-  "Protect against concurrent access to STYLE and store STREAM for use
-   in timer-driven output."
+  ;; Protect against concurrent access to STYLE and store STREAM for
+  ;; use in timer-driven output.
   (bt:with-recursive-lock-held ((style-%lock style))
     (unless (eq event :trigger)
       (setf (style-%stream style)       stream
@@ -157,7 +157,7 @@
                                  (style  separator-mixin)
                                  (stream t)
                                  &key)
-  "Print a separator before each event."
+  ;; Print a separator before each event.
   (print-separator (style-separator style) stream (or *print-right-margin* 80)))
 
 ;; Utility functions
