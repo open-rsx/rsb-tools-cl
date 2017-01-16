@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Dispatch function of the main tools program.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -52,9 +52,7 @@
                                         :static?     static?
                                         :compression (when compress? 9)))))
 
-      ;; Otherwise display information regarding entry points and
-      ;; symbolic links and offer to create these automatically if
-      ;; necessary.
+      ;; Otherwise display information regarding entry points.
       (t
        (format *error-output* "~@<Invoke this program as~
                                ~@:_~@:_~
