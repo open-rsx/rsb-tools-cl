@@ -1,6 +1,6 @@
 ;;;; plot-events.lisp --- Plot events for multiple scopes.
 ;;;;
-;;;; Copyright (C) 2016 Jan Moringen
+;;;; Copyright (C) 2016, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -31,6 +31,7 @@
                  :do (format stream "set style line ~D lt 1 lc rgb '#~6,'0X'~%"
                              i color)
                  :finally (write-string "set style increment user" stream)))))
+         (tick-count-limit 100)
          ;; Internal
          ((&flet random-name (type)
             (format nil "/tmp/~8,'0X.~A" (random (expt 16 8)) type)))
@@ -65,7 +66,8 @@
       (with-output-to-file (stream script
                                    :if-does-not-exist :create
                                    :if-exists         :supersede)
-        (let ((tics? (< (hash-table-count scopes) 100)))
+        (let* ((scope-count  (hash-table-count scopes))
+               (tick-divisor (max 1 (ceiling scope-count tick-count-limit))))
           (format stream "set terminal ~A~@[ ~A~]
                           set output \"~A.~A\"
 
@@ -78,23 +80,20 @@
 
                           set xtics font \",10\"
                           set xtics rotate by -30
-                          ~:[~
-                            unset ytics~
-                          ~:;~
-                            set ytics font \",10\"
-                          ~]
+                          set ytics font \",10\"
 
                           set title \"Events by ~(~A~) timestamp\"
 
                           plot "
                   terminal-name terminal-options output type
-                  palette borders tics? timestamp)
+                  palette borders timestamp)
           (iter (for  (scope . (file)) in     (sort (hash-table-alist scopes) #'string<
                                                     :key (compose #'scope-string #'car)))
                 (for  index            :from  0)
                 (for  first?           :first t :then nil)
                 (write-plot-commands-for-scope
-                 stream scope file timestamp index first? tics?)))))
+                 stream scope file timestamp index first?
+                 (zerop (mod index tick-divisor)))))))
 
     (push (lambda ()
             (mapc (compose #'close #'second) (hash-table-values scopes))
