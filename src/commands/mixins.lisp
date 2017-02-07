@@ -1,6 +1,6 @@
 ;;;; mixins.lisp --- Mixins class used by the commands module.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -239,3 +239,17 @@
   (:documentation
    "This class is intended to be mixed into command classes that
     perform some kind of event queuing."))
+
+;;; `filter-mixin'
+
+(defclass filter-mixin ()
+  ((filters :initarg  :filters
+            :type     list
+            :reader   command-filters
+            :initform '()
+            :documentation
+            "List of objects implementing the filter protocol. Only
+             events accepted by all filters are processed."))
+  (:documentation
+   "This class is intended to be mixed into command classes filter
+    event streams."))

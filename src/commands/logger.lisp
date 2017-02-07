@@ -1,6 +1,6 @@
 ;;;; logger.lisp --- Implementation of the logger command.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -23,26 +23,20 @@
 ;;; `logger' command class
 
 (defclass logger (source-mixin
+                  filter-mixin
                   event-queue-mixin
                   output-stream-mixin
                   style-mixin
                   print-items:print-items-mixin)
-  ((filters :initarg  :filters
-            :type     list
-            :reader   logger-filters
-            :initform '()
-            :documentation
-            "List of objects implementing the filter protocol. Only
-             events accepted by all filters are processed.")
-   (while   :initarg  :while
-            :type     (or null function)
-            :reader   logger-while
-            :initform nil
-            :documentation
-            "Stores a function that, when called with the number of
-             events processed so far and the current event, returns
-             Boolean to indicate whether processing should
-             continue."))
+  ((while :initarg  :while
+          :type     (or null function)
+          :reader   logger-while
+          :initform nil
+          :documentation
+          "Stores a function that, when called with the number of
+           events processed so far and the current event, returns
+           Boolean to indicate whether processing should
+           continue."))
   (:default-initargs
    :filters (list *only-user-events-filter*))
   (:documentation
@@ -98,7 +92,7 @@
                           (max-queued-events command-max-queued-events)
                           (stream            command-stream)
                           (style             command-style)
-                          (filters           logger-filters)
+                          (filters           command-filters)
                           (while             logger-while))
           command)
          (converters (rsb.tools.common::maybe-ensure-idl-loading-converter

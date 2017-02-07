@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for the commands module.
 ;;;;
-;;;; Copyright (C) 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2013, 2014, 2015, 2016, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -58,7 +58,10 @@
    #:command-payload
 
    #:event-queue-mixin
-   #:command-max-queued-events)
+   #:command-max-queued-events
+
+   #:filter-mixin
+   #:command-filters)
 
   ;; General purpose command classes
   (:export
