@@ -63,7 +63,8 @@
  'command :logger :class 'logger)
 
 (defun process-events (queue stream style &key while)
-  "Process events in QUEUE until interrupted."
+  ;; Process events in QUEUE until interrupted, if WHILE is a
+  ;; function, calling WHILE returns false.
   (let ((continue-function nil)) ; TODO there is a macro for this in rsbag
     (restart-bind
         ((continue (lambda (&optional condition)
