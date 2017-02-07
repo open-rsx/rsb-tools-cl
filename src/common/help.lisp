@@ -1,6 +1,6 @@
 ;;;; help.lisp --- Automatic generation of help strings.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2011-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -116,6 +116,37 @@
    stream
    :class-blacklist   class-blacklist
    :initarg-blacklist initarg-blacklist))
+
+(defun make-filter-help-string (&key (show :default))
+  "Return a help string that explains how to specify filters and lists
+   the available filters."
+  (with-output-to-string (stream)
+    (format stream "Specify a filter that events have to match in ~
+                    order to be processed rather than discarded. This ~
+                    option can be supplied multiple times in which ~
+                    case events have to match all specified ~
+                    filters. Each SPEC has to be of one of the forms~@
+                    ~@
+                    ~2@TKIND | KIND SINGLE-VALUE | KIND KEY1 VALUE1 ~
+                      KEY2 VALUE2 ...~@
+                    ~@
+                    where keys and values depend on KIND and may be ~
+                    mandatory in some cases. Examples (note that the ~
+                    single quotes have to be included only when used ~
+                    within a shell):~@
+                    ~@
+                    ~2@T--filter 'origin \"EAEE2B00-AF4B-11E0-8930-001AA0342D7D\"'~@
+                    ~2@T--filter 'regex \".*foo[0-9]+\"'~@
+                    ~2@T--filter 'regex :regex \".*foo[0-9]+\"' (equivalent)~@
+                    ~2@T-f 'xpath :xpath ~
+                      \"node()/@foo\" :fallback-policy :do-not-match'~@
+                    ~@
+                    ")
+    (with-abbreviation (stream :filters show)
+      (format stream "The following filters are currently available:~@
+                      ~@
+                      ")
+      (print-filter-help stream))))
 
 ;;; Version string
 

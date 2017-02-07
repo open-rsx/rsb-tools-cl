@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for common module.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2011-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -88,6 +88,7 @@
 
    #:print-uri-help
    #:print-filter-help
+   #:make-filter-help-string
 
    #:print-version
 
