@@ -1,6 +1,6 @@
 ;;;; style-image-png.lisp --- Format event payloads as PNG images.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2012-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -29,7 +29,8 @@
   (let+ (((&accessors-r/o (in-color  rst.vision:image-color-mode)
                           (in-width  rst.vision:image-width)
                           (in-height rst.vision:image-height)
-                          (in-pixels rst.vision:image-data)) data)
+                          (in-pixels rst.vision:image-data))
+          data)
 
          ;; Compute output width, output height and scaling factors
          ;; based on input width, input height and requested width and
