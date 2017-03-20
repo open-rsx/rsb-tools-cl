@@ -1,6 +1,6 @@
 ;;;; rst-forward.lisp --- Forward definitions of RST types to avoid dependency.
 ;;;;
-;;;; Copyright (C) 2012, 2013 Jan Moringen
+;;;; Copyright (C) 2012-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,6 +12,7 @@
       (:export
        #:image
        #:image-color-mode
+       #:image-depth
        #:image-width
        #:image-height
        #:image-data))))
@@ -21,6 +22,7 @@
 (cl:unless (cl:find-class 'image cl:nil)
   (cl:defclass image ()
     ((color-mode :reader image-color-mode)
+     (depth      :reader image-depth)
      (width      :reader image-width)
      (height     :reader image-height)
      (data       :reader image-data))))
