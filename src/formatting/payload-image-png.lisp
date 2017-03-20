@@ -92,6 +92,28 @@
                           ,pixel-format-form ,depth-form)))))))
 
       (define-decoders (in-color in-depth)
+        ((:color-grayscale :depth-8u 1)
+         (generate (the fixnum from-offset) :from 0 :by scale-x)
+         (iter (for (the fixnum to-offset) :from 0 :below out-width)
+               (in outer (next from-offset))
+               (setf (aref row to-offset) (aref in-pixels from-offset))))
+
+        ((:color-grayscale :depth-16u 1)
+         (generate (the fixnum from-offset) :from 0 :by (* 2 scale-x))
+         (iter (for (the fixnum to-offset) :from 0 :below out-width)
+               (in outer (next from-offset))
+               (setf (aref row to-offset) (aref in-pixels (1+ from-offset)))))
+
+        ((:color-grayscale :depth-32f 1)
+         (generate (the fixnum from-offset) :from 0 :by (* 4 scale-x))
+         (iter (for (the fixnum to-offset) :from 0 :below out-width)
+               (in outer (next from-offset))
+               (setf (aref row to-offset)
+                     (truncate
+                      (the (single-float 0f0 1f0)
+                           (nibbles:ieee-single-ref/le in-pixels from-offset))
+                      #.(float 1/255 1f0)))))
+
         ((:color-rgba :depth-8u 4)
          (generate (the fixnum from-offset) :from 0 :by (* 4 scale-x))
          (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 4)
