@@ -1,6 +1,6 @@
 ;;;; binary-style-mixins.lisp --- Mixin classes for binary event formatting classes.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2012-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -143,36 +143,46 @@
          (scale     (round (/ input requested))))
     (values (floor input scale) scale)))
 
-(declaim (inline %yuv422->rgba)
-         (ftype (function ((nibbles:simple-octet-vector) fixnum
-                           (nibbles:simple-octet-vector) fixnum)
-                          (values))
-                %yuv422->rgba))
+(macrolet
+    ((define-yuv->rgb (name alpha?)
+       `(progn
+          (declaim (inline ,name)
+                   (ftype (function ((nibbles:simple-octet-vector) fixnum
+                                     (nibbles:simple-octet-vector) fixnum)
+                                    (values))
+                          ,name))
 
-(defun %yuv422->rgba (yuv-array yuv-start rgb-array rgb-start)
-  (declare #.cl-rsb-system:+optimization-fast+unsafe+)
+          (defun ,name (yuv-array yuv-start rgb-array rgb-start)
+            (declare #.cl-rsb-system:+optimization-fast+unsafe+)
 
-  (let* ((c     (aref yuv-array (+ yuv-start 0)))
-         (d     (aref yuv-array (+ yuv-start 1)))
-         (c2    (aref yuv-array (+ yuv-start 2)))
-         (e     (aref yuv-array (+ yuv-start 3)))
+            (let* ((c     (aref yuv-array (+ yuv-start 0)))
+                   (d     (aref yuv-array (+ yuv-start 1)))
+                   (c2    (aref yuv-array (+ yuv-start 2)))
+                   (e     (aref yuv-array (+ yuv-start 3)))
 
-         (valc1 (+ (* 298 c)  128 (* 298 -16)))
-         (valc2 (+ (* 298 c2) 128 (* 298 -16)))
+                   (valc1 (+ (* 298 c)  128 (* 298 -16)))
+                   (valc2 (+ (* 298 c2) 128 (* 298 -16)))
 
-         (blue  (+ (* 517 d)              (* 517 -128)))
-         (green (- (+ (* 208 d) (* 100 e) (* 208 -128) (* 100 -128))))
-         (red   (+ (* 409 e)              (* 409 -128))))
-    (macrolet
-        ((store (offset form)
-           `(setf (aref rgb-array (+ rgb-start ,offset))
-                  (clamp (ash ,form -8) 0 255))))
-      (store 0 (+ valc1 red))
-      (store 1 (+ valc1 green))
-      (store 2 (+ valc1 blue))
-      (store 3 65535)
-      (store 4 (+ valc2 red))
-      (store 5 (+ valc2 green))
-      (store 6 (+ valc2 blue))
-      (store 7 65535)))
-  (values))
+                   (blue  (+ (* 517 d)              (* 517 -128)))
+                   (green (- (+ (* 208 d) (* 100 e) (* 208 -128) (* 100 -128))))
+                   (red   (+ (* 409 e)              (* 409 -128))))
+              (macrolet
+                  ((store (offset form)
+                     `(setf (aref rgb-array (+ rgb-start ,offset))
+                            (clamp (ash ,form -8) 0 255))))
+                (store 0 (+ valc1 red))
+                (store 1 (+ valc1 green))
+                (store 2 (+ valc1 blue))
+                ,@(if alpha?
+                      `((store 3 65535)
+                        (store 4 (+ valc2 red))
+                        (store 5 (+ valc2 green))
+                        (store 6 (+ valc2 blue))
+                        (store 7 65535))
+                      `((store 3 (+ valc2 red))
+                        (store 4 (+ valc2 green))
+                        (store 5 (+ valc2 blue))))))
+            (values)))))
+
+  (define-yuv->rgb %yuv422->rgba t)
+  (define-yuv->rgb %yuv422->rgb  nil))

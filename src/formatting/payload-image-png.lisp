@@ -42,7 +42,11 @@
 
          ;; Create the output PNG object.
          (png (make-instance 'zpng:streamed-png
-                             :color-type :truecolor-alpha
+                             :color-type (ecase in-color
+                                           (:color-rgba
+                                            :truecolor-alpha)
+                                           ((:color-rgb :color-bgr :color-yuv422)
+                                            :truecolor))
                              :width      out-width
                              :height     out-height))
          (row (zpng:row-data png)))
@@ -86,15 +90,15 @@
 
         ((:color-rgb 3)
          (generate (the fixnum from-offset) :from 0 :by (* 3 scale-x))
-         (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 4)
+         (iter (for (the fixnum to-offset) :from 0 :below (* 3 out-width) :by 3)
                (in outer (next from-offset))
                (replace row in-pixels
-                        :start1 to-offset   :end1 (+ to-offset 3)
+                        :start1 to-offset   :end1 (+ to-offset   3)
                         :start2 from-offset :end2 (+ from-offset 3))))
 
         ((:color-bgr 3)
          (generate (the fixnum from-offset) :from 0 :by (* 3 scale-x))
-         (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 4)
+         (iter (for (the fixnum to-offset) :from 0 :below (* 3 out-width) :by 3)
                (in outer (next from-offset))
                (setf (aref row (+ to-offset 0)) (aref in-pixels (+ from-offset 2))
                      (aref row (+ to-offset 1)) (aref in-pixels (+ from-offset 1))
@@ -102,9 +106,9 @@
 
         ((:color-yuv422 2 (* 2 (ceiling out-width 2)))
          (generate (the fixnum from-offset) :from 0 :by (* 4 scale-x))
-         (iter (for (the fixnum to-offset) :from 0 :below (* 4 out-width) :by 8)
+         (iter (for (the fixnum to-offset) :from 0 :below (* 3 out-width) :by 6)
                (in outer (next from-offset))
-               (%yuv422->rgba in-pixels from-offset row to-offset)))))
+               (%yuv422->rgb in-pixels from-offset row to-offset)))))
 
     (zpng:finish-png png)
 
