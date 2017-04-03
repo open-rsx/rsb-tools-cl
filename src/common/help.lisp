@@ -139,7 +139,7 @@
                     ~2@T--filter 'regex \".*foo[0-9]+\"'~@
                     ~2@T--filter 'regex :regex \".*foo[0-9]+\"' (equivalent)~@
                     ~2@T-f 'xpath :xpath ~
-                      \"node()/@foo\" :fallback-policy :do-not-match'~@
+                      \"data/rst.vision:image/@width > 100\"'~@
                     ~@
                     ")
     (with-abbreviation (stream :filters show)
