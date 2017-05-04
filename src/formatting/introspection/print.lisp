@@ -1,6 +1,6 @@
 ;;;; print.lisp --- Printing of introspection information.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -88,10 +88,10 @@
                       (latency        info-latency))
           process-info))
     (if colon?
-        (format stream "Uptime    ~@[ ~/rsb.formatting.introspection::print-elapsed-time/~]~
-                        ~24,0T│ User        ~:[?~:;~:*~A~]~
+        (format stream "Uptime ~@[ ~/rsb.formatting.introspection::print-elapsed-time/~]~
+                        ~21,0T│ User        ~:[?~:;~:*~A~]~
                         ~@:_Latency ~/rsb.formatting.introspection::print-time-offset-markup/~
-                        ~24,0T│ RSB Version ~:[?~:;~:*~A~]"
+                        ~21,0T│ RSB Version ~:[?~:;~:*~A~]"
                 start-time             executing-user
                 (when remote? latency) rsb-version)
         (format stream "Start~
@@ -115,11 +115,11 @@
 (defun print-time-offset-markup (stream value &optional colon? at?)
   (declare (ignore colon? at?))
   (format stream "~[~
-                     ??.??? s~
+                     ??? s~
                      ~;~
-                     ~,3@F s~
+                     ~/rsb.formatting::print-human-readable-duration/~
                      ~;~
-                     ~2@T< 1 ms~
+                     ~/rsb.formatting::print-human-readable-duration/~
                   ~]"
           (cond
             ((null value)          0)
@@ -159,18 +159,18 @@
          (latency      (when remote? (info-latency host-info))))
     (if colon?
         (format stream "Clock offset ~/rsb.formatting.introspection::print-time-offset-markup/~
-                        ~24,0T│ Machine type    ~:[?~:;~:*~A~]~
+                        ~21,0T│ Machine type    ~:[?~:;~:*~A~]~
                         ~60,0T│ Software type    ~:[?~:;~:*~A~]~
                         ~@:_Latency      ~/rsb.formatting.introspection::print-time-offset-markup/~
-                        ~24,0T│ Machine version ~:[?~:;~:*~A~]~
+                        ~21,0T│ Machine version ~:[?~:;~:*~A~]~
                         ~60,0T│ Software version ~:[?~:;~:*~A~]"
                 clock-offset machine-type                         software-type
-                latency      (truncate-string machine-version 17) software-version)
+                latency      (truncate-string machine-version 20) software-version)
         (format stream "Machine type    ~:[?~:;~:*~A~]~
-                        ~36,0T│ Software type    ~:[?~:;~:*~A~]~
+                        ~37,0T│ Software type    ~:[?~:;~:*~A~]~
                         ~@:_~
                         Machine version ~:[?~:;~:*~A~]~
-                        ~36,0T│ Software version ~:[?~:;~:*~A~]"
+                        ~37,0T│ Software version ~:[?~:;~:*~A~]"
                 machine-type                         software-type
                 (truncate-string machine-version 17) software-version))))
 
