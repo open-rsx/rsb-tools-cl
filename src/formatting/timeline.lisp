@@ -124,7 +124,7 @@
                 t)))
   (define-access?-method :data) ; only if rsb.transport.payload-size meta-data item is not available
   (define-access?-method :meta-data)
-  (define-access?-method :timestamp-data))
+  (define-access?-method :timestamp))
 
 (defmethod format-header ((style timeline) (target t))
   (let+ (((&accessors-r/o
