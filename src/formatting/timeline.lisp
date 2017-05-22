@@ -1,6 +1,6 @@
 ;;;; timeline.lisp --- Render a timeline view of received events.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2012-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -38,7 +38,7 @@
   (let+ (((&structure %cell- count max-size glyph) cell)
          (new-count (- end start))
          (new-size  (reduce #'max events
-                            :key           (rcurry #'rsb.stats:event-size/power-of-2 0)
+                            :key           #'cdr
                             :initial-value 0
                             :start         start
                             :end           end)))
@@ -179,9 +179,10 @@
   ;; trigger events.
   (if (eq event :trigger)
       (call-next-method)
-      (let+ (((&structure style- timestamp (events %events)) style))
-        (setf events (merge 'list (list event) events #'>
-                            :key timestamp)))))
+      (let+ (((&structure style- timestamp (events %events)) style)
+             (entry (cons (funcall (the function timestamp) event)
+                          (rsb.stats:event-size/power-of-2 event 0))))
+        (setf events (merge 'list (list entry) events #'> :key #'car)))))
 
 (defmethod adjust-cache! ((style timeline))
   (let+ (((&accessors-r/o ((lower-bound upper-bound) bounds/expanded)
@@ -207,7 +208,7 @@
           (finally (setf (cdr tail) nil)))))
 
 (defmethod fill-cache! ((style timeline))
-  (let+ (((&structure-r/o style- timestamp (events %events) (cache %cache))
+  (let+ (((&structure-r/o style- (events %events) (cache %cache))
           style))
     ;; Iterate over bins of the form [LOWER, UPPER] for all
     ;; not-yet-populated cache cells.
@@ -221,15 +222,14 @@
           ;; Advance to first event that is in the first bin.
           (when (first-iteration-p)
             (next event)
-            (let ((key (funcall timestamp event)))
-              (iter (until (<= key (%cell-upper cell)))
-                    (in outer (next event)))))
+            (iter (until (<= (car event) (%cell-upper cell)))
+                  (in outer (next event))))
 
           ;; Collect all events for the bin [LOWER, UPPER].
           (let+ (((&structure-r/o %cell- lower upper) cell))
             (iter (with events/bin                      = events/rest)
                   (with (the non-negative-fixnum count) = 0)
-                  (while (<= lower (funcall timestamp event) upper))
+                  (while (<= lower (car event) upper))
                   (incf count)
                   (in outer (next event))
                   (finally-protected
