@@ -1,6 +1,6 @@
 ;;;; graphite-adapter.lisp --- Push introspection data into an Graphite.
 ;;;;
-;;;; Copyright (C) 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2015, 2016, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -87,9 +87,11 @@
          ((&flet timing-information (info &optional clock-offset?)
             (values
              (if clock-offset? '(#1=("latency") ("clock_offset")) '(#1#))
-             (list* (rsb.model:info-latency info)
-                    (when clock-offset?
-                      (list (rsb.model:info-clock-offset info)))))))
+             (append (when-let ((value (rsb.model:info-latency info)))
+                       (list value))
+                     (when clock-offset?
+                       (when-let ((value (rsb.model:info-clock-offset info)))
+                         (list value)))))))
          ((&flet count-participants (node)
             (declare (type rsb.model:process-node node))
             (let+ ((participants (rsb.introspection:introspection-participants node))
