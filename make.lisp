@@ -84,7 +84,7 @@
                                   (variable-value '#:+version-major+)))
               (version-minor    (variable-value '#:+version-minor+))
               (previous-release (format nil "release-~D.~D" version-major (1- version-minor)))
-              (version-string   (git-describe directory :match previous-release)))
+              (version-string   "release-0.16-5-gfffffff" #+no(git-describe directory :match previous-release)))
          (ppcre:register-groups-bind ((#'parse-integer version-revision) commit dirty)
              ("^release-[0-9]+\\.[0-9]+-([0-9]+)-(g[a-z0-9]+)(?:-(dirty))?" version-string)
            (values version-major version-minor version-revision commit dirty)))
