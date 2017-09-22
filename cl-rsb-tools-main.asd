@@ -82,7 +82,7 @@ tools."
                 (:version :cl-rsb-tools-call       #.(version/string))
                 (:version :cl-rsb-tools-send       #.(version/string))
                 (:version :cl-rsb-tools-introspect #.(version/string))
-                (:version :cl-rsb-tools-web        #.(version/string))
+                ; (:version :cl-rsb-tools-web        #.(version/string))
                 (:version :cl-rsb-tools-bridge     #.(version/string))
                 (:version :cl-rsb-tools-server     #.(version/string))
 
