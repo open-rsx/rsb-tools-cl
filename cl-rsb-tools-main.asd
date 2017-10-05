@@ -1,6 +1,6 @@
 ;;;; cl-rsb-tools-main.asd --- System definition for main binary of cl-rsb-tools.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -92,7 +92,12 @@ tools."
                  :components ((:file       "package")
                               (:file       "main"
                                :depends-on ("package")))))
-  :entry-point "rsb.tools.main:main")
+  :entry-point "rsb.tools.main:main"
+  :output-files (program-op (operation component)
+                  (let* ((output/relative #-win32 "tools" #+win32 "tools.exe")
+                         (output/absolute (uiop:ensure-absolute-pathname
+                                           output/relative *default-pathname-defaults*)))
+                    (values (list output/absolute) t))))
 
 (defmethod perform :before ((operation program-op)
                             (component (eql (find-system :cl-rsb-tools-main))))
