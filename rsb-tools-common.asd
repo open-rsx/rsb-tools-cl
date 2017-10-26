@@ -1,6 +1,6 @@
 ;;;; rsb-tools-common.asd --- Common functions for cl-rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2011-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -80,12 +80,13 @@ RSB-related systems."
                 :esrap
                 :cl-ppcre
                 :architecture.builder-protocol
+                (:version :serialization.protocol-buffer.parser.text-format "0.4")
                 :cl-protobuf
 
                 :net.didierverna.clon
 
-                (:version :cl-rsb   #.(version/string :revision? nil))
-                (:version :rsb-clon #.(version/string :revision? nil)))
+                (:version :cl-rsb                                           #.(version/string :revision? nil))
+                (:version :rsb-clon                                         #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "common"
                  :pathname   "src/common"
