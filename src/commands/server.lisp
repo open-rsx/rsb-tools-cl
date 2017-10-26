@@ -1,6 +1,6 @@
 ;;;; server.lisp --- Implementation of the server command.
 ;;;;
-;;;; Copyright (C) 2016 Jan Moringen
+;;;; Copyright (C) 2016, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -43,7 +43,8 @@
               (warn "~@<Ignoring scope ~A in ~A.~@:>"
                     (scope-string scope) scope-or-uri))))
          ((&flet+ check-transport ((transport &rest options))
-            (unless (eq transport :socket)
+            (unless (member transport '(:socket :tcp-socket
+                                        :unix :unix-socket))
               (error "~@<Server mode is not supported for transport ~
                       ~A requested via ~A.~@:> "
                      transport scope-or-uri))

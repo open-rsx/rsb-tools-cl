@@ -470,16 +470,21 @@ add_test(NAME    "bridge/smoke/bidirectional"
                  "inprocess:/foo <-> inprocess:/bar")
 
 # Server test
-add_test(NAME    "server/smoke"
+add_test(NAME    "server/tcp/smoke"
          COMMAND "${MAIN_EXECUTABLE}" server
                  --debug
                  --eval "${EXIT_AFTER_THREE_SECONDS}"
                  "socket://localhost:0?portfile=-")
-add_test(NAME    "server/two-ports"
+add_test(NAME    "server/tcp/two-ports"
          COMMAND "${MAIN_EXECUTABLE}" server
                  --debug
                  --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 "socket://localhost:0?portfile=-" "socket://localhost:0?portfile=-")
+                 "socket://localhost:0?portfile=-" "tcp-socket://localhost:0?portfile=-")
+add_test(NAME    "server/unix/smoke"
+         COMMAND "${MAIN_EXECUTABLE}" server
+                 --debug
+                 --eval "${EXIT_AFTER_THREE_SECONDS}"
+                 "unix:?name=socket")
 
 # redump test
 add_test("redump/simple"
