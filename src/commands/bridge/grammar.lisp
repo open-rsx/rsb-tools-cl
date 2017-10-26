@@ -1,51 +1,18 @@
 ;;;; grammar.lisp --- Grammar for simple forwarding specification .
 ;;;;
-;;;; Copyright (C) 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2015, 2016, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 (cl:in-package #:rsb.tools.commands.bridge)
 
-(defmacro defrule/s (name-and-options expression &body options)
-  "Like `esrap:defule' but define additional rules named NAME/S and
-   NAME/?S which respectively require/ allow EXPRESSION to be
-   followed by whitespace.
-
-   NAME-AND-OPTIONS can either just be a rule name or list of the form
-
-     (NAME &key WHITESPACE-RULE WS? ?WS? DEFINER)
-
-   where WHITESPACE-RULE names the rule used to parsed whitespace in
-   the NAME/S and NAME/?S variants. Defaults to `whitespace'.
-
-   WS? and ?WS? control which of the NAME/S and NAME/?S rules should
-   be generated. Default is generating both.
-
-   DEFINER is the name of the macro used to define \"main\"
-   rule. Defaults to `esrap:defrule'."
-  (let+ (((name
-           &key
-           (skippable-rule 'whitespace)
-           (ws?            t)
-           (?ws?           t)
-           (definer        'defrule))
-          (ensure-list name-and-options))
-         (name/s  (format-symbol *package* "~A/S" name))
-         (name/?s (format-symbol *package* "~A/?S" name)))
-    `(progn
-       (,definer ,name
-                 ,expression
-                 ,@options)
-       ,@(when ws?
-           `((defrule ,name/s
-                 (and ,name ,skippable-rule)
-               (:function first))))
-       ,@(when ?ws?
-           `((defrule ,name/?s
-                 (and ,name (? ,skippable-rule))
-               (:function first)))))))
-
 ;;; Rules
+
+(defrule skippable
+    whitespace+)
+
+(defrule skippable?
+    whitespace*)
 
 (defrule bridge-specification
     connection-list
@@ -157,7 +124,7 @@
   (:function puri:parse-uri))
 
 (defrule uri-characters
-    (+ (or (not (or whitespace ";" "->" "<->")) uri-characters/special))
+    (+ (or (not (or skippable ";" "->" "<->")) uri-characters/special))
   (:text t))
 
 (defrule uri-characters/special
@@ -176,9 +143,6 @@
   (define-keyword-rule right-arrow      "->")
   (define-keyword-rule left-right-arrow "<->")
   (define-keyword-rule semicolon        #\;))
-
-(defrule whitespace
-    (+ (or #\Space #\Tab #\Newline)))
 
 (defun parse-spec (source &key (rule 'bridge-specification))
   (esrap:parse rule source))

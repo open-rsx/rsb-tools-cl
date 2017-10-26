@@ -80,6 +80,7 @@ RSB-related systems."
                 :esrap
                 :cl-ppcre
                 :architecture.builder-protocol
+                (:version :parser.common-rules                              "0.3")
                 (:version :serialization.protocol-buffer.parser.text-format "0.4")
                 :cl-protobuf
 

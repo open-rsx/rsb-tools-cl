@@ -1,6 +1,6 @@
 ;;;; package.lisp --- Package definition for implementation of the bridge command.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2011-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -23,6 +23,11 @@
   (:import-from #:esrap
    #:defrule
    #:? #:&)
+
+  (:import-from #:parser.common-rules
+   #:whitespace+ #:whitespace*
+
+   #:defrule/s)
 
   (:import-from #:rsb.model.inference
    #:communication?)
