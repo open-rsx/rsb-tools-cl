@@ -1,6 +1,6 @@
 ;;;; send.lisp --- Entry point of the send tool.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -10,7 +10,7 @@
                 payload-literal-mixin
                 print-items:print-items-mixin)
   ((method     :initarg  :method
-               :type     string
+               :type     (or null string)
                :reader   send-method
                :documentation
                "Set the method field of the event being sent to

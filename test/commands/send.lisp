@@ -1,6 +1,6 @@
 ;;;; send.lisp --- Tests for the send command class.
 ;;;;
-;;;; Copyright (C) 2015 Jan Moringen
+;;;; Copyright (C) 2015, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -25,7 +25,9 @@
         ((:destination ,(puri:uri "/") :payload nil))
         ((:destination ,(rsb:make-scope "/") :payload nil))
         ((:destination "/" :payload nil))
-        ((:destination ,(rsb:make-scope "/") :payload-spec "true")))
+        ((:destination ,(rsb:make-scope "/") :payload-spec "true"))
+        ((:destination "/" :payload nil :method nil))
+        ((:destination "/" :payload nil :method "request")))
 
     (let+ (((&flet do-it () (apply #'make-command :send initargs))))
       (case expected
