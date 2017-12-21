@@ -171,6 +171,9 @@
                            (multiple-value-call
                                #'bridge-description->connection-list
                              (check-description (parse-spec spec)))))
+                        ;; Collect IDs of already created connections
+                        ;; so we can roll back in case of an error.
+                        (connection-ids '())
                         ((&flet+ make-connection
                              ((listeners informers filters transform))
                            (let+ (((&values connection which)
@@ -182,16 +185,25 @@
                                     :transform         transform
                                     :timestamp-events? t
                                     :self-filters      self-filters)))
+                             (push which connection-ids)
                              (cons which
                                    (setf (rsb.patterns:participant-child
                                           bridge which :connection)
-                                         connection)))))
-                        (connections   (mapcar #'make-connection connections))
-                        (which         (princ-to-string (incf count)))
-                        (control-scope (make-group-scope which)))
-                   (setf (gethash which groups) (cons which connections))
-                   (notify "child-added" control-scope)
-                   (scope-string control-scope))))
+                                         connection))))))
+                   (unwind-protect-case ()
+                       (let* ((which         (princ-to-string (incf count)))
+                              (control-scope (make-group-scope which))
+                              (connections   (mapcar #'make-connection connections)))
+                         (setf (gethash which groups) (cons which connections))
+                         (notify "child-added" control-scope)
+                         (scope-string control-scope)) ; TODO return scope
+                     (:abort
+                      (map nil (lambda (which)
+                                 (ignore-errors
+                                   (setf (rsb.patterns:participant-child
+                                          bridge which :connection)
+                                         nil)))
+                           connection-ids))))))
              ;; Connection operations
              ("destroy" (scope scope)
                (log:info "~@<Received request to removed connection ~
