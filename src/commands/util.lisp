@@ -1,6 +1,6 @@
 ;;;; util.lisp --- Utilities shared between commands.
 ;;;;
-;;;; Copyright (C) 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2015, 2016, 2017 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -22,7 +22,7 @@
   (let ((path (puri:uri-path uri)))
     (if (ends-with #\/ path)
         uri
-        (puri:copy-uri uri :path  (concatenate 'string path "/")))))
+        (puri:copy-uri uri :path (concatenate 'string path "/")))))
 
 ;;; Converters
 
