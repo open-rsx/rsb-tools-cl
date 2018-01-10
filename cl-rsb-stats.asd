@@ -1,6 +1,6 @@
 ;;;; cl-rsb-stats.asd --- Stats functions for cl-rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -104,6 +104,8 @@ RSB-related systems."
   :description "This system contains tests for the cl-rsb-stats
 system."
   :depends-on  ((:version :lift         "1.7.1")
+
+                :cl-ppcre
 
                 (:version :cl-rsb-stats #.(version/string)))
   :encoding    :utf-8
