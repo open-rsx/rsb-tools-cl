@@ -1,6 +1,6 @@
 ;;;; event.lisp --- Unit tests for parsing events and payloads.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014, 2015, 2016, 2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,7 +12,7 @@
    "Test suite for event and payload parsing functions."))
 
 (addtest (common-event-root
-          :doumentation
+          :documentation
           "Smoke test for the `parse-payload-spec' function")
   parse-payload-spec/smoke
 
