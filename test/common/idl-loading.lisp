@@ -1,6 +1,6 @@
 ;;;; idl-loading.lisp --- Unit tests for IDL loading functionality.
 ;;;;
-;;;; Copyright (C) 2016 Jan Moringen
+;;;; Copyright (C) 2016, 2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -12,7 +12,7 @@
    "Test suite for IDL loading functionality."))
 
 (addtest (common-idl-loading-root
-          :doumentation
+          :documentation
           "Smoke test for the `find-and-load-idl' function.")
   find-and-load-idl/smoke
 
