@@ -46,7 +46,7 @@
           (,(pb-file a-file)              rsb.protocol:notification)
           (,(pb-file a-utf-8-file)        rsb.protocol:notification)
           ("1"                            1)
-          (".1"                           .1)
+          (".1"                           .1d0)
           ("\"bar\""                      "bar"))
 
       (let+ (((&flet do-it () (parse-payload-spec input)))
@@ -97,7 +97,7 @@
         ("/foo(true)"                 ,(rsb:make-scope "/")              "foo" t)
         ("/foo(/bar)"                 ,(rsb:make-scope "/")              "foo" ,(rsb:make-scope "/bar"))
         ("/foo(1)"                    ,(rsb:make-scope "/")              "foo" 1)
-        ("/foo(.1)"                   ,(rsb:make-scope "/")              "foo" .1)
+        ("/foo(.1)"                   ,(rsb:make-scope "/")              "foo" .1d0)
         ("/foo(\"bar\")"              ,(rsb:make-scope "/")              "foo" "bar"))
 
     (let+ (((&flet do-it () (parse-call-spec input)))
