@@ -50,8 +50,9 @@ html body footer {
 }
 
 /*
- * Spin Animatino
+ * Spin Animation
  */
+
 .glyphicon-spin {
     -webkit-animation: spin 1000ms infinite linear;
        -moz-animation: spin 1000ms infinite linear;
