@@ -1,6 +1,6 @@
 # CMakeLists.txt --- CMake build description file.
 #
-# Copyright (C) 2011-2017 Jan Moringen
+# Copyright (C) 2011-2018 Jan Moringen
 #
 # Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -237,6 +237,16 @@ endif()
 # Tests
 enable_testing()
 
+function(tools_test COMMAND NAME)
+    set(SHELL_COMMAND "")
+    foreach(WORD ${MAIN_EXECUTABLE} ${COMMAND} ${ARGN})
+        string(REPLACE "<empty>" "" WORD "${WORD}")
+        set(SHELL_COMMAND "${SHELL_COMMAND} '${WORD}'")
+    endforeach()
+    add_test(NAME    "${COMMAND}/${NAME}"
+             COMMAND sh -c "${SHELL_COMMAND}")
+endfunction()
+
 # Lift-based tests for formatting and stats systems.
 foreach(SYSTEM rsb-tools-common cl-rsb-formatting cl-rsb-stats
                rsb-tools-commands rsb-tools-commands-web)
@@ -254,70 +264,58 @@ set(EXIT_AFTER_THREE_SECONDS "(let ((timer (sb-ext:make-timer (lambda () (sb-ext
 
 # --help, --help-all and --version for all binaries.
 foreach(TOOL ${TOOLS})
-    add_test(NAME    "${TOOL}/help"
-             COMMAND "${MAIN_EXECUTABLE}" "${TOOL}" --help)
-    add_test(NAME    "${TOOL}/help-all"
-             COMMAND "${MAIN_EXECUTABLE}" "${TOOL}" --help-for=all)
-    add_test(NAME    "${TOOL}/version"
-             COMMAND "${MAIN_EXECUTABLE}" "${TOOL}" --version)
+    tools_test("${TOOL}" "help"     "--help")
+    tools_test("${TOOL}" "help-all" "--help-for=all")
+    tools_test("${TOOL}" "version"  "--version")
 endforeach()
 
 # All categories for info binary.
 foreach(CATEGORY verbose configuration transports converters filters
                  transforms event-processing participants)
-    add_test(NAME    "info/category=${CATEGORY}"
-             COMMAND "${MAIN_EXECUTABLE}" info --debug --${CATEGORY})
+    tools_test("info" "category=${CATEGORY}" --debug --${CATEGORY})
 endforeach()
 
 # All error policies for logger, send, call and bridge binaries.
 foreach(POLICY continue abort)
-    add_test(NAME    "logger/on-error=${POLICY}"
-            COMMAND  "${MAIN_EXECUTABLE}" logger
-                     --debug --on-error "${POLICY}"
-                     --eval "${EXIT_AFTER_THREE_SECONDS}"
-                     inprocess:)
-    add_test(NAME    "send/on-error=${POLICY}"
-             COMMAND "${MAIN_EXECUTABLE}" send
-                     --debug --on-error "${POLICY}"
-                     1 inprocess:)
-    add_test(NAME    "call/on-error=${POLICY}"
-             COMMAND "${MAIN_EXECUTABLE}" call
-                     --debug --on-error "${POLICY}"
-                     --no-wait
-                     "inprocess:/foo/bar(1)")
-    add_test(NAME    "bridge/on-error=${POLICY}"
-            COMMAND  "${MAIN_EXECUTABLE}" bridge
-                     --debug --on-error "${POLICY}"
-                     --eval "${EXIT_AFTER_THREE_SECONDS}"
-                     "inprocess:/foo -> inprocess:/bar")
+    tools_test("logger" "on-error=${POLICY}"
+               --debug --on-error "${POLICY}"
+               --eval "${EXIT_AFTER_THREE_SECONDS}"
+               inprocess:)
+    tools_test("send" "on-error=${POLICY}"
+               --debug --on-error "${POLICY}"
+               1 inprocess:)
+    tools_test("call" "on-error=${POLICY}"
+               --debug --on-error "${POLICY}"
+               --no-wait
+               "inprocess:/foo/bar(1)")
+    tools_test("bridge" "on-error=${POLICY}"
+               --debug --on-error "${POLICY}"
+               --eval "${EXIT_AFTER_THREE_SECONDS}"
+               "inprocess:/foo -> inprocess:/bar")
 endforeach()
 
 # IDL loading and error policies for logger, send, call and bridge
 # binaries.
 function(idl_tests SUFFIX OPTIONS)
-    add_test(NAME   "logger/${SUFFIX}"
-             COMMAND "${MAIN_EXECUTABLE}" logger
-                     --debug
-                     ${OPTIONS}
-                     --eval "${EXIT_AFTER_THREE_SECONDS}"
-                     inprocess:)
-    add_test(NAME   "send/${SUFFIX}"
-             COMMAND "${MAIN_EXECUTABLE}" send
-                     --debug
-                     ${OPTIONS}
-                     1 inprocess:)
-    add_test(NAME   "call/${SUFFIX}"
-             COMMAND "${MAIN_EXECUTABLE}" call
-                     --debug
-                     ${OPTIONS}
-                     --no-wait
-                     "inprocess:/foo/bar(1)")
-    add_test(NAME   "bridge/${SUFFIX}"
-             COMMAND "${MAIN_EXECUTABLE}" bridge
-                     --debug
-                     ${OPTIONS}
-                     --eval "${EXIT_AFTER_THREE_SECONDS}"
-                     "inprocess:/foo -> inprocess:/bar")
+    tools_test("logger" "${SUFFIX}"
+               --debug
+               ${OPTIONS}
+               --eval "${EXIT_AFTER_THREE_SECONDS}"
+               inprocess:)
+    tools_test("send" "${SUFFIX}"
+               --debug
+               ${OPTIONS}
+               1 inprocess:)
+    tools_test("call" "${SUFFIX}"
+               --debug
+               ${OPTIONS}
+               --no-wait
+               "inprocess:/foo/bar(1)")
+    tools_test("bridge" "${SUFFIX}"
+               --debug
+               ${OPTIONS}
+               --eval "${EXIT_AFTER_THREE_SECONDS}"
+               "inprocess:/foo -> inprocess:/bar")
 endfunction()
 
 idl_tests(idl-path/on-error=contiue "--on-error=continue;--idl-path;no-such-directory")
@@ -325,17 +323,13 @@ idl_tests(load-idl/simple           "--load-idl=${CMAKE_SOURCE_DIR}/test/data/te
 idl_tests(load-idl/crlf             "--load-idl=${CMAKE_SOURCE_DIR}/test/data/test/CRLF.proto")
 idl_tests(on-demand-idl-loading     "--idl-path=${CMAKE_SOURCE_DIR}/test/data/;--on-demand-idl-loading=blocking")
 
-add_test(NAME   "send/protocol-buffer-payload"
-         COMMAND "${MAIN_EXECUTABLE}" send
-         --debug
-         --on-demand-idl-loading=blocking --idl-path=${CMAKE_SOURCE_DIR}/test/data/
-         "pb:.test.Simple:{data:\"foo\"}" inprocess:)
-add_test(NAME   "call/protocol-buffer-payload"
-         COMMAND "${MAIN_EXECUTABLE}" call
-                 --debug
-                 --on-demand-idl-loading=blocking --idl-path=${CMAKE_SOURCE_DIR}/test/data/
-                 --no-wait
-                 "inprocess:/foo/bar(pb:.test.Simple:{data:\"foo\"})")
+tools_test("send" "protocol-buffer-payload" --debug
+           --on-demand-idl-loading=blocking --idl-path=${CMAKE_SOURCE_DIR}/test/data/
+           "pb:.test.Simple:{data:\"foo\"}" inprocess:)
+tools_test("call" "protocol-buffer-payload" --debug
+           --on-demand-idl-loading=blocking --idl-path=${CMAKE_SOURCE_DIR}/test/data/
+           --no-wait
+           "inprocess:/foo/bar(pb:.test.Simple:{data:\"foo\"})")
 
 # Event meta-data specifications for send binary.
 foreach(ARG "--method=foo"
@@ -346,14 +340,12 @@ foreach(ARG "--method=foo"
             "--timestamp=foo=2013-03-27"
             "--cause=12345678-1234-1234-1234-567899999999:1")
     string(REGEX REPLACE "[- ]" "" CLEAN_ARG "${ARG}")
-    add_test(NAME   "send/meta-data/${CLEAN_ARG}"
-             COMMAND "${MAIN_EXECUTABLE}" send
-                     --debug
-                     ${ARG} 1 inprocess:)
+    tools_test("send" "meta-data/${CLEAN_ARG}" --debug
+               ${ARG} 1 inprocess:)
 endforeach()
 
 # Payload specifications for call and send binaries.
-foreach(PAYLOAD ""
+foreach(PAYLOAD "<empty>"
                 "true"
                 "false"
                 "\"string\""
@@ -367,43 +359,30 @@ foreach(PAYLOAD ""
                 "pb:.rsb.protocol.Notification:{data:\"\\\\000\"}"
                 "pb:.rsb.protocol.Notification:{event_id:{sequence_number:1}}")
     string(REGEX REPLACE "[- #]" "" CLEAN_PAYLOAD "${PAYLOAD}")
-    add_test(NAME   "send/payload/${CLEAN_PAYLOAD}"
-             COMMAND "${MAIN_EXECUTABLE}" send
-                     --debug
-                     "${PAYLOAD}" inprocess:)
-    add_test(NAME   "call/payload/${CLEAN_PAYLOAD}"
-             COMMAND "${MAIN_EXECUTABLE}" call
-                     --debug
-                     --no-wait
-                     "inprocess:/foo/bar(${PAYLOAD})")
+    tools_test("send" "payload/${CLEAN_PAYLOAD}" --debug
+               "${PAYLOAD}" inprocess:)
+    tools_test("call" "payload/${CLEAN_PAYLOAD}" --debug
+               --no-wait "inprocess:/foo/bar(${PAYLOAD})")
 endforeach()
 
 # Multiple URIs, queue capacity and stop-after for logger
-add_test(NAME    "logger/multiple-uris"
-         COMMAND "${MAIN_EXECUTABLE}" logger
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 inprocess:/foo inprocess:/bar)
-add_test(NAME    "logger/queue-capacity"
-         COMMAND "${MAIN_EXECUTABLE}" logger
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 --max-queued-events 1
-                 inprocess:/foo)
-add_test(NAME    "logger/stop-after"
-         COMMAND "${MAIN_EXECUTABLE}" logger
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 --stop-after 10
-                 inprocess:/foo)
+tools_test("logger" "multiple-uris" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           inprocess:/foo inprocess:/bar)
+tools_test("logger" "queue-capacity" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           --max-queued-events 1
+           inprocess:/foo)
+tools_test("logger" "stop-after" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           --stop-after 10
+           inprocess:/foo)
 
 # Filters for logger
-add_test(NAME    "logger/filter"
-         COMMAND "${MAIN_EXECUTABLE}" logger
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 --filter "scope :scope \"/foo\""
-                 inprocess:/)
+tools_test("logger" "filter" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           --filter "scope :scope \"/foo\""
+           inprocess:/)
 
 # All styles for logger and call binaries.
 # TODO: add these:
@@ -415,22 +394,18 @@ foreach(STYLE discard meta-data payload detailed
               monitor monitor/scope monitor/origin monitor/type monitor/size
               timeline/scope timeline/origin
               json)
-    add_test(NAME    "logger/style=${STYLE}"
-             COMMAND "${MAIN_EXECUTABLE}" logger
-                     --debug --style "${STYLE}"
-                     --eval "${SEND_EVENT_AFTER_TWO_SECONDS}"
-                     --eval "${EXIT_AFTER_THREE_SECONDS}"
-                     inprocess:)
-    add_test(NAME   "call/style=${STYLE}/no-wait"
-            COMMAND "${MAIN_EXECUTABLE}" call
-                    --debug --style "${STYLE}"
-                    --no-wait
-                    "inprocess:/foo/bar(1)")
-    add_test(NAME   "call/style=${STYLE}/wait"
-            COMMAND "${MAIN_EXECUTABLE}" call
-                    --debug --style "${STYLE}"
-                    --eval "(progn (bt:make-thread (lambda () (rsb:with-participant (s :local-server \"inprocess:/foo\") (rsb.patterns.request-reply:with-methods (s) ((\"bar\" (x integer) x)) (sleep 2))))) (sleep 1))"
-                    "inprocess:/foo/bar(1)")
+    tools_test("logger" "style=${STYLE}" --debug
+               --style "${STYLE}"
+               --eval "${SEND_EVENT_AFTER_TWO_SECONDS}"
+               --eval "${EXIT_AFTER_THREE_SECONDS}"
+               inprocess:)
+    tools_test("call" "style=${STYLE}/no-wait" --debug
+               --style "${STYLE}"
+               --no-wait "inprocess:/foo/bar(1)")
+    tools_test("call" "style=${STYLE}/wait" --debug
+               --style "${STYLE}"
+               --eval "(progn (bt:make-thread (lambda () (rsb:with-participant (s :local-server \"inprocess:/foo\") (rsb.patterns.request-reply:with-methods (s) ((\"bar\" (x integer) x)) (sleep 2))))) (sleep 1))"
+               "inprocess:/foo/bar(1)")
 endforeach()
 
 # Introspection tests
@@ -445,56 +420,39 @@ foreach(URLS "inprocess:" "inprocess:;inprocess:/")
       set(EXIT "--eval;${EXIT_AFTER_THREE_SECONDS}")
     endif()
 
-    add_test(NAME    "introspect/${CLEAN_URLS}/${CLEAN_STYLE}"
-             COMMAND "${MAIN_EXECUTABLE}" introspect
-                     --debug
-                     ${EXIT} ${STYLE} ${URLS})
+    tools_test("introspect" "${CLEAN_URLS}/${CLEAN_STYLE}" --debug
+               ${EXIT} ${STYLE} ${URLS})
   endforeach()
 endforeach()
 
 # Bridge tests
-add_test(NAME    "bridge/smoke/unidirectional"
-         COMMAND "${MAIN_EXECUTABLE}" bridge
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 "inprocess:/foo -> inprocess:/bar")
-add_test(NAME    "bridge/smoke/transform"
-         COMMAND "${MAIN_EXECUTABLE}" bridge
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 "inprocess:/foo -> /prefix-scope :prefix \"/baz\"/ inprocess:/bar")
-add_test(NAME    "bridge/smoke/bidirectional"
-         COMMAND "${MAIN_EXECUTABLE}" bridge
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 "inprocess:/foo <-> inprocess:/bar")
+tools_test("bridge" "smoke/unidirectional" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           "inprocess:/foo -> inprocess:/bar")
+tools_test("bridge" "smoke/transform" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           "inprocess:/foo -> /prefix-scope :prefix \"/baz\"/ inprocess:/bar")
+tools_test("bridge" "smoke/bidirectional" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           "inprocess:/foo <-> inprocess:/bar")
 
 # Server test
-add_test(NAME    "server/tcp/smoke"
-         COMMAND "${MAIN_EXECUTABLE}" server
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 "socket://localhost:0?portfile=-")
-add_test(NAME    "server/tcp/two-ports"
-         COMMAND "${MAIN_EXECUTABLE}" server
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 "socket://localhost:0?portfile=-" "tcp-socket://localhost:0?portfile=-")
-add_test(NAME    "server/unix/smoke"
-         COMMAND "${MAIN_EXECUTABLE}" server
-                 --debug
-                 --eval "${EXIT_AFTER_THREE_SECONDS}"
-                 "unix:?name=socket")
+tools_test("server" "tcp/smoke" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           "socket://localhost:0?portfile=-")
+tools_test("server" "tcp/two-ports" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           "socket://localhost:0?portfile=-" "tcp-socket://localhost:0?portfile=-")
+tools_test("server" "unix/smoke" --debug
+           --eval "${EXIT_AFTER_THREE_SECONDS}"
+           "unix:?name=socket")
 
 # redump test
 add_test("redump/simple"
          sh -c "cp \"${MAIN_EXECUTABLE}\" ./temp && ./temp redump")
-add_test(NAME    "redump/name"
-         COMMAND "${MAIN_EXECUTABLE}" redump redumped)
-add_test(NAME    "redump/compress"
-         COMMAND "${MAIN_EXECUTABLE}" redump redumped-compress compress)
-add_test(NAME    "redump/static"
-         COMMAND "${MAIN_EXECUTABLE}" redump redumped-static static)
+tools_test("redump" "name"     redumped)
+tools_test("redump" "compress" redumped-compress compress)
+tools_test("redump" "static"   redumped-static static)
 
 # Install binary
 install(CODE "message(STATUS \"Configuring Lisp image ${MAIN_NAME} for installation\")
