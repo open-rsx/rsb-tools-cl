@@ -364,7 +364,7 @@ foreach(PAYLOAD ""
                 "#P\"${CMAKE_CURRENT_LIST_FILE}\":utf-8"
                 "#P\"${CMAKE_CURRENT_LIST_FILE}\":binary"
                 "pb:.rsb.protocol.Notification:{}"
-                "pb:.rsb.protocol.Notification:{data:\"\\000\"}"
+                "pb:.rsb.protocol.Notification:{data:\"\\\\000\"}"
                 "pb:.rsb.protocol.Notification:{event_id:{sequence_number:1}}")
     string(REGEX REPLACE "[- #]" "" CLEAN_PAYLOAD "${PAYLOAD}")
     add_test(NAME   "send/payload/${CLEAN_PAYLOAD}"
