@@ -1,6 +1,6 @@
 ;;;; event.lisp --- Event construction utilities.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -70,7 +70,10 @@
 
       ;; Otherwise try to `cl:read', potentially signaling an error.
       (t
-       (let+ (((&values value consumed) (read-from-string spec)))
+       (let+ (((&values value consumed)
+               (with-standard-io-syntax
+                 (let ((*read-default-float-format* 'double-float))
+                   (read-from-string spec)))))
          (unless (= consumed (length spec))
            (error "~@<Junk at end of argument string: ~S.~@:>"
                   (subseq spec consumed)))
