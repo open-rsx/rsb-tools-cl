@@ -244,7 +244,7 @@ function(tools_test COMMAND NAME)
         set(SHELL_COMMAND "${SHELL_COMMAND} '${WORD}'")
     endforeach()
     add_test(NAME    "${COMMAND}/${NAME}"
-             COMMAND sh -c "${SHELL_COMMAND}")
+             COMMAND sh -c "RSB_CONFIG_FILES=%pwd ${SHELL_COMMAND}")
 endfunction()
 
 # Lift-based tests for formatting and stats systems.
