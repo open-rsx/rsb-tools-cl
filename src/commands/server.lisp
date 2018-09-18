@@ -1,6 +1,6 @@
 ;;;; server.lisp --- Implementation of the server command.
 ;;;;
-;;;; Copyright (C) 2016, 2017 Jan Moringen
+;;;; Copyright (C) 2016, 2017, 2018 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -61,13 +61,16 @@
               (mapc #'check-transport all-options)))))
     (etypecase scope-or-uri
       (puri:uri
-       (let+ (((&values scope options)
-               (rsb:uri->scope-and-options scope-or-uri)))
+       (let+ ((query (puri:uri-query scope-or-uri))
+              (query (if (and query (search "server=" query))
+                         query
+                         (format nil "~A~@[&~A~]"
+                                 "server=1" (puri:uri-query scope-or-uri))))
+              (uri   (puri:copy-uri scope-or-uri :path "/" :query query))
+              ((&values scope options) (rsb:uri->scope-and-options uri)))
          (check-scope scope)
          (check-options options)
-         (let ((query (format nil "~A~@[&~A~]"
-                              "server=1" (puri:uri-query scope-or-uri))))
-           (puri:copy-uri scope-or-uri :path "/" :query query))))
+         uri))
       (scope
        (check-scope scope-or-uri)
        (check-options '())
