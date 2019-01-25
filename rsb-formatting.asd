@@ -1,10 +1,10 @@
-;;;; cl-rsb-formatting.asd --- Formatting functions for cl-rsb-based utilities.
+;;;; rsb-formatting.asd --- Formatting functions for rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-formatting-system
+(cl:defpackage #:rsb-formatting-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-formatting-system)
+(cl:in-package #:rsb-formatting-system)
 
 ;;; Version stuff
 
@@ -66,7 +66,7 @@ See `version/list' for details on keyword parameters."
 
 ;;; System definition
 
-(defsystem :cl-rsb-formatting
+(defsystem :rsb-formatting
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
@@ -83,7 +83,7 @@ RSB-related systems."
                 (:version :utilities.binary-dump         "0.1")
                 (:version :utilities.print-tree          "0.1")
 
-                (:version :cl-rsb                        #.(version/string :revision? nil))
+                (:version :rsb                           #.(version/string :revision? nil))
                 (:version :rsb-protocol                  #.(version/string :revision? nil))  ; for payload-collection
                 (:version :rsb-transport-socket          #.(version/string :revision? nil))  ; likewise
                 (:version :rsb-introspection             #.(version/string :revision? nil)))
@@ -145,26 +145,26 @@ RSB-related systems."
                               (:file       "print")
                               (:file       "styles"))))
 
-  :in-order-to ((test-op (test-op :cl-rsb-formatting/test))))
+  :in-order-to ((test-op (test-op :rsb-formatting/test))))
 
-;;; System definition for tests of the cl-rsb-formatting system
+;;; System definition for tests of the rsb-formatting system
 
-(defsystem :cl-rsb-formatting/test
+(defsystem :rsb-formatting/test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "This system contains tests for the cl-rsb-formatting
+  :description "This system contains tests for the rsb-formatting
 system."
   :depends-on  (:cl-ppcre
 
-                (:version :lift                  "1.7.1")
+                (:version :lift                "1.7.1")
 
-                (:version :cl-rsb-formatting     #.(version/string))
-                (:version :cl-rsb-formatting-png #.(version/string))
-                (:version :rsb-formatting-json   #.(version/string))
+                (:version :rsb-formatting      #.(version/string))
+                (:version :rsb-formatting-png  #.(version/string))
+                (:version :rsb-formatting-json #.(version/string))
 
-                (:version :cl-rsb/test           #.(version/string :revision? nil)))
+                (:version :rsb/test            #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting-early"
                  :pathname   "test/formatting"
@@ -200,7 +200,7 @@ system."
                               (:file       "json")))))
 
 (defmethod perform ((operation test-op)
-                    (component (eql (find-system :cl-rsb-formatting/test))))
+                    (component (eql (find-system :rsb-formatting/test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
            :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
                             "lift-rsb-formatting.config")))

@@ -1,6 +1,6 @@
 # CMakeLists.txt --- CMake build description file.
 #
-# Copyright (C) 2011-2018 Jan Moringen
+# Copyright (C) 2011-2019 Jan Moringen
 #
 # Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -130,7 +130,7 @@ endif()
 
 option(WITH_PNG_SUPPORT "Build with support for PNG image payloads." ON)
 if(WITH_PNG_SUPPORT)
-    add_silent_load(cl-rsb-formatting-png)
+    add_silent_load(rsb-formatting-png)
 endif()
 option(WITH_JSON_SUPPORT "Build with support for JSON formatting." ON)
 if(WITH_JSON_SUPPORT)
@@ -179,7 +179,7 @@ endfunction()
 # Project definition (version is grovelled from asd system definition,
 # possibly in combination with version.sexp file written below).
 # C compiler is needed for CLON's stream-width determination feature
-set(SYSTEM_NAME "cl-rsb-tools-logger")
+set(SYSTEM_NAME "rsb-tools-logger")
 project(rsb-tools "C")
 
 # Determine at least major and minor version components.
@@ -216,7 +216,7 @@ message(STATUS "Project is ${CMAKE_PROJECT_NAME} (${VERSION_FROM_LISP})")
 
 # Create binary.
 set(MAIN_NAME        "tools")
-set(MAIN_SYSTEM_NAME "cl-rsb-tools-main")
+set(MAIN_SYSTEM_NAME "rsb-tools-main")
 set(MAIN_EXECUTABLE  "${CMAKE_CURRENT_BINARY_DIR}/${MAIN_NAME}${CMAKE_EXECUTABLE_SUFFIX}")
 set(TOOLS            info logger call send introspect web bridge server)
 set(LISP_INIT "${LISP_INIT_BASE} ${LISP_LOAD}")
@@ -248,7 +248,7 @@ function(tools_test COMMAND NAME)
 endfunction()
 
 # Lift-based tests for formatting and stats systems.
-foreach(SYSTEM rsb-tools-common cl-rsb-formatting cl-rsb-stats
+foreach(SYSTEM rsb-tools-common rsb-formatting rsb-stats
                rsb-tools-commands rsb-tools-commands-web)
     set(LISP_INIT "${LISP_INIT_BASE}")
     configure_lisp_redirect("test-${SYSTEM}"

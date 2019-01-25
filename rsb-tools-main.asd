@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-logger.asd --- RSB Logging utility based cl-rsb.
+;;;; rsb-tools-main.asd --- System definition for main binary of rsb-tools.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-logger-system
+(cl:defpackage #:rsb-tools-main-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-logger-system)
+(cl:in-package #:rsb-tools-main-system)
 
 ;;; Version stuff
 
@@ -66,32 +66,40 @@ See `version/list' for details on keyword parameters."
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-logger
+(defsystem :rsb-tools-main
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "A simple utility for receiving and displaying events
-exchanged on a given RSB bus or channel."
-  :depends-on  (:alexandria
-                :let-plus
-                :iterate
-                (:version :lparallel                     "2.1.2")
-                (:version :log4cl                        "1.1.1")
+  :description "Main program and dispatch function for all rsb tools."
+  :depends-on  ((:version :asdf                 "3.1.5") ; for register-immutable-system
 
-                :net.didierverna.clon
+                (:version :rsb-introspection    #.(version/string :revision? nil))
 
-                (:version :cl-rsb                        #.(version/string :revision? nil))
+                (:version :rsb-tools-info       #.(version/string))
+                (:version :rsb-tools-logger     #.(version/string))
+                (:version :rsb-tools-call       #.(version/string))
+                (:version :rsb-tools-send       #.(version/string))
+                (:version :rsb-tools-introspect #.(version/string))
+                (:version :rsb-tools-web        #.(version/string))
+                (:version :rsb-tools-bridge     #.(version/string))
+                (:version :rsb-tools-server     #.(version/string))
 
-                (:version :rsb-tools-common              #.(version/string))
-                (:version :cl-rsb-stats                  #.(version/string))
-                (:version :rsb-formatting-and-rsb-common #.(version/string))
-                (:version :rsb-formatting-and-rsb-stats  #.(version/string))
-                (:version :rsb-tools-commands            #.(version/string)))
+                (:version :rsb-tools-commands   #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "logger"
+  :components  ((:module     "main"
                  :components ((:file       "package")
-                              (:file       "help"
-                               :depends-on ("package"))
                               (:file       "main"
-                               :depends-on ("package" "help"))))))
+                               :depends-on ("package")))))
+  :entry-point "rsb.tools.main:main"
+  :output-files (program-op (operation component)
+                  (let* ((output/relative #-win32 "tools" #+win32 "tools.exe")
+                         (output/absolute (uiop:ensure-absolute-pathname
+                                           output/relative *default-pathname-defaults*)))
+                    (values (list output/absolute) t))))
+
+(defmethod perform :before ((operation program-op)
+                            (component (eql (find-system :rsb-tools-main))))
+  (mapc (lambda (system)
+          (uiop:symbol-call '#:asdf '#:register-immutable-system system))
+        (already-loaded-systems)))

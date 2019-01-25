@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-server.asd --- Standalone RSB server command.
+;;;; rsb-tools-info.asd --- RSB information query utility.
 ;;;;
-;;;; Copyright (C) 2016 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-server-system
+(cl:defpackage #:rsb-tools-info-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-server-system)
+(cl:in-package #:rsb-tools-info-system)
 
 ;;; Version stuff
 
@@ -66,23 +66,26 @@ See `version/list' for details on keyword parameters."
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-server
+(defsystem :rsb-tools-info
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "A standalone socket transport server."
+  :description "A simple utility for infoing remote methods exposed
+via RSB."
   :depends-on  (:alexandria
                 :let-plus
 
                 :net.didierverna.clon
 
-                (:version :cl-rsb             #.(version/string :revision? nil))
+                (:version :rsb                #.(version/string :revision? nil))
 
                 (:version :rsb-tools-common   #.(version/string))
+                (:version :rsb-formatting     #.(version/string))
                 (:version :rsb-tools-commands #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "server"
-                 :serial     t
+  :components  ((:module     "info"
                  :components ((:file       "package")
-                              (:file       "main")))))
+
+                              (:file       "main"
+                               :depends-on ("package"))))))

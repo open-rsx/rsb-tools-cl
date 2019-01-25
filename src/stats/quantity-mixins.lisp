@@ -1,6 +1,6 @@
 ;;;; quantity-mixins.lisp --- Mixin classes for quantity classes.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -156,7 +156,7 @@
     ;; When enough data has been collected, apply the filter function
     ;; and return filtered data.
     (when (>= (length values) order)
-      (locally (declare #.cl-rsb-system:+optimization-fast+unsafe+)
+      (locally (declare #.rsb:+optimization-fast+unsafe+)
         (let ((cell (make-list order)))
           (declare (dynamic-extent cell))
           (iter (for (the fixnum i) to (- (length values) order))

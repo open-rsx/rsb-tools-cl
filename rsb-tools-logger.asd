@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-introspect.asd --- Introspection utility based on rsb-introspection.
+;;;; rsb-tools-logger.asd --- RSB Logging utility based rsb.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-introspect-system
+(cl:defpackage #:rsb-tools-logger-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-introspect-system)
+(cl:in-package #:rsb-tools-logger-system)
 
 ;;; Version stuff
 
@@ -40,13 +40,13 @@
                      (revision? t)
                      commit?)
   "Return a version of the form (MAJOR MINOR [REVISION [COMMIT]])
-   where REVISION and COMMIT are optional.
+where REVISION and COMMIT are optional.
 
-   REVISION? controls whether REVISION should be included. Default
-   behavior is to include REVISION.
+REVISION? controls whether REVISION should be included. Default
+behavior is to include REVISION.
 
-   COMMIT? controls whether COMMIT should be included. Default
-   behavior is to not include COMMIT."
+COMMIT? controls whether COMMIT should be included. Default behavior
+is to not include COMMIT."
   (append (list +version-major+ +version-minor+)
           (when revision? (list +version-revision+))
           (when (and commit? +version-commit+)
@@ -57,37 +57,41 @@
                        revision?
                        commit?)
   "Return a version string of the form
-   \"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
-   optional.
+\"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
+optional.
 
-   See `version/list' for details on keyword parameters."
+See `version/list' for details on keyword parameters."
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-introspect
+(defsystem :rsb-tools-logger
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "A tool for introspecting hosts, processes and participants in RSB systems."
+  :description "A simple utility for receiving and displaying events
+exchanged on a given RSB bus or channel."
   :depends-on  (:alexandria
                 :let-plus
                 :iterate
+                (:version :lparallel                     "2.1.2")
                 (:version :log4cl                        "1.1.1")
 
                 :net.didierverna.clon
 
-                (:version :cl-rsb                        #.(version/string :revision? nil))
-                (:version :rsb-introspection             #.(version/string :revision? nil))
+                (:version :rsb                           #.(version/string :revision? nil))
 
                 (:version :rsb-tools-common              #.(version/string))
-                (:version :cl-rsb-formatting             #.(version/string))
+                (:version :rsb-stats                     #.(version/string))
                 (:version :rsb-formatting-and-rsb-common #.(version/string))
+                (:version :rsb-formatting-and-rsb-stats  #.(version/string))
                 (:version :rsb-tools-commands            #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "introspect"
-                 :serial     t
+  :components  ((:module     "logger"
                  :components ((:file       "package")
-                              (:file       "main")))))
+                              (:file       "help"
+                               :depends-on ("package"))
+                              (:file       "main"
+                               :depends-on ("package" "help"))))))

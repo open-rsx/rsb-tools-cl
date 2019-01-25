@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the info tool.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -60,7 +60,7 @@
    :commandline     (list* (concatenate
                             'string (namestring program-pathname) " info")
                            args)
-   :version         (cl-rsb-tools-info-system:version/list :commit? t)
+   :version         (rsb-tools-info-system:version/list :commit? t)
    :update-synopsis #'update-synopsis
    :return          (lambda () (return-from main)))
   (enable-swank-on-signal)

@@ -1,12 +1,12 @@
-;;;; rsb-formatting-and-rsb-stats.asd --- Formatting styles based on cl-rsb-stats.
+;;;; rsb-formatting-and-rsb-stats.asd --- Formatting styles based on rsb-stats.
 ;;;;
-;;;; Copyright (C) 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2013-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(load (merge-pathnames "cl-rsb-formatting.asd" *load-pathname*))
+(load (merge-pathnames "rsb-formatting.asd" *load-pathname*))
 
-(cl:in-package #:cl-rsb-formatting-system)
+(cl:in-package #:rsb-formatting-system)
 
 ;;; System definition
 
@@ -16,10 +16,10 @@
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
   :description "This system adds a column-based event formatting
-style, the columns of which are quantities defined in the cl-rsb-stats
+style, the columns of which are quantities defined in the rsb-stats
 system."
-  :depends-on  ((:version :cl-rsb-formatting #.(version/string))
-                (:version :cl-rsb-stats      #.(version/string)))
+  :depends-on  ((:version :rsb-formatting #.(version/string))
+                (:version :rsb-stats      #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "formatting"
                  :pathname   "src/formatting"

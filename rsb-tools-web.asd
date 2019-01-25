@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-send.asd --- RSB sending utility based on cl-rsb.
+;;;; rsb-tools-web.asd --- Webion utility based on rsb-webion.
 ;;;;
-;;;; Copyright (C) 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-send-system
+(cl:defpackage #:rsb-tools-web-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-send-system)
+(cl:in-package #:rsb-tools-web-system)
 
 ;;; Version stuff
 
@@ -40,13 +40,13 @@
                      (revision? t)
                      commit?)
   "Return a version of the form (MAJOR MINOR [REVISION [COMMIT]])
-where REVISION and COMMIT are optional.
+   where REVISION and COMMIT are optional.
 
-REVISION? controls whether REVISION should be included. Default
-behavior is to include REVISION.
+   REVISION? controls whether REVISION should be included. Default
+   behavior is to include REVISION.
 
-COMMIT? controls whether COMMIT should be included. Default behavior
-is to not include COMMIT."
+   COMMIT? controls whether COMMIT should be included. Default
+   behavior is to not include COMMIT."
   (append (list +version-major+ +version-minor+)
           (when revision? (list +version-revision+))
           (when (and commit? +version-commit+)
@@ -57,37 +57,30 @@ is to not include COMMIT."
                        revision?
                        commit?)
   "Return a version string of the form
-\"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
-optional.
+   \"MAJOR.MINOR[.REVISION[-.COMMIT]]\" where REVISION and COMMIT are
+   optional.
 
-See `version/list' for details on keyword parameters."
+   See `version/list' for details on keyword parameters."
   (declare (ignore revision? commit?))
   (format nil "~{~A.~A~^.~A~^-~A~}" (apply #'version/list args)))
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-send
+(defsystem :rsb-tools-web
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "A simple utility for sending remote methods exposed
-via RSB."
+  :description "A tool for serving system information (e.g. introspection) via HTTP."
   :depends-on  (:alexandria
-                :let-plus
-                :iterate
-                (:version :log4cl             "1.1.1")
 
-                :cl-ppcre
                 :net.didierverna.clon
 
-                (:version :cl-rsb             #.(version/string :revision? nil))
-
-                (:version :rsb-tools-common   #.(version/string))
-                (:version :rsb-tools-commands #.(version/string)))
+                (:version :rsb-tools-common       #.(version/string))
+                (:version :rsb-tools-commands     #.(version/string))
+                (:version :rsb-tools-commands-web #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "send"
+  :components  ((:module     "web"
+                 :serial     t
                  :components ((:file       "package")
-
-                              (:file       "main"
-                               :depends-on ("package"))))))
+                              (:file       "main")))))

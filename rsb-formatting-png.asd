@@ -1,18 +1,18 @@
-;;;; cl-rsb-formatting-png.asd --- Formatting support for PNG payloads.
+;;;; rsb-formatting-png.asd --- Formatting support for PNG payloads.
 ;;;;
-;;;; Copyright (C) 2013, 2014, 2016 Jan Moringen
+;;;; Copyright (C) 2013-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 #.(progn
-    (load (merge-pathnames "cl-rsb-formatting.asd" *load-truename*))
+    (load (merge-pathnames "rsb-formatting.asd" *load-truename*))
     (values))
 
-(cl:in-package #:cl-rsb-formatting-system)
+(cl:in-package #:rsb-formatting-system)
 
 ;;; System definition
 
-(defsystem :cl-rsb-formatting-png
+(defsystem :rsb-formatting-png
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
@@ -24,10 +24,10 @@
 
                 :zpng
 
-                (:version :cl-rsb-formatting #.(version/string :revision? nil)))
+                (:version :rsb-formatting #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "formatting"
                  :pathname   "src/formatting"
                  :components ((:file       "payload-image-png"))))
 
-  :in-order-to ((test-op (test-op :cl-rsb-formatting/test))))
+  :in-order-to ((test-op (test-op :rsb-formatting/test))))

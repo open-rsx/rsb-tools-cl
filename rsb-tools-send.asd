@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-bridge.asd --- RSB Logging utility based cl-rsb.
+;;;; rsb-tools-send.asd --- RSB sending utility based on rsb.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2012-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-bridge-system
+(cl:defpackage #:rsb-tools-send-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-bridge-system)
+(cl:in-package #:rsb-tools-send-system)
 
 ;;; Version stuff
 
@@ -66,27 +66,28 @@ See `version/list' for details on keyword parameters."
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-bridge
+(defsystem :rsb-tools-send
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "A tool for forwarding events between RSB buses."
+  :description "A simple utility for sending remote methods exposed
+via RSB."
   :depends-on  (:alexandria
                 :let-plus
                 :iterate
-                (:version :lparallel          "2.1.2")
                 (:version :log4cl             "1.1.1")
 
+                :cl-ppcre
                 :net.didierverna.clon
 
-                (:version :cl-rsb             #.(version/string :revision? nil))
+                (:version :rsb                #.(version/string :revision? nil))
 
                 (:version :rsb-tools-common   #.(version/string))
                 (:version :rsb-tools-commands #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "bridge"
-                 :serial     t
+  :components  ((:module     "send"
                  :components ((:file       "package")
-                              (:file       "help")
-                              (:file       "main")))))
+
+                              (:file       "main"
+                               :depends-on ("package"))))))

@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the web tool.
 ;;;;
-;;;; Copyright (C) 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2015, 2016, 2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -151,7 +151,7 @@ i.e. at least one of the \"data\" and \"error\" properties is present. Both can 
     (setf *configuration* (options-from-default-sources))
     (process-commandline-options
      :commandline     (list* program-name args)
-     :version         (cl-rsb-tools-web-system:version/list :commit? t)
+     :version         (rsb-tools-web-system:version/list :commit? t)
      :update-synopsis (curry #'update-synopsis :program-name program-name)
      :return          (lambda () (return-from main)))
     (enable-swank-on-signal))

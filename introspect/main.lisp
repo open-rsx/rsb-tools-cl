@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the introspect tool.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -101,7 +101,7 @@ In most systems, all replies should arrive within a few milliseconds. However, c
     (setf *configuration* (options-from-default-sources))
     (process-commandline-options
      :commandline     (list* program-name args)
-     :version         (cl-rsb-tools-introspect-system:version/list :commit? t)
+     :version         (rsb-tools-introspect-system:version/list :commit? t)
      :update-synopsis (curry #'update-synopsis :program-name program-name)
      :return          (lambda () (return-from main)))
     (enable-swank-on-signal))

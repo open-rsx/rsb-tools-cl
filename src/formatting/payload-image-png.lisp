@@ -1,6 +1,6 @@
 ;;;; style-image-png.lisp --- Format event payloads as PNG images.
 ;;;;
-;;;; Copyright (C) 2012-2017 Jan Moringen
+;;;; Copyright (C) 2012-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -72,7 +72,7 @@
                        `((and (eq ,pixel-format ,pixel-format-form)
                               (eq ,depth        ,depth-form))
                          (locally
-                             (declare #.cl-rsb-system:+optimization-fast+unsafe+)
+                             (declare #.rsb:+optimization-fast+unsafe+)
                            (let ((row-fixup (- (* ,bytes-per-pixel in-width)
                                                (* ,bytes-per-pixel scale-x ,units-per-row))))
                              (iter outer

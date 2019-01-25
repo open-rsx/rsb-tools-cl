@@ -1,6 +1,6 @@
 ;;;; help.lisp --- Automatic generation of help strings.
 ;;;;
-;;;; Copyright (C) 2011-2017 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -173,7 +173,7 @@
                     `((,(lisp-implementation-type)
                         ,(lisp-implementation-version))))
                   (when include-rsb-version?
-                    `(("RSB" ,(cl-rsb-system:version/list :commit? t))))
+                    `(("RSB" ,(rsb-system:version/list :commit? t))))
                   (iter (for (name version) on more-versions :by #'cddr)
                         (collect (list (string name) version)))))
          ;; Compute the common column for all versions to be printed

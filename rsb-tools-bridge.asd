@@ -1,10 +1,10 @@
-;;;; cl-rsb-tools-call.asd --- RSB RPC calling utility based on cl-rsb.
+;;;; rsb-tools-bridge.asd --- RSB Logging utility based rsb.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-tools-call-system
+(cl:defpackage #:rsb-tools-bridge-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-tools-call-system)
+(cl:in-package #:rsb-tools-bridge-system)
 
 ;;; Version stuff
 
@@ -66,30 +66,27 @@ See `version/list' for details on keyword parameters."
 
 ;;; System definition
 
-(defsystem :cl-rsb-tools-call
+(defsystem :rsb-tools-bridge
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "A simple utility for calling remote methods exposed
-via RSB."
+  :description "A tool for forwarding events between RSB buses."
   :depends-on  (:alexandria
                 :let-plus
                 :iterate
-                (:version :log4cl                        "1.1.1")
+                (:version :lparallel          "2.1.2")
+                (:version :log4cl             "1.1.1")
 
-                :cl-ppcre
                 :net.didierverna.clon
 
-                (:version :cl-rsb                        #.(version/string :revision? nil))
+                (:version :rsb                #.(version/string :revision? nil))
 
-                (:version :rsb-tools-common              #.(version/string))
-                (:version :cl-rsb-formatting             #.(version/string))
-                (:version :rsb-formatting-and-rsb-common #.(version/string))
-                (:version :rsb-tools-commands            #.(version/string)))
+                (:version :rsb-tools-common   #.(version/string))
+                (:version :rsb-tools-commands #.(version/string)))
   :encoding    :utf-8
-  :components  ((:module     "call"
+  :components  ((:module     "bridge"
+                 :serial     t
                  :components ((:file       "package")
-
-                              (:file       "main"
-                               :depends-on ("package"))))))
+                              (:file       "help")
+                              (:file       "main")))))

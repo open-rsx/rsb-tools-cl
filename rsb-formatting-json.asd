@@ -1,14 +1,14 @@
 ;;;; rsb-formatting-json.asd --- Formatting support for JSON payloads.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
 #.(progn
-    (load (merge-pathnames "cl-rsb-formatting.asd" *load-truename*))
+    (load (merge-pathnames "rsb-formatting.asd" *load-truename*))
     (values))
 
-(cl:in-package #:cl-rsb-formatting-system)
+(cl:in-package #:rsb-formatting-system)
 
 ;;; System definitions
 
@@ -27,7 +27,7 @@
                 (:version :rsb-builder                                     #.(version/string :revision? nil))
                 (:version :rsb-model-builder                               #.(version/string :revision? nil))
 
-                (:version :cl-rsb-formatting                               #.(version/string)))
+                (:version :rsb-formatting                                  #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "formatting"
                  :pathname   "src/formatting"
@@ -38,4 +38,4 @@
                  :depends-on ("formatting")
                  :components ((:file       "json"))))
 
-  :in-order-to ((test-op (test-op :cl-rsb-formatting/test))))
+  :in-order-to ((test-op (test-op :rsb-formatting/test))))

@@ -1,6 +1,6 @@
 ;;;; rsb-tools-commands.asd --- System definition for the rsb-tools-commands system.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -79,12 +79,12 @@
                 (:version :architecture.service-provider "0.1")
                 (:version :utilities.print-items         "0.1")
 
-                (:version :cl-rsb                        #.(version/string :revision? nil))
+                (:version :rsb                           #.(version/string :revision? nil))
                 (:version :rsb-patterns-request-reply    #.(version/string :revision? nil))
                 (:version :rsb-model                     #.(version/string :revision? nil)) ; for bridge
 
                 (:version :rsb-tools-common              #.(version/string :revision? nil))
-                (:version :cl-rsb-formatting             #.(version/string)))
+                (:version :rsb-formatting                #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "commands"
                  :pathname   "src/commands"
@@ -126,13 +126,13 @@
   :depends-on  (:alexandria
                 :let-plus
 
-                (:version :lift                   "1.7.1")
+                (:version :lift                 "1.7.1")
 
-                (:version :rsb-transport-socket   #.(version/string :revision? nil))
+                (:version :rsb-transport-socket #.(version/string :revision? nil))
 
-                (:version :rsb-tools-commands     #.(version/string))
+                (:version :rsb-tools-commands   #.(version/string))
 
-                (:version :cl-rsb/test            #.(version/string :revision? nil)))
+                (:version :rsb/test             #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "commands"
                  :pathname   "test/commands"

@@ -1,6 +1,6 @@
 ;;;; rsb-tools-commands-web.asd --- Serve system information over HTTP.
 ;;;;
-;;;; Copyright (C) 2014, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2014-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -27,7 +27,7 @@
 
                 :hunchentoot
 
-                (:version :cl-rsb                              #.(version/string :revision? nil))
+                (:version :rsb                                 #.(version/string :revision? nil))
                 (:version :rsb-introspection                   #.(version/string :revision? nil))
                 (:version :rsb-model-builder                   #.(version/string :revision? nil))
 
@@ -64,7 +64,7 @@
 
                 (:version :rsb-tools-commands-web  #.(version/string))
 
-                (:version :cl-rsb/test             #.(version/string :revision? nil))
+                (:version :rsb/test                #.(version/string :revision? nil))
                 (:version :rsb-tools-commands/test #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "commands"

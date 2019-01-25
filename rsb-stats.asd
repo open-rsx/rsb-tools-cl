@@ -1,10 +1,10 @@
-;;;; cl-rsb-stats.asd --- Stats functions for cl-rsb-based utilities.
+;;;; rsb-stats.asd --- Stats functions for rsb-based utilities.
 ;;;;
-;;;; Copyright (C) 2011-2018 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
-(cl:defpackage #:cl-rsb-stats-system
+(cl:defpackage #:rsb-stats-system
   (:use
    #:cl
    #:asdf)
@@ -13,7 +13,7 @@
    #:version/list
    #:version/string))
 
-(cl:in-package #:cl-rsb-stats-system)
+(cl:in-package #:rsb-stats-system)
 
 ;;; Version stuff
 
@@ -66,7 +66,7 @@ See `version/list' for details on keyword parameters."
 
 ;;; System definition
 
-(defsystem :cl-rsb-stats
+(defsystem :rsb-stats
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
@@ -79,7 +79,7 @@ RSB-related systems."
                 (:version :architecture.service-provider "0.1")
                 :local-time
 
-                (:version :cl-rsb                        #.(version/string :revision? nil)))
+                (:version :rsb                           #.(version/string :revision? nil)))
   :encoding    :utf-8
   :components  ((:module     "stats"
                  :pathname   "src/stats"
@@ -92,22 +92,21 @@ RSB-related systems."
                               (:file       "quantity-mixins")
                               (:file       "quantities"))))
 
-  :in-order-to ((test-op (test-op :cl-rsb-stats/test))))
+  :in-order-to ((test-op (test-op :rsb-stats/test))))
 
-;;; System definition for test of the cl-rsb-stats system
+;;; System definition for test of the rsb-stats system
 
-(defsystem :cl-rsb-stats/test
+(defsystem :rsb-stats/test
   :author      "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :maintainer  "Jan Moringen <jmoringe@techfak.uni-bielefeld.de>"
   :version     #.(version/string)
   :license     "GPLv3" ; see COPYING file for details.
-  :description "This system contains tests for the cl-rsb-stats
-system."
-  :depends-on  ((:version :lift         "1.7.1")
+  :description "This system contains tests for the rsb-stats system."
+  :depends-on  ((:version :lift      "1.7.1")
 
                 :cl-ppcre
 
-                (:version :cl-rsb-stats #.(version/string)))
+                (:version :rsb-stats #.(version/string)))
   :encoding    :utf-8
   :components  ((:module     "stats"
                  :pathname   "test/stats"
@@ -117,7 +116,7 @@ system."
                               (:file       "quantities")))))
 
 (defmethod perform ((operation test-op)
-                    (component (eql (find-system :cl-rsb-stats/test))))
+                    (component (eql (find-system :rsb-stats/test))))
   (funcall (find-symbol "RUN-TESTS" :lift)
            :config (funcall (find-symbol "LIFT-RELATIVE-PATHNAME" :lift)
                             "lift-rsb-stats.config")))

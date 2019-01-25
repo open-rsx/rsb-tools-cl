@@ -1,6 +1,6 @@
 ;;;; main.lisp --- Entry point of the call tool.
 ;;;;
-;;;; Copyright (C) 2011-2016 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -197,7 +197,7 @@
     (setf *configuration* (options-from-default-sources))
     (process-commandline-options
      :commandline     (list* program-name args)
-     :version         (cl-rsb-tools-call-system:version/list :commit? t)
+     :version         (rsb-tools-call-system:version/list :commit? t)
      :update-synopsis (curry #'update-synopsis :program-name program-name)
      :return          (lambda () (return-from main)))
     (enable-swank-on-signal))

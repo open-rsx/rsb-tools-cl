@@ -1,6 +1,6 @@
 ;;;; binary-style-mixins.lisp --- Mixin classes for binary event formatting classes.
 ;;;;
-;;;; Copyright (C) 2012-2017 Jan Moringen
+;;;; Copyright (C) 2012-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -153,7 +153,7 @@
                           ,name))
 
           (defun ,name (yuv-array yuv-start rgb-array rgb-start)
-            (declare #.cl-rsb-system:+optimization-fast+unsafe+)
+            (declare #.rsb:+optimization-fast+unsafe+)
 
             (let* ((c     (aref yuv-array (+ yuv-start 0)))
                    (d     (aref yuv-array (+ yuv-start 1)))
