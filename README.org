@@ -7,8 +7,7 @@
   manipulating distributed systems using the [[https://github.com/open-rsx][Robotics Service Bus]]
   middleware.
 
-  *The full documentation for RSB can be found at
-  https://doc.cor-lab.de/manual/rsb-trunk/index.html.*
+  *The full documentation for RSB can be found [[https://open-rsx.github.io/rsb-manual/][here]].*
 
 * Dependencies
 
