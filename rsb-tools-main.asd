@@ -91,12 +91,9 @@ See `version/list' for details on keyword parameters."
                  :components ((:file       "package")
                               (:file       "main"
                                :depends-on ("package")))))
-  :entry-point "rsb.tools.main:main"
-  :output-files (program-op (operation component)
-                  (let* ((output/relative #-win32 "tools" #+win32 "tools.exe")
-                         (output/absolute (uiop:ensure-absolute-pathname
-                                           output/relative *default-pathname-defaults*)))
-                    (values (list output/absolute) t))))
+  :build-operation program-op
+  :build-pathname #-win32 "tools" #+win32 "tools.exe"
+  :entry-point "rsb.tools.main:main")
 
 (defmethod perform :before ((operation program-op)
                             (component (eql (find-system :rsb-tools-main))))
