@@ -1,6 +1,6 @@
 ;;;; debugger.lisp --- Disabling the debugger.
 ;;;;
-;;;; Copyright (C) 2011, 2012, 2013, 2015, 2016 Jan Moringen
+;;;; Copyright (C) 2011-2019 Jan Moringen
 ;;;;
 ;;;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 
@@ -35,7 +35,8 @@
   "Start a swank server and write its port to \"./swank-port.txt\"."
   ;; Load swank, if necessary.
   (unless (asdf:component-loaded-p (asdf:find-system :swank))
-    (ql:quickload :swank))
+    (when-let ((quickload (find-symbol (string '#:quickload) '#:ql)))
+      (funcall quickload :swank)))
   ;; Delete old port file.
   (when (probe-file port-file)
     (delete-file port-file))
